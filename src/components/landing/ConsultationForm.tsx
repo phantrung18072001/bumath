@@ -1,23 +1,57 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Send } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { isValidVnPhone } from "@/lib/validators";
 
+const APPS_SCRIPT_ENDPOINT = import.meta.env.VITE_APPS_SCRIPT_ENDPOINT as string;
 const ConsultationForm = () => {
   const [loading, setLoading] = useState(false);
+  const [course, setCourse] = useState("");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
+
+    const form = e.target as HTMLFormElement;
+    const sdt = (form.elements.namedItem("sdt") as HTMLInputElement).value;
+
+    if (!isValidVnPhone(sdt)) {
+      toast.error("Số điện thoại không hợp lệ (VD: 0912345678)");
       setLoading(false);
-      toast.success("Đã gửi yêu cầu tư vấn! Chúng tôi sẽ liên hệ sớm nhất.");
-      (e.target as HTMLFormElement).reset();
-    }, 1000);
+      return;
+    }
+
+    const data = {
+      nam_sinh: (form.elements.namedItem("nam_sinh") as HTMLInputElement).value,
+      luc_hoc: (form.elements.namedItem("luc_hoc") as HTMLInputElement).value,
+      ho_ten: (form.elements.namedItem("ho_ten") as HTMLInputElement).value,
+      sdt,
+      khoa_hoc: course,
+    };
+
+    try {
+      const res = await fetch(APPS_SCRIPT_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify(data),
+      });
+
+      if (res.ok) {
+        toast.success("Đã gửi yêu cầu tư vấn! Chúng tôi sẽ liên hệ sớm nhất.");
+        form.reset();
+        setCourse("");
+      } else {
+        toast.error(`Gửi thất bại (${res.status}), vui lòng thử lại.`);
+      }
+    } catch {
+      toast.error("Lỗi kết nối, vui lòng thử lại.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,24 +74,23 @@ const ConsultationForm = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border bg-card p-6 shadow-lg">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Input placeholder="Họ và tên *" required />
-              <Input placeholder="Số điện thoại *" type="tel" required />
-            </div>
-            <Input placeholder="Email" type="email" />
-            <Select>
+            <Input name="nam_sinh" placeholder="Năm sinh của con:" />
+            <Input name="luc_hoc" placeholder="Lực học của con:" />
+            <Input name="ho_ten" placeholder="Họ tên phụ huynh: *" required />
+            <Input name="sdt" placeholder="SĐT: *" type="tel" required />
+            <Select value={course} onValueChange={setCourse}>
               <SelectTrigger>
-                <SelectValue placeholder="Chọn lớp" />
+                <SelectValue placeholder="--Khóa học--" />
               </SelectTrigger>
               <SelectContent>
-                {[7, 8, 9, 10, 11, 12].map((l) => (
-                  <SelectItem key={l} value={String(l)}>
-                    Lớp {l}
+                {[7, 8, 9].map((l) => (
+                  <SelectItem key={l} value={`Lớp ${l}`}>
+                    Toán lớp {l}
                   </SelectItem>
                 ))}
+                <SelectItem value="Chuyên">Ôn thi chuyên Toán</SelectItem>
               </SelectContent>
             </Select>
-            <Textarea placeholder="Ghi chú thêm (trường chuyên mong muốn, mục tiêu...)" rows={3} />
             <Button type="submit" className="w-full gap-2 shadow-lg shadow-primary/25" size="lg" disabled={loading}>
               <Send className="h-4 w-4" />
               {loading ? "Đang gửi..." : "Gửi yêu cầu tư vấn"}
