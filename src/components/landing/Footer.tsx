@@ -9,7 +9,7 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <Link to="/" className="mb-3 flex items-center gap-2">
-              <img src="/bumath.jpeg" alt="BuMath-X" className="h-9 w-9 rounded-lg object-cover" />
+              <img src={`${import.meta.env.BASE_URL}bumath.jpeg`} alt="BuMath-X" className="h-9 w-9 rounded-lg object-cover" />
               <span className="text-lg font-extrabold">
                 Bu<span className="text-primary">Math</span>-X
               </span>
