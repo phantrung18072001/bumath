@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Trophy, Target, Clock, Zap } from "lucide-react";
+import { Trophy, Target, BookOpen, Zap, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const features = [
   { icon: Target, title: "Lộ trình cá nhân", desc: "Chọn trường chuyên → nhận lộ trình học phù hợp" },
-  { icon: Clock, title: "Kiểm tra hàng tuần", desc: "Thi thử mỗi thứ 7, chấm bài + nhận xét chi tiết" },
-  { icon: Zap, title: "Trợ giảng 1-1", desc: "Chat hỏi đáp trực tiếp, được chấm bài tay" },
-  { icon: Trophy, title: "Tỷ lệ đỗ 95%", desc: "Phương pháp đã được kiểm chứng qua nhiều năm" },
+  { icon: BookOpen, title: "Từ cơ bản đến đỗ chuyên", desc: "Xây nền vững chắc, tiến dần đến mức độ thi chuyên" },
+  { icon: Zap, title: "Toàn bộ chuyên đề cần thiết", desc: "Bao phủ đầy đủ các chuyên đề trọng tâm trong đề thi chuyên" },
+  { icon: CheckCircle, title: "Luyện tập và sửa lỗi", desc: "Bài tập có chọn lọc, phân tích lỗi sai và hướng dẫn khắc phục" },
 ];
 
 const IntensiveSection = () => {

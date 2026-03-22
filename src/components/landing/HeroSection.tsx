@@ -19,7 +19,7 @@ const HeroSection = () => {
           >
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border bg-card px-4 py-1.5 text-sm font-medium shadow-sm">
               <Star className="h-4 w-4 fill-accent text-accent" />
-              <span>Nền tảng học Toán #1 cho học sinh lớp 7–12</span>
+              <span>Nền tảng học Toán cho học sinh lớp 7–9 & ôn thi chuyên</span>
             </div>
           </motion.div>
 

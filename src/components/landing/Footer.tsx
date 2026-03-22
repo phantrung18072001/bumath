@@ -9,15 +9,13 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <Link to="/" className="mb-3 flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary font-black text-primary-foreground">
-                B
-              </div>
+              <img src="/bumath.jpeg" alt="BuMath-X" className="h-9 w-9 rounded-lg object-cover" />
               <span className="text-lg font-extrabold">
                 Bu<span className="text-primary">Math</span>-X
               </span>
             </Link>
             <p className="text-sm text-muted-foreground">
-              Nền tảng học Toán online hàng đầu cho học sinh lớp 7–12.
+              Nền tảng học Toán online hàng đầu cho học sinh lớp 7–9.
             </p>
           </div>
 
@@ -25,7 +23,7 @@ const Footer = () => {
           <div>
             <h4 className="mb-3 font-bold">Khóa học</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              {[7, 8, 9, 10, 11, 12].map((l) => (
+              {[7, 8, 9].map((l) => (
                 <li key={l}>
                   <Link to={`/class/lop-${l}`} className="transition-colors hover:text-primary">
                     Toán lớp {l}
