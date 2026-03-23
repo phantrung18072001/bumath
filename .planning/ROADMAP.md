@@ -28,7 +28,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. Navigating directly to any deep URL (e.g. `/courses/123`) returns the app, not a 404
   2. The Supabase client can be imported anywhere in the codebase from `src/lib/supabase.ts` without errors
   3. Environment variables for Supabase URL and anon key are loaded by Vite in both dev and production builds
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Vercel migration, Supabase client install and singleton creation
+- [ ] 01-02-PLAN.md — Vercel + Supabase dashboard setup and deployment verification
 
 ### Phase 2: Auth & Access Control
 **Goal**: Users can securely register, log in, and access only the areas their role permits — with an admin approval gate before students reach any content
@@ -88,7 +92,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/? | Not started | - |
+| 1. Foundation | 0/2 | Planning complete | - |
 | 2. Auth & Access Control | 0/? | Not started | - |
 | 3. Course Management | 0/? | Not started | - |
 | 4. Student Learning & Submission | 0/? | Not started | - |
