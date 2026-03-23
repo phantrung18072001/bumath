@@ -99,43 +99,41 @@
 
 ## Traceability
 
-*Populated during roadmap creation*
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | Phase 1 | Pending |
-| INFRA-02 | Phase 1 | Pending |
-| INFRA-03 | Phase 1 | Pending |
-| AUTH-01 | Phase 2 | Pending |
-| AUTH-02 | Phase 2 | Pending |
-| AUTH-03 | Phase 2 | Pending |
-| AUTH-04 | Phase 2 | Pending |
-| AUTH-05 | Phase 2 | Pending |
-| ROLE-01 | Phase 2 | Pending |
-| ROLE-02 | Phase 2 | Pending |
-| ROLE-03 | Phase 2 | Pending |
-| COURSE-01 | Phase 3 | Pending |
-| COURSE-02 | Phase 3 | Pending |
-| COURSE-03 | Phase 3 | Pending |
-| COURSE-04 | Phase 3 | Pending |
-| COURSE-05 | Phase 3 | Pending |
-| LEARN-01 | Phase 4 | Pending |
-| LEARN-02 | Phase 4 | Pending |
-| LEARN-03 | Phase 4 | Pending |
-| LEARN-04 | Phase 4 | Pending |
-| LEARN-05 | Phase 4 | Pending |
-| SUBMIT-01 | Phase 4 | Pending |
-| SUBMIT-02 | Phase 4 | Pending |
-| SUBMIT-03 | Phase 4 | Pending |
-| SUBMIT-04 | Phase 4 | Pending |
-| GRADE-01 | Phase 5 | Pending |
-| GRADE-02 | Phase 5 | Pending |
-| GRADE-03 | Phase 5 | Pending |
-| GRADE-04 | Phase 5 | Pending |
-| GRADE-05 | Phase 5 | Pending |
-| UX-01 | Phase 4 | Pending |
-| UX-02 | Phase 4 | Pending |
-| UX-03 | Phase 2 | Pending |
+| INFRA-01 | Phase 1 — Foundation | Pending |
+| INFRA-02 | Phase 1 — Foundation | Pending |
+| INFRA-03 | Phase 1 — Foundation | Pending |
+| AUTH-01 | Phase 2 — Auth & Access Control | Pending |
+| AUTH-02 | Phase 2 — Auth & Access Control | Pending |
+| AUTH-03 | Phase 2 — Auth & Access Control | Pending |
+| AUTH-04 | Phase 2 — Auth & Access Control | Pending |
+| AUTH-05 | Phase 2 — Auth & Access Control | Pending |
+| ROLE-01 | Phase 2 — Auth & Access Control | Pending |
+| ROLE-02 | Phase 2 — Auth & Access Control | Pending |
+| ROLE-03 | Phase 2 — Auth & Access Control | Pending |
+| UX-03 | Phase 2 — Auth & Access Control | Pending |
+| COURSE-01 | Phase 3 — Course Management | Pending |
+| COURSE-02 | Phase 3 — Course Management | Pending |
+| COURSE-03 | Phase 3 — Course Management | Pending |
+| COURSE-04 | Phase 3 — Course Management | Pending |
+| COURSE-05 | Phase 3 — Course Management | Pending |
+| LEARN-01 | Phase 4 — Student Learning & Submission | Pending |
+| LEARN-02 | Phase 4 — Student Learning & Submission | Pending |
+| LEARN-03 | Phase 4 — Student Learning & Submission | Pending |
+| LEARN-04 | Phase 4 — Student Learning & Submission | Pending |
+| LEARN-05 | Phase 4 — Student Learning & Submission | Pending |
+| SUBMIT-01 | Phase 4 — Student Learning & Submission | Pending |
+| SUBMIT-02 | Phase 4 — Student Learning & Submission | Pending |
+| SUBMIT-03 | Phase 4 — Student Learning & Submission | Pending |
+| SUBMIT-04 | Phase 4 — Student Learning & Submission | Pending |
+| UX-01 | Phase 4 — Student Learning & Submission | Pending |
+| UX-02 | Phase 4 — Student Learning & Submission | Pending |
+| GRADE-01 | Phase 5 — Grading & Notification | Pending |
+| GRADE-02 | Phase 5 — Grading & Notification | Pending |
+| GRADE-03 | Phase 5 — Grading & Notification | Pending |
+| GRADE-04 | Phase 5 — Grading & Notification | Pending |
+| GRADE-05 | Phase 5 — Grading & Notification | Pending |
 
 **Coverage:**
 - v1 requirements: 32 total
@@ -144,4 +142,4 @@
 
 ---
 *Requirements defined: 2026-03-24*
-*Last updated: 2026-03-24 after initial definition*
+*Last updated: 2026-03-24 — traceability populated after roadmap creation*
