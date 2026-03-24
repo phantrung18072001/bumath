@@ -71,3 +71,11 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+
+<!-- Note -->
+<!-- 1. Sửa lại luồng user đăng ký: Không cần admin duyệt nữa => nói chuyện lại với HA xem thử nen mua bán theo thế nào. -->
+
+<!-- Confirm là quay trên youtube trước rồi đọc từ link youtube -->
+<!-- Xem lại 1 lượt requirements -->
+

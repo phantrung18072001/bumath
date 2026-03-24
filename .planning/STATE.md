@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to execute
-stopped_at: Completed 03-02-PLAN.md (admin courses page)
-last_updated: "2026-03-24T16:16:16.257Z"
+status: Executing Phase 03
+stopped_at: Completed 03-04-PLAN.md (admin lessons page)
+last_updated: "2026-03-24T22:46:58.745Z"
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 14
-  completed_plans: 11
+  completed_plans: 14
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-24)
 ## Current Position
 
 Phase: 03 (course-management) — EXECUTING
-Plan: 3 of 5
+Plan: 1 of 5
 
 ## Performance Metrics
 
@@ -52,6 +52,9 @@ Plan: 3 of 5
 | Phase 02-auth-access-control P03 | 4min | 2 tasks | 2 files |
 | Phase 03-course-management P01 | 2min | 4 tasks | 4 files |
 | Phase 03-course-management P02 | 5min | 4 tasks | 4 files |
+| Phase 03-course-management P03 | 15min | 5 tasks | 4 files |
+| Phase 03-course-management P04 | 20min | 5 tasks | 6 files |
+| Phase 03-course-management P05 | 2min | 4 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -78,6 +81,11 @@ Recent decisions affecting current work:
 - [Phase 03-course-management]: Storage read policy permissive for authenticated users — file path discovery blocked by lesson RLS; student upload enforces user_id in path
 - [Phase 03-course-management]: target_grade enum values: grade_7/grade_8/grade_9/advanced map to UI labels Lớp 7/8/9/Ôn chuyên
 - [Phase 03-course-management]: CourseFormDialog resets via useEffect watching open/course props for clean controlled state
+- [Phase 03-course-management]: reorderChapters uses two sequential Supabase updates (no transaction support in JS client) — acceptable for low-concurrency admin UI
+- [Phase 03-course-management]: nextOrderIndex (chapters.length) passed from ChaptersPage to ChapterFormDialog for append-to-end ordering on create
+- [Phase 03-course-management]: extractYouTubeID normalises any YouTube URL to video ID; video_url stored as embed URL
+- [Phase 03-course-management]: Assignment storage path uses tmp/{chapterId} prefix on create — lesson ID not yet known at upload time
+- [Phase 03-course-management]: deleteAssignment called before removeLesson — storage failure prevents DB delete (consistent failure state)
 
 ### Pending Todos
 
@@ -92,6 +100,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T16:16:16.255Z
-Stopped at: Completed 03-02-PLAN.md (admin courses page)
+Last session: 2026-03-24T16:29:19.303Z
+Stopped at: Completed 03-04-PLAN.md (admin lessons page)
 Resume file: None
