@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Loader2 } from 'lucide-react'
+import { Loader2, BookOpen } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
 import { Profile } from '@/types/auth'
@@ -20,6 +20,7 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
+import UserEnrollmentDialog from '@/components/admin/UserEnrollmentDialog'
 
 function StatusBadge({ status }: { status: Profile['approval_status'] }) {
   if (status === 'pending') {
@@ -47,6 +48,7 @@ function UsersTable({
   onRejectConfirm,
   approvePendingId,
   rejectPendingId,
+  onManageEnrollments,
   emptyMessage,
 }: {
   users: Profile[]
@@ -56,6 +58,7 @@ function UsersTable({
   onRejectConfirm: (id: string) => void
   approvePendingId: string | null
   rejectPendingId: string | null
+  onManageEnrollments: (user: Profile) => void
   emptyMessage: string
 }) {
   if (users.length === 0) {
@@ -88,45 +91,59 @@ function UsersTable({
                 <StatusBadge status={user.approval_status} />
               </TableCell>
               <TableCell>
-                {user.approval_status === 'pending' && (
-                  <div className="flex gap-2 flex-wrap">
-                    <Button
-                      size="sm"
-                      className="min-h-[48px]"
-                      onClick={() => onApprove(user.id)}
-                      disabled={approvePendingId === user.id}
-                    >
-                      {approvePendingId === user.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-1" />
-                      ) : null}
-                      Duyệt tài khoản
-                    </Button>
-
-                    {confirmingRejectId === user.id ? (
+                <div className="flex gap-2 flex-wrap">
+                  {user.approval_status === 'pending' && (
+                    <>
                       <Button
-                        variant="destructive"
                         size="sm"
                         className="min-h-[48px]"
-                        onClick={() => onRejectConfirm(user.id)}
-                        disabled={rejectPendingId === user.id}
+                        onClick={() => onApprove(user.id)}
+                        disabled={approvePendingId === user.id}
                       >
-                        {rejectPendingId === user.id ? (
+                        {approvePendingId === user.id ? (
                           <Loader2 className="h-4 w-4 animate-spin mr-1" />
                         ) : null}
-                        Xác nhận từ chối?
+                        Duyệt tài khoản
                       </Button>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="min-h-[48px] text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
-                        onClick={() => onRejectStep1(user.id)}
-                      >
-                        Từ chối
-                      </Button>
-                    )}
-                  </div>
-                )}
+
+                      {confirmingRejectId === user.id ? (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="min-h-[48px]"
+                          onClick={() => onRejectConfirm(user.id)}
+                          disabled={rejectPendingId === user.id}
+                        >
+                          {rejectPendingId === user.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                          ) : null}
+                          Xác nhận từ chối?
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="min-h-[48px] text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+                          onClick={() => onRejectStep1(user.id)}
+                        >
+                          Từ chối
+                        </Button>
+                      )}
+                    </>
+                  )}
+
+                  {user.approval_status === 'approved' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="min-h-[48px]"
+                      onClick={() => onManageEnrollments(user)}
+                    >
+                      <BookOpen className="h-4 w-4 mr-1" />
+                      Quản lý khóa học
+                    </Button>
+                  )}
+                </div>
               </TableCell>
             </TableRow>
           ))}
@@ -139,6 +156,7 @@ function UsersTable({
 export default function UsersPage() {
   const queryClient = useQueryClient()
   const [confirmingRejectId, setConfirmingRejectId] = useState<string | null>(null)
+  const [enrollmentUser, setEnrollmentUser] = useState<Profile | null>(null)
 
   const { data: users = [], isLoading } = useQuery<Profile[]>({
     queryKey: ['admin', 'profiles'],
@@ -208,6 +226,7 @@ export default function UsersPage() {
     onRejectConfirm: handleRejectConfirm,
     approvePendingId,
     rejectPendingId,
+    onManageEnrollments: (user: Profile) => setEnrollmentUser(user),
   }
 
   return (
@@ -260,6 +279,12 @@ export default function UsersPage() {
           </TabsContent>
         </Tabs>
       )}
+
+      <UserEnrollmentDialog
+        open={!!enrollmentUser}
+        user={enrollmentUser}
+        onClose={() => setEnrollmentUser(null)}
+      />
     </div>
   )
 }
