@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS courses (
   id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   title        text NOT NULL,
   description  text,
-  grade        smallint,           -- 7, 8, 9, or NULL for ôn chuyên
+  target_grade text NOT NULL DEFAULT 'grade_7' CHECK (target_grade IN ('grade_7', 'grade_8', 'grade_9', 'advanced')),
   thumbnail_url text,
   created_at   timestamptz NOT NULL DEFAULT now(),
   updated_at   timestamptz NOT NULL DEFAULT now()
@@ -28,8 +28,9 @@ CREATE TABLE IF NOT EXISTS lessons (
   chapter_id    uuid NOT NULL REFERENCES chapters(id) ON DELETE CASCADE,
   title         text NOT NULL,
   description   text,
-  video_url     text,              -- YouTube embed URL
-  order_index   integer NOT NULL DEFAULT 0,
+  video_url       text,              -- YouTube embed URL
+  assignment_path text,              -- Storage path for assignment file
+  order_index     integer NOT NULL DEFAULT 0,
   created_at    timestamptz NOT NULL DEFAULT now(),
   updated_at    timestamptz NOT NULL DEFAULT now()
 );
