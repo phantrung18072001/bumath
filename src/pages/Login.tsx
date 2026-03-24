@@ -4,7 +4,7 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { supabase } from '@/lib/supabase'
-import { isValidVnPhone, toE164 } from '@/lib/validators'
+import { isValidVnPhone, phoneToEmail } from '@/lib/validators'
 import { useAuth } from '@/contexts/AuthContext'
 
 export default function Login() {
@@ -38,7 +38,7 @@ export default function Login() {
     setIsSubmitting(true)
     try {
       const { error } = await supabase.auth.signInWithPassword({
-        phone: toE164(phone),
+        email: phoneToEmail(phone),
         password,
       })
 

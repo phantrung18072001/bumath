@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { supabase } from '@/lib/supabase'
-import { isValidVnPhone, toE164 } from '@/lib/validators'
+import { isValidVnPhone, toE164, phoneToEmail } from '@/lib/validators'
 import { useAuth } from '@/contexts/AuthContext'
 
 const registerSchema = z
@@ -70,10 +70,11 @@ export default function Register() {
 
   const onSubmit = async (values: RegisterFormValues) => {
     const { error } = await supabase.auth.signUp({
-      phone: toE164(values.phone),
+      email: phoneToEmail(values.phone),
       password: values.password,
       options: {
         data: {
+          phone: toE164(values.phone),
           full_name: values.fullName,
           year_of_birth: values.yearOfBirth,
           address: values.address,

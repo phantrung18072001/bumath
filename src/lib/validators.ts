@@ -15,3 +15,6 @@ export function toE164(phone: string): string {
   if (cleaned.startsWith('0')) return '+84' + cleaned.slice(1)
   return cleaned
 }
+export function phoneToEmail(phone: string): string {
+  return `${toE164(phone)}@bumath.local`
+}

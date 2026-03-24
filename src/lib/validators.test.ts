@@ -1,4 +1,4 @@
-import { isValidVnPhone, toE164 } from '@/lib/validators'
+import { isValidVnPhone, toE164, phoneToEmail } from '@/lib/validators'
 
 describe('toE164', () => {
   it('converts 0-prefix phone to +84 E.164 format', () => {
@@ -41,5 +41,15 @@ describe('isValidVnPhone', () => {
 
   it('rejects phone with invalid middle digits', () => {
     expect(isValidVnPhone('0112345678')).toBe(false)
+  })
+})
+
+describe('phoneToEmail', () => {
+  it('converts 0-prefix phone to dummy email', () => {
+    expect(phoneToEmail('0912345678')).toBe('+84912345678@bumath.local')
+  })
+
+  it('converts +84-prefix phone to dummy email', () => {
+    expect(phoneToEmail('+84912345678')).toBe('+84912345678@bumath.local')
   })
 })
