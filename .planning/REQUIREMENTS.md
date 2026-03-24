@@ -17,7 +17,7 @@
 - [x] **AUTH-02**: Học sinh có thể đăng nhập và duy trì session qua các lần reload
 - [x] **AUTH-03**: Học sinh/giảng viên/admin có thể đăng xuất từ bất kỳ trang nào
 - [x] **AUTH-04**: Tài khoản học sinh mới ở trạng thái "pending" cho đến khi admin duyệt
-- [ ] **AUTH-05**: Admin có thể xem danh sách tài khoản đang chờ duyệt và duyệt/từ chối
+- [x] **AUTH-05**: Admin có thể xem danh sách tài khoản đang chờ duyệt và duyệt/từ chối
 
 ### Roles & Access Control
 
@@ -60,7 +60,7 @@
 
 - [ ] **UX-01**: Tất cả các luồng chính (đăng nhập, xem bài, nộp bài) hoạt động trên viewport 375px
 - [ ] **UX-02**: Tất cả nút/vùng tương tác có kích thước tối thiểu 48x48px
-- [ ] **UX-03**: Giao diện hoàn toàn bằng tiếng Việt
+- [x] **UX-03**: Giao diện hoàn toàn bằng tiếng Việt
 
 ## v2 Requirements
 
@@ -108,11 +108,11 @@
 | AUTH-02 | Phase 2 — Auth & Access Control | Complete |
 | AUTH-03 | Phase 2 — Auth & Access Control | Complete |
 | AUTH-04 | Phase 2 — Auth & Access Control | Complete |
-| AUTH-05 | Phase 2 — Auth & Access Control | Pending |
+| AUTH-05 | Phase 2 — Auth & Access Control | Complete |
 | ROLE-01 | Phase 2 — Auth & Access Control | Complete |
 | ROLE-02 | Phase 2 — Auth & Access Control | Complete |
 | ROLE-03 | Phase 2 — Auth & Access Control | Pending |
-| UX-03 | Phase 2 — Auth & Access Control | Pending |
+| UX-03 | Phase 2 — Auth & Access Control | Complete |
 | COURSE-01 | Phase 3 — Course Management | Pending |
 | COURSE-02 | Phase 3 — Course Management | Pending |
 | COURSE-03 | Phase 3 — Course Management | Pending |
