@@ -56,7 +56,7 @@ Exceptions:
 | Body | 14px (text-sm) | 400 | 1.5 | `text-sm font-normal` | Table cells, form helper text, description paragraphs |
 | Label | 16px (text-base) | 400 | 1.5 | `text-base font-normal` | Form labels, tab triggers, badge text |
 | Heading | 20px (text-xl) | 600 | 1.3 | `text-xl font-semibold leading-[1.3]` | Page headings (matches UsersPage.tsx h1 pattern) |
-| Display | 28px (text-2xl) | 700 | 1.2 | `text-2xl font-bold leading-[1.2]` | Not used in this phase — admin-only, heading is sufficient |
+| Display | 28px (text-2xl) | 600 | 1.2 | `text-2xl font-semibold leading-[1.2]` | Not used in this phase — admin-only, heading is sufficient |
 
 Source: UsersPage.tsx `h1 className="text-xl font-semibold leading-[1.3]"` — established admin page heading pattern.
 
@@ -80,7 +80,7 @@ Accent reserved for:
 2. "Tạo chuyên đề" button on `/admin/courses/{courseId}`
 3. "Thêm bài học" button on `/admin/courses/{courseId}/chapters/{chapterId}`
 4. "Thêm khóa học" (enrollment add) button on user detail panel in `/admin/users`
-5. Form submit buttons ("Lưu", "Tạo") inside Dialog and lesson form
+5. Form submit buttons ("Lưu khóa học", "Lưu chuyên đề", "Lưu bài học", "Tạo khóa học", "Tạo chuyên đề") inside Dialog and lesson form
 6. Do NOT use accent on reorder [↑][↓] buttons — use `variant="outline"` instead
 
 Grade target badges use semantic colors (not accent):
@@ -94,6 +94,8 @@ Secondary semantic color: `--secondary` hsl(200 80% 50%) — blue. Not used in t
 ---
 
 ## Layout Contract
+
+Primary focal point: `<h1>` page title + primary CTA button in header bar.
 
 ### Page Shell (all 3 admin pages)
 
@@ -190,9 +192,9 @@ All copy is in Vietnamese (UX-03, locked).
 | YouTube URL | Đường dẫn video YouTube |
 | Lesson description | Mô tả bài học |
 | Assignment file | Tệp bài tập (PDF hoặc hình ảnh) |
-| Form save button | Lưu |
-| Form cancel button | Hủy |
-| Dialog create button | Tạo |
+| Form save button | Context-specific (see note): course dialog — "Lưu khóa học"; chapter dialog — "Lưu chuyên đề"; lesson form — "Lưu bài học". Save button label is scoped to the entity being edited. |
+| Form cancel button | Đóng (dialog dismissal — no data loss implied) |
+| Dialog create button | Context-specific (see note): course dialog — "Tạo khóa học"; chapter dialog — "Tạo chuyên đề". Create button label matches the primary CTA of the page. |
 
 ### Empty States
 
