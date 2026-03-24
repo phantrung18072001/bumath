@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to plan
-stopped_at: Completed 01-foundation-01-PLAN.md — Vercel migration + Supabase client bootstrap
-last_updated: "2026-03-24T03:43:35.953Z"
+status: Ready to execute
+stopped_at: Completed 02-auth-access-control-01-PLAN.md
+last_updated: "2026-03-24T06:11:44.771Z"
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
+  total_plans: 5
+  completed_plans: 3
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-24)
 
 **Core value:** Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ thể từ giảng viên trên từng bài làm
-**Current focus:** Phase 01 — foundation
+**Current focus:** Phase 02 — Auth & Access Control
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
+Phase: 02 (Auth & Access Control) — EXECUTING
+Plan: 2 of 3
 
 ## Performance Metrics
 
@@ -47,6 +47,7 @@ Plan: Not started
 
 *Updated after each plan completion*
 | Phase 01-foundation P01 | 2 | 3 tasks | 7 files |
+| Phase 02-auth-access-control P01 | 4min | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -62,6 +63,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: Pin @supabase/supabase-js to 2.78.0 — v2.79+ dropped Node 18 support (project runs Node 18.20.8)
 - [Phase 01-foundation]: Vercel SPA routing via vercel.json rewrites (not redirects) — rewrites preserve URL visible to user
 - [Phase 01-foundation]: Delete deploy.yml permanently — GitHub Pages superseded by Vercel, no value in archiving
+- [Phase 02-auth-access-control]: React Context (not TanStack Query) for auth state — session is event-driven via onAuthStateChange
+- [Phase 02-auth-access-control]: setTimeout(0) for profile fetch in onAuthStateChange to avoid Supabase callback deadlock
+- [Phase 02-auth-access-control]: ProtectedRoute redirects pending/rejected users to /pending; /pending page must not itself use ProtectedRoute (infinite redirect loop)
 
 ### Pending Todos
 
@@ -76,6 +80,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T02:05:26.026Z
-Stopped at: Completed 01-foundation-01-PLAN.md — Vercel migration + Supabase client bootstrap
+Last session: 2026-03-24T06:11:44.769Z
+Stopped at: Completed 02-auth-access-control-01-PLAN.md
 Resume file: None

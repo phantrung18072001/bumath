@@ -13,16 +13,16 @@
 
 ### Authentication
 
-- [ ] **AUTH-01**: Học sinh có thể tạo tài khoản bằng email và mật khẩu
-- [ ] **AUTH-02**: Học sinh có thể đăng nhập và duy trì session qua các lần reload
-- [ ] **AUTH-03**: Học sinh/giảng viên/admin có thể đăng xuất từ bất kỳ trang nào
-- [ ] **AUTH-04**: Tài khoản học sinh mới ở trạng thái "pending" cho đến khi admin duyệt
+- [x] **AUTH-01**: Học sinh có thể tạo tài khoản bằng email và mật khẩu
+- [x] **AUTH-02**: Học sinh có thể đăng nhập và duy trì session qua các lần reload
+- [x] **AUTH-03**: Học sinh/giảng viên/admin có thể đăng xuất từ bất kỳ trang nào
+- [x] **AUTH-04**: Tài khoản học sinh mới ở trạng thái "pending" cho đến khi admin duyệt
 - [ ] **AUTH-05**: Admin có thể xem danh sách tài khoản đang chờ duyệt và duyệt/từ chối
 
 ### Roles & Access Control
 
-- [ ] **ROLE-01**: Hệ thống có 3 roles: student, teacher, admin với quyền khác nhau
-- [ ] **ROLE-02**: Route được bảo vệ theo role — học sinh không thể truy cập trang admin/teacher
+- [x] **ROLE-01**: Hệ thống có 3 roles: student, teacher, admin với quyền khác nhau
+- [x] **ROLE-02**: Route được bảo vệ theo role — học sinh không thể truy cập trang admin/teacher
 - [ ] **ROLE-03**: RLS policies trong Supabase ngăn học sinh xem dữ liệu của nhau
 
 ### Course Management (Admin)
@@ -104,13 +104,13 @@
 | INFRA-01 | Phase 1 — Foundation | Complete |
 | INFRA-02 | Phase 1 — Foundation | Complete |
 | INFRA-03 | Phase 1 — Foundation | Complete |
-| AUTH-01 | Phase 2 — Auth & Access Control | Pending |
-| AUTH-02 | Phase 2 — Auth & Access Control | Pending |
-| AUTH-03 | Phase 2 — Auth & Access Control | Pending |
-| AUTH-04 | Phase 2 — Auth & Access Control | Pending |
+| AUTH-01 | Phase 2 — Auth & Access Control | Complete |
+| AUTH-02 | Phase 2 — Auth & Access Control | Complete |
+| AUTH-03 | Phase 2 — Auth & Access Control | Complete |
+| AUTH-04 | Phase 2 — Auth & Access Control | Complete |
 | AUTH-05 | Phase 2 — Auth & Access Control | Pending |
-| ROLE-01 | Phase 2 — Auth & Access Control | Pending |
-| ROLE-02 | Phase 2 — Auth & Access Control | Pending |
+| ROLE-01 | Phase 2 — Auth & Access Control | Complete |
+| ROLE-02 | Phase 2 — Auth & Access Control | Complete |
 | ROLE-03 | Phase 2 — Auth & Access Control | Pending |
 | UX-03 | Phase 2 — Auth & Access Control | Pending |
 | COURSE-01 | Phase 3 — Course Management | Pending |
