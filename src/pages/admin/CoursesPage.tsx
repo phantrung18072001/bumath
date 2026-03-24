@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Loader2, Plus, Pencil, Trash2 } from 'lucide-react'
+import { Loader2, Plus, Pencil, Trash2, BookOpen } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Table,
@@ -48,6 +49,7 @@ function GradeBadge({ grade }: { grade: Course['target_grade'] }) {
 }
 
 export default function CoursesPage() {
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingCourse, setEditingCourse] = useState<Course | null>(null)
@@ -135,6 +137,15 @@ export default function CoursesPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2 flex-wrap">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="min-h-[48px]"
+                        aria-label="Xem chuyên đề"
+                        onClick={() => navigate(`/admin/courses/${course.id}`)}
+                      >
+                        <BookOpen className="h-4 w-4" />
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
