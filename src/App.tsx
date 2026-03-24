@@ -11,6 +11,9 @@ import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import UsersPage from "./pages/admin/UsersPage";
+import CoursesPage from "./pages/admin/CoursesPage";
+import ChaptersPage from "./pages/admin/ChaptersPage";
+import LessonsPage from "./pages/admin/LessonsPage";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +31,9 @@ const App = () => (
             <Route path="/pending" element={<Pending />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="/admin/users" element={<ProtectedRoute requiredRole="admin"><UsersPage /></ProtectedRoute>} />
+            <Route path="/admin/courses" element={<ProtectedRoute requiredRole="admin"><CoursesPage /></ProtectedRoute>} />
+            <Route path="/admin/courses/:courseId" element={<ProtectedRoute requiredRole="admin"><ChaptersPage /></ProtectedRoute>} />
+            <Route path="/admin/courses/:courseId/chapters/:chapterId" element={<ProtectedRoute requiredRole="admin"><LessonsPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
