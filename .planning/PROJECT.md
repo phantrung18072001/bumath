@@ -16,6 +16,9 @@ Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ t
 - ✓ Form tư vấn/đăng ký quan tâm gửi về Google Sheets — existing
 - ✓ Responsive design, hỗ trợ tiếng Việt (font Be Vietnam Pro) — existing
 - ✓ Navigation header với placeholder cho login/register — existing
+- ✓ Vercel SPA hosting với deep-link routing — Validated in Phase 1: Foundation
+- ✓ Supabase client singleton (`src/lib/supabase.ts`) với env var plumbing — Validated in Phase 1: Foundation
+- ✓ `@supabase/supabase-js@2.78.0` installed (Node 18 compatible) — Validated in Phase 1: Foundation
 
 ### Active
 
