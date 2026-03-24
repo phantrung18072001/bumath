@@ -52,14 +52,14 @@ All text is in Vietnamese (UX-03). Font: "Be Vietnam Pro".
 
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
-| Body | 16px | 400 (regular) | 1.5 | Form helper text, table cell content, card body copy |
-| Label | 14px | 500 (medium) | 1.4 | Form field labels, table column headers, badge text |
+| Body | 16px | 400 (regular) | 1.5 | Form helper text, table cell content, card body copy, form field labels, table column headers, badge text |
 | Heading | 20px | 600 (semibold) | 1.3 | Page title (e.g. "Đăng nhập", "Đăng ký"), card section title |
-| Display | 28px | 700 (bold) | 1.2 | Pending/rejected screen main message only |
+| Label | 14px | 400 (regular) | 1.4 | Secondary labels, status text, helper text beneath form fields |
+| Display | 28px | 600 (semibold) | 1.2 | Pending/rejected screen main message only |
 
 Constraints:
 - Maximum 4 type sizes declared above — do not introduce additional sizes in this phase.
-- Weights used: 400, 500, 600, 700. Do not use 800/900 in auth screens (reserved for landing hero).
+- Weights used: 400 (regular) and 600 (semibold) only. Do not use 500, 700, 800, or 900 in auth screens (800/900 reserved for landing hero; 500/700 not used in this phase).
 - Body line-height 1.5 applies to all paragraph and helper text.
 - Heading line-height 1.3 applies to all page-level and card-level titles.
 
@@ -79,12 +79,12 @@ Source: `src/index.css` CSS variables (HSL format, light mode).
 Accent (`--primary`, orange) reserved for:
 1. Primary submit button on `/login` form — "Đăng nhập"
 2. Primary submit button on `/register` form — "Đăng ký"
-3. "Approve" (Duyệt) action button in admin user table
+3. "Duyệt tài khoản" action button in admin user table
 4. Logo accent span ("Math" in "BuMath-X") — inherited from existing Header, do not change
 5. Focus ring (`--ring` maps to `--primary`) on all form inputs
 
 Destructive (`--destructive`, red) reserved for:
-1. "Reject" (Từ chối) action button in admin user table — only interactive element in this phase that uses destructive color
+1. "Từ chối" action button in admin user table — only interactive element in this phase that uses destructive color
 
 Muted (`--muted-foreground`) used for: placeholder text in inputs, helper text beneath form fields, processing time note on pending screen.
 
@@ -122,13 +122,13 @@ This phase introduces the following new screens and components:
 - Full-width page layout with page heading "Quản lý tài khoản"
 - Tabs component: "Tất cả" | "Chờ duyệt" | "Đã duyệt" | "Từ chối"
 - Table with columns: Tên học sinh, Số điện thoại, Năm sinh, Địa chỉ, Trạng thái, Hành động
-- Action column: "Duyệt" button (primary) + "Từ chối" button (destructive outline) — visible only on pending rows
+- Action column: "Duyệt tài khoản" button (primary) + "Từ chối" button (destructive outline) — visible only on pending rows
 - Status column: Badge component per status
 - No sidebar in this phase — full-width single-column layout
 
 ### `ProtectedRoute` component (non-visual)
 - Wraps all routes requiring authentication
-- Loading state during session check: full-page centered spinner (Lucide `Loader2` with `animate-spin`, 24px, primary color) — no skeleton, instant redirect if session is confirmed
+- Loading state during session check: full-page centered spinner (Lucide `Loader2` with `animate-spin`, 24px, primary color) — no skeleton, instant redirect if session is confirmed. Spinner must include `aria-label="Đang tải..."` on the wrapper element (or an `sr-only` span with text "Đang tải...") for screen reader accessibility.
 
 ---
 
@@ -153,7 +153,7 @@ This phase introduces the following new screens and components:
 - Error message on invalid format: "Số điện thoại không hợp lệ (VD: 0912345678)"
 
 ### Admin Table Row Actions
-- "Duyệt" and "Từ chối" buttons are inline in the Actions column
+- "Duyệt tài khoản" and "Từ chối" buttons are inline in the Actions column
 - After action completes: row status badge updates optimistically; row moves to correct tab on next tab switch (not instant row removal to avoid layout shift)
 - Confirmation for Reject: inline — no modal dialog. Reject button becomes a two-step: first click changes button label to "Xác nhận từ chối?" with destructive styling, second click confirms. Auto-resets after 3 seconds if not confirmed.
 
@@ -180,7 +180,7 @@ All copy is in Vietnamese (UX-03 locked decision).
 | Admin tab: pending | Chờ duyệt |
 | Admin tab: approved | Đã duyệt |
 | Admin tab: rejected | Từ chối |
-| Admin approve button | Duyệt |
+| Admin approve button | Duyệt tài khoản |
 | Admin reject button (step 1) | Từ chối |
 | Admin reject button (step 2 confirm) | Xác nhận từ chối? |
 | Auth error: wrong credentials | Số điện thoại hoặc mật khẩu không đúng. |
@@ -192,7 +192,7 @@ All copy is in Vietnamese (UX-03 locked decision).
 | Registration success toast | Tài khoản đã được tạo. Vui lòng chờ xét duyệt. |
 | Approval success toast (admin) | Đã duyệt tài khoản thành công. |
 | Rejection success toast (admin) | Đã từ chối tài khoản. |
-| Loading / session check label | (no text label — spinner only) |
+| Loading / session check label | sr-only span "Đang tải..." (or aria-label="Đang tải..." on spinner wrapper) |
 | Empty state: pending tab | Không có tài khoản nào đang chờ duyệt. |
 | Empty state: all tab | Chưa có tài khoản nào được tạo. |
 
