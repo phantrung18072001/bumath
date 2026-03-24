@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone, CreditCard, HelpCircle } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Menu, X, Phone, CreditCard, HelpCircle, LogOut } from "lucide-react";
 
 const navItems = [
   { label: "Giới thiệu", to: "/gioi-thieu" },
@@ -13,6 +14,8 @@ const navItems = [
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, profile, loading, signOut } = useAuth();
+  const isAuthenticated = !loading && !!user;
 
   return (
     <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
@@ -47,16 +50,35 @@ const Header = () => {
             <HelpCircle className="h-3.5 w-3.5" />
             Hướng dẫn
           </Link>
-          <Link to="/login">
-            <Button variant="ghost" size="sm" className="h-7 text-sm">
-              Đăng nhập
-            </Button>
-          </Link>
-          <Link to="/register">
-            <Button size="sm" className="h-7 text-sm">
-              Đăng ký
-            </Button>
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <span className="text-sm font-medium text-foreground">
+                {profile?.full_name || 'Tài khoản'}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-sm gap-1"
+                onClick={() => signOut()}
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                Đăng xuất
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant="ghost" size="sm" className="h-7 text-sm">
+                  Đăng nhập
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button size="sm" className="h-7 text-sm">
+                  Đăng ký
+                </Button>
+              </Link>
+            </>
+          )}
           <Link to="/thanh-toan">
             <Button variant="outline" size="sm" className="h-7 text-sm gap-1">
               <CreditCard className="h-3.5 w-3.5" />
@@ -111,14 +133,33 @@ const Header = () => {
             <Phone className="h-3.5 w-3.5" />
             0123.456.789
           </div>
-          <div className="mt-3 flex gap-2">
-            <Link to="/login" className="flex-1">
-              <Button variant="outline" className="w-full" size="sm">Đăng nhập</Button>
-            </Link>
-            <Link to="/register" className="flex-1">
-              <Button className="w-full" size="sm">Đăng ký</Button>
-            </Link>
-          </div>
+          {isAuthenticated ? (
+            <div className="mt-3">
+              <div className="flex items-center gap-2 mb-2 px-3">
+                <span className="text-sm font-medium text-foreground">
+                  {profile?.full_name || 'Tài khoản'}
+                </span>
+              </div>
+              <Button
+                variant="ghost"
+                className="w-full min-h-[48px] gap-1"
+                size="sm"
+                onClick={() => { signOut(); setMobileOpen(false); }}
+              >
+                <LogOut className="h-4 w-4" />
+                Đăng xuất
+              </Button>
+            </div>
+          ) : (
+            <div className="mt-3 flex gap-2">
+              <Link to="/login" className="flex-1">
+                <Button variant="outline" className="w-full" size="sm">Đăng nhập</Button>
+              </Link>
+              <Link to="/register" className="flex-1">
+                <Button className="w-full" size="sm">Đăng ký</Button>
+              </Link>
+            </div>
+          )}
           <div className="mt-2">
             <Link to="/thanh-toan" className="block">
               <Button variant="outline" className="w-full gap-1" size="sm">

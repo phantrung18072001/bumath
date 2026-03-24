@@ -52,7 +52,7 @@ Plans:
 - [x] 02-01-PLAN.md — Auth types, validators, AuthContext, ProtectedRoute
 - [x] 02-02-PLAN.md — Login, Register, Pending pages
 - [x] 02-03-PLAN.md — Admin UsersPage with approve/reject
-- [ ] 02-04-PLAN.md — Gap closure: Wire admin route in App.tsx with ProtectedRoute
+- [x] 02-04-PLAN.md — Gap closure: Wire admin route in App.tsx with ProtectedRoute
 - [ ] 02-05-PLAN.md — Gap closure: Add auth-aware logout to Header
 - [ ] 02-06-PLAN.md — Gap closure: RLS policies SQL migration for profiles table
 
