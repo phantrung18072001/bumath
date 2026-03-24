@@ -64,24 +64,30 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.profiles FORCE ROW LEVEL SECURITY;
 
 -- ============================================================
--- 4. RLS POLICIES
+-- 4. HELPER FUNCTION (must be before policies)
 -- ============================================================
 
--- Policy: Students can only read their own profile row
--- Matches: AuthContext.tsx query `.eq('id', currentSession.user.id).single()`
+-- SECURITY DEFINER: runs as function owner (bypasses RLS on profiles).
+-- Needed to avoid infinite recursion — policies on profiles cannot
+-- subquery profiles directly or they trigger themselves.
+CREATE OR REPLACE FUNCTION public.get_my_role()
+RETURNS TEXT LANGUAGE sql SECURITY DEFINER STABLE AS $$
+  SELECT role FROM public.profiles WHERE id = auth.uid()
+$$;
+
+-- ============================================================
+-- 5. RLS POLICIES
+-- ============================================================
+
+-- Policy: Students see only their own row; admins/teachers see all rows
 CREATE POLICY "Students can view own profile"
   ON public.profiles
   FOR SELECT
   TO authenticated
   USING (
     id = auth.uid()
-    OR
-    (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('admin', 'teacher')
+    OR get_my_role() IN ('admin', 'teacher')
   );
-
--- Policy: Admin can read all profiles (for UsersPage.tsx)
--- Note: This is covered by the SELECT policy above via the OR clause.
--- Admin and teacher roles can see all rows; students see only their own.
 
 -- Policy: Users can update their own profile (name, address, etc.)
 CREATE POLICY "Users can update own profile"
@@ -97,19 +103,15 @@ CREATE POLICY "Admin can update any profile"
   ON public.profiles
   FOR UPDATE
   TO authenticated
-  USING (
-    (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin'
-  )
-  WITH CHECK (
-    (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin'
-  );
+  USING (get_my_role() = 'admin')
+  WITH CHECK (get_my_role() = 'admin');
 
 -- Policy: No direct INSERT from client (trigger handles creation)
 -- The handle_new_user function runs as SECURITY DEFINER, bypassing RLS.
 -- No INSERT policy needed for authenticated users.
 
 -- ============================================================
--- 5. INDEXES
+-- 6. INDEXES
 -- ============================================================
 CREATE INDEX IF NOT EXISTS idx_profiles_approval_status ON public.profiles(approval_status);
 CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
