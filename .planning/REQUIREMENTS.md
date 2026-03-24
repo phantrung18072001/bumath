@@ -7,9 +7,9 @@
 
 ### Deployment & Infrastructure
 
-- [ ] **INFRA-01**: Ứng dụng được deploy lên Vercel (thay thế GitHub Pages) để hỗ trợ SPA routing
-- [ ] **INFRA-02**: Supabase project được cấu hình với environment variables trong Vite (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)
-- [ ] **INFRA-03**: Supabase client singleton được tạo tại `src/lib/supabase.ts`
+- [x] **INFRA-01**: Ứng dụng được deploy lên Vercel (thay thế GitHub Pages) để hỗ trợ SPA routing
+- [x] **INFRA-02**: Supabase project được cấu hình với environment variables trong Vite (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)
+- [x] **INFRA-03**: Supabase client singleton được tạo tại `src/lib/supabase.ts`
 
 ### Authentication
 
@@ -101,9 +101,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | Phase 1 — Foundation | Pending |
-| INFRA-02 | Phase 1 — Foundation | Pending |
-| INFRA-03 | Phase 1 — Foundation | Pending |
+| INFRA-01 | Phase 1 — Foundation | Complete |
+| INFRA-02 | Phase 1 — Foundation | Complete |
+| INFRA-03 | Phase 1 — Foundation | Complete |
 | AUTH-01 | Phase 2 — Auth & Access Control | Pending |
 | AUTH-02 | Phase 2 — Auth & Access Control | Pending |
 | AUTH-03 | Phase 2 — Auth & Access Control | Pending |

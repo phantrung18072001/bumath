@@ -31,7 +31,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Vercel migration, Supabase client install and singleton creation
+- [x] 01-01-PLAN.md — Vercel migration, Supabase client install and singleton creation
 - [ ] 01-02-PLAN.md — Vercel + Supabase dashboard setup and deployment verification
 
 ### Phase 2: Auth & Access Control
@@ -92,7 +92,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/2 | Planning complete | - |
+| 1. Foundation | 1/2 | In Progress|  |
 | 2. Auth & Access Control | 0/? | Not started | - |
 | 3. Course Management | 0/? | Not started | - |
 | 4. Student Learning & Submission | 0/? | Not started | - |
