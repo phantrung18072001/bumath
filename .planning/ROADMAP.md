@@ -45,8 +45,16 @@ Plans:
   4. Admin can view a list of pending accounts and approve or reject each one
   5. A student who has not been approved cannot access course pages — they see the pending screen
   6. All UI text, labels, and messages are in Vietnamese
-**Plans**: TBD
+**Plans**: 6 plans
 **UI hint**: yes
+
+Plans:
+- [x] 02-01-PLAN.md — Auth types, validators, AuthContext, ProtectedRoute
+- [x] 02-02-PLAN.md — Login, Register, Pending pages
+- [x] 02-03-PLAN.md — Admin UsersPage with approve/reject
+- [ ] 02-04-PLAN.md — Gap closure: Wire admin route in App.tsx with ProtectedRoute
+- [ ] 02-05-PLAN.md — Gap closure: Add auth-aware logout to Header
+- [ ] 02-06-PLAN.md — Gap closure: RLS policies SQL migration for profiles table
 
 ### Phase 3: Course Management
 **Goal**: Admin has full control to build the course catalogue — courses, ordered lessons with YouTube videos, assignment attachments, and student enrollment — so content exists for students to consume
@@ -93,7 +101,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 1/2 | In Progress|  |
-| 2. Auth & Access Control | 2/3 | In Progress|  |
+| 2. Auth & Access Control | 3/6 | In Progress|  |
 | 3. Course Management | 0/? | Not started | - |
 | 4. Student Learning & Submission | 0/? | Not started | - |
 | 5. Grading & Notification | 0/? | Not started | - |
