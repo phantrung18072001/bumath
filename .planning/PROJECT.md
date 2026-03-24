@@ -29,10 +29,10 @@ Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ t
 - [ ] Đăng nhập, đăng xuất, session persistent
 
 **Course Management (Admin)**
-- [ ] Admin tạo/sửa/xóa khóa học (tên, mô tả, lớp mục tiêu)
-- [ ] Admin thêm bài học vào khóa học (tiêu đề, video YouTube, mô tả)
-- [ ] Admin sắp xếp thứ tự bài học trong khóa
-- [ ] Admin đính kèm bài tập vào bài học (file PDF hoặc hình ảnh đề bài)
+- ✓ Admin tạo/sửa/xóa khóa học (tên, mô tả, lớp mục tiêu) — Validated in Phase 3: Course Management
+- ✓ Admin thêm bài học vào khóa học (tiêu đề, video YouTube, mô tả) — Validated in Phase 3: Course Management
+- ✓ Admin sắp xếp thứ tự bài học trong khóa — Validated in Phase 3: Course Management
+- ✓ Admin đính kèm bài tập vào bài học (file PDF hoặc hình ảnh đề bài) — Validated in Phase 3: Course Management
 
 **Learning Experience (Student)**
 - [ ] Học sinh xem danh sách khóa học được phép truy cập
@@ -104,4 +104,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-23 after initialization*
+*Last updated: 2026-03-25 — Phase 3 (Course Management) complete*
