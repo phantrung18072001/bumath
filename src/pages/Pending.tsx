@@ -27,7 +27,7 @@ export default function Pending() {
 
   const handleSignOut = async () => {
     await signOut()
-    // Auth state change will redirect to /login automatically via ProtectedRoute
+    // Auth state change will clear the session and redirect to /login
   }
 
   if (loading) {
