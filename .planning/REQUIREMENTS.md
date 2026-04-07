@@ -35,7 +35,7 @@
 
 ### Learning Experience (Student)
 
-- [ ] **LEARN-01**: Học sinh thấy danh sách khóa học mình được gán vào ngay sau khi đăng nhập
+- [x] **LEARN-01**: Học sinh thấy danh sách khóa học mình được gán vào ngay sau khi đăng nhập
 - [ ] **LEARN-02**: Học sinh có thể xem bài giảng qua YouTube embed trong trang bài học
 - [ ] **LEARN-03**: Học sinh có thể tải xuống/xem đề bài đính kèm bài học
 - [x] **LEARN-04**: Học sinh có thể đánh dấu bài học là đã hoàn thành
@@ -58,8 +58,8 @@
 
 ### Mobile & UX
 
-- [ ] **UX-01**: Tất cả các luồng chính (đăng nhập, xem bài, nộp bài) hoạt động trên viewport 375px
-- [ ] **UX-02**: Tất cả nút/vùng tương tác có kích thước tối thiểu 48x48px
+- [x] **UX-01**: Tất cả các luồng chính (đăng nhập, xem bài, nộp bài) hoạt động trên viewport 375px
+- [x] **UX-02**: Tất cả nút/vùng tương tác có kích thước tối thiểu 48x48px
 - [x] **UX-03**: Giao diện hoàn toàn bằng tiếng Việt
 
 ## v2 Requirements
@@ -118,7 +118,7 @@
 | COURSE-03 | Phase 3 — Course Management | Pending |
 | COURSE-04 | Phase 3 — Course Management | Pending |
 | COURSE-05 | Phase 3 — Course Management | Pending |
-| LEARN-01 | Phase 4 — Student Learning & Submission | Pending |
+| LEARN-01 | Phase 4 — Student Learning & Submission | Complete |
 | LEARN-02 | Phase 4 — Student Learning & Submission | Pending |
 | LEARN-03 | Phase 4 — Student Learning & Submission | Pending |
 | LEARN-04 | Phase 4 — Student Learning & Submission | Complete |
@@ -127,8 +127,8 @@
 | SUBMIT-02 | Phase 4 — Student Learning & Submission | Complete |
 | SUBMIT-03 | Phase 4 — Student Learning & Submission | Complete |
 | SUBMIT-04 | Phase 4 — Student Learning & Submission | Complete |
-| UX-01 | Phase 4 — Student Learning & Submission | Pending |
-| UX-02 | Phase 4 — Student Learning & Submission | Pending |
+| UX-01 | Phase 4 — Student Learning & Submission | Complete |
+| UX-02 | Phase 4 — Student Learning & Submission | Complete |
 | GRADE-01 | Phase 5 — Grading & Notification | Pending |
 | GRADE-02 | Phase 5 — Grading & Notification | Pending |
 | GRADE-03 | Phase 5 — Grading & Notification | Pending |
