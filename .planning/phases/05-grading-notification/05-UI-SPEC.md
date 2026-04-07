@@ -1,7 +1,8 @@
 ---
 phase: 5
 slug: grading-notification
-status: draft
+status: approved
+reviewed_at: 2026-04-07T00:00:00Z
 shadcn_initialized: true
 preset: "style=default, baseColor=slate, cssVariables=true"
 created: 2026-04-07
