@@ -14,6 +14,8 @@ import UsersPage from "./pages/admin/UsersPage";
 import CoursesPage from "./pages/admin/CoursesPage";
 import ChaptersPage from "./pages/admin/ChaptersPage";
 import LessonsPage from "./pages/admin/LessonsPage";
+import StudentCoursesPage from "./pages/student/CoursesPage";
+import StudentCourseDetailPage from "./pages/student/CourseDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +36,8 @@ const App = () => (
             <Route path="/admin/courses" element={<ProtectedRoute requiredRole="admin"><CoursesPage /></ProtectedRoute>} />
             <Route path="/admin/courses/:courseId" element={<ProtectedRoute requiredRole="admin"><ChaptersPage /></ProtectedRoute>} />
             <Route path="/admin/courses/:courseId/chapters/:chapterId" element={<ProtectedRoute requiredRole="admin"><LessonsPage /></ProtectedRoute>} />
+            <Route path="/courses" element={<ProtectedRoute requiredRole="student"><StudentCoursesPage /></ProtectedRoute>} />
+            <Route path="/courses/:courseId" element={<ProtectedRoute requiredRole="student"><StudentCourseDetailPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
