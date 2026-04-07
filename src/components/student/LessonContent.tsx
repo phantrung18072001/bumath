@@ -1,11 +1,11 @@
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { ExternalLink } from 'lucide-react'
 import { getAssignmentPublicUrl, type Lesson } from '@/lib/api/lessons'
 import type { Submission } from '@/lib/api/submissions'
 import LessonProgressButton from './LessonProgressButton'
+import SubmissionArea from './SubmissionArea'
 
 interface LessonContentProps {
   lesson: Lesson | null
@@ -72,19 +72,13 @@ export default function LessonContent({
             </Button>
           </div>
 
-          {/* 4. Submission status area */}
-          <div id="submission-area" className="mt-4">
-            {submission === null && (
-              <Badge className="bg-slate-100 text-slate-600">Chưa nộp</Badge>
-            )}
-            {submission?.status === 'submitted' && (
-              <Badge className="bg-blue-100 text-blue-700">Đã nộp (đang chờ chấm)</Badge>
-            )}
-            {submission?.status === 'graded' && (
-              <Badge className="bg-green-100 text-green-700">Đã chấm</Badge>
-            )}
-            {/* SubmissionArea will be integrated here in Plan 04 */}
-          </div>
+          <Separator className="my-6" />
+          <SubmissionArea
+            lessonId={lesson.id}
+            userId={userId}
+            courseId={courseId}
+            submission={submission}
+          />
         </>
       )}
 
