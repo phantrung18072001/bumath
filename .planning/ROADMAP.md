@@ -85,7 +85,7 @@ Plans:
 Plans:
 - [x] 04-01-PLAN.md — Install deps, DB schema SQL, API modules (lesson-progress, submissions)
 - [x] 04-02-PLAN.md — StudentLayout, CoursesPage, student route wiring
-- [ ] 04-03-PLAN.md — CourseDetailPage with sidebar, YouTube embed, mark complete
+- [x] 04-03-PLAN.md — CourseDetailPage with sidebar, YouTube embed, mark complete
 - [ ] 04-04-PLAN.md — SubmissionArea with image compression and upload
 - [ ] 04-05-PLAN.md — Visual and functional verification checkpoint
 

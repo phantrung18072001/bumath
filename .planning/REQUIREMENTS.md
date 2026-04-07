@@ -36,8 +36,8 @@
 ### Learning Experience (Student)
 
 - [x] **LEARN-01**: Học sinh thấy danh sách khóa học mình được gán vào ngay sau khi đăng nhập
-- [ ] **LEARN-02**: Học sinh có thể xem bài giảng qua YouTube embed trong trang bài học
-- [ ] **LEARN-03**: Học sinh có thể tải xuống/xem đề bài đính kèm bài học
+- [x] **LEARN-02**: Học sinh có thể xem bài giảng qua YouTube embed trong trang bài học
+- [x] **LEARN-03**: Học sinh có thể tải xuống/xem đề bài đính kèm bài học
 - [x] **LEARN-04**: Học sinh có thể đánh dấu bài học là đã hoàn thành
 - [x] **LEARN-05**: Học sinh thấy progress bar % hoàn thành cho mỗi khóa học
 
@@ -119,8 +119,8 @@
 | COURSE-04 | Phase 3 — Course Management | Pending |
 | COURSE-05 | Phase 3 — Course Management | Pending |
 | LEARN-01 | Phase 4 — Student Learning & Submission | Complete |
-| LEARN-02 | Phase 4 — Student Learning & Submission | Pending |
-| LEARN-03 | Phase 4 — Student Learning & Submission | Pending |
+| LEARN-02 | Phase 4 — Student Learning & Submission | Complete |
+| LEARN-03 | Phase 4 — Student Learning & Submission | Complete |
 | LEARN-04 | Phase 4 — Student Learning & Submission | Complete |
 | LEARN-05 | Phase 4 — Student Learning & Submission | Complete |
 | SUBMIT-01 | Phase 4 — Student Learning & Submission | Complete |

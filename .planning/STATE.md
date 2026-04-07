@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-stopped_at: "Completed 04-02: Student Layout and Courses Page"
-last_updated: "2026-04-07T09:06:02.117Z"
+stopped_at: "Completed 04-03: Course Detail Page with Sidebar/Tab Layout"
+last_updated: "2026-04-07T09:14:09.509Z"
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 19
-  completed_plans: 16
+  completed_plans: 17
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-24)
 ## Current Position
 
 Phase: 04 (student-learning-submission) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 
 ## Performance Metrics
 
@@ -57,6 +57,7 @@ Plan: 3 of 5
 | Phase 03-course-management P05 | 2min | 4 tasks | 3 files |
 | Phase 04-student-learning-submission P01 | 2min | 2 tasks | 7 files |
 | Phase 04-student-learning-submission PP02 | 8min | 2 tasks | 4 files |
+| Phase 04-student-learning-submission P03 | 4min | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,9 @@ Recent decisions affecting current work:
 - [Phase 04-student-learning-submission]: Unique constraint (user_id, lesson_id) on lesson_progress and submissions — one completion/submission per lesson
 - [Phase 04-student-learning-submission]: StudentLayout uses sticky 48px header (bg-card/border-b) with min-h-[48px] logout button — meets UX-02 tap target
 - [Phase 04-student-learning-submission]: CourseDetailPage created as placeholder stub for Plan 03; progress query enabled only when enrollments.length > 0
+- [Phase 04-student-learning-submission]: activeLessonId in local component state — URL stable on lesson switch (D-07)
+- [Phase 04-student-learning-submission]: lessonsByChapter Map<string, Lesson[]> for sidebar tree — avoids re-fetch and enables efficient rendering
+- [Phase 04-student-learning-submission]: Submission area is a placeholder in Plan 03 — Plan 04 will integrate SubmissionArea component
 
 ### Pending Todos
 
@@ -107,6 +111,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-07T09:06:02.109Z
-Stopped at: Completed 04-02: Student Layout and Courses Page
+Last session: 2026-04-07T09:14:09.500Z
+Stopped at: Completed 04-03: Course Detail Page with Sidebar/Tab Layout
 Resume file: None
