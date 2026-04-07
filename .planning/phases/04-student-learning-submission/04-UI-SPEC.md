@@ -58,10 +58,10 @@ Font family: "Be Vietnam Pro", sans-serif (project-wide, defined in `src/index.c
 | Body | 16px (text-base) | 400 (regular) | 1.5 | Lesson description text, sidebar lesson titles, submission status text |
 | Label | 14px (text-sm) | 600 (semibold) | 1.4 | Badge labels (Lớp 7/8/9/Ôn chuyên), form field labels, sidebar chapter headings, breadcrumb text |
 | Heading | 20px (text-xl) | 600 (semibold) | 1.2 | Lesson title in content panel, course card name, page section headings |
-| Display | 28px (text-2xl) | 700 (bold) | 1.2 | Course detail page title (top of content panel), /courses page heading |
+| Display | 28px (text-2xl) | 600 (semibold) | 1.2 | Course detail page title (top of content panel), /courses page heading |
 
 Rules:
-- Maximum 2 weights in any single view: 400 (body content) + 600 (labels/headings). Display weight 700 applies only to page-level titles.
+- Exactly 2 weights across all views: 400 (regular) for body content, 600 (semibold) for labels, headings, and display. Size alone (28px vs 20px vs 14px) provides hierarchy distinction — no third weight needed.
 - Vietnamese text renders correctly at all declared sizes with "Be Vietnam Pro" — no fallback needed for THCS diacritics.
 
 ---
@@ -99,6 +99,8 @@ CSS variables defined in `src/index.css`. All values are HSL. Resolved hex appro
   - ○ (not started): `text-muted-foreground` (grey)
 
 Source: `src/index.css` for CSS variables; `CoursesPage.tsx` for badge color pattern.
+
+**Primary focal point:** On the course detail page, the YouTube embed (`<AspectRatio ratio={16/9}>`) anchors the content panel and draws the eye first — all other sections (description, assignment, submission) flow below it in a single column.
 
 ---
 
@@ -139,7 +141,7 @@ New component to add if not yet present:
 ### /courses — Course Listing Page
 
 - Layout: single column, max-width `container` (1400px, Tailwind `container` class)
-- Page heading: "Khóa học của tôi" — 28px, weight 700
+- Page heading: "Khóa học của tôi" — 28px, weight 600 (semibold)
 - Grid: `grid grid-cols-1 gap-6 sm:grid-cols-2` — 1-col mobile, 2-col desktop (D-02)
 - Each card: `<Card>` with 16px padding, course name (heading 20px semibold), grade badge, progress bar + "X% hoàn thành" label
 - Progress bar: `<Progress value={completionPercent} className="h-2 mt-2" />`
@@ -296,3 +298,5 @@ New library: `browser-image-compression` (npm package, not a shadcn registry) �
 | CSS variables, shadcn/ui, Tailwind, Lucide, Be Vietnam Pro | src/index.css, components.json, CLAUDE.md |
 | Grade badge color pattern | src/pages/admin/CoursesPage.tsx (Phase 3 established) |
 | Lesson status icon colors (✓/→/○) | CONTEXT.md Specifics section |
+| Typography: 2 weights only (400 + 600), Display reduced from 700 to 600 | gsd-ui-checker Dimension 4 revision 2026-04-07 |
+| Primary focal point declaration (YouTube embed) | gsd-ui-checker Dimension 2 revision 2026-04-07 |
