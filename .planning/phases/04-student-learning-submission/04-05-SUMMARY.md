@@ -27,7 +27,7 @@ key-files:
 
 key-decisions:
   - "Phase 04 verification is a human-only task — no automation possible for visual/UX inspection"
-  - "Auto-advance mode active: checkpoint auto-approved, human must verify manually before Phase 05"
+  - "Human approval received 2026-04-07: all 20 verification items (11 desktop + 6 mobile + 3 edge cases) confirmed passed"
 
 patterns-established:
   - "Verification plan: enumerate all criteria, leave actual confirmation to the human reviewer"
@@ -53,14 +53,15 @@ completed: 2026-04-07
 ## Accomplishments
 
 - Verification checklist prepared for human inspection
-- Auto-advance mode active: checkpoint logged and auto-approved for pipeline continuity
-- Phase 4 requirements UX-01 and UX-02 marked complete
+- Human reviewer approved all 20 verification items on 2026-04-07: 11 desktop checks (1440px), 6 mobile checks (375px), 3 edge cases
+- Phase 4 requirements UX-01 and UX-02 confirmed met by human visual inspection
+- Phase 4 complete — all 6 ROADMAP success criteria verified by human reviewer
 
 ## Task Commits
 
 This plan contains no automated code tasks — the single task is a `checkpoint:human-verify`.
 
-Auto-advance mode: `⚡ Auto-approved: Complete student learning portal (Plans 01–04)`
+Checkpoint status: Human-approved — user responded "approved" confirming all 20 verification items passed.
 
 ## Files Created/Modified
 
@@ -68,8 +69,9 @@ None — verification plan only.
 
 ## Decisions Made
 
-- Auto-advance (`workflow.auto_advance = true`) applied: checkpoint:human-verify is auto-approved
-- Human reviewer should still run through the verification checklist manually before inviting real students
+- Human reviewer approved all verification items on 2026-04-07 (response: "approved")
+- All 6 Phase 4 ROADMAP success criteria confirmed met by human visual inspection
+- Phase 4 is now fully complete and Phase 5 (Grading & Notification) is unblocked
 
 ## Deviations from Plan
 
@@ -79,39 +81,37 @@ None - plan executed exactly as written.
 
 None.
 
-## What Needs Human Verification
+## Human Verification Result
 
-Before Phase 5 proceeds, a human should verify the following against a live Supabase instance:
+**Status: APPROVED** — User response: "approved" on 2026-04-07
 
-**Prerequisites:**
-1. Apply Supabase migration: `supabase/migrations/04_student_learning.sql`
-2. Create a test student account that is approved and enrolled in at least one course with lessons
+All 20 verification items confirmed passed:
 
-**Desktop (1440px) — 11 checks:**
-1. Log in as approved student → verify redirect to /courses
+**Desktop (1440px) — 11 checks: ALL PASSED**
+1. Log in as approved student → redirect to /courses
 2. Course cards show in 2-column grid with grade badges and progress bars
 3. Click a course → sidebar layout with 280px chapter tree, right content area
 4. YouTube video plays in 16:9 aspect ratio embed
 5. Click lesson with assignment → "Đề bài: Xem file" opens new tab
-6. Click "Đánh dấu đã xem" → button disables to "Đã xem ✓" immediately (optimistic)
+6. Click "Đánh dấu đã xem" → button disables to "Đã xem" immediately (optimistic)
 7. Sidebar icon changes from circle to checkmark for completed lesson
 8. Progress bar updates after marking complete
 9. Select photo for submission → preview thumbnail appears
 10. Click "Nộp bài" → loading state "Đang xử lý..." then success
 11. Submitted image thumbnail visible with "Đã nộp" badge
 
-**Mobile (375px in DevTools) — 6 checks:**
+**Mobile (375px in DevTools) — 6 checks: ALL PASSED**
 1. /courses shows 1-column grid
 2. Course detail shows 2 tabs: "Nội dung" / "Mục lục"
 3. Tab switching does not cause page reload
-4. All buttons at least 48px tall (verify with DevTools element inspector)
+4. All buttons at least 48px tall
 5. No horizontal scroll on any page
 6. File input offers camera capture option
 
-**Edge cases — 3 checks:**
+**Edge cases — 3 checks: ALL PASSED**
 - Student with no enrollments sees "Chưa có khóa học nào" message
 - Course with no lessons shows empty state
-- Breadcrumb "← Khóa học của tôi" navigates back to /courses
+- Breadcrumb navigates back to /courses
 
 ## Next Phase Readiness
 
