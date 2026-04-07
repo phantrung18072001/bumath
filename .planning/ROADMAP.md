@@ -87,7 +87,7 @@ Plans:
 - [x] 04-02-PLAN.md — StudentLayout, CoursesPage, student route wiring
 - [x] 04-03-PLAN.md — CourseDetailPage with sidebar, YouTube embed, mark complete
 - [x] 04-04-PLAN.md — SubmissionArea with image compression and upload
-- [ ] 04-05-PLAN.md — Visual and functional verification checkpoint
+- [x] 04-05-PLAN.md — Visual and functional verification checkpoint
 
 ### Phase 5: Grading & Notification
 **Goal**: Teachers can efficiently work through ungraded submissions, enter scores and comments, and students are notified and can view their results — completing the async feedback loop that is the product's core value
