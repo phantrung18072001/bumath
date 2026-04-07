@@ -79,8 +79,15 @@ Plans:
   4. A student can photograph their handwritten work and upload it as a submission — the image is compressed client-side before upload
   5. Each assignment shows a clear status label: "Chưa nộp," "Đã nộp," or "Đã chấm"
   6. All submission and lesson interactions work correctly on a 375px mobile viewport with 48px tap targets
-**Plans**: TBD
+**Plans**: 5 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 04-01-PLAN.md — Install deps, DB schema SQL, API modules (lesson-progress, submissions)
+- [ ] 04-02-PLAN.md — StudentLayout, CoursesPage, student route wiring
+- [ ] 04-03-PLAN.md — CourseDetailPage with sidebar, YouTube embed, mark complete
+- [ ] 04-04-PLAN.md — SubmissionArea with image compression and upload
+- [ ] 04-05-PLAN.md — Visual and functional verification checkpoint
 
 ### Phase 5: Grading & Notification
 **Goal**: Teachers can efficiently work through ungraded submissions, enter scores and comments, and students are notified and can view their results — completing the async feedback loop that is the product's core value
@@ -103,5 +110,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Foundation | 1/2 | In Progress|  |
 | 2. Auth & Access Control | 6/6 | Complete | 2026-03-24 |
 | 3. Course Management | 4/5 | In Progress|  |
-| 4. Student Learning & Submission | 0/? | Not started | - |
+| 4. Student Learning & Submission | 0/5 | Not started | - |
 | 5. Grading & Notification | 0/? | Not started | - |
