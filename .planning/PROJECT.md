@@ -35,10 +35,10 @@ Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ t
 - ✓ Admin đính kèm bài tập vào bài học (file PDF hoặc hình ảnh đề bài) — Validated in Phase 3: Course Management
 
 **Learning Experience (Student)**
-- [ ] Học sinh xem danh sách khóa học được phép truy cập
-- [ ] Học sinh xem và phát video bài giảng (YouTube embed)
-- [ ] Học sinh đánh dấu bài đã xem → tự động tính % hoàn thành khóa
-- [ ] Học sinh nộp bài tập bằng cách upload ảnh chụp bài làm
+- ✓ Học sinh xem danh sách khóa học được phép truy cập — Validated in Phase 4: Student Learning & Submission
+- ✓ Học sinh xem và phát video bài giảng (YouTube embed) — Validated in Phase 4: Student Learning & Submission
+- ✓ Học sinh đánh dấu bài đã xem → tự động tính % hoàn thành khóa — Validated in Phase 4: Student Learning & Submission
+- ✓ Học sinh nộp bài tập bằng cách upload ảnh chụp bài làm — Validated in Phase 4: Student Learning & Submission
 
 **Grading (Giảng viên)**
 - [ ] Giảng viên xem danh sách bài nộp của học sinh
