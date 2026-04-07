@@ -38,15 +38,15 @@
 - [ ] **LEARN-01**: Học sinh thấy danh sách khóa học mình được gán vào ngay sau khi đăng nhập
 - [ ] **LEARN-02**: Học sinh có thể xem bài giảng qua YouTube embed trong trang bài học
 - [ ] **LEARN-03**: Học sinh có thể tải xuống/xem đề bài đính kèm bài học
-- [ ] **LEARN-04**: Học sinh có thể đánh dấu bài học là đã hoàn thành
-- [ ] **LEARN-05**: Học sinh thấy progress bar % hoàn thành cho mỗi khóa học
+- [x] **LEARN-04**: Học sinh có thể đánh dấu bài học là đã hoàn thành
+- [x] **LEARN-05**: Học sinh thấy progress bar % hoàn thành cho mỗi khóa học
 
 ### Assignment Submission
 
-- [ ] **SUBMIT-01**: Học sinh có thể upload ảnh chụp bài làm tay cho từng bài tập
-- [ ] **SUBMIT-02**: Ảnh được compress client-side về dưới 500KB trước khi upload lên Supabase Storage
-- [ ] **SUBMIT-03**: Học sinh thấy trạng thái bài tập rõ ràng: "Chưa nộp" / "Đã nộp" / "Đã chấm"
-- [ ] **SUBMIT-04**: Học sinh chỉ thấy và nộp bài tập của chính mình (không thấy của người khác)
+- [x] **SUBMIT-01**: Học sinh có thể upload ảnh chụp bài làm tay cho từng bài tập
+- [x] **SUBMIT-02**: Ảnh được compress client-side về dưới 500KB trước khi upload lên Supabase Storage
+- [x] **SUBMIT-03**: Học sinh thấy trạng thái bài tập rõ ràng: "Chưa nộp" / "Đã nộp" / "Đã chấm"
+- [x] **SUBMIT-04**: Học sinh chỉ thấy và nộp bài tập của chính mình (không thấy của người khác)
 
 ### Grading (Teacher/Admin)
 
@@ -121,12 +121,12 @@
 | LEARN-01 | Phase 4 — Student Learning & Submission | Pending |
 | LEARN-02 | Phase 4 — Student Learning & Submission | Pending |
 | LEARN-03 | Phase 4 — Student Learning & Submission | Pending |
-| LEARN-04 | Phase 4 — Student Learning & Submission | Pending |
-| LEARN-05 | Phase 4 — Student Learning & Submission | Pending |
-| SUBMIT-01 | Phase 4 — Student Learning & Submission | Pending |
-| SUBMIT-02 | Phase 4 — Student Learning & Submission | Pending |
-| SUBMIT-03 | Phase 4 — Student Learning & Submission | Pending |
-| SUBMIT-04 | Phase 4 — Student Learning & Submission | Pending |
+| LEARN-04 | Phase 4 — Student Learning & Submission | Complete |
+| LEARN-05 | Phase 4 — Student Learning & Submission | Complete |
+| SUBMIT-01 | Phase 4 — Student Learning & Submission | Complete |
+| SUBMIT-02 | Phase 4 — Student Learning & Submission | Complete |
+| SUBMIT-03 | Phase 4 — Student Learning & Submission | Complete |
+| SUBMIT-04 | Phase 4 — Student Learning & Submission | Complete |
 | UX-01 | Phase 4 — Student Learning & Submission | Pending |
 | UX-02 | Phase 4 — Student Learning & Submission | Pending |
 | GRADE-01 | Phase 5 — Grading & Notification | Pending |

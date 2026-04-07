@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to plan
-stopped_at: Phase 4 UI-SPEC approved
-last_updated: "2026-04-07T04:03:29.338Z"
+status: Ready to execute
+stopped_at: "Completed 04-01: Dependencies, DB Migration, and API Foundation"
+last_updated: "2026-04-07T08:59:32.258Z"
 progress:
   total_phases: 5
   completed_phases: 3
-  total_plans: 14
-  completed_plans: 14
+  total_plans: 19
+  completed_plans: 15
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-24)
 
 **Core value:** Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ thể từ giảng viên trên từng bài làm
-**Current focus:** Phase 03 — course-management
+**Current focus:** Phase 04 — student-learning-submission
 
 ## Current Position
 
-Phase: 4
-Plan: Not started
+Phase: 04 (student-learning-submission) — EXECUTING
+Plan: 2 of 5
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ Plan: Not started
 | Phase 03-course-management P03 | 15min | 5 tasks | 4 files |
 | Phase 03-course-management P04 | 20min | 5 tasks | 6 files |
 | Phase 03-course-management P05 | 2min | 4 tasks | 3 files |
+| Phase 04-student-learning-submission P01 | 2min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,9 @@ Recent decisions affecting current work:
 - [Phase 03-course-management]: extractYouTubeID normalises any YouTube URL to video ID; video_url stored as embed URL
 - [Phase 03-course-management]: Assignment storage path uses tmp/{chapterId} prefix on create — lesson ID not yet known at upload time
 - [Phase 03-course-management]: deleteAssignment called before removeLesson — storage failure prevents DB delete (consistent failure state)
+- [Phase 04-student-learning-submission]: browser-image-compression with heic2any dynamic import for HEIC fallback — avoids bundle cost
+- [Phase 04-student-learning-submission]: getCourseProgress is pure function — progress computed at render, never stored in DB
+- [Phase 04-student-learning-submission]: Unique constraint (user_id, lesson_id) on lesson_progress and submissions — one completion/submission per lesson
 
 ### Pending Todos
 
@@ -100,6 +104,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-07T04:03:29.332Z
-Stopped at: Phase 4 UI-SPEC approved
-Resume file: .planning/phases/04-student-learning-submission/04-UI-SPEC.md
+Last session: 2026-04-07T08:59:32.249Z
+Stopped at: Completed 04-01: Dependencies, DB Migration, and API Foundation
+Resume file: None
