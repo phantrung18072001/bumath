@@ -86,7 +86,7 @@ Plans:
 - [x] 04-01-PLAN.md — Install deps, DB schema SQL, API modules (lesson-progress, submissions)
 - [x] 04-02-PLAN.md — StudentLayout, CoursesPage, student route wiring
 - [x] 04-03-PLAN.md — CourseDetailPage with sidebar, YouTube embed, mark complete
-- [ ] 04-04-PLAN.md — SubmissionArea with image compression and upload
+- [x] 04-04-PLAN.md — SubmissionArea with image compression and upload
 - [ ] 04-05-PLAN.md — Visual and functional verification checkpoint
 
 ### Phase 5: Grading & Notification
@@ -110,5 +110,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Foundation | 1/2 | In Progress|  |
 | 2. Auth & Access Control | 6/6 | Complete | 2026-03-24 |
 | 3. Course Management | 4/5 | In Progress|  |
-| 4. Student Learning & Submission | 2/5 | In Progress|  |
+| 4. Student Learning & Submission | 4/5 | In Progress|  |
 | 5. Grading & Notification | 0/? | Not started | - |
