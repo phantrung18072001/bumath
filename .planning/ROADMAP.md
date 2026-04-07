@@ -96,9 +96,14 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. A teacher sees a queue of all ungraded submissions and can open any submission to view the student's photo at full resolution
   2. A teacher can enter a numeric score and a text comment on a submission and save it
-  3. After a teacher saves a grade, the student receives an email notification
+  3. After a teacher saves a grade, the student receives an in-app bell notification (email deferred to v2)
   4. A student can open their graded submission and see the score and teacher comment alongside their submitted photo
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Migration (student_viewed_at + RPC) and API layer (4 new functions in submissions.ts)
+- [ ] 05-02-PLAN.md — Teacher grading queue (SubmissionsPage + GradingDialog + route wiring)
+- [ ] 05-03-PLAN.md — Student bell notification (BellNotification) and grade result view (SubmissionArea extension)
 
 ## Progress
 
@@ -111,4 +116,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Auth & Access Control | 6/6 | Complete | 2026-03-24 |
 | 3. Course Management | 4/5 | In Progress|  |
 | 4. Student Learning & Submission | 5/5 | Complete | 2026-04-07 |
-| 5. Grading & Notification | 0/? | Not started | - |
+| 5. Grading & Notification | 0/3 | Not started | - |
