@@ -41,9 +41,9 @@ Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ t
 - ✓ Học sinh nộp bài tập bằng cách upload ảnh chụp bài làm — Validated in Phase 4: Student Learning & Submission
 
 **Grading (Giảng viên)**
-- [ ] Giảng viên xem danh sách bài nộp của học sinh
-- [ ] Giảng viên nhập điểm và viết nhận xét/comment trên bài nộp
-- [ ] Học sinh nhận thông báo và xem kết quả chấm bài
+- ✓ Giảng viên xem danh sách bài nộp của học sinh — Validated in Phase 5: Grading & Notification
+- ✓ Giảng viên nhập điểm và viết nhận xét/comment trên bài nộp — Validated in Phase 5: Grading & Notification
+- ✓ Học sinh nhận thông báo và xem kết quả chấm bài — Validated in Phase 5: Grading & Notification
 
 **Progress Tracking**
 - [ ] Hiển thị bài nào đã xem / chưa xem trong từng khóa
@@ -104,4 +104,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-25 — Phase 3 (Course Management) complete*
+*Last updated: 2026-04-08 — Phase 5 (Grading & Notification) complete — MVP grading loop complete*
