@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 2: Auth & Access Control** - Registration, login, session, role-based routing, admin approval workflow
 - [ ] **Phase 3: Course Management** - Admin CRUD for courses, lessons, assignments, and enrollment
 - [ ] **Phase 4: Student Learning & Submission** - Course browsing, video lessons, progress tracking, photo upload
-- [ ] **Phase 5: Grading & Notification** - Teacher grading queue, score/comment entry, student grade view, email notification
+- [x] **Phase 5: Grading & Notification** - Teacher grading queue, score/comment entry, student grade view, email notification (completed 2026-04-08)
 
 ## Phase Details
 
@@ -103,7 +103,7 @@ Plans:
 Plans:
 - [x] 05-00-PLAN.md — Wave 0: Test stub files for all Phase 5 components (Nyquist compliance)
 - [x] 05-01-PLAN.md — Migration (student_viewed_at + RPC) and API layer (4 new functions in submissions.ts)
-- [ ] 05-02-PLAN.md — Teacher grading queue (SubmissionsPage + GradingDialog + route wiring + nav link)
+- [x] 05-02-PLAN.md — Teacher grading queue (SubmissionsPage + GradingDialog + route wiring + nav link)
 - [x] 05-03-PLAN.md — Student bell notification (BellNotification) and grade result view (SubmissionArea extension)
 
 ## Progress
@@ -117,4 +117,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Auth & Access Control | 6/6 | Complete | 2026-03-24 |
 | 3. Course Management | 4/5 | In Progress|  |
 | 4. Student Learning & Submission | 5/5 | Complete | 2026-04-07 |
-| 5. Grading & Notification | 3/4 | In Progress|  |
+| 5. Grading & Notification | 4/4 | Complete   | 2026-04-08 |
