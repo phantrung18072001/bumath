@@ -26,8 +26,8 @@ vi.mock('sonner', () => ({
 
 // --- Helpers ---
 
-function renderGradingDialog(props = {}) {
-  const GradingDialog = require('./GradingDialog').default
+async function renderGradingDialog(props = {}) {
+  const { default: GradingDialog } = await import('./GradingDialog')
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
@@ -53,14 +53,14 @@ beforeEach(() => {
 
 describe('GradingDialog', () => {
   it('renders dialog with student name in title when open', async () => {
-    renderGradingDialog()
+    await renderGradingDialog()
     await waitFor(() => {
       expect(screen.getByText(/Nguyen Van A/)).toBeInTheDocument()
     })
   })
 
   it('shows score input with min 0 max 10 step 0.5', async () => {
-    renderGradingDialog()
+    await renderGradingDialog()
     await waitFor(() => {
       const scoreInput = screen.getByLabelText(/[Dd]i[eể]m/)
       expect(scoreInput).toBeInTheDocument()
@@ -73,9 +73,9 @@ describe('GradingDialog', () => {
 
   // GRADE-03
   it('save button is disabled when score is empty', async () => {
-    renderGradingDialog()
+    await renderGradingDialog()
     await waitFor(() => {
-      const saveBtn = screen.getByRole('button', { name: /[Ll][uư]u [Dd]i[eể]m/ })
+      const saveBtn = screen.getByRole('button', { name: /[Ll][uư]u [đĐDd]i[eể]m/ })
       expect(saveBtn).toBeDisabled()
     })
   })
