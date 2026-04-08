@@ -38,9 +38,9 @@ vi.mock('sonner', () => ({
 
 // --- Helpers ---
 
-function renderSubmissionsPage() {
-  // Lazy import to ensure mocks are applied
-  const SubmissionsPage = require('./SubmissionsPage').default
+async function renderSubmissionsPage() {
+  // Dynamic import to ensure mocks are applied
+  const { default: SubmissionsPage } = await import('./SubmissionsPage')
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
@@ -59,14 +59,14 @@ beforeEach(() => {
 
 describe('SubmissionsPage', () => {
   it('renders the page heading', async () => {
-    renderSubmissionsPage()
+    await renderSubmissionsPage()
     await waitFor(() => {
       expect(screen.getByText(/[Cc]h[aấ]m b[aà]i/)).toBeInTheDocument()
     })
   })
 
   it('shows empty state when no ungraded submissions', async () => {
-    renderSubmissionsPage()
+    await renderSubmissionsPage()
     await waitFor(() => {
       expect(screen.getByText(/[Kk]h[oô]ng c[oó] b[aà]i n[aà]o/)).toBeInTheDocument()
     })
@@ -76,7 +76,7 @@ describe('SubmissionsPage', () => {
     const { getUngraded } = await import('@/lib/api/submissions')
     ;(getUngraded as ReturnType<typeof vi.fn>).mockResolvedValue(mockUngraded)
 
-    renderSubmissionsPage()
+    await renderSubmissionsPage()
     await waitFor(() => {
       expect(screen.getByText('Nguyen Van A')).toBeInTheDocument()
       expect(screen.getByText('Toan 7')).toBeInTheDocument()
