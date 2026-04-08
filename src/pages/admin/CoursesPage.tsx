@@ -29,6 +29,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb'
+import { Link } from 'react-router-dom'
 import { fetchCourses, deleteCourse, Course } from '@/lib/api/courses'
 import CourseFormDialog from '@/components/admin/CourseFormDialog'
 import { GRADE_BADGE } from '@/lib/constants/grades'
@@ -92,10 +93,18 @@ export default function CoursesPage() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <Button className="min-h-[48px]" onClick={handleOpenCreate}>
-          <Plus className="h-4 w-4 mr-1" />
-          Tạo khóa học
-        </Button>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/admin/submissions"
+            className="text-sm text-primary hover:underline"
+          >
+            Chấm bài →
+          </Link>
+          <Button className="min-h-[48px]" onClick={handleOpenCreate}>
+            <Plus className="h-4 w-4 mr-1" />
+            Tạo khóa học
+          </Button>
+        </div>
       </div>
 
       <h1 className="text-xl font-semibold leading-[1.3] mb-6">Quản lý khóa học</h1>
