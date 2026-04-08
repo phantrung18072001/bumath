@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { LogOut } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
+import BellNotification from '@/components/student/BellNotification'
 
 interface StudentLayoutProps {
   children: React.ReactNode
@@ -27,6 +28,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
               {profile.full_name}
             </span>
           )}
+          <BellNotification />
           <Button
             variant="ghost"
             size="sm"

@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import BellNotification from './BellNotification'
 
 // --- Mocks ---
 
@@ -10,7 +11,6 @@ vi.mock('@/lib/api/submissions', () => ({
 // --- Helpers ---
 
 function renderBellNotification() {
-  const BellNotification = require('./BellNotification').default
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
