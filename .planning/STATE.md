@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to plan
-stopped_at: Phase 5 UI-SPEC approved
-last_updated: "2026-04-07T15:35:44.764Z"
+status: Ready to execute
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-04-08T02:29:20.688Z"
 progress:
   total_phases: 5
   completed_phases: 4
-  total_plans: 19
-  completed_plans: 19
+  total_plans: 23
+  completed_plans: 21
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-24)
 
 **Core value:** Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ thể từ giảng viên trên từng bài làm
-**Current focus:** Phase 04 — student-learning-submission
+**Current focus:** Phase 05 — grading-notification
 
 ## Current Position
 
-Phase: 5
-Plan: Not started
+Phase: 05 (grading-notification) — EXECUTING
+Plan: 3 of 4
 
 ## Performance Metrics
 
@@ -60,6 +60,8 @@ Plan: Not started
 | Phase 04-student-learning-submission P03 | 4min | 3 tasks | 4 files |
 | Phase 04-student-learning-submission P04 | 8min | 2 tasks | 2 files |
 | Phase 04-student-learning-submission P05 | 1min | 1 tasks | 0 files |
+| Phase 05-grading-notification P01 | 1min | 2 tasks | 2 files |
+| Phase 05-grading-notification P00 | 4 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -102,6 +104,9 @@ Recent decisions affecting current work:
 - [Phase 04-student-learning-submission]: No resubmit UI after first submit (D-15) — once submission exists, show read-only view only
 - [Phase 04-student-learning-submission]: queryClient.invalidateQueries(['submissions', courseId]) on upload success — parent CourseDetailPage auto-refetches submission map
 - [Phase 04-student-learning-submission]: Phase 04 verification human-approved 2026-04-07 — all 20 items (11 desktop, 6 mobile, 3 edge cases) confirmed passed; Phase 05 is now unblocked
+- [Phase 05-grading-notification]: require() lazy import in Wave 0 test stubs — component does not need to exist when test file loads, enabling stubs as verify targets before implementation
+- [Phase 05-grading-notification]: SECURITY DEFINER RPC for student_viewed_at update — prevents students from blanket UPDATE policy exposing score/comment fields
+- [Phase 05-grading-notification]: mark_submission_viewed RPC triple-checks user_id=auth.uid(), status=graded, student_viewed_at IS NULL — prevents unauthorized access and double-marking
 
 ### Pending Todos
 
@@ -116,6 +121,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-07T15:35:44.758Z
-Stopped at: Phase 5 UI-SPEC approved
-Resume file: .planning/phases/05-grading-notification/05-UI-SPEC.md
+Last session: 2026-04-08T02:29:20.683Z
+Stopped at: Completed 05-01-PLAN.md
+Resume file: None

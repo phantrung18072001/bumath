@@ -50,11 +50,11 @@
 
 ### Grading (Teacher/Admin)
 
-- [ ] **GRADE-01**: Giảng viên thấy danh sách tất cả bài đã nộp chưa được chấm
-- [ ] **GRADE-02**: Giảng viên có thể xem ảnh bài làm của học sinh đầy đủ
-- [ ] **GRADE-03**: Giảng viên có thể nhập điểm số và comment nhận xét trên bài nộp
-- [ ] **GRADE-04**: Học sinh nhận email thông báo khi bài được chấm
-- [ ] **GRADE-05**: Học sinh có thể xem điểm và comment của giảng viên trên bài nộp của mình
+- [x] **GRADE-01**: Giảng viên thấy danh sách tất cả bài đã nộp chưa được chấm
+- [x] **GRADE-02**: Giảng viên có thể xem ảnh bài làm của học sinh đầy đủ
+- [x] **GRADE-03**: Giảng viên có thể nhập điểm số và comment nhận xét trên bài nộp
+- [x] **GRADE-04**: Học sinh nhận email thông báo khi bài được chấm
+- [x] **GRADE-05**: Học sinh có thể xem điểm và comment của giảng viên trên bài nộp của mình
 
 ### Mobile & UX
 
@@ -129,11 +129,11 @@
 | SUBMIT-04 | Phase 4 — Student Learning & Submission | Complete |
 | UX-01 | Phase 4 — Student Learning & Submission | Complete |
 | UX-02 | Phase 4 — Student Learning & Submission | Complete |
-| GRADE-01 | Phase 5 — Grading & Notification | Pending |
-| GRADE-02 | Phase 5 — Grading & Notification | Pending |
-| GRADE-03 | Phase 5 — Grading & Notification | Pending |
-| GRADE-04 | Phase 5 — Grading & Notification | Pending |
-| GRADE-05 | Phase 5 — Grading & Notification | Pending |
+| GRADE-01 | Phase 5 — Grading & Notification | Complete |
+| GRADE-02 | Phase 5 — Grading & Notification | Complete |
+| GRADE-03 | Phase 5 — Grading & Notification | Complete |
+| GRADE-04 | Phase 5 — Grading & Notification | Complete |
+| GRADE-05 | Phase 5 — Grading & Notification | Complete |
 
 **Coverage:**
 - v1 requirements: 32 total
