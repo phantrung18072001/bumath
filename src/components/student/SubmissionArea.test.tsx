@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import SubmissionArea from './SubmissionArea'
 
 // --- Mock data ---
 
@@ -39,7 +40,17 @@ vi.mock('@/lib/api/submissions', () => ({
   getSubmissionSignedUrl: vi.fn().mockResolvedValue('https://example.com/photo.jpg'),
   markGradeViewed: vi.fn().mockResolvedValue(undefined),
   compressImage: vi.fn().mockImplementation((f: File) => Promise.resolve(f)),
-  uploadSubmission: vi.fn().mockResolvedValue(mockGradedSubmission),
+  uploadSubmission: vi.fn().mockResolvedValue({
+    id: 'sub-1',
+    user_id: 'student-1',
+    lesson_id: 'lesson-1',
+    file_path: 'submissions/student-1/lesson-1/photo.jpg',
+    submitted_at: '2026-04-07T10:00:00Z',
+    status: 'graded',
+    score: 8.5,
+    comment: 'Lam tot',
+    student_viewed_at: null,
+  }),
 }))
 
 vi.mock('@/contexts/AuthContext', () => ({
@@ -58,7 +69,6 @@ vi.mock('sonner', () => ({
 // --- Helpers ---
 
 function renderSubmissionArea(props = {}) {
-  const SubmissionArea = require('./SubmissionArea').default
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })

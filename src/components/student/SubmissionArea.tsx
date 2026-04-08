@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { compressImage, uploadSubmission, getSubmissionSignedUrl } from '@/lib/api/submissions'
+import { compressImage, uploadSubmission, getSubmissionSignedUrl, markGradeViewed } from '@/lib/api/submissions'
 import type { Submission } from '@/lib/api/submissions'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -32,6 +32,17 @@ export default function SubmissionArea({
       getSubmissionSignedUrl(submission.file_path).then(setSubmittedImageUrl).catch(() => {})
     }
   }, [submission?.file_path])
+
+  // Fire-and-forget: mark graded submission as viewed (D-15)
+  useEffect(() => {
+    if (submission?.status === 'graded' && !submission.student_viewed_at) {
+      markGradeViewed(submission.id)
+        .then(() => {
+          queryClient.invalidateQueries({ queryKey: ['student', 'unviewed-grades'] })
+        })
+        .catch(() => {})
+    }
+  }, [submission?.id, submission?.status, submission?.student_viewed_at])
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -89,10 +100,10 @@ export default function SubmissionArea({
           })}
         </p>
         {submission.status === 'graded' && submission.score !== null && (
-          <div className="p-3 bg-muted rounded-lg">
-            <p className="text-sm font-semibold">Điểm: {submission.score}</p>
+          <div className="p-3 bg-muted rounded-lg space-y-1">
+            <p className="text-sm font-semibold">Điểm: {submission.score}/10</p>
             {submission.comment && (
-              <p className="text-sm text-muted-foreground mt-1">{submission.comment}</p>
+              <p className="text-sm text-muted-foreground">{submission.comment}</p>
             )}
           </div>
         )}
