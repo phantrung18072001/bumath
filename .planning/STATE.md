@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-04-08T02:29:20.688Z"
+stopped_at: Completed 05-03-PLAN.md
+last_updated: "2026-04-08T02:35:14.837Z"
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 23
-  completed_plans: 21
+  completed_plans: 22
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-24)
 ## Current Position
 
 Phase: 05 (grading-notification) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 
 ## Performance Metrics
 
@@ -62,6 +62,7 @@ Plan: 3 of 4
 | Phase 04-student-learning-submission P05 | 1min | 1 tasks | 0 files |
 | Phase 05-grading-notification P01 | 1min | 2 tasks | 2 files |
 | Phase 05-grading-notification P00 | 4 | 2 tasks | 4 files |
+| Phase 05-grading-notification P03 | 4min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -107,6 +108,8 @@ Recent decisions affecting current work:
 - [Phase 05-grading-notification]: require() lazy import in Wave 0 test stubs — component does not need to exist when test file loads, enabling stubs as verify targets before implementation
 - [Phase 05-grading-notification]: SECURITY DEFINER RPC for student_viewed_at update — prevents students from blanket UPDATE policy exposing score/comment fields
 - [Phase 05-grading-notification]: mark_submission_viewed RPC triple-checks user_id=auth.uid(), status=graded, student_viewed_at IS NULL — prevents unauthorized access and double-marking
+- [Phase 05-grading-notification]: queryKey ['student', 'unviewed-grades'] namespaced to avoid collision with admin queries
+- [Phase 05-grading-notification]: refetchInterval 60_000 for bell badge — free-tier safe polling, avoids Realtime subscription overhead
 
 ### Pending Todos
 
@@ -121,6 +124,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-08T02:29:20.683Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-04-08T02:35:14.834Z
+Stopped at: Completed 05-03-PLAN.md
 Resume file: None
