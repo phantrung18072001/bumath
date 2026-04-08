@@ -10,6 +10,17 @@ export interface Submission {
   status: 'submitted' | 'graded'
   score: number | null
   comment: string | null
+  student_viewed_at: string | null
+}
+
+export interface UngradedSubmission {
+  id: string
+  user_id: string
+  lesson_id: string
+  file_path: string
+  submitted_at: string
+  profiles: { full_name: string }
+  lessons: { title: string; chapters: { course_id: string; courses: { title: string } } }
 }
 
 const BUCKET = 'submissions'
@@ -113,4 +124,63 @@ export async function getSubmissionSignedUrl(path: string): Promise<string> {
     .createSignedUrl(path, 3600)
   if (error) throw error
   return data.signedUrl
+}
+
+/**
+ * Get all ungraded submissions for the teacher grading queue (D-03, GRADE-01).
+ * Joins profiles (student name), lessons (title), chapters, and courses.
+ * Ordered oldest-first for fair grading queue.
+ */
+export async function getUngraded(): Promise<UngradedSubmission[]> {
+  const { data, error } = await supabase
+    .from('submissions')
+    .select(`
+      id, user_id, lesson_id, file_path, submitted_at,
+      profiles ( full_name ),
+      lessons ( title, chapters ( course_id, courses ( title ) ) )
+    `)
+    .eq('status', 'submitted')
+    .order('submitted_at', { ascending: true })
+  if (error) throw error
+  return (data ?? []) as UngradedSubmission[]
+}
+
+/**
+ * Grade a submission — set score, comment, and status to 'graded' (D-09, GRADE-03).
+ */
+export async function gradeSubmission(
+  id: string,
+  score: number,
+  comment: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from('submissions')
+    .update({ score, comment, status: 'graded' })
+    .eq('id', id)
+  if (error) throw error
+}
+
+/**
+ * Get the count of graded submissions not yet viewed by the student (D-16, GRADE-04).
+ * Used for the bell notification badge.
+ */
+export async function getUnviewedGradeCount(): Promise<number> {
+  const { count, error } = await supabase
+    .from('submissions')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'graded')
+    .is('student_viewed_at', null)
+  if (error) throw error
+  return count ?? 0
+}
+
+/**
+ * Mark a graded submission as viewed by the student (D-15, GRADE-04).
+ * Calls the SECURITY DEFINER RPC to safely update student_viewed_at.
+ */
+export async function markGradeViewed(submissionId: string): Promise<void> {
+  const { error } = await supabase.rpc('mark_submission_viewed', {
+    submission_id: submissionId,
+  })
+  if (error) throw error
 }
