@@ -8,6 +8,13 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   Form,
   FormControl,
   FormField,
@@ -161,16 +168,24 @@ export default function Register() {
                   <FormLabel className="text-base font-normal leading-[1.5]">
                     Năm sinh
                   </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="2010"
-                      min={1990}
-                      max={2020}
-                      disabled={isSubmitting}
-                      {...field}
-                    />
-                  </FormControl>
+                  <Select
+                    disabled={isSubmitting}
+                    onValueChange={(val) => field.onChange(Number(val))}
+                    value={field.value ? String(field.value) : ''}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Chọn năm sinh" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {Array.from({ length: 31 }, (_, i) => 2020 - i).map((year) => (
+                        <SelectItem key={year} value={String(year)}>
+                          {year}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

@@ -172,30 +172,40 @@ export default function UsersPage() {
 
   const approveMutation = useMutation({
     mutationFn: async (userId: string) => {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .update({ approval_status: 'approved' })
         .eq('id', userId)
+        .select()
       if (error) throw error
+      if (!data || data.length === 0) throw new Error('Không có quyền cập nhật. Kiểm tra role admin trong Supabase.')
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'profiles'] })
       toast.success('Đã duyệt tài khoản thành công.')
     },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
   })
 
   const rejectMutation = useMutation({
     mutationFn: async (userId: string) => {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .update({ approval_status: 'rejected' })
         .eq('id', userId)
+        .select()
       if (error) throw error
+      if (!data || data.length === 0) throw new Error('Không có quyền cập nhật. Kiểm tra role admin trong Supabase.')
     },
     onSuccess: () => {
       setConfirmingRejectId(null)
       queryClient.invalidateQueries({ queryKey: ['admin', 'profiles'] })
       toast.success('Đã từ chối tài khoản.')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
     },
   })
 
@@ -230,7 +240,7 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div>
       <h1 className="text-xl font-semibold leading-[1.3] mb-6">Quản lý tài khoản</h1>
 
       {isLoading ? (

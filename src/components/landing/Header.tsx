@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { Menu, X, Phone, CreditCard, HelpCircle, LogOut } from "lucide-react";
+import { Menu, X, Phone, CreditCard, HelpCircle, LogOut, LayoutDashboard } from "lucide-react";
 
 const navItems = [
   { label: "Giới thiệu", to: "/gioi-thieu" },
@@ -50,11 +50,21 @@ const Header = () => {
             <HelpCircle className="h-3.5 w-3.5" />
             Hướng dẫn
           </Link>
-          {isAuthenticated ? (
+          {loading ? (
+            <div className="h-7 w-24 rounded bg-muted animate-pulse" />
+          ) : isAuthenticated ? (
             <>
               <span className="text-sm font-medium text-foreground">
                 {profile?.full_name || 'Tài khoản'}
               </span>
+              {profile?.role === 'admin' && (
+                <Link to="/admin/users">
+                  <Button variant="outline" size="sm" className="h-7 text-sm gap-1">
+                    <LayoutDashboard className="h-3.5 w-3.5" />
+                    Trang quản lý
+                  </Button>
+                </Link>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
@@ -133,13 +143,23 @@ const Header = () => {
             <Phone className="h-3.5 w-3.5" />
             0123.456.789
           </div>
-          {isAuthenticated ? (
+          {loading ? (
+            <div className="mt-3 h-10 rounded bg-muted animate-pulse" />
+          ) : isAuthenticated ? (
             <div className="mt-3">
               <div className="flex items-center gap-2 mb-2 px-3">
                 <span className="text-sm font-medium text-foreground">
                   {profile?.full_name || 'Tài khoản'}
                 </span>
               </div>
+              {profile?.role === 'admin' && (
+                <Link to="/admin/users" onClick={() => setMobileOpen(false)}>
+                  <Button variant="outline" className="w-full min-h-[48px] gap-1 mb-1" size="sm">
+                    <LayoutDashboard className="h-4 w-4" />
+                    Trang quản lý
+                  </Button>
+                </Link>
+              )}
               <Button
                 variant="ghost"
                 className="w-full min-h-[48px] gap-1"

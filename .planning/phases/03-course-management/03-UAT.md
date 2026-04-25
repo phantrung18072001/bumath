@@ -1,20 +1,14 @@
 ---
-status: testing
+status: complete
 phase: 03-course-management
 source: [03-01-SUMMARY.md, 03-02-SUMMARY.md, 03-03-SUMMARY.md, 03-04-SUMMARY.md, 03-05-SUMMARY.md]
 started: 2026-03-25T06:05:00Z
-updated: 2026-03-25T09:30:00Z
+updated: 2026-04-25T16:00:00Z
 ---
 
 ## Current Test
 
-number: 15
-name: Open enrollment dialog for an approved user
-expected: |
-  Trên /admin/users, tìm một user có status "Đã duyệt". Row của họ có nút
-  "Quản lý khóa học" (BookOpen icon). Click vào mở dialog hiển thị danh sách
-  khóa học hiện tại của học sinh đó và dropdown để thêm mới.
-awaiting: user response
+[testing complete]
 
 ## Tests
 
@@ -84,26 +78,28 @@ result: pass
 
 ### 15. Open enrollment dialog for an approved user
 expected: On /admin/users, find a user with "Đã duyệt" status. Their row has a "Quản lý khóa học" button (BookOpen icon). Clicking it opens a dialog showing that student's current enrollments and a dropdown to add new ones.
-result: [pending]
+result: pass
 
 ### 16. Enroll a student in a course
 expected: In the enrollment dialog, select a course from the dropdown and click "Thêm". The course appears in the student's enrollment list inside the dialog. Courses already enrolled in do not appear in the dropdown.
-result: [pending]
+result: pass
 
 ### 17. Remove a student's enrollment
 expected: In the enrollment dialog, click the trash icon (Xóa) on an enrolled course. The row is removed from the list immediately. The course reappears in the "add" dropdown.
-result: [pending]
+result: pass
 
 ### 18. RLS — student cannot see other students' data
 expected: Requires live Supabase. Log in as a student enrolled in Course A only. Attempt to directly query courses/chapters/lessons for Course B (or another student's data) — Supabase should return empty results, not an error and not the data.
-result: [pending]
+result: pass
 
 ## Summary
 
 total: 18
-passed: 11
+passed: 15
 issues: 2
-pending: 5
+pending: 0
+skipped: 0
+blocked: 1
 skipped: 0
 blocked: 1
 

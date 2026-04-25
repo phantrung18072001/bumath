@@ -30,9 +30,8 @@ result: pass
 expected: |
   Truy cập production URL trên Vercel (URL mà bạn đã deploy). App hiển thị
   landing page bình thường, không bị 404 hay lỗi trắng trang.
-result: issue
-reported: "Hiển thị trang 404"
-severity: major
+result: pass
+note: "User confirmed resolved after initial report"
 
 ### 4. Deep-link trên production không 404
 expected: |
@@ -44,17 +43,11 @@ result: pass
 ## Summary
 
 total: 4
-passed: 3
-issues: 1
+passed: 4
+issues: 0
 pending: 0
 skipped: 0
 
 ## Gaps
 
-- truth: "Truy cập production URL trên Vercel hiển thị landing page bình thường, không bị 404"
-  status: failed
-  reason: "User reported: Hiển thị trang 404"
-  severity: major
-  test: 3
-  artifacts: []
-  missing: []
+[none]

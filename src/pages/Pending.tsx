@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Clock, Loader2 } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Clock, Loader2, Home } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -67,6 +67,14 @@ export default function Pending() {
           <p className="text-base font-normal leading-[1.5] text-muted-foreground">
             Liên hệ Zalo để được hỗ trợ nhanh hơn: {ADMIN_ZALO_NUMBER}
           </p>
+
+          {/* Về trang chủ */}
+          <Link to="/" className="w-full">
+            <Button variant="outline" className="w-full min-h-[48px] gap-2">
+              <Home className="h-4 w-4" />
+              Về trang chủ
+            </Button>
+          </Link>
 
           {/* Đăng xuất button */}
           <Button
