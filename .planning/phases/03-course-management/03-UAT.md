@@ -106,20 +106,37 @@ blocked: 1
 ## Gaps
 
 - truth: "Lesson list clearly shows YouTube thumbnail/preview, file attachment label with icon, and each lesson row is informative at a glance"
-  status: failed
+  status: diagnosed
   reason: "User reported: UI tệ quá, không hiểu đính kèm ở danh sách là gì, không hiểu thị youtube ở danh sách, không có preview"
   severity: major
   test: 10
-  artifacts: []
-  missing: [youtube thumbnail preview in lesson list, file attachment indicator with meaningful label, lesson row redesign]
+  root_cause: "LessonsPage.tsx never reads lesson.video_url — no thumbnail column exists. Attachment cell shows a bare FileText icon with no filename or label. Both fields are fetched but not rendered."
+  artifacts:
+    - path: "src/pages/admin/LessonsPage.tsx"
+      issue: "lines 183-204: missing YouTube thumbnail column; attachment cell shows only bare icon, no filename"
+    - path: "src/lib/youtube.ts"
+      issue: "extractYouTubeID() exists and works but is never imported in LessonsPage"
+    - path: "src/lib/api/lessons.ts"
+      issue: "getAssignmentPublicUrl() exists (line 136) but never called from LessonsPage"
+  missing:
+    - "Add YouTube thumbnail column using extractYouTubeID(lesson.video_url) → img.youtube.com/vi/{id}/mqdefault.jpg"
+    - "Replace bare FileText icon with filename chip + icon in attachment cell"
+    - "Show clickable assignment URL via getAssignmentPublicUrl"
 
 - truth: "File attachment field in lesson dialog shows a preview of the attached file and uses clear, user-friendly label"
-  status: failed
+  status: diagnosed
   reason: "User reported: cần có preview đính kèm, sửa tên cho dễ hiểu hơn"
   severity: major
   test: 12
-  artifacts: []
-  missing: [file preview in dialog (image thumbnail or PDF icon + filename), clearer label for attachment field]
+  root_cause: "LessonFormDialog.tsx file upload section only renders selectedFile.name + size as plain text. No URL.createObjectURL preview for images, no PDF icon. Label 'Tệp bài tập' is ambiguous. Edit mode also shows existing file as bare text with no icon."
+  artifacts:
+    - path: "src/components/admin/LessonFormDialog.tsx"
+      issue: "line 274: label text ambiguous; lines 302-306: no visual preview after file selection; lines 278-291: existing file shown as plain text"
+  missing:
+    - "Rename label to 'Tài liệu đính kèm cho học sinh' with Paperclip icon"
+    - "For selected image files: render <img> thumbnail via URL.createObjectURL"
+    - "For selected PDFs: render FileText icon + filename chip"
+    - "Apply icon+chip treatment to existing file display in edit mode"
 
 # UI Direction Note (from UAT):
 # User wants Udemy-style UI for both admin/teacher (course builder) and student views.
