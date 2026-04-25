@@ -1,45 +1,48 @@
 ---
 phase: 03-course-management
-verified: 2026-03-25T12:00:00Z
+verified: 2026-04-25T10:00:00Z
 status: human_needed
-score: 7/7 must-haves verified
+score: 13/13 must-haves verified
 re_verification: true
-  previous_status: gaps_found
-  previous_score: 3/7
+  previous_status: human_needed
+  previous_score: 7/7
   gaps_closed:
-    - "Phase 03 code is merged into main and deployable (commit 6430a44)"
-    - "DB schema and application code use consistent column names — courses.target_grade fixed and assignment_path added (commit f140ccd)"
-    - "Admin can create, edit, and delete courses with target grade (COURSE-01) — now unblocked"
-    - "Admin can add lessons with YouTube video URLs and ordered chapters (COURSE-02, COURSE-03) — now unblocked"
-    - "Admin can attach assignment files to lessons (COURSE-04) — column now exists"
-    - "Admin can assign and remove student enrollments (COURSE-05) — now unblocked"
-    - "Dead src/types/course.ts removed"
+    - "Lesson list row shows YouTube thumbnail via img.youtube.com/vi/{id}/mqdefault.jpg"
+    - "Lesson list attachment cell shows filename chip linking to getAssignmentPublicUrl"
+    - "Lesson dialog file label renamed to 'Tai lieu dinh kem cho hoc sinh' with Paperclip icon"
+    - "Selecting an image file renders inline thumbnail preview via URL.createObjectURL"
+    - "Selecting a PDF file renders FileText icon + filename + formatted size chip"
+    - "Edit-mode existing attachment shows as icon + filename chip with X-icon Xoa file button"
   gaps_remaining: []
   regressions: []
 human_verification:
   - test: "Verify RLS policies work correctly for student enrollment-based access"
     expected: "An approved student enrolled in course X can read lessons for course X but not for course Y they are not enrolled in"
     why_human: "Requires a live Supabase instance with seeded data and two test user accounts"
-  - test: "Verify file upload and download for lesson attachments"
-    expected: "Admin can upload a PDF, the filename/size shows in the form, and after saving the FileText icon appears in the lessons table row"
+  - test: "Verify YouTube thumbnail renders correctly for a real lesson with video_url"
+    expected: "80x48px thumbnail loads from img.youtube.com for a lesson with a valid YouTube URL; em dash shown for lesson without URL"
+    why_human: "Thumbnail load depends on external YouTube CDN and live session; static analysis confirms wiring but not network success"
+  - test: "Verify file upload and download for lesson attachments — full create/edit/remove flow"
+    expected: "Admin uploads PDF, filename chip appears in list row linking to the file; edit shows chip with Xoa file button; removing clears the chip"
     why_human: "Requires live Supabase Storage bucket and real file I/O; cannot verify with static analysis"
+  - test: "Verify image file preview renders in dialog after file selection"
+    expected: "Selecting a JPG/PNG in the dialog shows an inline thumbnail preview; blob URL revoked on dialog close"
+    why_human: "Requires browser file picker interaction; blob URL is a runtime artifact not testable with static grep"
 ---
 
 # Phase 03: Course Management Verification Report
 
-**Phase Goal:** Admin has full control to build the course catalogue — courses, ordered lessons with YouTube videos, assignment attachments, and student enrollment — so content exists for students to consume
-**Verified:** 2026-03-25T12:00:00Z
+**Phase Goal:** Implement full course management system for admins — courses, chapters, lessons (with YouTube + file attachments), and student enrollment. All CRUD operations must work end-to-end with proper RLS.
+**Verified:** 2026-04-25T10:00:00Z
 **Status:** human_needed
-**Re-verification:** Yes — after gap closure
+**Re-verification:** Yes — Plan 03-06 closed 2 UAT gaps (test-10, test-12); previous status was human_needed (7/7).
 
-## Gap Closure Summary
+## Gap Closure Summary (Plan 03-06)
 
-All four gaps from initial verification have been resolved:
+Two UAT gaps diagnosed after the previous verification have been resolved:
 
-1. **Code merged to main** — commit `6430a44` brought all Phase 03 source files onto main. commit `f140ccd` applied the schema fix.
-2. **target_grade schema fix** — `supabase/migrations/20260324_course_management_schema.sql` now defines `target_grade text NOT NULL DEFAULT 'grade_7' CHECK (target_grade IN ('grade_7', 'grade_8', 'grade_9', 'advanced'))`. All API and UI code references this column correctly.
-3. **assignment_path column added** — lessons table now has `assignment_path text` column. `lessons.ts`, `LessonFormDialog`, and `LessonsPage` all reference it consistently.
-4. **Dead src/types/course.ts removed** — `src/types/` now contains only `auth.ts`.
+1. **test-10 (Lesson list — no video/attachment info):** `LessonsPage.tsx` now has a dedicated Video column rendering an 80x48px YouTube thumbnail via `extractYouTubeID` + `img.youtube.com/vi/{id}/mqdefault.jpg`, and the attachment cell shows a clickable filename chip using `getAssignmentPublicUrl`.
+2. **test-12 (Dialog label ambiguous; no preview):** `LessonFormDialog.tsx` label renamed to "Tai lieu dinh kem cho hoc sinh" with a Paperclip icon; selecting an image renders a blob-based thumbnail (with proper `URL.revokeObjectURL` cleanup on unmount); selecting a PDF renders a FileText icon + filename + formatted size chip; edit-mode existing attachment shows as an icon + filename chip with an X-icon "Xoa file" button.
 
 ---
 
@@ -47,17 +50,30 @@ All four gaps from initial verification have been resolved:
 
 ### Observable Truths
 
+**From Plans 03-01 through 03-05 — carried forward:**
+
 | # | Truth | Status | Evidence |
 |---|-------|--------|----------|
-| 1 | Phase 03 code is merged into main and deployable | VERIFIED | All 16 Phase 03 source files exist on main; commit `6430a44` is the merge commit |
-| 2 | DB schema and application code use consistent column names | VERIFIED | Schema has `target_grade text` with CHECK constraint; `assignment_path text` in lessons; all API/UI types match exactly |
-| 3 | Admin can create, edit, and delete courses with target grade (COURSE-01) | VERIFIED | `CoursesPage.tsx` + `CourseFormDialog.tsx` wired to `courses.ts` API; full RHF+Zod validation; `target_grade` enum select works end-to-end |
-| 4 | Admin can create chapters and ordered lessons with YouTube URLs (COURSE-02, COURSE-03) | VERIFIED | `ChaptersPage.tsx` + `LessonsPage.tsx` with Up/Down reorder buttons; `LessonFormDialog` validates YouTube URLs via `extractYouTubeID` in Zod `.refine()` |
-| 5 | Admin can attach assignment files to lessons (COURSE-04) | VERIFIED | `LessonFormDialog` has file input (PDF/image, 10MB limit), `uploadAssignment`/`deleteAssignment` storage helpers in `lessons.ts`; `assignment_path` column now exists in schema |
-| 6 | Admin can assign and remove student enrollments (COURSE-05) | VERIFIED | `UserEnrollmentDialog` + `enrollments.ts` API fully wired; `UsersPage` opens dialog via `enrollmentUser` state + BookOpen button; enrollment join now references correct `target_grade` column |
-| 7 | RLS policies protect enrolled content per student | VERIFIED | `20260324_course_management_rls.sql` on main: `is_admin()` + `is_approved_user()` SECURITY DEFINER helpers; admin ALL + student SELECT via enrollment EXISTS check on all 4 tables |
+| 1 | Phase 03 code is merged into main and deployable | VERIFIED | All 16 Phase 03 source files on main; build passes (2287 modules, 9.3s) |
+| 2 | DB schema and application code use consistent column names | VERIFIED | Schema: `target_grade text NOT NULL CHECK (...)` + `assignment_path text` in lessons; all API/UI types match |
+| 3 | Admin can create, edit, and delete courses with target grade (COURSE-01) | VERIFIED | `CoursesPage.tsx` + `CourseFormDialog.tsx` wired to `courses.ts` API; full RHF+Zod; `target_grade` enum select end-to-end |
+| 4 | Admin can create chapters and ordered lessons with YouTube URLs (COURSE-02, COURSE-03) | VERIFIED | `ChaptersPage.tsx` + `LessonsPage.tsx` with reorder buttons; `LessonFormDialog` validates YouTube via `extractYouTubeID` in Zod `.refine()` |
+| 5 | Admin can attach assignment files to lessons (COURSE-04) | VERIFIED | `LessonFormDialog` file input (PDF/image, 10MB limit); `uploadAssignment`/`deleteAssignment` helpers; `assignment_path` column in schema |
+| 6 | Admin can assign and remove student enrollments (COURSE-05) | VERIFIED | `UserEnrollmentDialog` + `enrollments.ts` API fully wired; `UsersPage` opens dialog via BookOpen button |
+| 7 | RLS policies protect enrolled content per student | VERIFIED | `20260324_course_management_rls.sql`: `is_admin()` + `is_approved_user()` SECURITY DEFINER; admin ALL + student SELECT via enrollment EXISTS check on all 4 tables |
 
-**Score:** 7/7 truths verified
+**From Plan 03-06 — new truths:**
+
+| # | Truth | Status | Evidence |
+|---|-------|--------|----------|
+| 8 | Lesson list row shows YouTube thumbnail when video_url is present | VERIFIED | `LessonsPage.tsx` line 201-212: `extractYouTubeID(lesson.video_url)` feeds `img.youtube.com/vi/{id}/mqdefault.jpg`; em dash fallback when null |
+| 9 | Lesson list attachment cell shows filename chip linking to the file | VERIFIED | Lines 216-231: `getAssignmentPublicUrl(lesson.assignment_path)` as `href`; FileText icon + truncated filename in chip; em dash fallback |
+| 10 | Lesson dialog file field uses label "Tai lieu dinh kem cho hoc sinh" with Paperclip icon | VERIFIED | `LessonFormDialog.tsx` line 283-286: `<Paperclip className="h-4 w-4" />` + exact label text confirmed |
+| 11 | Selecting an image file in the dialog renders an inline thumbnail preview | VERIFIED | Lines 87-94: `URL.createObjectURL(selectedFile)` in `useEffect` when `selectedFile.type.startsWith('image/')`; `URL.revokeObjectURL` cleanup on return |
+| 12 | Selecting a PDF file renders FileText icon + filename chip | VERIFIED | Lines 320-342: `imagePreviewUrl ? <img/> : <FileText/>` block; filename + `formatFileSize` output rendered |
+| 13 | Edit-mode existing attachment shows as icon + filename chip with Xoa file button | VERIFIED | Lines 289-309: `isEditing && existingFileName && !removeExisting && !selectedFile` guard; FileText chip + `<X />` icon button calls `setRemoveExisting(true)` |
+
+**Score:** 13/13 truths verified
 
 ---
 
@@ -65,44 +81,49 @@ All four gaps from initial verification have been resolved:
 
 | Artifact | Expected | Status | Details |
 |----------|----------|--------|---------|
-| `supabase/migrations/20260324_course_management_schema.sql` | Tables: courses, chapters, lessons, enrollments | VERIFIED | `target_grade text NOT NULL CHECK (...)` at line 8; `assignment_path text` at line 32; all 4 tables, indexes, and triggers present |
-| `supabase/migrations/20260324_course_management_rls.sql` | RLS policies for all 4 tables | VERIFIED | admin_all_* + student_read_enrolled_* on courses/chapters/lessons; admin_all_enrollments + student_read_own_enrollments |
-| `supabase/migrations/20260324_course_management_storage.sql` | assignments storage bucket | VERIFIED | 10MB limit, 5 MIME types, 4 policies (admin upload/update/delete + authenticated read + student submit own) |
-| `src/lib/api/courses.ts` | CRUD for courses table | VERIFIED | fetchCourses, insertCourse, updateCourse, deleteCourse; Course interface uses `target_grade` enum |
-| `src/lib/api/chapters.ts` | CRUD + reorder for chapters | VERIFIED | fetchChapters, insertChapter, updateChapter, removeChapter, reorderChapters (swap order_index) |
-| `src/lib/api/lessons.ts` | CRUD + reorder + storage helpers | VERIFIED | All CRUD + reorderLessons + uploadAssignment/deleteAssignment/getAssignmentPublicUrl; `assignment_path` in Lesson interface and LessonInsert/Update types |
-| `src/lib/api/enrollments.ts` | getUserEnrollments, addEnrollment, removeEnrollment | VERIFIED | EnrollmentWithCourse join selects `id, title, target_grade` from courses; three mutation functions present |
-| `src/lib/youtube.ts` | extractYouTubeID utility | VERIFIED | Handles watch/embed/shorts/youtu.be/m.youtube.com formats with two regex patterns |
-| `src/pages/admin/CoursesPage.tsx` | Course list + CRUD + grade badges | VERIFIED | useQuery(fetchCourses) + useMutation(deleteCourse); CourseFormDialog integrated; GradeBadge for all 4 grade values |
-| `src/pages/admin/ChaptersPage.tsx` | Chapter list + reorder + nav to LessonsPage | VERIFIED | Up/Down buttons with boundary disable; BookOpen navigate to `/admin/courses/:courseId/chapters/:chapterId` at line 207 |
-| `src/pages/admin/LessonsPage.tsx` | Lesson list + reorder + attachment indicator | VERIFIED | FileText icon for `lesson.assignment_path`; reorder wired; 3-level breadcrumb; deleteAssignment called before removeLesson |
-| `src/components/admin/CourseFormDialog.tsx` | RHF+Zod create/edit dialog | VERIFIED | Zod schema with title (required), description (optional), target_grade (enum); useEffect resets form on open |
-| `src/components/admin/ChapterFormDialog.tsx` | RHF+Zod create/edit for chapters | VERIFIED | Title required; nextOrderIndex passed from parent |
-| `src/components/admin/LessonFormDialog.tsx` | YouTube URL + file upload dialog | VERIFIED | extractYouTubeID in Zod .refine(); 10MB file check; existing file display with "Xoa file" button; ScrollArea for scroll |
-| `src/components/admin/UserEnrollmentDialog.tsx` | Enrollment table + add/remove | VERIFIED | Set diff for available courses; GradeBadge in enrollment table; addEnrollment/removeEnrollment mutations |
+| `supabase/migrations/20260324_course_management_schema.sql` | Tables: courses, chapters, lessons, enrollments | VERIFIED | `target_grade text NOT NULL CHECK (...)` + `assignment_path text`; all 4 tables, indexes, triggers |
+| `supabase/migrations/20260324_course_management_rls.sql` | RLS policies for all 4 tables | VERIFIED | admin_all_* + student_read_enrolled_* on all 4 tables |
+| `supabase/migrations/20260324_course_management_storage.sql` | assignments storage bucket | VERIFIED | 10MB limit, 5 MIME types, 4 policies |
+| `src/lib/api/courses.ts` | CRUD for courses table | VERIFIED | fetchCourses, insertCourse, updateCourse, deleteCourse |
+| `src/lib/api/chapters.ts` | CRUD + reorder for chapters | VERIFIED | Full CRUD + reorderChapters (swap order_index) |
+| `src/lib/api/lessons.ts` | CRUD + reorder + storage helpers | VERIFIED | Full CRUD + reorderLessons + uploadAssignment/deleteAssignment/getAssignmentPublicUrl |
+| `src/lib/api/enrollments.ts` | getUserEnrollments, addEnrollment, removeEnrollment | VERIFIED | Three mutation functions + EnrollmentWithCourse join |
+| `src/lib/youtube.ts` | extractYouTubeID utility | VERIFIED | Handles watch?v=, youtu.be/, embed/, shorts/, m.youtube.com formats |
+| `src/pages/admin/CoursesPage.tsx` | Course list + CRUD + grade badges | VERIFIED | useQuery + useMutation; GradeBadge for all 4 grade values |
+| `src/pages/admin/ChaptersPage.tsx` | Chapter list + reorder + nav to LessonsPage | VERIFIED | Up/Down buttons; BookOpen navigates to lessons route |
+| `src/pages/admin/LessonsPage.tsx` | Lesson list + thumbnail column + attachment chip + reorder | VERIFIED | Video column with YouTube thumbnail; filename chip with getAssignmentPublicUrl href |
+| `src/components/admin/CourseFormDialog.tsx` | RHF+Zod create/edit dialog | VERIFIED | Zod enum; useEffect reset on open |
+| `src/components/admin/ChapterFormDialog.tsx` | RHF+Zod create/edit for chapters | VERIFIED | Title required; nextOrderIndex from parent |
+| `src/components/admin/LessonFormDialog.tsx` | YouTube URL + file upload dialog with preview | VERIFIED | Paperclip label; blob-URL image preview with cleanup; PDF chip; edit-mode chip with Xoa file |
+| `src/components/admin/UserEnrollmentDialog.tsx` | Enrollment table + add/remove | VERIFIED | Set diff for available courses; GradeBadge in table |
 | `src/App.tsx` (routes) | 3 new admin routes | VERIFIED | /admin/courses, /admin/courses/:courseId, /admin/courses/:courseId/chapters/:chapterId all with ProtectedRoute requiredRole="admin" |
 
-No MISSING or STUB artifacts remain. `src/types/course.ts` dead file confirmed deleted — `src/types/` contains only `auth.ts`.
+All 16 artifacts: VERIFIED. No MISSING, STUB, or ORPHANED artifacts.
 
 ---
 
 ### Key Link Verification
 
+**Carried forward from previous verification:**
+
+| From | To | Via | Status |
+|------|----|-----|--------|
+| `CoursesPage.tsx` | Supabase `courses` table | `fetchCourses()` in useQuery | VERIFIED |
+| `ChaptersPage.tsx` | Supabase `chapters` table | `fetchChapters(courseId)` in useQuery | VERIFIED |
+| `LessonsPage.tsx` | Supabase `lessons` table | `fetchLessons(chapterId)` in useQuery | VERIFIED |
+| `LessonFormDialog.tsx` | Supabase Storage | `uploadAssignment()` before insert | VERIFIED |
+| `UsersPage.tsx` | `UserEnrollmentDialog` | `enrollmentUser` state + BookOpen | VERIFIED |
+| `UserEnrollmentDialog.tsx` | Supabase `enrollments` table | getUserEnrollments/addEnrollment/removeEnrollment | VERIFIED |
+
+**New links from Plan 03-06:**
+
 | From | To | Via | Status | Details |
 |------|----|-----|--------|---------|
-| `CoursesPage.tsx` | Supabase `courses` table | `fetchCourses()` in useQuery | VERIFIED | queryFn: fetchCourses at line 58; invalidation on mutate success |
-| `CourseFormDialog.tsx` | Supabase `courses` table | `insertCourse`/`updateCourse` in useMutation | VERIFIED | mutation.mutate(payload) with toast on success/error |
-| `ChaptersPage.tsx` | Supabase `chapters` table | `fetchChapters(courseId)` in useQuery | VERIFIED | queryKey includes courseId; enabled: !!courseId |
-| `ChaptersPage.tsx` | `LessonsPage.tsx` | `useNavigate` + BookOpen button | VERIFIED | navigate(`/admin/courses/${courseId}/chapters/${chapter.id}`) at line 207 |
-| `LessonsPage.tsx` | Supabase `lessons` table | `fetchLessons(chapterId)` in useQuery | VERIFIED | queryKey includes chapterId; enabled: !!chapterId |
-| `LessonFormDialog.tsx` | Supabase Storage `assignments` | `uploadAssignment()` before insertLesson | VERIFIED | File uploaded first; path stored in assignment_path on insert payload |
-| `LessonFormDialog.tsx` | `extractYouTubeID` utility | import + Zod `.refine()` | VERIFIED | Line 44-47: `.refine((val) => !val || !!extractYouTubeID(val), ...)` |
-| `UsersPage.tsx` | `UserEnrollmentDialog` | `enrollmentUser` state + BookOpen button | VERIFIED | setEnrollmentUser at line 229; dialog open={!!enrollmentUser} at line 284 |
-| `UserEnrollmentDialog.tsx` | Supabase `enrollments` table | `getUserEnrollments`/`addEnrollment`/`removeEnrollment` | VERIFIED | All three mutation functions confirmed; course join selects target_grade |
-| `courses.ts` API | Supabase `courses.target_grade` column | `.select('*')` + `target_grade` in insert | VERIFIED | Schema column name now matches: `target_grade text NOT NULL CHECK (...)` |
-| `lessons.ts` API | Supabase `lessons.assignment_path` column | `.select('*')` + `assignment_path` in insert/update | VERIFIED | Column now exists in schema at line 32 |
+| `src/pages/admin/LessonsPage.tsx` | `src/lib/youtube.ts` | `extractYouTubeID` import | VERIFIED | Line 6: import; used at line 201 in JSX render |
+| `src/pages/admin/LessonsPage.tsx` | `src/lib/api/lessons.ts` | `getAssignmentPublicUrl` import | VERIFIED | Lines 37-43: multi-line import block; used at line 218 as `href` attribute |
+| `src/components/admin/LessonFormDialog.tsx` | browser File API | `URL.createObjectURL` on selectedFile image | VERIFIED | Line 89: create; line 91: `revokeObjectURL` cleanup via useEffect return |
 
-All key links WIRED. The two previously BROKEN links are now VERIFIED.
+All key links: WIRED.
 
 ---
 
@@ -110,16 +131,23 @@ All key links WIRED. The two previously BROKEN links are now VERIFIED.
 
 | Artifact | Data Variable | Source | Produces Real Data | Status |
 |----------|--------------|--------|--------------------|--------|
-| `CoursesPage.tsx` | `courses` array | `fetchCourses()` → `supabase.from('courses').select('*')` | Yes | FLOWING |
-| `ChaptersPage.tsx` | `chapters` array | `fetchChapters(courseId)` → `.from('chapters').select('*').eq('course_id', courseId).order('order_index')` | Yes | FLOWING |
-| `LessonsPage.tsx` | `lessons` array | `fetchLessons(chapterId)` → `.from('lessons').select('*').eq('chapter_id', chapterId).order('order_index')` | Yes | FLOWING — `assignment_path` column now exists; FileText indicator will render correctly |
-| `UserEnrollmentDialog.tsx` | `enrollments` array | `getUserEnrollments(userId)` → `.from('enrollments').select('id, user_id, course_id, enrolled_at, course:courses(id, title, target_grade)')` | Yes | FLOWING — join on `target_grade` now valid |
+| `LessonsPage.tsx` — Video column | `lesson.video_url` | `fetchLessons(chapterId)` → Supabase `.from('lessons').select('*')` | Yes — stored as embed URL from form submission | FLOWING |
+| `LessonsPage.tsx` — Attachment cell | `lesson.assignment_path` | Same query above | Yes — storage path stored on lesson insert/update | FLOWING |
+| `LessonFormDialog.tsx` — image preview | `imagePreviewUrl` state | `URL.createObjectURL(selectedFile)` triggered by `useEffect([selectedFile])` | Yes — runtime blob from browser File API | FLOWING |
+| `LessonFormDialog.tsx` — edit-mode chip | `existingFileName` derived | `lesson.assignment_path.split('/').pop()` | Yes — derived from DB-stored path | FLOWING |
 
 ---
 
 ### Behavioral Spot-Checks
 
-Step 7b: All Phase 03 routes are behind `ProtectedRoute requiredRole="admin"` and require a live Supabase session. Cannot exercise end-to-end flows without a running server and authenticated admin user. Spot-checks routed to human verification.
+| Behavior | Command | Result | Status |
+|----------|---------|--------|--------|
+| Production build succeeds | `yarn build` | 2287 modules, no errors, 9.30s | PASS |
+| `extractYouTubeID` imported and used in render | grep LessonsPage.tsx | Line 6 (import) + line 201 (JSX call) | PASS |
+| `getAssignmentPublicUrl` imported and used as href | grep LessonsPage.tsx | Line 41 (import) + line 218 (href attribute) | PASS |
+| `URL.createObjectURL` with `revokeObjectURL` cleanup | grep LessonFormDialog.tsx | Lines 89 + 91 | PASS |
+| Label text matches spec | grep LessonFormDialog.tsx | Line 285 exact match | PASS |
+| No anti-patterns (TODO/FIXME/return null) | grep both modified files | Only HTML placeholder= attrs; no stubs | PASS |
 
 ---
 
@@ -127,27 +155,22 @@ Step 7b: All Phase 03 routes are behind `ProtectedRoute requiredRole="admin"` an
 
 | Requirement | Source Plan | Description | Status | Evidence |
 |-------------|------------|-------------|--------|----------|
-| COURSE-01 | 03-02-PLAN.md | Admin có thể tạo, sửa, xóa khóa học (tên, mô tả, lớp mục tiêu: 7/8/9/chuyên) | SATISFIED | CoursesPage + CourseFormDialog fully implemented and on main; schema column matches; Zod enum validates grade_7/grade_8/grade_9/advanced |
-| COURSE-02 | 03-03-PLAN.md, 03-04-PLAN.md | Admin có thể thêm bài học vào khóa học (tiêu đề, URL video YouTube, mô tả, thứ tự) | SATISFIED | LessonsPage + LessonFormDialog with YouTube URL validation via extractYouTubeID; order_index managed via nextOrderIndex |
-| COURSE-03 | 03-03-PLAN.md, 03-04-PLAN.md | Admin có thể sắp xếp lại thứ tự bài học trong khóa | SATISFIED | reorderLessons and reorderChapters swap order_index; ChevronUp/Down buttons with boundary disabling in both pages |
-| COURSE-04 | 03-04-PLAN.md | Admin có thể đính kèm bài tập vào bài học (upload file PDF hoặc hình ảnh đề bài) | SATISFIED | LessonFormDialog file upload (PDF/image, 10MB limit); uploadAssignment/deleteAssignment helpers; assignment_path column exists; storage bucket migration with policies |
-| COURSE-05 | 03-05-PLAN.md | Admin có thể gán học sinh vào khóa học | SATISFIED | UserEnrollmentDialog + enrollments API; UsersPage wires dialog; available courses computed client-side by Set diff |
+| COURSE-01 | 03-02-PLAN.md | Admin co the tao, sua, xoa khoa hoc (ten, mo ta, lop muc tieu: 7/8/9/chuyen) | SATISFIED | CoursesPage + CourseFormDialog; Zod enum validates grade_7/grade_8/grade_9/advanced |
+| COURSE-02 | 03-03, 03-04, 03-06 | Admin co the them bai hoc vao khoa hoc (tieu de, URL video YouTube, mo ta, thu tu) | SATISFIED | LessonFormDialog with YouTube validation; list now shows thumbnail confirming video data is surfaced |
+| COURSE-03 | 03-03, 03-04 | Admin co the sap xep lai thu tu bai hoc trong khoa | SATISFIED | reorderLessons/reorderChapters swap order_index; ChevronUp/Down with boundary disabling |
+| COURSE-04 | 03-04, 03-06 | Admin co the dinh kem bai tap vao bai hoc (upload file PDF hoac hinh anh de bai) | SATISFIED | File upload with 10MB limit; image preview + PDF chip in dialog; filename chip in list linking to file |
+| COURSE-05 | 03-05-PLAN.md | Admin co the gan hoc sinh vao khoa hoc | SATISFIED | UserEnrollmentDialog + enrollments API; UsersPage wires dialog |
 
-All 5 requirements: SATISFIED.
-
-No ORPHANED requirements — REQUIREMENTS.md lists only COURSE-01 through COURSE-05 for Phase 3.
+All 5 requirements: SATISFIED. No ORPHANED requirements.
 
 ---
 
 ### Anti-Patterns Found
 
-No blockers or warnings remain. The four blockers from initial verification have been resolved:
-- `courses.grade` → `courses.target_grade` fixed in schema
-- `assignment_path` column added to lessons table
-- Dead `src/types/course.ts` removed
-- All Phase 03 code is on main
-
-No new anti-patterns detected in the merged code.
+None. The `placeholder=` matches from grep are HTML input placeholder attributes (user-facing hint text in Vietnamese), not code stubs. Both modified files are clean:
+- No TODO/FIXME/XXX comments
+- No `return null`, `return []`, `return {}`, or `=> {}` stub patterns
+- No hardcoded empty props passed to child components
 
 ---
 
@@ -156,30 +179,40 @@ No new anti-patterns detected in the merged code.
 #### 1. RLS Student Access Enforcement
 
 **Test:** Create two Supabase users: student A enrolled in Course X, student B enrolled in Course Y. As student A, attempt to read lessons for Course Y via direct Supabase query.
-**Expected:** RLS denies the select; student A sees only Course X lessons. The `student_read_enrolled_lessons` policy uses an EXISTS subquery joining enrollments → chapters, which should block cross-enrollment access.
+**Expected:** RLS denies the select; student A sees only Course X lessons. The `student_read_enrolled_lessons` policy uses an EXISTS subquery joining enrollments to chapters.
 **Why human:** Requires a live Supabase instance with seeded auth users, profile rows with `approval_status = 'approved'`, and two separate enrollment records.
 
-#### 2. Lesson File Attachment End-to-End
+#### 2. YouTube Thumbnail Renders Correctly in Lesson List
 
-**Test:** As admin in the running app, open LessonFormDialog for a new lesson. Upload a PDF under 10MB. Save. Verify the FileText icon appears in the lessons table row. Edit the lesson and verify the existing filename is shown with the "Xoa file" button. Click "Xoa file" and save — verify the icon disappears.
-**Expected:** File stored in the `assignments` Supabase Storage bucket; `assignment_path` persisted to DB; UI indicator reflects attachment presence correctly through create, edit (retain), and edit (remove) flows.
-**Why human:** Requires live Supabase Storage with real file I/O; cannot verify with static analysis.
+**Test:** Navigate to a chapter that has at least one lesson with a YouTube video URL and one without. Observe the Video column.
+**Expected:** Lesson with video shows an 80x48px thumbnail loaded from `img.youtube.com`; lesson without video shows an em dash.
+**Why human:** Thumbnail loading depends on the external YouTube CDN and a live authenticated session. Static analysis confirms the code path is wired but cannot confirm network success.
+
+#### 3. Lesson File Attachment End-to-End Flow
+
+**Test:** As admin, open LessonFormDialog for a new lesson, upload a PDF under 10MB, save. Then open edit mode for that lesson and verify: (a) the filename chip appears with Xoa file button, (b) clicking Xoa file removes the chip and clears the attachment on save.
+**Expected:** File stored in the `assignments` Supabase Storage bucket; `assignment_path` persisted to DB; filename chip in list row links to the public URL; chip in edit dialog reflects stored state; removal clears both storage and DB column.
+**Why human:** Requires live Supabase Storage with real file I/O.
+
+#### 4. Image Preview in Lesson Dialog
+
+**Test:** As admin, open LessonFormDialog for a new lesson and select a JPG or PNG file using the file picker.
+**Expected:** Immediately after selection, an inline thumbnail preview renders using a blob URL. After closing the dialog, the preview is cleaned up with no memory leak.
+**Why human:** Requires browser file picker interaction; blob URL is a runtime artifact that cannot be tested with static grep.
 
 ---
 
 ### Gaps Summary
 
-No gaps remain. All previously identified gaps have been closed:
+No gaps remain. Phase 03 is fully implemented across all 6 plans:
 
-- Gap 1 (code not on main): Resolved by commit `6430a44` and `f140ccd`
-- Gap 2 (`target_grade` mismatch): Resolved — schema now uses `target_grade text NOT NULL CHECK (...)`
-- Gap 3 (`assignment_path` missing): Resolved — column added to lessons table at line 32 of schema migration
-- Gap 4 (dead type file): Resolved — `src/types/course.ts` deleted
+- Plans 03-01 through 03-05: Core CRUD for courses/chapters/lessons/enrollments, RLS policies, storage bucket (verified in previous round at 7/7).
+- Plan 03-06: UI polish gap-closure — YouTube thumbnail column and improved attachment display in both list and dialog (6 new truths verified in this round).
 
-The only remaining items are human verification checks that require a live Supabase environment. All automated verification levels pass: code exists, is substantive, is wired, and data flows through real Supabase queries.
+All 13 must-have truths pass automated verification. The only open items are 4 human verification checks that require a live Supabase environment or browser interaction. No automated gaps remain.
 
 ---
 
-_Verified: 2026-03-25T12:00:00Z_
+_Verified: 2026-04-25T10:00:00Z_
 _Verifier: Claude (gsd-verifier)_
-_Re-verification: Yes — previous status was gaps_found (3/7), now human_needed (7/7)_
+_Re-verification: Yes — Plan 03-06 gap closure; previous status was human_needed (7/7), now human_needed (13/13)_
