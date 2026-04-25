@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Plus, Pencil, Trash2, ChevronUp, ChevronDown, FileText } from 'lucide-react'
 import { toast } from 'sonner'
+import { extractYouTubeID } from '@/lib/youtube'
 import {
   Table,
   TableBody,
@@ -37,6 +38,7 @@ import {
   removeLesson,
   reorderLessons,
   deleteAssignment,
+  getAssignmentPublicUrl,
   Lesson,
 } from '@/lib/api/lessons'
 import LessonFormDialog from '@/components/admin/LessonFormDialog'
@@ -183,8 +185,9 @@ export default function LessonsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-16">STT</TableHead>
+                <TableHead className="w-32">Video</TableHead>
                 <TableHead>Tên bài học</TableHead>
-                <TableHead className="w-24 text-center">Đính kèm</TableHead>
+                <TableHead className="w-56">Đính kèm</TableHead>
                 <TableHead>Sắp xếp</TableHead>
                 <TableHead>Hành động</TableHead>
               </TableRow>
@@ -193,14 +196,39 @@ export default function LessonsPage() {
               {lessons.map((lesson, index) => (
                 <TableRow key={lesson.id}>
                   <TableCell className="text-muted-foreground">{index + 1}</TableCell>
+                  <TableCell>
+                    {(() => {
+                      const videoId = lesson.video_url ? extractYouTubeID(lesson.video_url) : null
+                      return videoId ? (
+                        <img
+                          src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
+                          alt={`Thumbnail ${lesson.title}`}
+                          loading="lazy"
+                          className="w-20 h-12 object-cover rounded border"
+                        />
+                      ) : (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      )
+                    })()}
+                  </TableCell>
                   <TableCell className="font-medium">{lesson.title}</TableCell>
-                  <TableCell className="text-center">
+                  <TableCell>
                     {lesson.assignment_path ? (
-                      <FileText
-                        className="h-4 w-4 text-muted-foreground inline"
-                        aria-label="Có đính kèm"
-                      />
-                    ) : null}
+                      <a
+                        href={getAssignmentPublicUrl(lesson.assignment_path)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 max-w-[14rem] rounded-md border bg-muted/40 px-2 py-1 text-xs text-foreground hover:bg-muted transition-colors"
+                        title={lesson.assignment_path.split('/').pop() ?? lesson.assignment_path}
+                      >
+                        <FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                        <span className="truncate">
+                          {lesson.assignment_path.split('/').pop() ?? lesson.assignment_path}
+                        </span>
+                      </a>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1">

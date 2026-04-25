@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
-import { Loader2, Youtube } from 'lucide-react'
+import { Loader2, Youtube, Paperclip, FileText, X } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Dialog,
@@ -82,6 +82,16 @@ export default function LessonFormDialog({
   const [fileError, setFileError] = useState<string | null>(null)
   // Track whether the existing attachment should be removed
   const [removeExisting, setRemoveExisting] = useState(false)
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (selectedFile && selectedFile.type.startsWith('image/')) {
+      const url = URL.createObjectURL(selectedFile)
+      setImagePreviewUrl(url)
+      return () => URL.revokeObjectURL(url)
+    }
+    setImagePreviewUrl(null)
+  }, [selectedFile])
 
   const form = useForm<LessonFormValues>({
     resolver: zodResolver(lessonSchema),
@@ -270,14 +280,21 @@ export default function LessonFormDialog({
 
               {/* File upload */}
               <div className="space-y-2">
-                <label className="text-sm font-medium leading-none">
-                  Tệp bài tập (PDF hoặc hình ảnh)
+                <label className="text-sm font-medium leading-none flex items-center gap-1">
+                  <Paperclip className="h-4 w-4" />
+                  Tài liệu đính kèm cho học sinh
                 </label>
 
-                {/* Show existing file info */}
+                {/* Show existing file info as chip */}
                 {isEditing && existingFileName && !removeExisting && !selectedFile && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span>{existingFileName}</span>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="inline-flex items-center gap-1.5 max-w-full rounded-md border bg-muted/40 px-2 py-1 text-sm"
+                      title={existingFileName}
+                    >
+                      <FileText className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                      <span className="truncate">{existingFileName}</span>
+                    </span>
                     <Button
                       type="button"
                       variant="outline"
@@ -285,6 +302,7 @@ export default function LessonFormDialog({
                       className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground h-7 px-2"
                       onClick={() => setRemoveExisting(true)}
                     >
+                      <X className="h-3.5 w-3.5 mr-1" />
                       Xóa file
                     </Button>
                   </div>
@@ -298,11 +316,29 @@ export default function LessonFormDialog({
                   onChange={handleFileChange}
                 />
 
-                {/* Show newly selected file info */}
+                {/* Show newly selected file with preview */}
                 {selectedFile && (
-                  <p className="text-sm text-muted-foreground">
-                    {selectedFile.name} — {formatFileSize(selectedFile.size)}
-                  </p>
+                  <div className="flex items-start gap-3 rounded-md border bg-muted/30 p-2">
+                    {imagePreviewUrl ? (
+                      <img
+                        src={imagePreviewUrl}
+                        alt={`Preview ${selectedFile.name}`}
+                        className="h-20 w-20 object-cover rounded border"
+                      />
+                    ) : (
+                      <div className="h-20 w-20 flex items-center justify-center rounded border bg-background">
+                        <FileText className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
+                      </div>
+                    )}
+                    <div className="flex flex-col text-sm min-w-0 flex-1">
+                      <span className="truncate font-medium" title={selectedFile.name}>
+                        {selectedFile.name}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {formatFileSize(selectedFile.size)}
+                      </span>
+                    </div>
+                  </div>
                 )}
 
                 {/* File error */}
