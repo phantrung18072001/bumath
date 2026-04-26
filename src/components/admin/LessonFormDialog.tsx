@@ -199,7 +199,7 @@ export default function LessonFormDialog({
           <DialogTitle>{isEditing ? 'Chỉnh sửa bài học' : 'Thêm bài học'}</DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 overflow-y-auto pr-1">
+        <ScrollArea className="flex-1 overflow-y-auto overflow-x-hidden pr-1">
           <Form {...form}>
             <form
               id="lesson-form"
@@ -274,7 +274,7 @@ export default function LessonFormDialog({
               />
 
               {/* Multi-file attachment */}
-              <div className="space-y-2">
+              <div className="space-y-2 w-full overflow-hidden">
                 <label className="text-sm font-medium leading-none flex items-center gap-1">
                   <Paperclip className="h-4 w-4" />
                   Tài liệu đính kèm cho học sinh
@@ -285,11 +285,11 @@ export default function LessonFormDialog({
                 {keptPaths.map((p) => {
                   const name = p.split('/').pop() ?? p
                   return (
-                    <div key={p} className="flex items-center gap-2 min-w-0">
-                      <span className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden rounded-md border bg-muted/40 px-2 py-1 text-sm" title={name}>
+                    <div key={p} className="grid grid-cols-[1fr_auto] gap-2 items-center w-full">
+                      <div className="flex items-center gap-1.5 overflow-hidden rounded-md border bg-muted/40 px-2 py-1 text-sm" title={name}>
                         <FileText className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                        <span className="truncate min-w-0">{name}</span>
-                      </span>
+                        <span className="truncate">{name}</span>
+                      </div>
                       <Button
                         type="button"
                         variant="outline"
@@ -305,17 +305,17 @@ export default function LessonFormDialog({
 
                 {/* Newly selected files (pending upload) */}
                 {selectedFiles.map((file, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <span className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden rounded-md border border-dashed bg-muted/20 px-2 py-1 text-sm" title={file.name}>
+                  <div key={i} className="grid grid-cols-[1fr_auto_auto] gap-2 items-center w-full">
+                    <div className="flex items-center gap-1.5 overflow-hidden rounded-md border border-dashed bg-muted/20 px-2 py-1 text-sm" title={file.name}>
                       <FileText className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                      <span className="truncate min-w-0">{file.name}</span>
-                    </span>
-                    <span className="text-xs text-muted-foreground shrink-0 whitespace-nowrap">{formatFileSize(file.size)}</span>
+                      <span className="truncate">{file.name}</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">{formatFileSize(file.size)}</span>
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="shrink-0 h-7 px-2 text-muted-foreground hover:text-destructive"
+                      className="h-7 px-2 text-muted-foreground hover:text-destructive"
                       onClick={() => removeSelectedFile(i)}
                     >
                       <X className="h-3.5 w-3.5" />
