@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/contexts/AuthContext'
 import StudentLayout from '@/components/student/StudentLayout'
@@ -101,12 +102,13 @@ export default function CourseDetailPage() {
     <StudentLayout>
       {/* Always-visible back link */}
       {!isLoading && (
-        <div className="px-4 md:px-8 pt-4 pb-1">
+        <div className="px-4 md:px-8 pt-4 pb-2">
           <Link
             to="/courses"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
           >
-            ← Khóa học của tôi
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+            Khóa học của tôi
           </Link>
         </div>
       )}
