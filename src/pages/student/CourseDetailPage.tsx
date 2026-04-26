@@ -98,23 +98,21 @@ export default function CourseDetailPage() {
   // Error state
   const hasError = courseError || chaptersError || lessonsError
 
+  const backLink = (
+    <Link
+      to="/courses"
+      className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
+    >
+      <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+      Khóa học của tôi
+    </Link>
+  )
+
   return (
     <StudentLayout>
-      {/* Always-visible back link */}
-      {!isLoading && (
-        <div className="px-4 md:px-8 pt-4 pb-2">
-          <Link
-            to="/courses"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
-          >
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-            Khóa học của tôi
-          </Link>
-        </div>
-      )}
-
       {hasError && (
         <div className="px-4 md:px-8 py-4">
+          <div className="mb-3">{backLink}</div>
           <Alert variant="destructive">
             <AlertDescription>
               Không thể tải khóa học. Vui lòng làm mới trang.
@@ -124,7 +122,8 @@ export default function CourseDetailPage() {
       )}
 
       {!isLoading && !hasError && !course && (
-        <div className="px-4 md:px-8 py-16 text-center">
+        <div className="px-4 md:px-8 pt-4 pb-16 text-center">
+          <div className="text-left mb-8">{backLink}</div>
           <h2 className="text-xl font-semibold mb-2">Không tìm thấy khóa học</h2>
           <p className="text-base text-muted-foreground">
             Khóa học này không tồn tại hoặc đã bị xóa.
@@ -141,7 +140,8 @@ export default function CourseDetailPage() {
       )}
 
       {!isLoading && !hasError && chapters && chapters.length === 0 && (
-        <div className="px-4 md:px-8 py-16 text-center">
+        <div className="px-4 md:px-8 pt-4 pb-16 text-center">
+          <div className="text-left mb-8">{backLink}</div>
           <h2 className="text-xl font-semibold mb-2">Khóa học chưa có bài giảng</h2>
           <p className="text-base text-muted-foreground">
             Giảng viên đang cập nhật nội dung. Vui lòng quay lại sau.
@@ -151,7 +151,7 @@ export default function CourseDetailPage() {
 
       {!isLoading && !hasError && chapters && chapters.length > 0 && lessonsByChapter && (
         <>
-          {/* Desktop layout — fixed height = remaining viewport, no outer scroll */}
+          {/* Desktop layout — viewport-filling, back link inside right panel */}
           <div className="hidden md:flex h-[calc(100vh-48px)]">
             <div className="w-[280px] shrink-0 bg-sidebar border-r border-sidebar-border">
               <LessonSidebar
@@ -164,6 +164,7 @@ export default function CourseDetailPage() {
               />
             </div>
             <div className="flex-1 overflow-y-auto">
+              <div className="px-8 pt-4 pb-1">{backLink}</div>
               <LessonContent
                 lesson={activeLesson}
                 isCompleted={completedLessonIds.has(activeLessonId ?? '')}
@@ -174,8 +175,9 @@ export default function CourseDetailPage() {
             </div>
           </div>
 
-          {/* Mobile layout */}
+          {/* Mobile layout — page scrolls naturally */}
           <div className="block md:hidden">
+            <div className="px-4 pt-4 pb-1">{backLink}</div>
             <Tabs defaultValue="content">
               <TabsList className="w-full h-12 rounded-none border-b bg-transparent p-0 gap-0">
                 <TabsTrigger
