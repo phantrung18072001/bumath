@@ -177,11 +177,21 @@ export default function CourseDetailPage() {
           {/* Mobile layout */}
           <div className="block md:hidden">
             <Tabs defaultValue="content">
-              <TabsList className="w-full h-12">
-                <TabsTrigger value="content" className="flex-1 min-h-[48px]">Nội dung</TabsTrigger>
-                <TabsTrigger value="outline" className="flex-1 min-h-[48px]">Mục lục</TabsTrigger>
+              <TabsList className="w-full h-12 rounded-none border-b bg-transparent p-0 gap-0">
+                <TabsTrigger
+                  value="content"
+                  className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-medium"
+                >
+                  Nội dung
+                </TabsTrigger>
+                <TabsTrigger
+                  value="outline"
+                  className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-medium"
+                >
+                  Mục lục
+                </TabsTrigger>
               </TabsList>
-              <TabsContent value="content">
+              <TabsContent value="content" className="mt-0">
                 <LessonContent
                   lesson={activeLesson}
                   isCompleted={completedLessonIds.has(activeLessonId ?? '')}
@@ -190,14 +200,15 @@ export default function CourseDetailPage() {
                   courseId={courseId!}
                 />
               </TabsContent>
-              <TabsContent value="outline">
+              <TabsContent value="outline" className="mt-0">
                 <LessonSidebar
                   chapters={chapters}
                   lessonsByChapter={lessonsByChapter}
                   completedLessonIds={completedLessonIds}
                   activeLessonId={activeLessonId}
-                  onSelectLesson={(lesson) => setActiveLessonId(lesson.id)}
+                  onSelectLesson={(lesson) => { setActiveLessonId(lesson.id) }}
                   progress={progress}
+                  scrollable={false}
                 />
               </TabsContent>
             </Tabs>

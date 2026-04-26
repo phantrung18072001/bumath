@@ -12,6 +12,7 @@ interface LessonSidebarProps {
   activeLessonId: string | null
   onSelectLesson: (lesson: Lesson) => void
   progress: number  // 0-100
+  scrollable?: boolean  // true on desktop, false on mobile (let page scroll)
 }
 
 export default function LessonSidebar({
@@ -21,9 +22,10 @@ export default function LessonSidebar({
   activeLessonId,
   onSelectLesson,
   progress,
+  scrollable = true,
 }: LessonSidebarProps) {
   return (
-    <div className="flex flex-col h-full">
+    <div className={scrollable ? 'flex flex-col h-full' : 'flex flex-col'}>
       {/* Progress header */}
       <div className="px-4 py-4 border-b border-sidebar-border shrink-0">
         <Progress
@@ -35,7 +37,7 @@ export default function LessonSidebar({
       </div>
 
       {/* Lesson list */}
-      <div className="flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className={scrollable ? 'flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden' : ''}>
         <Accordion type="multiple" defaultValue={chapters.map(c => c.id)}>
           {chapters.map(chapter => (
             <AccordionItem key={chapter.id} value={chapter.id}>
