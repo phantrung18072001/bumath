@@ -2,7 +2,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { ExternalLink } from 'lucide-react'
-import { getAssignmentPublicUrls, type Lesson } from '@/lib/api/lessons'
+import { getAssignmentPublicUrls, parseAssignmentPaths, type Lesson } from '@/lib/api/lessons'
 import type { Submission } from '@/lib/api/submissions'
 import LessonProgressButton from './LessonProgressButton'
 import SubmissionArea from './SubmissionArea'
@@ -59,22 +59,26 @@ export default function LessonContent({
       {/* 3. Assignment file link + submission area (only if lesson has assignment) */}
       {lesson.assignment_path !== null && (() => {
         const urls = getAssignmentPublicUrls(lesson.assignment_path)
+        const paths = parseAssignmentPaths(lesson.assignment_path)
         return (
           <>
             <Separator className="my-6" />
             <div className="flex flex-wrap gap-2">
-              {urls.map((url, i) => (
-                <Button
-                  key={url}
-                  variant="outline"
-                  size="sm"
-                  className="min-h-[48px]"
-                  onClick={() => window.open(url, '_blank', 'noopener')}
-                >
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  {urls.length === 1 ? 'Đề bài: Xem file' : `Tài liệu ${i + 1}`}
-                </Button>
-              ))}
+              {urls.map((url, i) => {
+                const name = paths[i]?.split('/').pop() ?? `Tài liệu ${i + 1}`
+                return (
+                  <Button
+                    key={url}
+                    variant="outline"
+                    size="sm"
+                    className="min-h-[48px]"
+                    onClick={() => window.open(url, '_blank', 'noopener')}
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2 shrink-0" />
+                    <span className="truncate max-w-[180px]">{name}</span>
+                  </Button>
+                )
+              })}
             </div>
 
             <Separator className="my-6" />
