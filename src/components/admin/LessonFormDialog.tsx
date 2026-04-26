@@ -288,7 +288,7 @@ export default function LessonFormDialog({
                     <div key={p} className="flex items-center gap-2 min-w-0">
                       <span className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden rounded-md border bg-muted/40 px-2 py-1 text-sm" title={name}>
                         <FileText className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                        <span className="truncate">{name}</span>
+                        <span className="truncate min-w-0">{name}</span>
                       </span>
                       <Button
                         type="button"
@@ -308,7 +308,7 @@ export default function LessonFormDialog({
                   <div key={i} className="flex items-center gap-2">
                     <span className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden rounded-md border border-dashed bg-muted/20 px-2 py-1 text-sm" title={file.name}>
                       <FileText className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                      <span className="truncate">{file.name}</span>
+                      <span className="truncate min-w-0">{file.name}</span>
                     </span>
                     <span className="text-xs text-muted-foreground shrink-0 whitespace-nowrap">{formatFileSize(file.size)}</span>
                     <Button

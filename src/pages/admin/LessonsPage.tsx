@@ -228,7 +228,7 @@ export default function LessonsPage() {
                           title={count > 1 ? `${count} files` : firstName}
                         >
                           <FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
-                          <span className="truncate">
+                          <span className="truncate min-w-0">
                             {count > 1 ? `${count} files` : firstName}
                           </span>
                         </a>
