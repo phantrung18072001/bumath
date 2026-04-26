@@ -19,7 +19,7 @@ export default function CourseDetailPage() {
   const { profile } = useAuth()
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null)
 
-  const { data: course, isLoading: courseLoading } = useQuery({
+  const { data: course, isLoading: courseLoading, isError: courseError } = useQuery({
     queryKey: ['course', courseSlug],
     queryFn: () => fetchCourseBySlug(courseSlug!),
     enabled: !!courseSlug,
@@ -95,7 +95,7 @@ export default function CourseDetailPage() {
   const isLoading = courseLoading || chaptersLoading || lessonsLoading
 
   // Error state
-  const hasError = chaptersError || lessonsError
+  const hasError = courseError || chaptersError || lessonsError
 
   return (
     <StudentLayout>
@@ -106,6 +106,15 @@ export default function CourseDetailPage() {
               Không thể tải khóa học. Vui lòng làm mới trang.
             </AlertDescription>
           </Alert>
+        </div>
+      )}
+
+      {!isLoading && !hasError && !course && (
+        <div className="px-4 md:px-8 py-16 text-center">
+          <h2 className="text-xl font-semibold mb-2">Không tìm thấy khóa học</h2>
+          <p className="text-base text-muted-foreground">
+            Khóa học này không tồn tại hoặc đã bị xóa.
+          </p>
         </div>
       )}
 
