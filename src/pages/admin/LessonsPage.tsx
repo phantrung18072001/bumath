@@ -213,20 +213,27 @@ export default function LessonsPage() {
                   </TableCell>
                   <TableCell className="font-medium">{lesson.title}</TableCell>
                   <TableCell>
-                    {lesson.assignment_path ? (
-                      <a
-                        href={getAssignmentPublicUrl(lesson.assignment_path)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 max-w-[14rem] rounded-md border bg-muted/40 px-2 py-1 text-xs text-foreground hover:bg-muted transition-colors"
-                        title={lesson.assignment_path.split('/').pop() ?? lesson.assignment_path}
-                      >
-                        <FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
-                        <span className="truncate">
-                          {lesson.assignment_path.split('/').pop() ?? lesson.assignment_path}
-                        </span>
-                      </a>
-                    ) : (
+                  {lesson.assignment_path ? (() => {
+                      const paths = lesson.assignment_path.startsWith('[')
+                        ? (() => { try { return JSON.parse(lesson.assignment_path) } catch { return [lesson.assignment_path] } })()
+                        : [lesson.assignment_path]
+                      const count = paths.length
+                      const firstName = (paths[0] as string).split('/').pop() ?? paths[0]
+                      return (
+                        <a
+                          href={getAssignmentPublicUrl(paths[0])}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 max-w-[14rem] rounded-md border bg-muted/40 px-2 py-1 text-xs text-foreground hover:bg-muted transition-colors"
+                          title={count > 1 ? `${count} files` : firstName}
+                        >
+                          <FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                          <span className="truncate">
+                            {count > 1 ? `${count} files` : firstName}
+                          </span>
+                        </a>
+                      )
+                    })() : (
                       <span className="text-xs text-muted-foreground">—</span>
                     )}
                   </TableCell>

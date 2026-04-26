@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
-import { Loader2, Youtube, Paperclip, FileText, X } from 'lucide-react'
+import { Loader2, Youtube, Paperclip, FileText, X, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Dialog,
@@ -31,6 +31,7 @@ import {
   updateLesson,
   uploadAssignment,
   deleteAssignment,
+  parseAssignmentPaths,
 } from '@/lib/api/lessons'
 import { extractYouTubeID } from '@/lib/youtube'
 
@@ -54,7 +55,6 @@ interface LessonFormDialogProps {
   open: boolean
   chapterId: string
   lesson: Lesson | null
-  /** order_index to use when creating a new lesson (usually lessons.length) */
   nextOrderIndex: number
   onSuccess: () => void
   onClose: () => void
@@ -77,35 +77,20 @@ export default function LessonFormDialog({
   const isEditing = !!lesson
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Track the selected new file (pending upload)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  // Existing paths from DB still being kept (user can remove each individually)
+  const [keptPaths, setKeptPaths] = useState<string[]>([])
+  // New files selected in this session (pending upload)
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [fileError, setFileError] = useState<string | null>(null)
-  // Track whether the existing attachment should be removed
-  const [removeExisting, setRemoveExisting] = useState(false)
-  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (selectedFile && selectedFile.type.startsWith('image/')) {
-      const url = URL.createObjectURL(selectedFile)
-      setImagePreviewUrl(url)
-      return () => URL.revokeObjectURL(url)
-    }
-    setImagePreviewUrl(null)
-  }, [selectedFile])
 
   const form = useForm<LessonFormValues>({
     resolver: zodResolver(lessonSchema),
-    defaultValues: {
-      title: '',
-      youtube_url: '',
-      description: '',
-    },
+    defaultValues: { title: '', youtube_url: '', description: '' },
   })
 
   const youtubeUrl = form.watch('youtube_url') ?? ''
   const youtubePreviewId = youtubeUrl ? extractYouTubeID(youtubeUrl) : null
 
-  // Reset form when dialog opens or editing target changes
   useEffect(() => {
     if (open) {
       if (lesson) {
@@ -114,35 +99,39 @@ export default function LessonFormDialog({
           youtube_url: lesson.video_url ?? '',
           description: lesson.description ?? '',
         })
+        setKeptPaths(parseAssignmentPaths(lesson.assignment_path))
       } else {
         form.reset({ title: '', youtube_url: '', description: '' })
+        setKeptPaths([])
       }
-      setSelectedFile(null)
+      setSelectedFiles([])
       setFileError(null)
-      setRemoveExisting(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
     }
   }, [open, lesson, form])
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0] ?? null
     setFileError(null)
+    const files = Array.from(e.target.files ?? [])
+    if (!files.length) return
 
-    if (!file) {
-      setSelectedFile(null)
-      return
-    }
-
-    if (file.size > MAX_FILE_SIZE) {
-      setFileError('File vượt quá 10MB. Vui lòng chọn file nhỏ hơn.')
-      setSelectedFile(null)
+    const oversized = files.find((f) => f.size > MAX_FILE_SIZE)
+    if (oversized) {
+      setFileError(`"${oversized.name}" vượt quá 10MB.`)
       if (fileInputRef.current) fileInputRef.current.value = ''
       return
     }
 
-    setSelectedFile(file)
-    // Selecting a new file implicitly replaces the existing one
-    setRemoveExisting(false)
+    setSelectedFiles((prev) => [...prev, ...files])
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  function removeKeptPath(path: string) {
+    setKeptPaths((prev) => prev.filter((p) => p !== path))
+  }
+
+  function removeSelectedFile(index: number) {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index))
   }
 
   const mutation = useMutation({
@@ -150,37 +139,32 @@ export default function LessonFormDialog({
       const videoId = values.youtube_url ? extractYouTubeID(values.youtube_url) : null
       const videoUrl = videoId ? `https://www.youtube.com/embed/${videoId}` : null
 
-      // Resolve assignment_path
-      let assignmentPath: string | null | undefined = undefined
+      let finalPaths: string[] = [...keptPaths]
 
       if (isEditing) {
-        if (selectedFile) {
-          // Upload new file; delete old file if present
-          if (lesson.assignment_path) {
-            await deleteAssignment(lesson.assignment_path)
-          }
-          assignmentPath = await uploadAssignment(selectedFile, lesson.id)
-        } else if (removeExisting && lesson.assignment_path) {
-          await deleteAssignment(lesson.assignment_path)
-          assignmentPath = null
-        }
-        // else: keep existing (undefined = do not update the column)
+        // Delete paths that were removed by user
+        const originalPaths = parseAssignmentPaths(lesson.assignment_path)
+        const removedPaths = originalPaths.filter((p) => !keptPaths.includes(p))
+        for (const p of removedPaths) await deleteAssignment(p)
 
-        const payload: Record<string, unknown> = {
+        // Upload new files
+        for (const file of selectedFiles) {
+          const path = await uploadAssignment(file, lesson.id)
+          finalPaths.push(path)
+        }
+
+        const assignmentPath = finalPaths.length > 0 ? JSON.stringify(finalPaths) : null
+        return updateLesson(lesson.id, {
           title: values.title,
           video_url: videoUrl,
           description: values.description ?? null,
-        }
-        if (assignmentPath !== undefined) {
-          payload.assignment_path = assignmentPath
-        }
-        return updateLesson(lesson.id, payload as Parameters<typeof updateLesson>[1])
+          assignment_path: assignmentPath,
+        })
       } else {
-        // Create flow
-        if (selectedFile) {
-          // We need the lesson ID for the path prefix; use a temp prefix then update
-          const tempPath = await uploadAssignment(selectedFile, `tmp/${chapterId}`)
-          assignmentPath = tempPath
+        // Create: upload all selected files to tmp prefix
+        for (const file of selectedFiles) {
+          const path = await uploadAssignment(file, `tmp/${chapterId}`)
+          finalPaths.push(path)
         }
 
         const insertPayload: LessonInsert = {
@@ -189,7 +173,7 @@ export default function LessonFormDialog({
           order_index: nextOrderIndex,
           video_url: videoUrl,
           description: values.description ?? null,
-          assignment_path: assignmentPath ?? null,
+          assignment_path: finalPaths.length > 0 ? JSON.stringify(finalPaths) : null,
         }
         return insertLesson(insertPayload)
       }
@@ -207,10 +191,6 @@ export default function LessonFormDialog({
     if (fileError) return
     mutation.mutate(values)
   }
-
-  const existingFileName = lesson?.assignment_path
-    ? lesson.assignment_path.split('/').pop()
-    : null
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -241,7 +221,7 @@ export default function LessonFormDialog({
                 )}
               />
 
-              {/* YouTube URL */}
+              {/* YouTube URL — optional */}
               <FormField
                 control={form.control}
                 name="youtube_url"
@@ -250,6 +230,7 @@ export default function LessonFormDialog({
                     <FormLabel className="flex items-center gap-1">
                       <Youtube className="h-4 w-4" />
                       Đường dẫn video YouTube
+                      <span className="text-xs font-normal text-muted-foreground ml-1">(không bắt buộc)</span>
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -292,96 +273,77 @@ export default function LessonFormDialog({
                 )}
               />
 
-              {/* File upload */}
+              {/* Multi-file attachment */}
               <div className="space-y-2">
                 <label className="text-sm font-medium leading-none flex items-center gap-1">
                   <Paperclip className="h-4 w-4" />
                   Tài liệu đính kèm cho học sinh
+                  <span className="text-xs font-normal text-muted-foreground ml-1">(không bắt buộc, nhiều file)</span>
                 </label>
 
-                {/* Show existing file info as chip */}
-                {isEditing && existingFileName && !removeExisting && !selectedFile && (
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span
-                      className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden rounded-md border bg-muted/40 px-2 py-1 text-sm"
-                      title={existingFileName}
-                    >
-                      <FileText className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                      <span className="truncate">{existingFileName}</span>
-                    </span>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="shrink-0 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground h-7 px-2"
-                      onClick={() => setRemoveExisting(true)}
-                    >
-                      <X className="h-3.5 w-3.5 mr-1" />
-                      Xóa file
-                    </Button>
-                  </div>
-                )}
-
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="application/pdf,image/*"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-
-                {selectedFile ? (
-                  <div className="flex items-start gap-3 overflow-hidden rounded-md border bg-muted/30 p-2">
-                    {imagePreviewUrl ? (
-                      <img
-                        src={imagePreviewUrl}
-                        alt={`Preview ${selectedFile.name}`}
-                        className="h-20 w-20 shrink-0 object-cover rounded border"
-                      />
-                    ) : (
-                      <div className="h-20 w-20 shrink-0 flex items-center justify-center rounded border bg-background">
-                        <FileText className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
-                      </div>
-                    )}
-                    <div className="flex flex-col text-sm w-0 flex-1 gap-1">
-                      <span className="truncate font-medium" title={selectedFile.name}>
-                        {selectedFile.name}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {formatFileSize(selectedFile.size)}
+                {/* Existing files still kept */}
+                {keptPaths.map((p) => {
+                  const name = p.split('/').pop() ?? p
+                  return (
+                    <div key={p} className="flex items-center gap-2 min-w-0">
+                      <span className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden rounded-md border bg-muted/40 px-2 py-1 text-sm" title={name}>
+                        <FileText className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                        <span className="truncate">{name}</span>
                       </span>
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="h-7 px-2 w-fit text-xs mt-1"
-                        onClick={() => {
-                          setSelectedFile(null)
-                          if (fileInputRef.current) fileInputRef.current.value = ''
-                        }}
+                        className="shrink-0 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground h-7 px-2"
+                        onClick={() => removeKeptPath(p)}
                       >
-                        <X className="h-3 w-3 mr-1" />
-                        Bỏ chọn
+                        <X className="h-3.5 w-3.5" />
                       </Button>
                     </div>
-                  </div>
-                ) : (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-9 px-3 text-sm"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <Paperclip className="h-4 w-4 mr-2" />
-                    Chọn file (PDF hoặc ảnh, tối đa 10MB)
-                  </Button>
-                )}
+                  )
+                })}
 
-                {/* File error */}
-                {fileError && (
-                  <p className="text-sm text-destructive">{fileError}</p>
-                )}
+                {/* Newly selected files (pending upload) */}
+                {selectedFiles.map((file, i) => (
+                  <div key={i} className="flex items-center gap-2 min-w-0">
+                    <span className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden rounded-md border border-dashed bg-muted/20 px-2 py-1 text-sm" title={file.name}>
+                      <FileText className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                      <span className="truncate">{file.name}</span>
+                      <span className="text-xs text-muted-foreground ml-auto shrink-0">{formatFileSize(file.size)}</span>
+                    </span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="shrink-0 h-7 px-2 text-muted-foreground hover:text-destructive"
+                      onClick={() => removeSelectedFile(i)}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                ))}
+
+                {/* Add file button */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="application/pdf,image/*,.doc,.docx,.xls,.xlsx"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-9 px-3 text-sm"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Thêm file (PDF, ảnh, Word, Excel — tối đa 10MB/file)
+                </Button>
+
+                {fileError && <p className="text-sm text-destructive">{fileError}</p>}
               </div>
             </form>
           </Form>
@@ -396,9 +358,7 @@ export default function LessonFormDialog({
             form="lesson-form"
             disabled={mutation.isPending || !!fileError}
           >
-            {mutation.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-1" />
-            ) : null}
+            {mutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
             {isEditing ? 'Lưu bài học' : 'Thêm bài học'}
           </Button>
         </DialogFooter>

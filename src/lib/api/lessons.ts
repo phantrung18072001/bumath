@@ -97,17 +97,30 @@ export async function reorderLessons(
 // ─────────────────────────────────────────────────────────────────
 
 /**
- * Uploads a file to the assignments bucket.
- * Returns the storage path (suitable for storing in lessons.assignment_path).
- *
- * Path pattern: assignments/{lessonId}/{filename}
- * On create, pass a temporary unique prefix (e.g. Date.now()).
+ * Parses assignment_path which may be a JSON array (multi-file) or a plain
+ * string (legacy single-file). Always returns a string[].
+ */
+export function parseAssignmentPaths(path: string | null | undefined): string[] {
+  if (!path) return []
+  try {
+    const parsed = JSON.parse(path)
+    if (Array.isArray(parsed)) return parsed.filter(Boolean)
+  } catch {
+    // legacy single path
+  }
+  return [path]
+}
+
+/**
+ * Uploads a single file to the assignments bucket.
+ * Uses a timestamp+random suffix to avoid name collisions.
  */
 export async function uploadAssignment(
   file: File,
   pathPrefix: string,
 ): Promise<string> {
-  const safeName = file.name.replace(/[^\w.\-]/g, '_')
+  const ext = file.name.split('.').pop() ?? 'bin'
+  const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`
   const path = `${pathPrefix}/${safeName}`
 
   const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
@@ -120,19 +133,28 @@ export async function uploadAssignment(
 }
 
 /**
- * Deletes a file from the assignments bucket by its storage path.
- * Silently succeeds if the path is null/empty.
+ * Deletes one or more files from the assignments bucket.
+ * Accepts either a single path string or a JSON-encoded array of paths.
+ * Silently succeeds if path is null/empty.
  */
 export async function deleteAssignment(path: string | null): Promise<void> {
-  if (!path) return
-  const { error } = await supabase.storage.from(BUCKET).remove([path])
+  const paths = parseAssignmentPaths(path)
+  if (paths.length === 0) return
+  const { error } = await supabase.storage.from(BUCKET).remove(paths)
   if (error) throw error
 }
 
 /**
- * Returns the public URL for an assignment file.
+ * Returns the public URL for an assignment file path.
  */
 export function getAssignmentPublicUrl(path: string): string {
   const { data } = supabase.storage.from(BUCKET).getPublicUrl(path)
   return data.publicUrl
+}
+
+/**
+ * Returns public URLs for all files in assignment_path (multi or legacy single).
+ */
+export function getAssignmentPublicUrls(path: string | null): string[] {
+  return parseAssignmentPaths(path).map(getAssignmentPublicUrl)
 }
