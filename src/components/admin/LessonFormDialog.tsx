@@ -32,6 +32,7 @@ import {
   uploadAssignment,
   deleteAssignment,
   parseAssignmentPaths,
+  getAssignmentPublicUrl,
 } from '@/lib/api/lessons'
 import { extractYouTubeID } from '@/lib/youtube'
 
@@ -77,11 +78,19 @@ export default function LessonFormDialog({
   const isEditing = !!lesson
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Existing paths from DB still being kept (user can remove each individually)
   const [keptPaths, setKeptPaths] = useState<string[]>([])
-  // New files selected in this session (pending upload)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [newFilePreviews, setNewFilePreviews] = useState<string[]>([])
   const [fileError, setFileError] = useState<string | null>(null)
+
+  // Generate object URLs for image previews of newly selected files
+  useEffect(() => {
+    const urls = selectedFiles.map((f) =>
+      f.type.startsWith('image/') ? URL.createObjectURL(f) : ''
+    )
+    setNewFilePreviews(urls)
+    return () => urls.forEach((u) => u && URL.revokeObjectURL(u))
+  }, [selectedFiles])
 
   const form = useForm<LessonFormValues>({
     resolver: zodResolver(lessonSchema),
@@ -194,7 +203,7 @@ export default function LessonFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Chỉnh sửa bài học' : 'Thêm bài học'}</DialogTitle>
         </DialogHeader>
@@ -281,20 +290,24 @@ export default function LessonFormDialog({
                   <span className="text-xs font-normal text-muted-foreground ml-1">(không bắt buộc, nhiều file)</span>
                 </label>
 
-                {/* Existing files still kept */}
+                {/* Existing files from DB */}
                 {keptPaths.map((p) => {
                   const name = p.split('/').pop() ?? p
+                  const isImage = /\.(jpg|jpeg|png|gif|webp|heic|avif)$/i.test(name)
+                  const publicUrl = getAssignmentPublicUrl(p)
                   return (
-                    <div key={p} className="grid grid-cols-[1fr_auto] gap-2 items-center w-full">
-                      <div className="flex items-center gap-1.5 overflow-hidden rounded-md border bg-muted/40 px-2 py-1 text-sm" title={name}>
-                        <FileText className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                        <span className="truncate">{name}</span>
-                      </div>
+                    <div key={p} className="grid grid-cols-[auto_1fr_auto] gap-2 items-center rounded-md border bg-muted/40 px-2 py-1.5">
+                      {isImage ? (
+                        <img src={publicUrl} alt={name} className="h-8 w-8 rounded object-cover border shrink-0" />
+                      ) : (
+                        <FileText className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                      )}
+                      <span className="text-sm truncate" title={name}>{name}</span>
                       <Button
                         type="button"
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
-                        className="shrink-0 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground h-7 px-2"
+                        className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                         onClick={() => removeKeptPath(p)}
                       >
                         <X className="h-3.5 w-3.5" />
@@ -304,24 +317,29 @@ export default function LessonFormDialog({
                 })}
 
                 {/* Newly selected files (pending upload) */}
-                {selectedFiles.map((file, i) => (
-                  <div key={i} className="grid grid-cols-[1fr_auto_auto] gap-2 items-center w-full">
-                    <div className="flex items-center gap-1.5 overflow-hidden rounded-md border border-dashed bg-muted/20 px-2 py-1 text-sm" title={file.name}>
-                      <FileText className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                      <span className="truncate">{file.name}</span>
+                {selectedFiles.map((file, i) => {
+                  const previewUrl = newFilePreviews[i]
+                  return (
+                    <div key={i} className="grid grid-cols-[auto_1fr_auto_auto] gap-2 items-center rounded-md border border-dashed bg-muted/20 px-2 py-1.5">
+                      {previewUrl ? (
+                        <img src={previewUrl} alt={file.name} className="h-8 w-8 rounded object-cover border shrink-0" />
+                      ) : (
+                        <FileText className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                      )}
+                      <span className="text-sm truncate" title={file.name}>{file.name}</span>
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">{formatFileSize(file.size)}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => removeSelectedFile(i)}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </Button>
                     </div>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">{formatFileSize(file.size)}</span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 px-2 text-muted-foreground hover:text-destructive"
-                      onClick={() => removeSelectedFile(i)}
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                ))}
+                  )
+                })}
 
                 {/* Add file button */}
                 <input
