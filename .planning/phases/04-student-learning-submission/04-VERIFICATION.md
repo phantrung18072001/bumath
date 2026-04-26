@@ -24,6 +24,12 @@ human_verification:
   - test: "Optimistic mark-complete update"
     expected: "Clicking 'Đánh dấu đã xem' instantly disables the button to 'Đã xem ✓' and the sidebar icon changes from ○ to ✓ before the server responds."
     why_human: "Optimistic update timing requires visual inspection in a running browser with a live database."
+  - test: "Slug-based course URL navigation"
+    expected: "Clicking a course card navigates to /courses/<slug> (e.g., /courses/toan-lop-7), NOT a UUID. The course detail page loads all chapters and lessons correctly."
+    why_human: "Requires live browser with DB migration applied so slug column is populated."
+  - test: "Invalid slug shows 404 UI"
+    expected: "Navigating to /courses/khong-ton-tai (non-existent slug) shows 'Không tìm thấy khóa học' message — not a blank page, not a crash."
+    why_human: "Requires live browser and live Supabase to confirm null-course guard triggers."
 ---
 
 # Phase 4: Student Learning & Submission Verification Report
