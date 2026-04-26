@@ -191,7 +191,8 @@ export default function LessonFormDialog({
       toast.success(isEditing ? 'Đã cập nhật bài học.' : 'Đã thêm bài học thành công.')
       onSuccess()
     },
-    onError: () => {
+    onError: (err) => {
+      console.error('[LessonFormDialog] save error:', err)
       toast.error('Lưu không thành công. Vui lòng kiểm tra lại thông tin.')
     },
   })
