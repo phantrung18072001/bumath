@@ -37,6 +37,8 @@ import {
 import { extractYouTubeID } from '@/lib/youtube'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
+const ALLOWED_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'application/pdf'])
+const ALLOWED_ACCEPT = 'image/jpeg,image/png,image/webp,image/heic,application/pdf'
 
 const lessonSchema = z.object({
   title: z.string().min(1, 'Tên bài học không được để trống.'),
@@ -123,6 +125,13 @@ export default function LessonFormDialog({
     setFileError(null)
     const files = Array.from(e.target.files ?? [])
     if (!files.length) return
+
+    const wrongType = files.find((f) => !ALLOWED_MIME.has(f.type))
+    if (wrongType) {
+      setFileError(`"${wrongType.name}" không được hỗ trợ. Chỉ chấp nhận: JPG, PNG, WebP, HEIC, PDF.`)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      return
+    }
 
     const oversized = files.find((f) => f.size > MAX_FILE_SIZE)
     if (oversized) {
@@ -346,7 +355,7 @@ export default function LessonFormDialog({
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="application/pdf,image/*,.doc,.docx,.xls,.xlsx"
+                  accept={ALLOWED_ACCEPT}
                   multiple
                   className="hidden"
                   onChange={handleFileChange}
@@ -359,7 +368,7 @@ export default function LessonFormDialog({
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Thêm file (PDF, ảnh, Word, Excel — tối đa 10MB/file)
+                  Thêm file (JPG, PNG, WebP, HEIC, PDF — tối đa 10MB/file)
                 </Button>
 
                 {fileError && <p className="text-sm text-destructive">{fileError}</p>}
