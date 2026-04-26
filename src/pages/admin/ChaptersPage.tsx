@@ -40,7 +40,7 @@ import {
 import ChapterFormDialog from '@/components/admin/ChapterFormDialog'
 
 export default function ChaptersPage() {
-  const { courseId } = useParams<{ courseId: string }>()
+  const { courseSlug } = useParams<{ courseSlug: string }>()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -53,19 +53,19 @@ export default function ChaptersPage() {
     queryKey: ['admin', 'courses'],
     queryFn: fetchCourses,
   })
-  const course = courses.find((c) => c.id === courseId)
+  const course = courses.find((c) => c.slug === courseSlug)
 
   // Fetch chapters for this course
   const { data: chapters = [], isLoading } = useQuery<Chapter[]>({
-    queryKey: ['admin', 'chapters', courseId],
-    queryFn: () => fetchChapters(courseId!),
-    enabled: !!courseId,
+    queryKey: ['admin', 'chapters', course?.id],
+    queryFn: () => fetchChapters(course!.id),
+    enabled: !!course?.id,
   })
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => removeChapter(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'chapters', courseId] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'chapters', course?.id] })
       toast.success('Đã xóa chuyên đề.')
       setDeletingChapter(null)
     },
@@ -83,7 +83,7 @@ export default function ChaptersPage() {
       chapterB: Pick<Chapter, 'id' | 'order_index'>
     }) => reorderChapters(chapterA, chapterB),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'chapters', courseId] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'chapters', course?.id] })
     },
     onError: () => {
       toast.error('Sắp xếp không thành công. Vui lòng thử lại.')
@@ -117,7 +117,7 @@ export default function ChaptersPage() {
   }
 
   function handleDialogSuccess() {
-    queryClient.invalidateQueries({ queryKey: ['admin', 'chapters', courseId] })
+    queryClient.invalidateQueries({ queryKey: ['admin', 'chapters', course?.id] })
     setDialogOpen(false)
     setEditingChapter(null)
   }
@@ -204,7 +204,7 @@ export default function ChaptersPage() {
                         className="min-h-[48px]"
                         aria-label="Quản lý bài học"
                         onClick={() =>
-                          navigate(`/admin/courses/${courseId}/chapters/${chapter.id}`)
+                          navigate(`/admin/courses/${courseSlug}/chapters/${chapter.slug}`)
                         }
                       >
                         <BookOpen className="h-4 w-4" />
@@ -238,7 +238,7 @@ export default function ChaptersPage() {
 
       <ChapterFormDialog
         open={dialogOpen}
-        courseId={courseId!}
+        courseId={course?.id ?? ''}
         chapter={editingChapter}
         nextOrderIndex={chapters.length}
         onSuccess={handleDialogSuccess}

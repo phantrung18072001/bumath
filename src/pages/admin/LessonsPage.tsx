@@ -44,7 +44,7 @@ import {
 import LessonFormDialog from '@/components/admin/LessonFormDialog'
 
 export default function LessonsPage() {
-  const { courseId, chapterId } = useParams<{ courseId: string; chapterId: string }>()
+  const { courseSlug, chapterSlug } = useParams<{ courseSlug: string; chapterSlug: string }>()
   const queryClient = useQueryClient()
 
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -56,21 +56,21 @@ export default function LessonsPage() {
     queryKey: ['admin', 'courses'],
     queryFn: fetchCourses,
   })
-  const course = courses.find((c) => c.id === courseId)
+  const course = courses.find((c) => c.slug === courseSlug)
 
   // Fetch chapters for breadcrumb
   const { data: chapters = [] } = useQuery<Chapter[]>({
-    queryKey: ['admin', 'chapters', courseId],
-    queryFn: () => fetchChapters(courseId!),
-    enabled: !!courseId,
+    queryKey: ['admin', 'chapters', course?.id],
+    queryFn: () => fetchChapters(course!.id),
+    enabled: !!course?.id,
   })
-  const chapter = chapters.find((ch) => ch.id === chapterId)
+  const chapter = chapters.find((ch) => ch.slug === chapterSlug)
 
   // Fetch lessons for this chapter
   const { data: lessons = [], isLoading } = useQuery<Lesson[]>({
-    queryKey: ['admin', 'lessons', chapterId],
-    queryFn: () => fetchLessons(chapterId!),
-    enabled: !!chapterId,
+    queryKey: ['admin', 'lessons', chapter?.id],
+    queryFn: () => fetchLessons(chapter!.id),
+    enabled: !!chapter?.id,
   })
 
   const deleteMutation = useMutation({
@@ -80,7 +80,7 @@ export default function LessonsPage() {
       await removeLesson(lesson.id)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'lessons', chapterId] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'lessons', chapter?.id] })
       toast.success('Đã xóa bài học.')
       setDeletingLesson(null)
     },
@@ -98,7 +98,7 @@ export default function LessonsPage() {
       lessonB: Pick<Lesson, 'id' | 'order_index'>
     }) => reorderLessons(lessonA, lessonB),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'lessons', chapterId] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'lessons', chapter?.id] })
     },
     onError: () => {
       toast.error('Sắp xếp không thành công. Vui lòng thử lại.')
@@ -132,7 +132,7 @@ export default function LessonsPage() {
   }
 
   function handleDialogSuccess() {
-    queryClient.invalidateQueries({ queryKey: ['admin', 'lessons', chapterId] })
+    queryClient.invalidateQueries({ queryKey: ['admin', 'lessons', chapter?.id] })
     setDialogOpen(false)
     setEditingLesson(null)
   }
@@ -151,7 +151,7 @@ export default function LessonsPage() {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link to={`/admin/courses/${courseId}`}>{course?.title ?? 'Chuyên đề'}</Link>
+                <Link to={`/admin/courses/${courseSlug}`}>{course?.title ?? 'Chuyên đề'}</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
@@ -285,7 +285,7 @@ export default function LessonsPage() {
 
       <LessonFormDialog
         open={dialogOpen}
-        chapterId={chapterId!}
+        chapterId={chapter?.id ?? ''}
         lesson={editingLesson}
         nextOrderIndex={lessons.length}
         onSuccess={handleDialogSuccess}

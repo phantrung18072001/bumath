@@ -145,7 +145,7 @@ export default function CoursesPage() {
                         size="sm"
                         className="min-h-[48px]"
                         aria-label="Xem chuyên đề"
-                        onClick={() => navigate(`/admin/courses/${course.id}`)}
+                        onClick={() => navigate(`/admin/courses/${course.slug}`)}
                       >
                         <BookOpen className="h-4 w-4" />
                       </Button>
