@@ -1,8 +1,8 @@
 ---
 phase: 03-course-management
-verified: 2026-04-25T10:00:00Z
-status: human_needed
-score: 13/13 must-haves verified
+verified: 2026-04-26T22:11:56+07:00
+status: verified
+score: 13/13 must-haves verified + 4/4 human UAT passed
 re_verification: true
   previous_status: human_needed
   previous_score: 7/7
@@ -18,16 +18,16 @@ re_verification: true
 human_verification:
   - test: "Verify RLS policies work correctly for student enrollment-based access"
     expected: "An approved student enrolled in course X can read lessons for course X but not for course Y they are not enrolled in"
-    why_human: "Requires a live Supabase instance with seeded data and two test user accounts"
+    result: PASSED — human approved 2026-04-26
   - test: "Verify YouTube thumbnail renders correctly for a real lesson with video_url"
     expected: "80x48px thumbnail loads from img.youtube.com for a lesson with a valid YouTube URL; em dash shown for lesson without URL"
-    why_human: "Thumbnail load depends on external YouTube CDN and live session; static analysis confirms wiring but not network success"
+    result: PASSED — human approved 2026-04-26
   - test: "Verify file upload and download for lesson attachments — full create/edit/remove flow"
     expected: "Admin uploads PDF, filename chip appears in list row linking to the file; edit shows chip with Xoa file button; removing clears the chip"
-    why_human: "Requires live Supabase Storage bucket and real file I/O; cannot verify with static analysis"
+    result: PASSED — human approved 2026-04-26
   - test: "Verify image file preview renders in dialog after file selection"
     expected: "Selecting a JPG/PNG in the dialog shows an inline thumbnail preview; blob URL revoked on dialog close"
-    why_human: "Requires browser file picker interaction; blob URL is a runtime artifact not testable with static grep"
+    result: PASSED — human approved 2026-04-26
 ---
 
 # Phase 03: Course Management Verification Report
