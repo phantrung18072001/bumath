@@ -36,11 +36,11 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="/admin/users" element={<ProtectedRoute requiredRole="admin"><AdminLayout><UsersPage /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/courses" element={<ProtectedRoute requiredRole="admin"><AdminLayout><CoursesPage /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/courses/:courseId" element={<ProtectedRoute requiredRole="admin"><AdminLayout><ChaptersPage /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/courses/:courseId/chapters/:chapterId" element={<ProtectedRoute requiredRole="admin"><AdminLayout><LessonsPage /></AdminLayout></ProtectedRoute>} />
+            <Route path="/admin/courses/:courseSlug" element={<ProtectedRoute requiredRole="admin"><AdminLayout><ChaptersPage /></AdminLayout></ProtectedRoute>} />
+            <Route path="/admin/courses/:courseSlug/chapters/:chapterSlug" element={<ProtectedRoute requiredRole="admin"><AdminLayout><LessonsPage /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/submissions" element={<ProtectedRoute requiredRole="admin"><AdminLayout><SubmissionsPage /></AdminLayout></ProtectedRoute>} />
             <Route path="/courses" element={<ProtectedRoute requiredRole="student"><StudentCoursesPage /></ProtectedRoute>} />
-            <Route path="/courses/:courseId" element={<ProtectedRoute requiredRole="student"><StudentCourseDetailPage /></ProtectedRoute>} />
+            <Route path="/courses/:courseSlug" element={<ProtectedRoute requiredRole="student"><StudentCourseDetailPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
