@@ -38,6 +38,7 @@ vi.mock('@/lib/supabase', () => ({
 
 vi.mock('@/lib/api/submissions', () => ({
   getSubmissionSignedUrl: vi.fn().mockResolvedValue('https://example.com/photo.jpg'),
+  getSubmissionSignedUrls: vi.fn().mockResolvedValue(['https://example.com/photo.jpg']),
   markGradeViewed: vi.fn().mockResolvedValue(undefined),
   compressImage: vi.fn().mockImplementation((f: File) => Promise.resolve(f)),
   uploadSubmission: vi.fn().mockResolvedValue({

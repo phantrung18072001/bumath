@@ -59,27 +59,39 @@ export async function compressImage(file: File): Promise<File> {
 }
 
 /**
- * Upload a compressed image to Supabase Storage and insert a submission record.
- * Storage path: submissions/{userId}/{lessonId}/{timestamp}.jpg
+ * Parse file_path from DB: supports both legacy single path (string) and
+ * new multi-file format (JSON array of paths).
+ */
+export function parseFilePaths(filePath: string): string[] {
+  try {
+    const parsed = JSON.parse(filePath)
+    if (Array.isArray(parsed)) return parsed
+  } catch {}
+  return [filePath]
+}
+
+/**
+ * Upload multiple compressed images and insert a submission record.
+ * Paths stored as JSON array in file_path column.
  */
 export async function uploadSubmission(
   userId: string,
   lessonId: string,
-  compressedFile: File,
+  compressedFiles: File[],
 ): Promise<Submission> {
-  const path = `${userId}/${lessonId}/${Date.now()}.jpg`
-
-  const { error: storageError } = await supabase.storage
-    .from(BUCKET)
-    .upload(path, compressedFile, {
-      contentType: 'image/jpeg',
-      upsert: false,
-    })
-  if (storageError) throw storageError
+  const paths: string[] = []
+  for (const file of compressedFiles) {
+    const path = `${userId}/${lessonId}/${Date.now()}-${Math.random().toString(36).slice(2, 6)}.jpg`
+    const { error: storageError } = await supabase.storage
+      .from(BUCKET)
+      .upload(path, file, { contentType: 'image/jpeg', upsert: false })
+    if (storageError) throw storageError
+    paths.push(path)
+  }
 
   const { data, error } = await supabase
     .from('submissions')
-    .insert({ user_id: userId, lesson_id: lessonId, file_path: path })
+    .insert({ user_id: userId, lesson_id: lessonId, file_path: JSON.stringify(paths) })
     .select()
     .single()
   if (error) throw error
@@ -87,25 +99,28 @@ export async function uploadSubmission(
 }
 
 /**
- * Resubmit: upload a new image and update the existing submission record.
+ * Resubmit: upload new images and update the existing submission record.
  * Only allowed when submission.status === 'submitted' (not yet graded).
  */
 export async function resubmitSubmission(
   submissionId: string,
   userId: string,
   lessonId: string,
-  compressedFile: File,
+  compressedFiles: File[],
 ): Promise<Submission> {
-  const path = `${userId}/${lessonId}/${Date.now()}.jpg`
-
-  const { error: storageError } = await supabase.storage
-    .from(BUCKET)
-    .upload(path, compressedFile, { contentType: 'image/jpeg', upsert: false })
-  if (storageError) throw storageError
+  const paths: string[] = []
+  for (const file of compressedFiles) {
+    const path = `${userId}/${lessonId}/${Date.now()}-${Math.random().toString(36).slice(2, 6)}.jpg`
+    const { error: storageError } = await supabase.storage
+      .from(BUCKET)
+      .upload(path, file, { contentType: 'image/jpeg', upsert: false })
+    if (storageError) throw storageError
+    paths.push(path)
+  }
 
   const { data, error } = await supabase
     .from('submissions')
-    .update({ file_path: path, submitted_at: new Date().toISOString(), status: 'submitted' })
+    .update({ file_path: JSON.stringify(paths), submitted_at: new Date().toISOString(), status: 'submitted' })
     .eq('id', submissionId)
     .select()
     .single()
@@ -140,15 +155,25 @@ export async function getSubmissions(userId: string, lessonIds: string[]): Promi
 }
 
 /**
- * Create a signed URL to view a submitted image (private bucket).
- * TTL: 1 hour.
+ * Create signed URLs for all submitted images (private bucket). TTL: 1 hour.
+ * Accepts a JSON-encoded array of paths or a legacy single path string.
  */
+export async function getSubmissionSignedUrls(filePath: string): Promise<string[]> {
+  const paths = parseFilePaths(filePath)
+  const urls = await Promise.all(
+    paths.map(async (path) => {
+      const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(path, 3600)
+      if (error) throw error
+      return data.signedUrl
+    })
+  )
+  return urls
+}
+
+/** @deprecated Use getSubmissionSignedUrls instead */
 export async function getSubmissionSignedUrl(path: string): Promise<string> {
-  const { data, error } = await supabase.storage
-    .from(BUCKET)
-    .createSignedUrl(path, 3600)
-  if (error) throw error
-  return data.signedUrl
+  const urls = await getSubmissionSignedUrls(path)
+  return urls[0]
 }
 
 /**
