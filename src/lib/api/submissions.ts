@@ -87,8 +87,33 @@ export async function uploadSubmission(
 }
 
 /**
- * Get the submission for a specific user + lesson pair. Returns null if not submitted.
+ * Resubmit: upload a new image and update the existing submission record.
+ * Only allowed when submission.status === 'submitted' (not yet graded).
  */
+export async function resubmitSubmission(
+  submissionId: string,
+  userId: string,
+  lessonId: string,
+  compressedFile: File,
+): Promise<Submission> {
+  const path = `${userId}/${lessonId}/${Date.now()}.jpg`
+
+  const { error: storageError } = await supabase.storage
+    .from(BUCKET)
+    .upload(path, compressedFile, { contentType: 'image/jpeg', upsert: false })
+  if (storageError) throw storageError
+
+  const { data, error } = await supabase
+    .from('submissions')
+    .update({ file_path: path, submitted_at: new Date().toISOString(), status: 'submitted' })
+    .eq('id', submissionId)
+    .select()
+    .single()
+  if (error) throw error
+  return data as Submission
+}
+
+
 export async function getSubmission(userId: string, lessonId: string): Promise<Submission | null> {
   const { data, error } = await supabase
     .from('submissions')
