@@ -62,15 +62,14 @@ export async function updateChapter(id: string, payload: ChapterUpdate): Promise
   const updatePayload: ChapterUpdate & { slug?: string } = { ...payload }
   if (payload.title) {
     // Fetch current chapter to scope uniqueness to correct course
-    const { data: current } = await supabase
+    const { data: current, error: fetchError } = await supabase
       .from('chapters')
       .select('course_id')
       .eq('id', id)
       .single()
-    if (current) {
-      const base = slugify(payload.title)
-      updatePayload.slug = await generateUniqueChapterSlug(current.course_id, base, id)
-    }
+    if (fetchError) throw fetchError
+    const base = slugify(payload.title)
+    updatePayload.slug = await generateUniqueChapterSlug(current.course_id, base, id)
   }
   const { data, error } = await supabase
     .from('chapters')
