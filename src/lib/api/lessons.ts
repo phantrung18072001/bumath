@@ -107,8 +107,7 @@ export async function uploadAssignment(
   file: File,
   pathPrefix: string,
 ): Promise<string> {
-  const ext = file.name.split('.').pop() ?? 'bin'
-  const safeName = `${Date.now()}.${ext}`
+  const safeName = file.name.replace(/[^\w.\-]/g, '_')
   const path = `${pathPrefix}/${safeName}`
 
   const { error } = await supabase.storage.from(BUCKET).upload(path, file, {

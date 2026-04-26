@@ -85,7 +85,7 @@ beforeAll(async () => {
 
 function resetMocksWithData(profiles = defaultProfiles) {
   __order.mockResolvedValue({ data: profiles, error: null })
-  __updateEq.mockResolvedValue({ error: null })
+  __updateEq.mockReturnValue({ select: vi.fn().mockResolvedValue({ data: [{ id: 'mock' }], error: null }) })
   __update.mockReturnValue({ eq: __updateEq })
   __from.mockReturnValue({ select: vi.fn().mockReturnValue({ order: __order }), update: __update })
 }

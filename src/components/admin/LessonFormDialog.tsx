@@ -102,6 +102,9 @@ export default function LessonFormDialog({
     },
   })
 
+  const youtubeUrl = form.watch('youtube_url') ?? ''
+  const youtubePreviewId = youtubeUrl ? extractYouTubeID(youtubeUrl) : null
+
   // Reset form when dialog opens or editing target changes
   useEffect(() => {
     if (open) {
@@ -255,6 +258,17 @@ export default function LessonFormDialog({
                       />
                     </FormControl>
                     <FormMessage />
+                    {youtubePreviewId && (
+                      <div className="aspect-video w-full rounded-md overflow-hidden border">
+                        <iframe
+                          src={`https://www.youtube.com/embed/${youtubePreviewId}`}
+                          title="YouTube preview"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          className="w-full h-full border-0"
+                        />
+                      </div>
+                    )}
                   </FormItem>
                 )}
               />
@@ -287,9 +301,9 @@ export default function LessonFormDialog({
 
                 {/* Show existing file info as chip */}
                 {isEditing && existingFileName && !removeExisting && !selectedFile && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
                     <span
-                      className="inline-flex items-center gap-1.5 max-w-full rounded-md border bg-muted/40 px-2 py-1 text-sm"
+                      className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden rounded-md border bg-muted/40 px-2 py-1 text-sm"
                       title={existingFileName}
                     >
                       <FileText className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
@@ -299,7 +313,7 @@ export default function LessonFormDialog({
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground h-7 px-2"
+                      className="shrink-0 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground h-7 px-2"
                       onClick={() => setRemoveExisting(true)}
                     >
                       <X className="h-3.5 w-3.5 mr-1" />
@@ -312,33 +326,56 @@ export default function LessonFormDialog({
                   ref={fileInputRef}
                   type="file"
                   accept="application/pdf,image/*"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="hidden"
                   onChange={handleFileChange}
                 />
 
-                {/* Show newly selected file with preview */}
-                {selectedFile && (
-                  <div className="flex items-start gap-3 rounded-md border bg-muted/30 p-2">
+                {selectedFile ? (
+                  <div className="flex items-start gap-3 overflow-hidden rounded-md border bg-muted/30 p-2">
                     {imagePreviewUrl ? (
                       <img
                         src={imagePreviewUrl}
                         alt={`Preview ${selectedFile.name}`}
-                        className="h-20 w-20 object-cover rounded border"
+                        className="h-20 w-20 shrink-0 object-cover rounded border"
                       />
                     ) : (
-                      <div className="h-20 w-20 flex items-center justify-center rounded border bg-background">
+                      <div className="h-20 w-20 shrink-0 flex items-center justify-center rounded border bg-background">
                         <FileText className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
                       </div>
                     )}
-                    <div className="flex flex-col text-sm min-w-0 flex-1">
+                    <div className="flex flex-col text-sm w-0 flex-1 gap-1">
                       <span className="truncate font-medium" title={selectedFile.name}>
                         {selectedFile.name}
                       </span>
                       <span className="text-xs text-muted-foreground">
                         {formatFileSize(selectedFile.size)}
                       </span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-7 px-2 w-fit text-xs mt-1"
+                        onClick={() => {
+                          setSelectedFile(null)
+                          if (fileInputRef.current) fileInputRef.current.value = ''
+                        }}
+                      >
+                        <X className="h-3 w-3 mr-1" />
+                        Bỏ chọn
+                      </Button>
                     </div>
                   </div>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-9 px-3 text-sm"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Paperclip className="h-4 w-4 mr-2" />
+                    Chọn file (PDF hoặc ảnh, tối đa 10MB)
+                  </Button>
                 )}
 
                 {/* File error */}
@@ -358,7 +395,6 @@ export default function LessonFormDialog({
             type="submit"
             form="lesson-form"
             disabled={mutation.isPending || !!fileError}
-            className="min-h-[48px]"
           >
             {mutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin mr-1" />

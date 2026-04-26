@@ -47,7 +47,7 @@ export default function LessonProgressButton({
         className="opacity-70 min-h-[48px] w-full md:w-auto"
       >
         <Check className="h-4 w-4 mr-2" />
-        Đã xem ✓
+        Đã xem
       </Button>
     )
   }
@@ -62,7 +62,7 @@ export default function LessonProgressButton({
       {mutation.isPending
         ? <Loader2 className="h-4 w-4 mr-2 animate-spin" />
         : <Check className="h-4 w-4 mr-2" />}
-      ✓ Đánh dấu đã xem
+      Đánh dấu đã xem
     </Button>
   )
 }

@@ -91,16 +91,8 @@ export default function CourseDetailPage() {
 
   return (
     <StudentLayout>
-      {/* Breadcrumb */}
-      <Link
-        to="/courses"
-        className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground mb-4 px-4 md:px-8 pt-4"
-      >
-        ← Khóa học của tôi
-      </Link>
-
       {hasError && (
-        <div className="px-4 md:px-8 pb-4">
+        <div className="px-4 md:px-8 py-4">
           <Alert variant="destructive">
             <AlertDescription>
               Không thể tải khóa học. Vui lòng làm mới trang.
@@ -128,7 +120,7 @@ export default function CourseDetailPage() {
 
       {!isLoading && !hasError && chapters && chapters.length > 0 && lessonsByChapter && (
         <>
-          {/* Desktop layout */}
+          {/* Desktop layout — fixed height = remaining viewport, no outer scroll */}
           <div className="hidden md:flex h-[calc(100vh-48px)]">
             <div className="w-[280px] shrink-0 bg-sidebar border-r border-sidebar-border">
               <LessonSidebar
@@ -141,6 +133,12 @@ export default function CourseDetailPage() {
               />
             </div>
             <div className="flex-1 overflow-y-auto">
+              <Link
+                to="/courses"
+                className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground px-8 pt-4 pb-2"
+              >
+                ← Khóa học của tôi
+              </Link>
               <LessonContent
                 lesson={activeLesson}
                 isCompleted={completedLessonIds.has(activeLessonId ?? '')}
@@ -153,6 +151,12 @@ export default function CourseDetailPage() {
 
           {/* Mobile layout */}
           <div className="block md:hidden">
+            <Link
+              to="/courses"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground px-4 pt-4 pb-2"
+            >
+              ← Khóa học của tôi
+            </Link>
             <Tabs defaultValue="content">
               <TabsList className="w-full h-12">
                 <TabsTrigger value="content" className="flex-1 min-h-[48px]">Nội dung</TabsTrigger>

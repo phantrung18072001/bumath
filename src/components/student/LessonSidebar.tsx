@@ -1,6 +1,5 @@
 import { cn } from '@/lib/utils'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Progress } from '@/components/ui/progress'
 import { Check, ChevronRight, Circle } from 'lucide-react'
 import type { Chapter } from '@/lib/api/chapters'
@@ -36,7 +35,7 @@ export default function LessonSidebar({
       </div>
 
       {/* Lesson list */}
-      <ScrollArea className="h-[calc(100vh-48px-80px)]">
+      <div className="flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <Accordion type="multiple" defaultValue={chapters.map(c => c.id)}>
           {chapters.map(chapter => (
             <AccordionItem key={chapter.id} value={chapter.id}>
@@ -66,7 +65,7 @@ export default function LessonSidebar({
             </AccordionItem>
           ))}
         </Accordion>
-      </ScrollArea>
+      </div>
     </div>
   )
 }
