@@ -213,7 +213,7 @@ export default function LessonFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-3xl max-h-[95vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Chỉnh sửa bài học' : 'Thêm bài học'}</DialogTitle>
         </DialogHeader>
@@ -293,63 +293,76 @@ export default function LessonFormDialog({
               />
 
               {/* Multi-file attachment */}
-              <div className="space-y-2 w-full overflow-hidden">
+              <div className="space-y-3 w-full overflow-hidden">
                 <label className="text-sm font-medium leading-none flex items-center gap-1">
                   <Paperclip className="h-4 w-4" />
                   Tài liệu đính kèm cho học sinh
                   <span className="text-xs font-normal text-muted-foreground ml-1">(không bắt buộc, nhiều file)</span>
                 </label>
 
-                {/* Existing files from DB */}
-                {keptPaths.map((p) => {
-                  const name = p.split('/').pop() ?? p
-                  const isImage = /\.(jpg|jpeg|png|gif|webp|heic|avif)$/i.test(name)
-                  const publicUrl = getAssignmentPublicUrl(p)
-                  return (
-                    <div key={p} className="grid grid-cols-[auto_1fr_auto] gap-2 items-center rounded-md border bg-muted/40 px-2 py-1.5">
-                      {isImage ? (
-                        <img src={publicUrl} alt={name} className="h-8 w-8 rounded object-cover border shrink-0" />
-                      ) : (
-                        <FileText className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />
-                      )}
-                      <span className="text-sm truncate" title={name}>{name}</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => removeKeptPath(p)}
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  )
-                })}
+                {/* Portrait card grid — existing + new files */}
+                {(keptPaths.length > 0 || selectedFiles.length > 0) && (
+                  <div className="flex flex-wrap gap-3">
+                    {/* Existing files from DB */}
+                    {keptPaths.map((p) => {
+                      const name = p.split('/').pop() ?? p
+                      const isImage = /\.(jpg|jpeg|png|gif|webp|heic|avif)$/i.test(name)
+                      const publicUrl = getAssignmentPublicUrl(p)
+                      return (
+                        <div key={p} className="relative w-24 flex flex-col gap-1">
+                          {/* Portrait thumbnail */}
+                          <div className="relative w-24 h-32 rounded-md border bg-muted/40 overflow-hidden">
+                            {isImage ? (
+                              <img src={publicUrl} alt={name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex flex-col items-center justify-center gap-1 text-muted-foreground">
+                                <FileText className="h-8 w-8" />
+                                <span className="text-[10px] uppercase font-medium">PDF</span>
+                              </div>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => removeKeptPath(p)}
+                              className="absolute top-1 right-1 h-5 w-5 rounded-full bg-background/80 backdrop-blur-sm border flex items-center justify-center text-muted-foreground hover:text-destructive hover:border-destructive transition-colors"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground truncate text-center w-24" title={name}>{name}</p>
+                        </div>
+                      )
+                    })}
 
-                {/* Newly selected files (pending upload) */}
-                {selectedFiles.map((file, i) => {
-                  const previewUrl = newFilePreviews[i]
-                  return (
-                    <div key={i} className="grid grid-cols-[auto_1fr_auto_auto] gap-2 items-center rounded-md border border-dashed bg-muted/20 px-2 py-1.5">
-                      {previewUrl ? (
-                        <img src={previewUrl} alt={file.name} className="h-8 w-8 rounded object-cover border shrink-0" />
-                      ) : (
-                        <FileText className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />
-                      )}
-                      <span className="text-sm truncate" title={file.name}>{file.name}</span>
-                      <span className="text-xs text-muted-foreground whitespace-nowrap">{formatFileSize(file.size)}</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => removeSelectedFile(i)}
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  )
-                })}
+                    {/* Newly selected files */}
+                    {selectedFiles.map((file, i) => {
+                      const previewUrl = newFilePreviews[i]
+                      const isPdf = file.type === 'application/pdf'
+                      return (
+                        <div key={i} className="relative w-24 flex flex-col gap-1">
+                          <div className="relative w-24 h-32 rounded-md border border-dashed bg-muted/20 overflow-hidden">
+                            {previewUrl ? (
+                              <img src={previewUrl} alt={file.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex flex-col items-center justify-center gap-1 text-muted-foreground">
+                                <FileText className="h-8 w-8" />
+                                <span className="text-[10px] uppercase font-medium">{isPdf ? 'PDF' : file.name.split('.').pop()?.toUpperCase()}</span>
+                              </div>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => removeSelectedFile(i)}
+                              className="absolute top-1 right-1 h-5 w-5 rounded-full bg-background/80 backdrop-blur-sm border flex items-center justify-center text-muted-foreground hover:text-destructive hover:border-destructive transition-colors"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground truncate text-center w-24" title={file.name}>{file.name}</p>
+                          <p className="text-[10px] text-muted-foreground text-center">{formatFileSize(file.size)}</p>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
 
                 {/* Add file button */}
                 <input
@@ -368,7 +381,7 @@ export default function LessonFormDialog({
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Thêm file (JPG, PNG, WebP, HEIC, PDF — tối đa 10MB/file)
+                  Thêm file (JPG, PNG, WebP, HEIC, PDF — tối đa 10MB)
                 </Button>
 
                 {fileError && <p className="text-sm text-destructive">{fileError}</p>}
