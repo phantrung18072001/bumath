@@ -10,13 +10,13 @@ export interface Enrollment {
 
 // Enrollment enriched with course metadata for display
 export interface EnrollmentWithCourse extends Enrollment {
-  course: Pick<Course, 'id' | 'title' | 'target_grade'>
+  course: Pick<Course, 'id' | 'title' | 'slug' | 'target_grade'>
 }
 
 export async function getUserEnrollments(userId: string): Promise<EnrollmentWithCourse[]> {
   const { data, error } = await supabase
     .from('enrollments')
-    .select('id, user_id, course_id, enrolled_at, course:courses(id, title, target_grade)')
+    .select('id, user_id, course_id, enrolled_at, course:courses(id, title, slug, target_grade)')
     .eq('user_id', userId)
     .order('enrolled_at', { ascending: false })
   if (error) throw error
