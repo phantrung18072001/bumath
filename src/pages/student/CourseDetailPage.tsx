@@ -8,15 +8,23 @@ import LessonContent from '@/components/student/LessonContent'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { fetchCourseBySlug } from '@/lib/api/courses'
 import { fetchChapters } from '@/lib/api/chapters'
 import { fetchLessons, type Lesson } from '@/lib/api/lessons'
 import { getLessonProgress, getCourseProgress } from '@/lib/api/lesson-progress'
 import { getSubmissions } from '@/lib/api/submissions'
 
 export default function CourseDetailPage() {
-  const { courseId } = useParams<{ courseId: string }>()
+  const { courseSlug } = useParams<{ courseSlug: string }>()
   const { profile } = useAuth()
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null)
+
+  const { data: course, isLoading: courseLoading } = useQuery({
+    queryKey: ['course', courseSlug],
+    queryFn: () => fetchCourseBySlug(courseSlug!),
+    enabled: !!courseSlug,
+  })
+  const courseId = course?.id
 
   // 1. Fetch chapters
   const {
@@ -84,7 +92,7 @@ export default function CourseDetailPage() {
   const activeSubmission = activeLessonId ? submissionMap.get(activeLessonId) ?? null : null
 
   // Loading state
-  const isLoading = chaptersLoading || lessonsLoading
+  const isLoading = courseLoading || chaptersLoading || lessonsLoading
 
   // Error state
   const hasError = chaptersError || lessonsError

@@ -112,7 +112,7 @@ export default function CoursesPage() {
               return (
                 <Link
                   key={enrollment.id}
-                  to={`/courses/${course.id}`}
+                  to={`/courses/${course.slug}`}
                   className="block"
                 >
                   <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
