@@ -284,7 +284,7 @@ All components below are **already installed** in `src/components/ui/`. Zero new
 - Behavior: partial, case-insensitive match against `profiles.full_name`
 - No debounce needed — client-side filter is instant
 
-**Result count:** Below filter bar, above table: `<p className="text-sm text-muted-foreground mb-3">Hiển thị {filteredData.length} / {data.length} bài nộp</p>`
+**Result count:** Below filter bar, above table: `<p className="text-sm text-muted-foreground mb-4">Hiển thị {filteredData.length} / {data.length} bài nộp</p>`
 
 **Empty filtered state (no results after filter):**
 - Show: `<p className="text-center text-muted-foreground py-8">Không tìm thấy bài nộp nào phù hợp với bộ lọc.</p>`
@@ -368,7 +368,7 @@ All components below are **already installed** in `src/components/ui/`. Zero new
 
 [Lock notice banner]
   bg-muted border border-border rounded-lg p-4 mb-4
-  flex items-center gap-3
+  flex items-center gap-2
   [Lock icon h-5 w-5 text-muted-foreground]
   <p className="text-sm text-muted-foreground">
     "Bạn chưa đăng ký khóa học này."
@@ -376,7 +376,7 @@ All components below are **already installed** in `src/components/ui/`. Zero new
 
 [Chapter accordion list]
   For each chapter:
-    div.border.rounded-lg.p-4.mb-3
+    div.border.rounded-lg.p-4.mb-4
     h3: chapter.title    text-base font-semibold mb-2
     ul:
       For each lesson:
@@ -517,7 +517,7 @@ All copy is Vietnamese (UX-03). All copy in this contract is the exact string to
 | Element | Current | Required |
 |---------|---------|---------|
 | Empty state heading | `Chưa có khóa học nào` | `Chưa có khóa học nào` *(unchanged)* |
-| Empty state body | `Bạn chưa được gán vào khóa học nào. Vui lòng liên hệ giảng viên để được thêm vào khóa học.` | Add: `<Link to="/catalogue" className="text-primary underline mt-3 block">Khám phá tất cả khóa học →</Link>` |
+| Empty state body | `Bạn chưa được gán vào khóa học nào. Vui lòng liên hệ giảng viên để được thêm vào khóa học.` | Add: `<Link to="/catalogue" className="text-primary underline mt-4 block">Khám phá tất cả khóa học →</Link>` |
 
 ---
 
