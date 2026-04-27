@@ -137,7 +137,7 @@ export default function GradingPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 max-w-5xl">
+    <div className="container mx-auto py-8 max-w-7xl px-4">
       {/* Back link */}
       <Link
         to="/admin/submissions"
@@ -149,9 +149,9 @@ export default function GradingPage() {
 
       <h1 className="text-xl font-semibold mb-6 leading-relaxed">Chấm bài nộp</h1>
 
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Left: Image carousel */}
-        <div className="flex-1">
+      <div className="flex flex-col gap-8">
+        {/* Top: Image carousel — full width */}
+        <div className="w-full">
           {totalImages === 0 ? (
             <div className="rounded-lg border bg-muted flex items-center justify-center h-80">
               <p className="text-sm text-muted-foreground leading-relaxed">Không có ảnh bài làm.</p>
@@ -162,7 +162,8 @@ export default function GradingPage() {
                 <img
                   src={signedUrls[carouselIndex]}
                   alt={`Bài làm ${carouselIndex + 1}`}
-                  className="w-full object-contain max-h-[82vh] cursor-zoom-in"
+                  className="w-full object-contain"
+                  style={{ minHeight: '60vh' }}
                 />
                 {totalImages > 1 && (
                   <>
@@ -192,10 +193,11 @@ export default function GradingPage() {
           )}
         </div>
 
-        {/* Right: Grading form */}
-        <div className="lg:w-[420px] space-y-5">
+        {/* Bottom: Grading form — full width, horizontal layout */}
+        <div className="w-full">
+          <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* Score */}
-          <div>
+          <div className="lg:w-36 shrink-0">
             <label className="block text-sm font-semibold mb-1.5 leading-relaxed" htmlFor="grade-score">
               Điểm số
             </label>
@@ -216,7 +218,7 @@ export default function GradingPage() {
           </div>
 
           {/* Comment */}
-          <div>
+          <div className="flex-1 min-w-0">
             <label className="block text-sm font-semibold mb-1.5 leading-relaxed" htmlFor="grade-comment">
               Nhận xét
             </label>
@@ -226,12 +228,12 @@ export default function GradingPage() {
               rows={8}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              className="leading-relaxed"
+              className="leading-relaxed w-full"
             />
           </div>
 
           {/* Teacher image upload */}
-          <div>
+          <div className="lg:w-56 shrink-0">
             <p className="text-sm font-semibold mb-1.5 leading-relaxed">Ảnh phản hồi (tùy chọn)</p>
             <input
               ref={teacherFileInputRef}
@@ -273,6 +275,7 @@ export default function GradingPage() {
           </div>
 
           {/* Save / confirm */}
+          <div className="lg:w-44 shrink-0 pt-0 lg:pt-6">
           {!pendingConfirm ? (
             <Button
               className="w-full min-h-[48px] leading-relaxed"
@@ -306,6 +309,7 @@ export default function GradingPage() {
               </div>
             </div>
           )}
+          </div>
         </div>
       </div>
     </div>
