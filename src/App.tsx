@@ -19,6 +19,7 @@ import SubmissionsPage from "./pages/admin/SubmissionsPage";
 import GradingPage from "./pages/admin/GradingPage";
 import StudentCoursesPage from "./pages/student/CoursesPage";
 import StudentCourseDetailPage from "./pages/student/CourseDetailPage";
+import StudentCataloguePage from "./pages/student/CataloguePage";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/admin/submissions/:submissionId" element={<ProtectedRoute requiredRole="admin"><AdminLayout><GradingPage /></AdminLayout></ProtectedRoute>} />
             <Route path="/courses" element={<ProtectedRoute requiredRole="student"><StudentCoursesPage /></ProtectedRoute>} />
             <Route path="/courses/:courseSlug" element={<ProtectedRoute requiredRole="student"><StudentCourseDetailPage /></ProtectedRoute>} />
+            <Route path="/catalogue" element={<ProtectedRoute requiredRole="student"><StudentCataloguePage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
