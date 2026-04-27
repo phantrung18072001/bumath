@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/contexts/AuthContext'
-import { fetchAllCourses } from '@/lib/api/courses'
+import { fetchAllCourses, Course } from '@/lib/api/courses'
 import { getUserEnrollments } from '@/lib/api/enrollments'
 import { GRADE_BADGE } from '@/lib/constants/grades'
 import StudentLayout from '@/components/student/StudentLayout'
@@ -10,8 +10,18 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 
+const GRADE_FILTERS: { value: Course['target_grade'] | 'all'; label: string }[] = [
+  { value: 'all', label: 'Tất cả' },
+  { value: 'grade_7', label: 'Lớp 7' },
+  { value: 'grade_8', label: 'Lớp 8' },
+  { value: 'grade_9', label: 'Lớp 9' },
+  { value: 'advanced', label: 'Ôn chuyên' },
+]
+
 export default function CataloguePage() {
   const { profile } = useAuth()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const activeGrade = (searchParams.get('grade') ?? 'all') as Course['target_grade'] | 'all'
 
   // Fetch all courses
   const {
@@ -34,6 +44,18 @@ export default function CataloguePage() {
   const enrolledCourseIds = new Set(enrollments.map(e => e.course_id))
   const isLoading = coursesLoading || enrollmentsLoading
 
+  const filteredCourses = activeGrade === 'all'
+    ? allCourses
+    : allCourses.filter(c => c.target_grade === activeGrade)
+
+  function setGrade(grade: Course['target_grade'] | 'all') {
+    if (grade === 'all') {
+      setSearchParams({})
+    } else {
+      setSearchParams({ grade })
+    }
+  }
+
   return (
     <StudentLayout>
       <div className="p-6 md:p-8">
@@ -41,6 +63,24 @@ export default function CataloguePage() {
         <p className="text-sm text-muted-foreground mb-6">
           Tất cả các khóa học đang có tại BuMath
         </p>
+
+        {/* Grade filter tabs */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {GRADE_FILTERS.map(f => (
+            <button
+              key={f.value}
+              onClick={() => setGrade(f.value)}
+              className={[
+                'rounded-full px-4 py-1.5 text-sm font-medium transition-colors border',
+                activeGrade === f.value
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground',
+              ].join(' ')}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
 
         {/* Error state */}
         {coursesError && (
@@ -61,21 +101,23 @@ export default function CataloguePage() {
         )}
 
         {/* Empty state */}
-        {!isLoading && !coursesError && allCourses.length === 0 && (
+        {!isLoading && !coursesError && filteredCourses.length === 0 && (
           <div className="flex justify-center">
             <Card className="max-w-md w-full p-6 text-center">
               <h2 className="text-xl font-semibold mb-2">Chưa có khóa học nào</h2>
               <p className="text-muted-foreground text-sm">
-                Hiện tại chưa có khóa học nào. Vui lòng quay lại sau.
+                {activeGrade === 'all'
+                  ? 'Hiện tại chưa có khóa học nào. Vui lòng quay lại sau.'
+                  : `Chưa có khóa học nào cho ${GRADE_FILTERS.find(f => f.value === activeGrade)?.label}.`}
               </p>
             </Card>
           </div>
         )}
 
         {/* Course grid */}
-        {!isLoading && !coursesError && allCourses.length > 0 && (
+        {!isLoading && !coursesError && filteredCourses.length > 0 && (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {allCourses.map((course) => {
+            {filteredCourses.map((course) => {
               const isEnrolled = enrolledCourseIds.has(course.id)
               const gradeBadge = GRADE_BADGE[course.target_grade]
 

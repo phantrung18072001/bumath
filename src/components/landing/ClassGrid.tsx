@@ -4,9 +4,9 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 const classes = [
-  { level: 7, slug: "lop-7", desc: "Đại số, Hình học cơ bản, Số học", courses: 8, color: "from-orange-400 to-amber-500" },
-  { level: 8, slug: "lop-8", desc: "Phương trình, Tam giác đồng dạng, Hình học", courses: 10, color: "from-sky-400 to-blue-500" },
-  { level: 9, slug: "lop-9", desc: "Hệ PT, Đường tròn, Ôn thi vào chuyên", courses: 15, color: "from-emerald-400 to-green-500" },
+  { level: 7, grade: "grade_7", desc: "Đại số, Hình học cơ bản, Số học", courses: 8, color: "from-orange-400 to-amber-500" },
+  { level: 8, grade: "grade_8", desc: "Phương trình, Tam giác đồng dạng, Hình học", courses: 10, color: "from-sky-400 to-blue-500" },
+  { level: 9, grade: "grade_9", desc: "Hệ PT, Đường tròn, Ôn thi vào chuyên", courses: 15, color: "from-emerald-400 to-green-500" },
 ];
 
 const ClassGrid = () => {
@@ -25,13 +25,13 @@ const ClassGrid = () => {
         <div className="grid gap-4 sm:grid-cols-3">
           {classes.map((c, i) => (
             <motion.div
-              key={c.slug}
+              key={c.grade}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
             >
-              <Link to={`/class/${c.slug}`}>
+              <Link to={`/catalogue?grade=${c.grade}`}>
                 <Card className="group cursor-pointer overflow-hidden border-0 shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
                   <div className={`h-2 bg-gradient-to-r ${c.color}`} />
                   <CardContent className="p-5">
