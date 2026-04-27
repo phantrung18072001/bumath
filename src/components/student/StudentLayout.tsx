@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link, NavLink } from 'react-router-dom'
 import { LogOut } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
@@ -21,7 +21,40 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
     <div className="min-h-screen bg-background">
       {/* Compact header — h-12 (48px), satisfies UX-02 */}
       <header className="h-12 bg-card border-b border-border flex items-center px-4 sticky top-0 z-10">
-        <span className="font-semibold text-primary text-base">BuMath</span>
+        <Link
+          to="/"
+          className="flex items-center gap-2"
+          aria-label="Trang chủ BuMath"
+        >
+          <img
+            src={`${import.meta.env.BASE_URL}bumath.jpeg`}
+            alt="BuMath"
+            className="h-8 w-8 rounded-lg object-cover"
+          />
+          <span className="font-semibold text-primary text-base">BuMath</span>
+        </Link>
+        <nav className="ml-4 hidden sm:flex items-center gap-1">
+          <NavLink
+            to="/courses"
+            className={({ isActive }) =>
+              `text-sm font-semibold px-3 py-2 rounded-lg transition-colors ${
+                isActive ? 'text-primary' : 'text-foreground hover:bg-muted'
+              }`
+            }
+          >
+            Khóa học của tôi
+          </NavLink>
+          <NavLink
+            to="/catalogue"
+            className={({ isActive }) =>
+              `text-sm font-semibold px-3 py-2 rounded-lg transition-colors ${
+                isActive ? 'text-primary' : 'text-foreground hover:bg-muted'
+              }`
+            }
+          >
+            Khám phá khóa học
+          </NavLink>
+        </nav>
         <div className="ml-auto flex items-center gap-2">
           {profile?.full_name && (
             <span className="text-sm text-muted-foreground hidden sm:inline">
