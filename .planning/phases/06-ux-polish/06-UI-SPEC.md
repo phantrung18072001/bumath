@@ -380,7 +380,7 @@ All components below are **already installed** in `src/components/ui/`. Zero new
     h3: chapter.title    text-base font-semibold mb-2
     ul:
       For each lesson:
-        li.flex.items-center.gap-2.py-1.5
+        li.flex.items-center.gap-2.py-2
           <Lock className="h-4 w-4 shrink-0 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">{lesson.title}</span>
 
