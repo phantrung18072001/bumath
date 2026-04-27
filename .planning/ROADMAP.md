@@ -118,14 +118,21 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 3. Course Management | 4/5 | In Progress|  |
 | 4. Student Learning & Submission | 5/5 | Complete | 2026-04-07 |
 | 5. Grading & Notification | 4/4 | Complete   | 2026-04-08 |
-| 6. UX Polish | 0/TBD | Not started |  |
+| 6. UX Polish | 0/5 | Not started |  |
 
 ### Phase 6: UX Polish
 
 **Goal:** Improve usability across the platform — grading filters, student course discovery flow, navigation fixes, and visual polish
-**Requirements**: TBD
+**Requirements**: UX-P6-01, UX-P6-02, UX-P6-03, UX-P6-04, UX-P6-05, UX-P6-06
 **Depends on:** Phase 5
-**Plans:** TBD (run /gsd-plan-phase 6 to break down)
+**Plans:** 5 plans
+
+Plans:
+- [ ] 06-00-PLAN.md — Wave 0: Test stubs for Nyquist compliance
+- [ ] 06-01-PLAN.md — Quick wins: NotFound Vietnamese, StudentLayout nav, Progress bar color
+- [ ] 06-02-PLAN.md — Admin grading filters (SubmissionsPage)
+- [ ] 06-03-PLAN.md — Course catalogue page + RLS migration
+- [ ] 06-04-PLAN.md — Course preview mode (CourseDetailPage)
 
 **Scope:**
 - Admin grading queue: filter by class (grade), course, lesson, student name
