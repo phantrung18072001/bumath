@@ -36,7 +36,13 @@ export interface UngradedSubmission {
   file_path: string
   submitted_at: string
   profiles: { full_name: string }
-  lessons: { title: string; chapters: { course_id: string; courses: { title: string } } }
+  lessons: {
+    title: string
+    chapters: {
+      course_id: string
+      courses: { title: string; target_grade: 'grade_7' | 'grade_8' | 'grade_9' | 'advanced' }
+    }
+  }
 }
 
 const BUCKET = 'submissions'
@@ -205,7 +211,7 @@ export async function getUngraded(): Promise<UngradedSubmission[]> {
     .select(`
       id, user_id, lesson_id, file_path, submitted_at,
       profiles ( full_name ),
-      lessons ( title, chapters ( course_id, courses ( title ) ) )
+      lessons ( title, chapters ( course_id, courses ( title, target_grade ) ) )
     `)
     .eq('status', 'submitted')
     .order('submitted_at', { ascending: true })
