@@ -151,9 +151,11 @@ export default function GradingPage() {
 
       <h1 className="text-xl font-semibold mb-6 leading-relaxed">Chấm bài nộp</h1>
 
-      <div className="flex flex-col gap-8">
-        {/* Top: Image carousel — full width */}
-        <div className="w-full">
+      {/* Two-column layout: image left, form right */}
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
+
+        {/* Left: Image carousel */}
+        <div className="flex-1 min-w-0">
           {totalImages === 0 ? (
             <div className="rounded-lg border bg-muted flex items-center justify-center h-80">
               <p className="text-sm text-muted-foreground leading-relaxed">Không có ảnh bài làm.</p>
@@ -165,7 +167,7 @@ export default function GradingPage() {
                   <img
                     src={signedUrls[carouselIndex]}
                     alt={`Bài làm ${carouselIndex + 1}`}
-                    className="w-full object-contain max-h-[72vh] cursor-zoom-in"
+                    className="w-full object-contain max-h-[80vh] cursor-zoom-in"
                   />
                 </Zoom>
                 {totalImages > 1 && (
@@ -196,11 +198,10 @@ export default function GradingPage() {
           )}
         </div>
 
-        {/* Bottom: Grading form — full width, horizontal layout */}
-        <div className="w-full">
-          <div className="flex flex-col lg:flex-row gap-6 items-start">
+        {/* Right: Grading form — sticky sidebar */}
+        <div className="w-full lg:w-80 shrink-0 lg:sticky lg:top-8 space-y-5">
           {/* Score */}
-          <div className="lg:w-36 shrink-0">
+          <div>
             <label className="block text-sm font-semibold mb-1.5 leading-relaxed" htmlFor="grade-score">
               Điểm số
             </label>
@@ -221,14 +222,14 @@ export default function GradingPage() {
           </div>
 
           {/* Comment */}
-          <div className="flex-1 min-w-0">
+          <div>
             <label className="block text-sm font-semibold mb-1.5 leading-relaxed" htmlFor="grade-comment">
               Nhận xét
             </label>
             <Textarea
               id="grade-comment"
               placeholder="Ví dụ: Làm đúng bước 1, cần kiểm tra lại dấu..."
-              rows={8}
+              rows={6}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               className="leading-relaxed w-full"
@@ -236,7 +237,7 @@ export default function GradingPage() {
           </div>
 
           {/* Teacher image upload */}
-          <div className="lg:w-56 shrink-0">
+          <div>
             <p className="text-sm font-semibold mb-1.5 leading-relaxed">Ảnh phản hồi (tùy chọn)</p>
             <input
               ref={teacherFileInputRef}
@@ -278,7 +279,6 @@ export default function GradingPage() {
           </div>
 
           {/* Save / confirm */}
-          <div className="lg:w-44 shrink-0 pt-0 lg:pt-6">
           {!pendingConfirm ? (
             <Button
               className="w-full min-h-[48px] leading-relaxed"
@@ -312,8 +312,6 @@ export default function GradingPage() {
               </div>
             </div>
           )}
-          </div>
-          </div>
         </div>
       </div>
     </div>
