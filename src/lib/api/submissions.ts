@@ -275,7 +275,6 @@ export type GradedUnviewedSubmission = Submission & {
   lesson: {
     id: string
     title: string
-    slug: string | null
     chapter: {
       course_id: string
       course: { title: string; slug: string }
@@ -291,7 +290,6 @@ type GradedUnviewedRow = Record<string, unknown> & {
   lessons: {
     id: string
     title: string
-    slug: string | null
     chapters: {
       course_id: string
       courses: { title: string; slug: string }
@@ -305,7 +303,7 @@ export async function getGradedUnviewed(): Promise<GradedUnviewedSubmission[]> {
     .select(`
       *,
       lessons:lesson_id (
-        id, title, slug,
+        id, title,
         chapters:chapter_id (
           course_id,
           courses:course_id ( title, slug )
@@ -323,7 +321,6 @@ export async function getGradedUnviewed(): Promise<GradedUnviewedSubmission[]> {
       lesson: {
         id: r.lessons.id,
         title: r.lessons.title,
-        slug: r.lessons.slug ?? null,
         chapter: {
           course_id: r.lessons.chapters.course_id,
           course: {
