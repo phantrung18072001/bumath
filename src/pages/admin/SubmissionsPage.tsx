@@ -1,7 +1,6 @@
-import { useState } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
-import { toast } from 'sonner'
 import { getUngraded, UngradedSubmission } from '@/lib/api/submissions'
 import {
   Table,
@@ -13,11 +12,9 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import GradingDialog from '@/components/admin/GradingDialog'
 
 export default function SubmissionsPage() {
-  const queryClient = useQueryClient()
-  const [gradingSubmission, setGradingSubmission] = useState<UngradedSubmission | null>(null)
+  const navigate = useNavigate()
 
   const { data = [], isLoading } = useQuery<UngradedSubmission[]>({
     queryKey: ['admin', 'submissions', 'ungraded'],
@@ -71,10 +68,9 @@ export default function SubmissionsPage() {
                   <TableCell>
                     <Button
                       size="sm"
-                      className="min-h-[48px]"
-                      onClick={() => setGradingSubmission(row)}
+                      onClick={() => navigate(`/admin/submissions/${row.id}`)}
                     >
-                      Chấm bài
+                      Chấm
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -83,18 +79,6 @@ export default function SubmissionsPage() {
           </Table>
         </div>
       )}
-
-      <GradingDialog
-        submission={gradingSubmission}
-        open={!!gradingSubmission}
-        onClose={() => setGradingSubmission(null)}
-        onSuccess={() => {
-          const name = gradingSubmission?.profiles.full_name
-          setGradingSubmission(null)
-          queryClient.invalidateQueries({ queryKey: ['admin', 'submissions', 'ungraded'] })
-          toast.success(`Đã lưu điểm cho ${name}`)
-        }}
-      />
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/contexts/AuthContext'
@@ -19,6 +19,8 @@ export default function CourseDetailPage() {
   const { courseSlug } = useParams<{ courseSlug: string }>()
   const { profile } = useAuth()
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null)
+  const [searchParams] = useSearchParams()
+  const lessonIdFromQuery = searchParams.get('lesson')
 
   const { data: course, isLoading: courseLoading, isError: courseError } = useQuery({
     queryKey: ['course', courseSlug],
@@ -87,6 +89,18 @@ export default function CourseDetailPage() {
       if (firstLesson) setActiveLessonId(firstLesson.id)
     }
   }, [chapters, lessonsByChapter, activeLessonId])
+
+  // 7b. Auto-select lesson from ?lesson= query param (deep-link from bell notification)
+  useEffect(() => {
+    if (!lessonIdFromQuery || !allLessons.length) return
+    const found = allLessons.find((l: Lesson) => l.id === lessonIdFromQuery)
+    if (found) {
+      setActiveLessonId(found.id)
+      requestAnimationFrame(() => {
+        document.getElementById(`lesson-${found.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      })
+    }
+  }, [lessonIdFromQuery, allLessons.length])
 
   // 8. Derive active lesson and submission
   const activeLesson = allLessons.find(l => l.id === activeLessonId) ?? null

@@ -16,6 +16,7 @@ import CoursesPage from "./pages/admin/CoursesPage";
 import ChaptersPage from "./pages/admin/ChaptersPage";
 import LessonsPage from "./pages/admin/LessonsPage";
 import SubmissionsPage from "./pages/admin/SubmissionsPage";
+import GradingPage from "./pages/admin/GradingPage";
 import StudentCoursesPage from "./pages/student/CoursesPage";
 import StudentCourseDetailPage from "./pages/student/CourseDetailPage";
 
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/admin/courses/:courseSlug" element={<ProtectedRoute requiredRole="admin"><AdminLayout><ChaptersPage /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/courses/:courseSlug/chapters/:chapterSlug" element={<ProtectedRoute requiredRole="admin"><AdminLayout><LessonsPage /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/submissions" element={<ProtectedRoute requiredRole="admin"><AdminLayout><SubmissionsPage /></AdminLayout></ProtectedRoute>} />
+            <Route path="/admin/submissions/:submissionId" element={<ProtectedRoute requiredRole="admin"><AdminLayout><GradingPage /></AdminLayout></ProtectedRoute>} />
             <Route path="/courses" element={<ProtectedRoute requiredRole="student"><StudentCoursesPage /></ProtectedRoute>} />
             <Route path="/courses/:courseSlug" element={<ProtectedRoute requiredRole="student"><StudentCourseDetailPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />

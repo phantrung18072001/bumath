@@ -11,6 +11,22 @@ export interface Submission {
   score: number | null
   comment: string | null
   student_viewed_at: string | null
+  teacher_images: string[] | null
+}
+
+/**
+ * Decode teacher_images from JSON text to string[] (or null).
+ */
+function mapSubmission(row: Record<string, unknown>): Submission {
+  let teacherImages: string[] | null = null
+  if (typeof row.teacher_images === 'string') {
+    try {
+      const parsed = JSON.parse(row.teacher_images)
+      if (Array.isArray(parsed)) teacherImages = parsed
+      // eslint-disable-next-line no-empty
+    } catch {}
+  }
+  return { ...(row as unknown as Submission), teacher_images: teacherImages }
 }
 
 export interface UngradedSubmission {
@@ -66,6 +82,7 @@ export function parseFilePaths(filePath: string): string[] {
   try {
     const parsed = JSON.parse(filePath)
     if (Array.isArray(parsed)) return parsed
+    // eslint-disable-next-line no-empty
   } catch {}
   return [filePath]
 }
@@ -137,7 +154,8 @@ export async function getSubmission(userId: string, lessonId: string): Promise<S
     .eq('lesson_id', lessonId)
     .maybeSingle()
   if (error) throw error
-  return data as Submission | null
+  if (!data) return null
+  return mapSubmission(data as Record<string, unknown>)
 }
 
 /**
@@ -151,15 +169,15 @@ export async function getSubmissions(userId: string, lessonIds: string[]): Promi
     .eq('user_id', userId)
     .in('lesson_id', lessonIds)
   if (error) throw error
-  return (data ?? []) as Submission[]
+  return (data ?? []).map(row => mapSubmission(row as Record<string, unknown>))
 }
 
 /**
  * Create signed URLs for all submitted images (private bucket). TTL: 1 hour.
- * Accepts a JSON-encoded array of paths or a legacy single path string.
+ * Accepts a JSON-encoded array of paths, a legacy single path string, or a string[] directly.
  */
-export async function getSubmissionSignedUrls(filePath: string): Promise<string[]> {
-  const paths = parseFilePaths(filePath)
+export async function getSubmissionSignedUrls(filePath: string | string[]): Promise<string[]> {
+  const paths = Array.isArray(filePath) ? filePath : parseFilePaths(filePath)
   const urls = await Promise.all(
     paths.map(async (path) => {
       const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(path, 3600)
@@ -196,16 +214,21 @@ export async function getUngraded(): Promise<UngradedSubmission[]> {
 }
 
 /**
- * Grade a submission — set score, comment, and status to 'graded' (D-09, GRADE-03).
+ * Grade a submission — set score, comment, teacher_images, and status to 'graded' (D-09, GRADE-03).
  */
 export async function gradeSubmission(
   id: string,
   score: number,
   comment: string,
+  teacherImages?: string[],
 ): Promise<void> {
+  const updates: Record<string, unknown> = { score, comment, status: 'graded' }
+  if (teacherImages !== undefined) {
+    updates.teacher_images = JSON.stringify(teacherImages)
+  }
   const { error } = await supabase
     .from('submissions')
-    .update({ score, comment, status: 'graded' })
+    .update(updates)
     .eq('id', id)
   if (error) throw error
 }
@@ -233,4 +256,82 @@ export async function markGradeViewed(submissionId: string): Promise<void> {
     submission_id: submissionId,
   })
   if (error) throw error
+}
+
+/**
+ * Get a single submission by ID (for the teacher grading page).
+ */
+export async function getSubmissionById(id: string): Promise<Submission> {
+  const { data, error } = await supabase
+    .from('submissions')
+    .select('*')
+    .eq('id', id)
+    .single()
+  if (error) throw error
+  return mapSubmission(data as Record<string, unknown>)
+}
+
+export type GradedUnviewedSubmission = Submission & {
+  lesson: {
+    id: string
+    title: string
+    slug: string | null
+    chapter: {
+      course_id: string
+      course: { title: string; slug: string }
+    }
+  }
+}
+
+/**
+ * Get all graded submissions not yet viewed by the current student, with lesson/course info.
+ * Used for the bell notification dropdown.
+ */
+type GradedUnviewedRow = Record<string, unknown> & {
+  lessons: {
+    id: string
+    title: string
+    slug: string | null
+    chapters: {
+      course_id: string
+      courses: { title: string; slug: string }
+    }
+  }
+}
+
+export async function getGradedUnviewed(): Promise<GradedUnviewedSubmission[]> {
+  const { data, error } = await supabase
+    .from('submissions')
+    .select(`
+      *,
+      lessons:lesson_id (
+        id, title, slug,
+        chapters:chapter_id (
+          course_id,
+          courses:course_id ( title, slug )
+        )
+      )
+    `)
+    .eq('status', 'graded')
+    .is('student_viewed_at', null)
+    .order('submitted_at', { ascending: false })
+  if (error) throw error
+  return (data ?? []).map(row => {
+    const r = row as GradedUnviewedRow
+    return {
+      ...mapSubmission(r),
+      lesson: {
+        id: r.lessons.id,
+        title: r.lessons.title,
+        slug: r.lessons.slug ?? null,
+        chapter: {
+          course_id: r.lessons.chapters.course_id,
+          course: {
+            title: r.lessons.chapters.courses.title,
+            slug: r.lessons.chapters.courses.slug,
+          },
+        },
+      },
+    }
+  })
 }

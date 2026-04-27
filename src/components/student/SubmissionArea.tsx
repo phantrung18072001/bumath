@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { compressImage, uploadSubmission, resubmitSubmission, getSubmissionSignedUrls, markGradeViewed } from '@/lib/api/submissions'
 import type { Submission } from '@/lib/api/submissions'
 import { Button } from '@/components/ui/button'
@@ -199,6 +199,13 @@ export default function SubmissionArea({
           </div>
         )}
 
+        {submission.status === 'graded' && submission.teacher_images && submission.teacher_images.length > 0 && (
+          <div className="mt-4 space-y-2">
+            <h4 className="font-semibold leading-relaxed">Hình ảnh phản hồi từ giáo viên</h4>
+            <TeacherImages paths={submission.teacher_images} />
+          </div>
+        )}
+
         {submission.status === 'submitted' && !resubmitMode && (
           <Button variant="outline" size="sm" className="min-h-[48px]" onClick={() => setResubmitMode(true)}>
             Nộp lại
@@ -219,6 +226,24 @@ export default function SubmissionArea({
         <Badge className="bg-slate-100 text-slate-600 hover:bg-slate-100">Chưa nộp</Badge>
       </div>
       <FilePickerSection onSubmit={() => uploadMutation.mutate()} isPending={uploadMutation.isPending} />
+    </div>
+  )
+}
+
+function TeacherImages({ paths }: { paths: string[] }) {
+  const { data: urls } = useQuery({
+    queryKey: ['teacher-images', paths],
+    queryFn: () => getSubmissionSignedUrls(paths),
+    enabled: paths.length > 0,
+  })
+  if (!urls) return null
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+      {urls.map((u, i) => (
+        <a key={i} href={u} target="_blank" rel="noreferrer">
+          <img src={u} alt={`Phản hồi ${i + 1}`} className="rounded-md border w-full h-32 object-cover" />
+        </a>
+      ))}
     </div>
   )
 }
