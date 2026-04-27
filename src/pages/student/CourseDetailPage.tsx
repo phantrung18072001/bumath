@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Lock } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/contexts/AuthContext'
 import StudentLayout from '@/components/student/StudentLayout'
@@ -9,11 +9,14 @@ import LessonContent from '@/components/student/LessonContent'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
 import { fetchCourseBySlug } from '@/lib/api/courses'
 import { fetchChapters } from '@/lib/api/chapters'
 import { fetchLessons, type Lesson } from '@/lib/api/lessons'
 import { getLessonProgress, getCourseProgress } from '@/lib/api/lesson-progress'
 import { getSubmissions } from '@/lib/api/submissions'
+import { getUserEnrollments } from '@/lib/api/enrollments'
+import { GRADE_BADGE } from '@/lib/constants/grades'
 
 export default function CourseDetailPage() {
   const { courseSlug } = useParams<{ courseSlug: string }>()
@@ -28,6 +31,19 @@ export default function CourseDetailPage() {
     enabled: !!courseSlug,
   })
   const courseId = course?.id
+
+  // Query user's enrollments to determine if enrolled in this course
+  const {
+    data: enrollments,
+    isLoading: enrollmentsLoading,
+  } = useQuery({
+    queryKey: ['enrollments', profile?.id],
+    queryFn: () => getUserEnrollments(profile!.id),
+    enabled: !!profile?.id,
+  })
+
+  // Check if user is enrolled in this specific course
+  const isEnrolled = !!enrollments?.some(e => e.course_id === courseId)
 
   // 1. Fetch chapters
   const {
@@ -106,8 +122,8 @@ export default function CourseDetailPage() {
   const activeLesson = allLessons.find(l => l.id === activeLessonId) ?? null
   const activeSubmission = activeLessonId ? submissionMap.get(activeLessonId) ?? null : null
 
-  // Loading state
-  const isLoading = courseLoading || chaptersLoading || lessonsLoading
+  // Wait for BOTH enrollment and content queries before deciding mode
+  const isLoading = courseLoading || chaptersLoading || lessonsLoading || enrollmentsLoading
 
   // Error state
   const hasError = courseError || chaptersError || lessonsError
