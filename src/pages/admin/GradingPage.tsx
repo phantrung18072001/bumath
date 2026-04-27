@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, X } from 'lucide-react'
 import { toast } from 'sonner'
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
 import {
   getSubmissionById,
   getSubmissionSignedUrls,
@@ -137,7 +139,7 @@ export default function GradingPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 max-w-7xl px-4">
+    <div className="container mx-auto py-8 max-w-5xl px-4">
       {/* Back link */}
       <Link
         to="/admin/submissions"
@@ -159,12 +161,13 @@ export default function GradingPage() {
           ) : (
             <div className="space-y-2">
               <div className="relative rounded-lg border overflow-hidden bg-muted">
-                <img
-                  src={signedUrls[carouselIndex]}
-                  alt={`Bài làm ${carouselIndex + 1}`}
-                  className="w-full object-contain"
-                  style={{ minHeight: '60vh' }}
-                />
+                <Zoom zoomMargin={24}>
+                  <img
+                    src={signedUrls[carouselIndex]}
+                    alt={`Bài làm ${carouselIndex + 1}`}
+                    className="w-full object-contain max-h-[72vh] cursor-zoom-in"
+                  />
+                </Zoom>
                 {totalImages > 1 && (
                   <>
                     <button

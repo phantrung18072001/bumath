@@ -2479,7 +2479,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.3.23":
+"@types/react-medium-image-zoom@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "@types/react-medium-image-zoom@npm:3.0.3"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10c0/4155e3633300948914d4620ea7c299cfc2f1a60313e28dabe28fec6081416e866e955846ae749759f9767352a8d973ca0987bf7f9253d4037c0c1fa51204a89a
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:*, @types/react@npm:^18.3.23":
   version: 18.3.28
   resolution: "@types/react@npm:18.3.28"
   dependencies:
@@ -5115,6 +5124,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-medium-image-zoom@npm:^5.4.3":
+  version: 5.4.3
+  resolution: "react-medium-image-zoom@npm:5.4.3"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/a7c3e12ce71a3daffdea447fea8741195b83b51322eab4f4d99f8c955fa83df30992fd83ce69d1af5d5e45ff4a5968586dd675ee2f6220575ed98af5c0e1cafa
+  languageName: node
+  linkType: hard
+
 "react-remove-scroll-bar@npm:^2.3.7":
   version: 2.3.8
   resolution: "react-remove-scroll-bar@npm:2.3.8"
@@ -6091,6 +6110,7 @@ __metadata:
     "@types/node": "npm:^22.16.5"
     "@types/react": "npm:^18.3.23"
     "@types/react-dom": "npm:^18.3.7"
+    "@types/react-medium-image-zoom": "npm:^3.0.3"
     "@vitejs/plugin-react-swc": "npm:^3.11.0"
     autoprefixer: "npm:^10.4.21"
     browser-image-compression: "npm:^2.0.2"
@@ -6115,6 +6135,7 @@ __metadata:
     react-day-picker: "npm:^8.10.1"
     react-dom: "npm:^18.3.1"
     react-hook-form: "npm:^7.61.1"
+    react-medium-image-zoom: "npm:^5.4.3"
     react-resizable-panels: "npm:^2.1.9"
     react-router-dom: "npm:^6.30.1"
     recharts: "npm:^2.15.4"
