@@ -31,9 +31,9 @@ const IntensiveSection = () => {
               Chương trình luyện thi chuyên Toán được thiết kế riêng cho từng trường,
               kết hợp video bài giảng chuyên sâu, bộ đề thi thử và trợ giảng chấm bài tay.
             </p>
-            <Link to="/on-thi-chuyen">
+            <Link to="/catalogue?grade=advanced">
               <Button size="lg" className="shadow-lg shadow-primary/25">
-                Tìm hiểu thêm
+                Xem khóa học ôn chuyên
               </Button>
             </Link>
           </motion.div>
