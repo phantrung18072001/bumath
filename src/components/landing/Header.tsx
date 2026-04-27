@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { Menu, X, Phone, CreditCard, HelpCircle, LogOut, LayoutDashboard } from "lucide-react";
+import { Menu, X, Phone, CreditCard, HelpCircle, LogOut, LayoutDashboard, BookOpen, Library } from "lucide-react";
 
 const navItems = [
   { label: "Giới thiệu", to: "/gioi-thieu" },
@@ -57,6 +57,22 @@ const Header = () => {
               <span className="text-sm font-medium text-foreground">
                 {profile?.full_name || 'Tài khoản'}
               </span>
+              {profile?.role === 'student' && (
+                <>
+                  <Link to="/courses">
+                    <Button variant="ghost" size="sm" className="h-7 text-sm gap-1">
+                      <BookOpen className="h-3.5 w-3.5" />
+                      Vào học
+                    </Button>
+                  </Link>
+                  <Link to="/catalogue">
+                    <Button variant="ghost" size="sm" className="h-7 text-sm gap-1">
+                      <Library className="h-3.5 w-3.5" />
+                      Danh mục
+                    </Button>
+                  </Link>
+                </>
+              )}
               {profile?.role === 'admin' && (
                 <Link to="/admin/users">
                   <Button variant="outline" size="sm" className="h-7 text-sm gap-1">
@@ -152,6 +168,22 @@ const Header = () => {
                   {profile?.full_name || 'Tài khoản'}
                 </span>
               </div>
+              {profile?.role === 'student' && (
+                <>
+                  <Link to="/courses" onClick={() => setMobileOpen(false)}>
+                    <Button variant="ghost" className="w-full min-h-[48px] gap-1 mb-1 justify-start" size="sm">
+                      <BookOpen className="h-4 w-4" />
+                      Vào học
+                    </Button>
+                  </Link>
+                  <Link to="/catalogue" onClick={() => setMobileOpen(false)}>
+                    <Button variant="ghost" className="w-full min-h-[48px] gap-1 mb-1 justify-start" size="sm">
+                      <Library className="h-4 w-4" />
+                      Danh mục
+                    </Button>
+                  </Link>
+                </>
+              )}
               {profile?.role === 'admin' && (
                 <Link to="/admin/users" onClick={() => setMobileOpen(false)}>
                   <Button variant="outline" className="w-full min-h-[48px] gap-1 mb-1" size="sm">
