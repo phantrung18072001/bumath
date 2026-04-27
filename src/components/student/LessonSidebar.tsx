@@ -30,7 +30,7 @@ export default function LessonSidebar({
       <div className="px-4 py-4 border-b border-sidebar-border shrink-0">
         <Progress
           value={progress}
-          className="h-2"
+          className="h-2 bg-muted"
           aria-label={`Tiến độ hoàn thành: ${progress}%`}
         />
         <span className="text-sm text-muted-foreground mt-1 block">{progress}% hoàn thành</span>

@@ -129,7 +129,7 @@ export default function CoursesPage() {
                     <CardContent className="p-4 pt-2">
                       <Progress
                         value={progress}
-                        className="h-2 mt-2"
+                        className="h-2 mt-2 bg-muted"
                         aria-label={`Tiến độ hoàn thành: ${progress}%`}
                       />
                       <span className="text-sm text-muted-foreground mt-1 block">
