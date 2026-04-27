@@ -57,6 +57,15 @@ All student routes use `<ProtectedRoute requiredRole="student">`.
 - `src/components/auth/ProtectedRoute.tsx` — role-based route guard
 - `src/components/ui/` — shadcn/ui components; **do not edit manually**, use the shadcn CLI
 
+### UI Component Rule
+
+**Always use shadcn/ui or Radix primitives before implementing custom components.**
+
+1. Check `src/components/ui/` for already-installed components
+2. Check https://ui.shadcn.com/docs/components for available components
+3. If a component exists but isn't installed: `yarn dlx shadcn@latest add <name>`
+4. Only build custom if shadcn/Radix genuinely doesn't cover the use case
+
 ### Database Schema (Supabase)
 
 Tables: `profiles`, `courses`, `chapters`, `lessons`, `enrollments`, `lesson_progress`, `submissions`.
