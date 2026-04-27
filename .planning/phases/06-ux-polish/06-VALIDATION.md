@@ -38,15 +38,16 @@ created: 2026-04-27
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 6-01-01 | 01 | 0 | UX-P6-02 | unit | `yarn test src/pages/NotFound.test.tsx` | ❌ W0 | ⬜ pending |
-| 6-01-02 | 01 | 0 | UX-P6-03 | unit | `yarn test src/components/student/StudentLayout.test.tsx` | ❌ W0 | ⬜ pending |
-| 6-01-03 | 01 | 0 | UX-P6-04 | unit | `yarn test src/pages/student/CataloguePage.test.tsx` | ❌ W0 | ⬜ pending |
-| 6-01-04 | 01 | 0 | UX-P6-05 | unit | `yarn test src/pages/student/CourseDetailPage.test.tsx` | ❌ W0 | ⬜ pending |
+| 6-00-01 | 00 | 0 | UX-P6-02 | unit | `yarn test src/pages/NotFound.test.tsx` | ❌ W0 | ⬜ pending |
+| 6-00-02 | 00 | 0 | UX-P6-03 | unit | `yarn test src/components/student/StudentLayout.test.tsx` | ❌ W0 | ⬜ pending |
+| 6-00-03 | 00 | 0 | UX-P6-04 | unit | `yarn test src/pages/student/CataloguePage.test.tsx` | ❌ W0 | ⬜ pending |
+| 6-00-04 | 00 | 0 | UX-P6-05 | unit | `yarn test src/pages/student/CourseDetailPage.test.tsx` | ❌ W0 | ⬜ pending |
+| 6-00-05 | 00 | 0 | UX-P6-01 | unit | `yarn test src/pages/admin/SubmissionsPage.test.tsx` | ❌ W0 | ⬜ pending |
+| 6-01-01 | 01 | 1 | UX-P6-02 | unit | `yarn test src/pages/NotFound.test.tsx` | ❌ W0 | ⬜ pending |
+| 6-01-02 | 01 | 1 | UX-P6-03 | unit | `yarn test src/components/student/StudentLayout.test.tsx` | ❌ W0 | ⬜ pending |
 | 6-02-01 | 02 | 1 | UX-P6-01 | unit | `yarn test src/pages/admin/SubmissionsPage.test.tsx` | ❌ W0 | ⬜ pending |
-| 6-02-02 | 02 | 1 | UX-P6-02 | unit | `yarn test src/pages/NotFound.test.tsx` | ❌ W0 | ⬜ pending |
-| 6-02-03 | 02 | 1 | UX-P6-03 | unit | `yarn test src/components/student/StudentLayout.test.tsx` | ❌ W0 | ⬜ pending |
-| 6-03-01 | 03 | 2 | UX-P6-04 | unit | `yarn test src/pages/student/CataloguePage.test.tsx` | ❌ W0 | ⬜ pending |
-| 6-04-01 | 04 | 2 | UX-P6-05 | unit | `yarn test src/pages/student/CourseDetailPage.test.tsx` | ❌ W0 | ⬜ pending |
+| 6-04-01 | 04 | 3 | UX-P6-04 | unit | `yarn test src/pages/student/CataloguePage.test.tsx` | ❌ W0 | ⬜ pending |
+| 6-05-01 | 05 | 4 | UX-P6-05 | unit | `yarn test src/pages/student/CourseDetailPage.test.tsx` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
