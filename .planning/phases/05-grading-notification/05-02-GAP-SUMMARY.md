@@ -46,14 +46,22 @@ completed_at: 2026-04-27T12:52:09Z
 
 `226ecda` feat(phase-05-gap): close GAP-A/B/C/D - grading page, teacher images, bell dropdown
 
-## Human Actions Required
+## Post-execution fixes (UAT session 2026-04-27)
 
-**Task 6 — Apply 3 SQL migrations to Supabase Dashboard (blocking):**
-1. `supabase/migrations/20260407_07_student_viewed_at.sql`
-2. `supabase/migrations/20260427_10_submissions_fk_profiles.sql`
-3. `supabase/migrations/20260427_11_teacher_images.sql`
+During UAT the following bugs were found and fixed:
 
-Navigate to: Supabase Dashboard → SQL Editor → New query → paste each migration → Run
+- **`lessons.slug` does not exist** — removed `slug` from `getGradedUnviewed` select query and `GradedUnviewedSubmission` type (lessons table has no slug column)
+- **Storage 400 on teacher upload** — added missing INSERT policy `supabase/migrations/20260427_12_teacher_storage_upload_policy.sql` for `teacher/` prefix in submissions bucket
+- **Bell badge not decrementing** — `SubmissionArea` was invalidating wrong query key (`['student','unviewed-grades']` vs `['graded-unviewed']`); fixed to use matching key for instant badge decrement
+- **UI improvements**: two-column sticky layout (image left, form right), `react-medium-image-zoom` for click-to-zoom, container widened to `max-w-6xl`, image `max-h` removed
 
-**Task 7 — End-to-end UAT re-run (blocking)**
-Re-run all UAT scenarios from the checklist to confirm grading page, teacher images, and bell dropdown work against live database.
+## Human Actions — COMPLETED ✅
+
+**Task 6:** All 4 migrations applied to live Supabase:
+1. `20260407_07_student_viewed_at.sql` ✅
+2. `20260427_10_submissions_fk_profiles.sql` ✅
+3. `20260427_11_teacher_images.sql` ✅
+4. `20260427_12_teacher_storage_upload_policy.sql` ✅
+
+**Task 7 — UAT: APPROVED 2026-04-27**
+All 15 test cases passed (B1-B2, A1-A6, C1-C2, D1-D5).
