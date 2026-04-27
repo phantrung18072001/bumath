@@ -45,6 +45,14 @@ Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ t
 - ✓ Giảng viên nhập điểm và viết nhận xét/comment trên bài nộp — Validated in Phase 5: Grading & Notification
 - ✓ Học sinh nhận thông báo và xem kết quả chấm bài — Validated in Phase 5: Grading & Notification
 
+**UX Polish (Phase 6)**
+- ✓ Admin grading queue với bộ lọc (lớp, khóa học, bài học, học sinh) — Validated in Phase 6: UX Polish
+- ✓ Trang 404 tiếng Việt với link điều hướng theo role — Validated in Phase 6: UX Polish
+- ✓ StudentLayout: logo link về trang chủ + nav links tới /courses và /catalogue — Validated in Phase 6: UX Polish
+- ✓ Student course catalogue tại /catalogue với badge đã/chưa đăng ký — Validated in Phase 6: UX Polish
+- ✓ CourseDetailPage preview mode cho học sinh chưa đăng ký — Validated in Phase 6: UX Polish
+- ✓ Progress bar track color fix (bg-muted thay vì bg-secondary) — Validated in Phase 6: UX Polish
+
 **Progress Tracking**
 - [ ] Hiển thị bài nào đã xem / chưa xem trong từng khóa
 - [ ] Progress bar % hoàn thành theo khóa học
@@ -89,6 +97,8 @@ Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ t
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
+
+Last updated: Phase 6 complete — all 6 milestone phases delivered. BuMath v1.0 MVP complete.
 
 **After each phase transition** (via `/gsd:transition`):
 1. Requirements invalidated? → Move to Out of Scope with reason
