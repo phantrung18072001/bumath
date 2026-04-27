@@ -33,6 +33,9 @@ Single-page React application for a Vietnamese math education platform (grades 7
 ### Component structure
 - `src/components/landing/` — Marketing landing page sections: `Header`, `HeroSection`, `ClassGrid`, `IntensiveSection`, `TestimonialsSection`, `ConsultationForm`, `Footer`
 - `src/components/ui/` — shadcn/ui components (do not modify these manually; use the shadcn CLI to add/update)
+
+### UI Component Rule
+**Always use shadcn/ui or Radix primitives before implementing custom components.** Check `src/components/ui/` and https://ui.shadcn.com/docs/components first. If a component is missing, install it with `yarn dlx shadcn@latest add <name>` before building from scratch.
 - `src/hooks/` — Custom hooks (`use-toast`, `use-mobile`)
 - `src/lib/utils.ts` — `cn()` utility (clsx + tailwind-merge)
 
