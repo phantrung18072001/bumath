@@ -80,3 +80,17 @@ export async function deleteCourse(id: string): Promise<void> {
   const { error } = await supabase.from('courses').delete().eq('id', id)
   if (error) throw error
 }
+
+/**
+ * Fetch all courses for the student catalogue view.
+ * Requires RLS migration 20260428_13_catalogue_rls.sql to be applied.
+ * Orders by target_grade for consistent grouping in UI.
+ */
+export async function fetchAllCourses(): Promise<Course[]> {
+  const { data, error } = await supabase
+    .from('courses')
+    .select('*')
+    .order('target_grade', { ascending: true })
+  if (error) throw error
+  return data as Course[]
+}
