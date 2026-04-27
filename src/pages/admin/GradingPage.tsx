@@ -313,6 +313,7 @@ export default function GradingPage() {
             </div>
           )}
           </div>
+          </div>
         </div>
       </div>
     </div>
