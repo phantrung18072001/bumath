@@ -4,9 +4,8 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { Menu, X, Phone, CreditCard, HelpCircle, LogOut, LayoutDashboard, BookOpen, Library } from "lucide-react";
 
-const navItems = [
+const staticNavItems = [
   { label: "Giới thiệu", to: "/gioi-thieu" },
-  { label: "Học thử", to: "/hoc-thu" },
   { label: "Đề thi", to: "/de-thi" },
   { label: "Tài liệu", to: "/tai-lieu" },
   { label: "Tản mạn Toán & Cuộc sống", to: "/tan-man" },
@@ -16,6 +15,12 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, profile, loading, signOut } = useAuth();
   const isAuthenticated = !loading && !!user;
+
+  const navItems = [
+    staticNavItems[0],
+    { label: isAuthenticated ? "Danh mục" : "Học thử", to: "/catalogue" },
+    ...staticNavItems.slice(1),
+  ];
 
   return (
     <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
