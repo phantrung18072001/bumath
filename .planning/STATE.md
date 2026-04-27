@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-stopped_at: Completed 06-00-PLAN.md
-last_updated: "2026-04-27T15:10:15.137Z"
+stopped_at: Completed 06-03-PLAN.md
+last_updated: "2026-04-27T15:18:19.070Z"
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 31
-  completed_plans: 28
+  completed_plans: 29
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-24)
 ## Current Position
 
 Phase: 06 (ux-polish) — EXECUTING
-Plan: 4 of 6
+Plan: 5 of 6
 
 ## Performance Metrics
 
@@ -67,6 +67,7 @@ Plan: 4 of 6
 | Phase 06-ux-polish P01 | 5 | 3 tasks | 5 files |
 | Phase 06-ux-polish P02 | 8min | 3 tasks | 3 files |
 | Phase 06-ux-polish P00 | 7min | 5 tasks | 4 files |
+| Phase 06-ux-polish P03 | 7min | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -124,6 +125,8 @@ Recent decisions affecting current work:
 - [Phase 06-ux-polish]: Role-aware 404 redirect: students → /courses, others → / for better nav flow
 - [Phase 06-ux-polish]: Radix UI SelectItem requires non-empty value: use 'all' sentinel instead of '' for default Select option
 - [Phase 06-ux-polish]: CataloguePage.tsx placeholder created — Vite resolves dynamic imports at transform time; stub needed for Wave 0 test loading
+- [Phase 06-ux-polish]: fetchAllCourses() separate from fetchCourses() — different ordering allows future divergence
+- [Phase 06-ux-polish]: approved_user_read_all_* replaces enrolled-only RLS — enrollment lock enforced by UI not RLS
 
 ### Pending Todos
 
@@ -138,6 +141,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-27T15:10:15.134Z
-Stopped at: Completed 06-00-PLAN.md
+Last session: 2026-04-27T15:18:19.067Z
+Stopped at: Completed 06-03-PLAN.md
 Resume file: None
