@@ -43,7 +43,7 @@ const App = () => (
             <Route path="/admin/submissions" element={<ProtectedRoute requiredRole="admin"><AdminLayout><SubmissionsPage /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/submissions/:submissionId" element={<ProtectedRoute requiredRole="admin"><AdminLayout><GradingPage /></AdminLayout></ProtectedRoute>} />
             <Route path="/courses" element={<ProtectedRoute requiredRole="student"><StudentCoursesPage /></ProtectedRoute>} />
-            <Route path="/courses/:courseSlug" element={<ProtectedRoute requiredRole="student"><StudentCourseDetailPage /></ProtectedRoute>} />
+            <Route path="/courses/:courseSlug" element={<StudentCourseDetailPage />} />
             <Route path="/catalogue" element={<StudentCataloguePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

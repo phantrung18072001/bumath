@@ -7,8 +7,15 @@ CREATE POLICY "public_read_courses"
   TO anon
   USING (true);
 
--- Allow anonymous users to read chapters (needed for course preview)
+-- Allow anonymous users to read chapters (needed for course TOC preview)
 CREATE POLICY "public_read_chapters"
   ON chapters FOR SELECT
+  TO anon
+  USING (true);
+
+-- Allow anonymous users to read lesson titles (needed for course TOC preview)
+-- Note: video_url (YouTube embeds) and assignment_path are not secret
+CREATE POLICY "public_read_lessons"
+  ON lessons FOR SELECT
   TO anon
   USING (true);

@@ -135,12 +135,11 @@ export default function CataloguePage() {
           {filteredCourses.map((course) => {
             const isEnrolled = isAuthenticated && enrolledCourseIds.has(course.id)
             const gradeBadge = GRADE_BADGE[course.target_grade]
-            const courseLink = isAuthenticated ? `/courses/${course.slug}` : '/login'
 
             return (
               <Link
                 key={course.id}
-                to={courseLink}
+                to={`/courses/${course.slug}`}
                 className="block"
               >
                 <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">

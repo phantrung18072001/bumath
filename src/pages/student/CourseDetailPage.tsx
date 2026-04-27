@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Lock } from 'lucide-react'
+import { ArrowLeft, Lock, LogIn } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/contexts/AuthContext'
 import StudentLayout from '@/components/student/StudentLayout'
+import Header from '@/components/landing/Header'
 import LessonSidebar from '@/components/student/LessonSidebar'
 import LessonContent from '@/components/student/LessonContent'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { fetchCourseBySlug } from '@/lib/api/courses'
 import { fetchChapters } from '@/lib/api/chapters'
 import { fetchLessons, type Lesson } from '@/lib/api/lessons'
@@ -20,7 +22,8 @@ import { GRADE_BADGE } from '@/lib/constants/grades'
 
 export default function CourseDetailPage() {
   const { courseSlug } = useParams<{ courseSlug: string }>()
-  const { profile } = useAuth()
+  const { user, profile, loading: authLoading } = useAuth()
+  const isAuthenticated = !authLoading && !!user
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null)
   const [searchParams] = useSearchParams()
   const lessonIdFromQuery = searchParams.get('lesson')
@@ -32,18 +35,18 @@ export default function CourseDetailPage() {
   })
   const courseId = course?.id
 
-  // Query user's enrollments to determine if enrolled in this course
+  // Query user's enrollments — only when authenticated
   const {
     data: enrollments,
     isLoading: enrollmentsLoading,
   } = useQuery({
     queryKey: ['enrollments', profile?.id],
     queryFn: () => getUserEnrollments(profile!.id),
-    enabled: !!profile?.id,
+    enabled: isAuthenticated && !!profile?.id,
   })
 
   // Check if user is enrolled in this specific course
-  const isEnrolled = !!enrollments?.some(e => e.course_id === courseId)
+  const isEnrolled = isAuthenticated && !!enrollments?.some(e => e.course_id === courseId)
 
   // 1. Fetch chapters
   const {
@@ -76,20 +79,20 @@ export default function CourseDetailPage() {
     : []
   const allLessonIds = allLessons.map(l => l.id)
 
-  // 4. Fetch lesson progress
+  // 4. Fetch lesson progress — only when authenticated
   const { data: progressData } = useQuery({
     queryKey: ['lesson-progress', courseId],
     queryFn: () => getLessonProgress(profile!.id, allLessonIds),
-    enabled: !!profile?.id && allLessonIds.length > 0,
+    enabled: isAuthenticated && !!profile?.id && allLessonIds.length > 0,
   })
 
   const completedLessonIds = new Set(progressData?.map(p => p.lesson_id) ?? [])
 
-  // 5. Fetch submissions
+  // 5. Fetch submissions — only when authenticated
   const { data: submissionsData } = useQuery({
     queryKey: ['submissions', courseId],
     queryFn: () => getSubmissions(profile!.id, allLessonIds),
-    enabled: !!profile?.id && allLessonIds.length > 0,
+    enabled: isAuthenticated && !!profile?.id && allLessonIds.length > 0,
   })
 
   const submissionMap = new Map(submissionsData?.map(s => [s.lesson_id, s]) ?? [])
@@ -123,23 +126,24 @@ export default function CourseDetailPage() {
   const activeSubmission = activeLessonId ? submissionMap.get(activeLessonId) ?? null : null
 
   // Wait for BOTH enrollment and content queries before deciding mode
-  const isLoading = courseLoading || chaptersLoading || lessonsLoading || enrollmentsLoading
+  const isLoading = authLoading || courseLoading || chaptersLoading || lessonsLoading ||
+    (isAuthenticated && enrollmentsLoading)
 
   // Error state
   const hasError = courseError || chaptersError || lessonsError
 
   const backLink = (
     <Link
-      to="/courses"
+      to={isAuthenticated ? '/courses' : '/catalogue'}
       className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
     >
       <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-      Khóa học của tôi
+      {isAuthenticated ? 'Khóa học của tôi' : 'Danh mục khóa học'}
     </Link>
   )
 
-  return (
-    <StudentLayout>
+  const pageContent = (
+    <>
       {hasError && (
         <div className="px-4 md:px-8 py-4">
           <div className="mb-3">{backLink}</div>
@@ -248,8 +252,8 @@ export default function CourseDetailPage() {
             </div>
           </>
         ) : (
-          /* Preview mode — non-enrolled students */
-          <div className="px-4 md:px-8 py-4">
+          /* Preview mode — non-enrolled or unauthenticated users */
+          <div className="px-4 md:px-8 py-4 max-w-3xl">
             <div className="mb-4">{backLink}</div>
 
             {/* Course header */}
@@ -267,21 +271,33 @@ export default function CourseDetailPage() {
               )}
             </div>
 
-            {/* Lock notice banner */}
-            <div className="bg-muted border border-border rounded-lg p-4 mb-4 flex items-center gap-2">
-              <Lock className="h-5 w-5 text-muted-foreground shrink-0" aria-hidden="true" />
-              <p className="text-sm text-muted-foreground">
-                Bạn chưa đăng ký khóa học này.
-              </p>
+            {/* Lock / CTA banner */}
+            <div className="bg-muted border border-border rounded-lg p-4 mb-6 flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex items-center gap-2">
+                <Lock className="h-5 w-5 text-muted-foreground shrink-0" aria-hidden="true" />
+                <p className="text-sm text-muted-foreground">
+                  {isAuthenticated
+                    ? 'Bạn chưa đăng ký khóa học này.'
+                    : 'Đăng nhập để học và theo dõi tiến độ của bạn.'}
+                </p>
+              </div>
+              {!isAuthenticated && (
+                <Link to="/login">
+                  <Button size="sm" className="gap-1.5 shrink-0">
+                    <LogIn className="h-4 w-4" />
+                    Đăng nhập
+                  </Button>
+                </Link>
+              )}
             </div>
 
-            {/* Chapter accordion list */}
+            {/* Chapter/lesson TOC */}
             {chapters.map(chapter => (
               <div key={chapter.id} className="border rounded-lg p-4 mb-4">
                 <h3 className="text-base font-semibold mb-2">{chapter.title}</h3>
                 <ul>
                   {(lessonsByChapter.get(chapter.id) ?? []).map(lesson => (
-                    <li key={lesson.id} className="flex items-center gap-2 py-2">
+                    <li key={lesson.id} className="flex items-center gap-2 py-2 border-t border-border/50 first:border-t-0">
                       <Lock className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                       <span className="text-sm text-muted-foreground">{lesson.title}</span>
                     </li>
@@ -290,15 +306,28 @@ export default function CourseDetailPage() {
               </div>
             ))}
 
-            {/* Contact CTA */}
-            <div className="mt-6 p-4 bg-muted rounded-lg text-center">
-              <p className="text-sm text-muted-foreground">
-                Vui lòng liên hệ giảng viên để được đăng ký khóa học này.
-              </p>
-            </div>
+            {/* Contact CTA — only for authenticated non-enrolled */}
+            {isAuthenticated && (
+              <div className="mt-6 p-4 bg-muted rounded-lg text-center">
+                <p className="text-sm text-muted-foreground">
+                  Vui lòng liên hệ giảng viên để được đăng ký khóa học này.
+                </p>
+              </div>
+            )}
           </div>
         )
       )}
-    </StudentLayout>
+    </>
+  )
+
+  if (isAuthenticated) {
+    return <StudentLayout>{pageContent}</StudentLayout>
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main>{pageContent}</main>
+    </div>
   )
 }
