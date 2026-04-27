@@ -2,8 +2,11 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Star } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 
 const HeroSection = () => {
+  const { user, loading } = useAuth();
+  const isAuthenticated = !loading && !!user;
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5 py-16 md:py-24">
       {/* Decorative shapes */}
@@ -52,7 +55,7 @@ const HeroSection = () => {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
           >
-            <Link to="/register">
+            <Link to={isAuthenticated ? "/courses" : "/catalogue"}>
               <Button size="lg" className="gap-2 text-base font-semibold shadow-lg shadow-primary/25">
                 Bắt đầu học ngay <ArrowRight className="h-5 w-5" />
               </Button>
