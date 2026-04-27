@@ -36,7 +36,7 @@ export default function SubmissionArea({
   useEffect(() => {
     if (submission?.status === 'graded' && !submission.student_viewed_at) {
       markGradeViewed(submission.id)
-        .then(() => queryClient.invalidateQueries({ queryKey: ['student', 'unviewed-grades'] }))
+        .then(() => queryClient.invalidateQueries({ queryKey: ['graded-unviewed'] }))
         .catch(() => {})
     }
   }, [submission?.id, submission?.status, submission?.student_viewed_at])
