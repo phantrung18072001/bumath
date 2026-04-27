@@ -118,3 +118,17 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 3. Course Management | 4/5 | In Progress|  |
 | 4. Student Learning & Submission | 5/5 | Complete | 2026-04-07 |
 | 5. Grading & Notification | 4/4 | Complete   | 2026-04-08 |
+| 6. UX Polish | 0/TBD | Not started |  |
+
+### Phase 6: UX Polish
+
+**Goal:** Improve usability across the platform — grading filters, student course discovery flow, navigation fixes, and visual polish
+**Requirements**: TBD
+**Depends on:** Phase 5
+**Plans:** TBD (run /gsd-plan-phase 6 to break down)
+
+**Scope:**
+- Admin grading queue: filter by class (grade), course, lesson, student name
+- Student: fix 404 pages; clear entry point to "my courses"; browsable course catalogue before enrollment; course preview (chapters/lessons list) before purchase
+- Navigation: BuMath logo click → home page; show logo + name together
+- Course progress column: use gray/neutral color instead of current blue

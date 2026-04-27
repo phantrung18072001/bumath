@@ -67,6 +67,10 @@ Plan: 1 of 6
 
 ## Accumulated Context
 
+### Roadmap Evolution
+
+- Phase 6 added: UX Polish — grading filters, student course discovery, nav fixes, progress bar color
+
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.
