@@ -118,14 +118,14 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 3. Course Management | 4/5 | In Progress|  |
 | 4. Student Learning & Submission | 5/5 | Complete | 2026-04-07 |
 | 5. Grading & Notification | 4/4 | Complete   | 2026-04-08 |
-| 6. UX Polish | 5/6 | In Progress|  |
+| 6. UX Polish | 6/6 | Complete   | 2026-04-27 |
 
 ### Phase 6: UX Polish
 
 **Goal:** Improve usability across the platform — grading filters, student course discovery flow, navigation fixes, and visual polish
 **Requirements**: UX-P6-01, UX-P6-02, UX-P6-03, UX-P6-04, UX-P6-05, UX-P6-06
 **Depends on:** Phase 5
-**Plans:** 5/6 plans executed
+**Plans:** 6/6 plans complete
 
 Plans:
 - [x] 06-00-PLAN.md — Wave 0: Test stubs for Nyquist compliance

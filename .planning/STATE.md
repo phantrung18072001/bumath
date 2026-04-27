@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to execute
-stopped_at: Completed 06-04-PLAN.md
-last_updated: "2026-04-27T15:23:43.679Z"
+status: Phase complete — ready for verification
+stopped_at: Completed 06-05-PLAN.md
+last_updated: "2026-04-27T15:28:42.679Z"
 progress:
   total_phases: 6
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 31
-  completed_plans: 30
+  completed_plans: 31
 ---
 
 # Project State
@@ -69,6 +69,7 @@ Plan: 6 of 6
 | Phase 06-ux-polish P00 | 7min | 5 tasks | 4 files |
 | Phase 06-ux-polish P03 | 7min | 3 tasks | 3 files |
 | Phase 06-ux-polish PP04 | 5min | 2 tasks | 3 files |
+| Phase 06 P05 | 8min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -130,6 +131,7 @@ Recent decisions affecting current work:
 - [Phase 06-ux-polish]: approved_user_read_all_* replaces enrolled-only RLS — enrollment lock enforced by UI not RLS
 - [Phase 06-ux-polish]: Replaced CataloguePage placeholder stub with full dual-query implementation (fetchAllCourses + getUserEnrollments)
 - [Phase 06-ux-polish]: Fixed test mock leak: empty state test explicitly resets fetchAllCourses to [] since vi.clearAllMocks() does not reset implementations
+- [Phase 06]: enrollmentsLoading in composite isLoading prevents mode flash before enrollment query resolves
 
 ### Pending Todos
 
@@ -144,6 +146,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-27T15:23:43.675Z
-Stopped at: Completed 06-04-PLAN.md
+Last session: 2026-04-27T15:28:42.676Z
+Stopped at: Completed 06-05-PLAN.md
 Resume file: None
