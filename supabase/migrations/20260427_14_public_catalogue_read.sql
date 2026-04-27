@@ -2,10 +2,11 @@
 -- Phase 6 UX Polish — unauthenticated visitors can browse the course catalogue
 
 -- Allow anonymous users to read courses (title, description, target_grade, slug)
+-- Only published courses are visible to unauthenticated visitors
 CREATE POLICY "public_read_courses"
   ON courses FOR SELECT
   TO anon
-  USING (true);
+  USING (is_published = true);
 
 -- Allow anonymous users to read chapters (needed for course TOC preview)
 CREATE POLICY "public_read_chapters"

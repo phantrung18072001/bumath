@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Loader2, Plus, Pencil, Trash2, BookOpen } from 'lucide-react'
+import { Loader2, Plus, Pencil, Trash2, BookOpen, Globe, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Table,
@@ -30,7 +30,7 @@ import {
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb'
 import { Link } from 'react-router-dom'
-import { fetchCourses, deleteCourse, Course } from '@/lib/api/courses'
+import { fetchCourses, deleteCourse, publishCourse, Course } from '@/lib/api/courses'
 import CourseFormDialog from '@/components/admin/CourseFormDialog'
 import { GRADE_BADGE } from '@/lib/constants/grades'
 
@@ -64,6 +64,18 @@ export default function CoursesPage() {
     },
     onError: () => {
       toast.error('Xóa không thành công. Vui lòng thử lại.')
+    },
+  })
+
+  const publishMutation = useMutation({
+    mutationFn: ({ id, published }: { id: string; published: boolean }) =>
+      publishCourse(id, published),
+    onSuccess: (_, { published }) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'courses'] })
+      toast.success(published ? 'Đã công khai khóa học.' : 'Đã chuyển về bản nháp.')
+    },
+    onError: () => {
+      toast.error('Không thể cập nhật trạng thái. Vui lòng thử lại.')
     },
   })
 
@@ -125,6 +137,7 @@ export default function CoursesPage() {
                 <TableHead>Tên khóa học</TableHead>
                 <TableHead>Mô tả</TableHead>
                 <TableHead>Lớp mục tiêu</TableHead>
+                <TableHead>Trạng thái</TableHead>
                 <TableHead>Hành động</TableHead>
               </TableRow>
             </TableHeader>
@@ -137,6 +150,19 @@ export default function CoursesPage() {
                   </TableCell>
                   <TableCell>
                     <GradeBadge grade={course.target_grade} />
+                  </TableCell>
+                  <TableCell>
+                    {course.is_published ? (
+                      <Badge className="bg-green-100 text-green-700 hover:bg-green-100 gap-1">
+                        <Globe className="h-3 w-3" />
+                        Công khai
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-muted-foreground gap-1">
+                        <EyeOff className="h-3 w-3" />
+                        Nháp
+                      </Badge>
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2 flex-wrap">
@@ -157,6 +183,21 @@ export default function CoursesPage() {
                         onClick={() => handleOpenEdit(course)}
                       >
                         <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant={course.is_published ? 'outline' : 'default'}
+                        size="sm"
+                        className="min-h-[48px] text-xs"
+                        disabled={publishMutation.isPending}
+                        onClick={() => publishMutation.mutate({ id: course.id, published: !course.is_published })}
+                      >
+                        {publishMutation.isPending ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : course.is_published ? (
+                          <><EyeOff className="h-3.5 w-3.5 mr-1" />Ẩn</>
+                        ) : (
+                          <><Globe className="h-3.5 w-3.5 mr-1" />Công khai</>
+                        )}
                       </Button>
                       <Button
                         variant="outline"

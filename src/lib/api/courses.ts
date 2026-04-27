@@ -7,6 +7,7 @@ export interface Course {
   slug: string
   description: string | null
   target_grade: 'grade_7' | 'grade_8' | 'grade_9' | 'advanced'
+  is_published: boolean
   created_at: string
   updated_at: string
 }
@@ -85,12 +86,23 @@ export async function deleteCourse(id: string): Promise<void> {
  * Fetch all courses for the student catalogue view.
  * Requires RLS migration 20260428_13_catalogue_rls.sql to be applied.
  * Orders by target_grade for consistent grouping in UI.
+ * RLS enforces is_published = true for non-admin users.
  */
 export async function fetchAllCourses(): Promise<Course[]> {
   const { data, error } = await supabase
     .from('courses')
     .select('*')
+    .eq('is_published', true)
     .order('target_grade', { ascending: true })
   if (error) throw error
   return data as Course[]
+}
+
+/** Toggle published state of a course. Admin only (enforced by RLS). */
+export async function publishCourse(id: string, isPublished: boolean): Promise<void> {
+  const { error } = await supabase
+    .from('courses')
+    .update({ is_published: isPublished })
+    .eq('id', id)
+  if (error) throw error
 }
