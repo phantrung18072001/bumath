@@ -65,11 +65,11 @@
 ### UX Polish (Phase 6)
 
 - [ ] **UX-P6-01**: Giảng viên có thể lọc danh sách bài chờ chấm theo lớp, khóa học, bài học, và tên học sinh
-- [ ] **UX-P6-02**: Trang 404 hiển thị tiếng Việt và link về trang chủ phù hợp theo role
-- [ ] **UX-P6-03**: Logo BuMath trong StudentLayout là link có thể click về trang chủ, có nav links
+- [x] **UX-P6-02**: Trang 404 hiển thị tiếng Việt và link về trang chủ phù hợp theo role
+- [x] **UX-P6-03**: Logo BuMath trong StudentLayout là link có thể click về trang chủ, có nav links
 - [ ] **UX-P6-04**: Học sinh có thể xem danh sách tất cả khóa học (catalogue) với badge trạng thái đăng ký
 - [ ] **UX-P6-05**: Học sinh chưa đăng ký có thể xem preview khóa học (danh sách chương/bài với lock icon)
-- [ ] **UX-P6-06**: Thanh progress bar dùng màu xám trung tính thay vì màu xanh
+- [x] **UX-P6-06**: Thanh progress bar dùng màu xám trung tính thay vì màu xanh
 
 ## v2 Requirements
 
@@ -144,11 +144,11 @@
 | GRADE-04 | Phase 5 — Grading & Notification | Complete |
 | GRADE-05 | Phase 5 — Grading & Notification | Complete |
 | UX-P6-01 | Phase 6 — UX Polish | Pending |
-| UX-P6-02 | Phase 6 — UX Polish | Pending |
-| UX-P6-03 | Phase 6 — UX Polish | Pending |
+| UX-P6-02 | Phase 6 — UX Polish | Complete |
+| UX-P6-03 | Phase 6 — UX Polish | Complete |
 | UX-P6-04 | Phase 6 — UX Polish | Pending |
 | UX-P6-05 | Phase 6 — UX Polish | Pending |
-| UX-P6-06 | Phase 6 — UX Polish | Pending |
+| UX-P6-06 | Phase 6 — UX Polish | Complete |
 
 **Coverage:**
 - v1 requirements: 38 total

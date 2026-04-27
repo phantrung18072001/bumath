@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Complete
-stopped_at: Phase 05 GAP UAT approved — all 15/15 test cases passed — MVP complete
-last_updated: "2026-04-27T20:44:00.000+07:00"
+status: Ready to execute
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-04-27T15:06:49.242Z"
 progress:
-  total_phases: 5
+  total_phases: 6
   completed_phases: 5
-  total_plans: 25
-  completed_plans: 25
+  total_plans: 31
+  completed_plans: 26
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-24)
 
 **Core value:** Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ thể từ giảng viên trên từng bài làm
-**Current focus:** Phase 03 — course-management
+**Current focus:** Phase 06 — ux-polish
 
 ## Current Position
 
-Phase: 03 (course-management) — EXECUTING
-Plan: 1 of 6
+Phase: 06 (ux-polish) — EXECUTING
+Plan: 2 of 6
 
 ## Performance Metrics
 
@@ -64,6 +64,7 @@ Plan: 1 of 6
 | Phase 05-grading-notification P00 | 4 | 2 tasks | 4 files |
 | Phase 05-grading-notification P03 | 4min | 2 tasks | 5 files |
 | Phase 05-grading-notification P02 | 11min | 3 tasks | 6 files |
+| Phase 06-ux-polish P01 | 5 | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -117,6 +118,8 @@ Recent decisions affecting current work:
 - [Phase 05-grading-notification]: refetchInterval 60_000 for bell badge — free-tier safe polling, avoids Realtime subscription overhead
 - [Phase 05-grading-notification]: Dynamic import() replaces require() in vitest ESM test stubs — CJS require() fails in Vitest v3 ESM mode even when module exists
 - [Phase 05-grading-notification]: useEffect cancellation flag pattern for async signed URL loading in GradingDialog — prevents state updates after unmount
+- [Phase 06-ux-polish]: bg-muted className override on Progress — CLAUDE.md prohibits editing src/components/ui/ components directly
+- [Phase 06-ux-polish]: Role-aware 404 redirect: students → /courses, others → / for better nav flow
 
 ### Pending Todos
 
@@ -131,6 +134,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-27T20:44:00.000+07:00
-Stopped at: Phase 05 GAP UAT approved — all 15/15 test cases passed — MVP v1.0 complete
+Last session: 2026-04-27T15:06:49.239Z
+Stopped at: Completed 06-01-PLAN.md
 Resume file: None
