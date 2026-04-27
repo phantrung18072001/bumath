@@ -100,6 +100,9 @@ describe('CataloguePage', () => {
   })
 
   it('shows empty state when no courses exist', async () => {
+    const { fetchAllCourses } = await import('@/lib/api/courses')
+    ;(fetchAllCourses as ReturnType<typeof vi.fn>).mockResolvedValue([])
+
     await renderCataloguePage()
     await waitFor(() => {
       expect(screen.getByText('Chưa có khóa học nào')).toBeInTheDocument()
