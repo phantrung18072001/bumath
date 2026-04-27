@@ -25,9 +25,9 @@ import { Button } from '@/components/ui/button'
 
 export default function SubmissionsPage() {
   const navigate = useNavigate()
-  const [filterGrade, setFilterGrade] = useState('')
-  const [filterCourse, setFilterCourse] = useState('')
-  const [filterLesson, setFilterLesson] = useState('')
+  const [filterGrade, setFilterGrade] = useState('all')
+  const [filterCourse, setFilterCourse] = useState('all')
+  const [filterLesson, setFilterLesson] = useState('all')
   const [filterStudent, setFilterStudent] = useState('')
 
   const { data = [], isLoading } = useQuery<UngradedSubmission[]>({
@@ -48,9 +48,9 @@ export default function SubmissionsPage() {
 
   // Apply client-side filters
   const filteredData = data.filter(row =>
-    (!filterGrade || row.lessons.chapters.courses.target_grade === filterGrade) &&
-    (!filterCourse || row.lessons.chapters.courses.title === filterCourse) &&
-    (!filterLesson || row.lessons.title === filterLesson) &&
+    (filterGrade === 'all' || row.lessons.chapters.courses.target_grade === filterGrade) &&
+    (filterCourse === 'all' || row.lessons.chapters.courses.title === filterCourse) &&
+    (filterLesson === 'all' || row.lessons.title === filterLesson) &&
     (!filterStudent || row.profiles.full_name.toLowerCase().includes(filterStudent.toLowerCase()))
   )
 
@@ -74,7 +74,7 @@ export default function SubmissionsPage() {
               <SelectValue placeholder="Tất cả lớp" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Tất cả lớp</SelectItem>
+              <SelectItem value="all">Tất cả lớp</SelectItem>
               {uniqueGrades.map(grade => (
                 <SelectItem key={grade} value={grade}>
                   {GRADE_BADGE[grade].label}
@@ -89,7 +89,7 @@ export default function SubmissionsPage() {
               <SelectValue placeholder="Tất cả khóa học" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Tất cả khóa học</SelectItem>
+              <SelectItem value="all">Tất cả khóa học</SelectItem>
               {uniqueCourses.map(course => (
                 <SelectItem key={course} value={course}>
                   {course}
@@ -104,7 +104,7 @@ export default function SubmissionsPage() {
               <SelectValue placeholder="Tất cả bài học" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Tất cả bài học</SelectItem>
+              <SelectItem value="all">Tất cả bài học</SelectItem>
               {uniqueLessons.map(lesson => (
                 <SelectItem key={lesson} value={lesson}>
                   {lesson}

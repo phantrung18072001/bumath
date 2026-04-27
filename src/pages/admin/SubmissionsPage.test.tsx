@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react'
+import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 // --- Mock data ---
@@ -11,7 +12,22 @@ const mockUngraded = [
     file_path: 'submissions/student-1/lesson-1/photo.jpg',
     submitted_at: '2026-04-07T10:00:00Z',
     profiles: { full_name: 'Nguyen Van A' },
-    lessons: { title: 'Bai 1', chapters: { course_id: 'course-1', courses: { title: 'Toan 7' } } },
+    lessons: {
+      title: 'Bai 1',
+      chapters: { course_id: 'course-1', courses: { title: 'Toan 7', target_grade: 'grade_7' } }
+    },
+  },
+  {
+    id: 'sub-2',
+    user_id: 'student-2',
+    lesson_id: 'lesson-2',
+    file_path: 'submissions/student-2/lesson-2/photo.jpg',
+    submitted_at: '2026-04-07T11:00:00Z',
+    profiles: { full_name: 'Tran Thi B' },
+    lessons: {
+      title: 'Bai 2',
+      chapters: { course_id: 'course-2', courses: { title: 'Toan 8', target_grade: 'grade_8' } }
+    },
   },
 ]
 
@@ -45,9 +61,11 @@ async function renderSubmissionsPage() {
     defaultOptions: { queries: { retry: false } },
   })
   return render(
-    <QueryClientProvider client={queryClient}>
-      <SubmissionsPage />
-    </QueryClientProvider>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <SubmissionsPage />
+      </QueryClientProvider>
+    </BrowserRouter>
   )
 }
 
@@ -80,6 +98,64 @@ describe('SubmissionsPage', () => {
     await waitFor(() => {
       expect(screen.getByText('Nguyen Van A')).toBeInTheDocument()
       expect(screen.getByText('Toan 7')).toBeInTheDocument()
+    })
+  })
+
+  it('shows filter bar when submissions exist', async () => {
+    const { getUngraded } = await import('@/lib/api/submissions')
+    ;(getUngraded as ReturnType<typeof vi.fn>).mockResolvedValue(mockUngraded)
+
+    await renderSubmissionsPage()
+    await waitFor(() => {
+      expect(screen.getByRole('combobox', { name: /lọc theo lớp/i })).toBeInTheDocument()
+      expect(screen.getByRole('combobox', { name: /lọc theo khóa học/i })).toBeInTheDocument()
+      expect(screen.getByRole('combobox', { name: /lọc theo bài học/i })).toBeInTheDocument()
+      expect(screen.getByPlaceholderText('Tìm học sinh...')).toBeInTheDocument()
+    })
+  })
+
+  it('shows result count', async () => {
+    const { getUngraded } = await import('@/lib/api/submissions')
+    ;(getUngraded as ReturnType<typeof vi.fn>).mockResolvedValue(mockUngraded)
+
+    await renderSubmissionsPage()
+    await waitFor(() => {
+      expect(screen.getByText(/Hiển thị 2 \/ 2 bài nộp/)).toBeInTheDocument()
+    })
+  })
+
+  it('filters by student name', async () => {
+    const { getUngraded } = await import('@/lib/api/submissions')
+    const userEvent = (await import('@testing-library/user-event')).default
+    ;(getUngraded as ReturnType<typeof vi.fn>).mockResolvedValue(mockUngraded)
+
+    await renderSubmissionsPage()
+    await waitFor(() => {
+      expect(screen.getByText('Nguyen Van A')).toBeInTheDocument()
+      expect(screen.getByText('Tran Thi B')).toBeInTheDocument()
+    })
+
+    const input = screen.getByPlaceholderText('Tìm học sinh...')
+    await userEvent.type(input, 'Nguyen')
+
+    await waitFor(() => {
+      expect(screen.getByText('Nguyen Van A')).toBeInTheDocument()
+      expect(screen.queryByText('Tran Thi B')).not.toBeInTheDocument()
+      expect(screen.getByText(/Hiển thị 1 \/ 2 bài nộp/)).toBeInTheDocument()
+    })
+  })
+
+  it('shows filter empty message when no results match', async () => {
+    const { getUngraded } = await import('@/lib/api/submissions')
+    const userEvent = (await import('@testing-library/user-event')).default
+    ;(getUngraded as ReturnType<typeof vi.fn>).mockResolvedValue(mockUngraded)
+
+    await renderSubmissionsPage()
+    const input = await screen.findByPlaceholderText('Tìm học sinh...')
+    await userEvent.type(input, 'nonexistent')
+
+    await waitFor(() => {
+      expect(screen.getByText('Không tìm thấy bài nộp nào phù hợp với bộ lọc.')).toBeInTheDocument()
     })
   })
 })
