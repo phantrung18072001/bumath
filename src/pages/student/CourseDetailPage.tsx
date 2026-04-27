@@ -180,50 +180,22 @@ export default function CourseDetailPage() {
       )}
 
       {!isLoading && !hasError && chapters && chapters.length > 0 && lessonsByChapter && (
-        <>
-          {/* Desktop layout — viewport-filling, back link inside right panel */}
-          <div className="hidden md:flex h-[calc(100vh-48px)]">
-            <div className="w-[280px] shrink-0 bg-sidebar border-r border-sidebar-border">
-              <LessonSidebar
-                chapters={chapters}
-                lessonsByChapter={lessonsByChapter}
-                completedLessonIds={completedLessonIds}
-                activeLessonId={activeLessonId}
-                onSelectLesson={(lesson) => setActiveLessonId(lesson.id)}
-                progress={progress}
-              />
-            </div>
-            <div className="flex-1 overflow-y-auto">
-              <div className="px-8 pt-4 pb-1">{backLink}</div>
-              <LessonContent
-                lesson={activeLesson}
-                isCompleted={completedLessonIds.has(activeLessonId ?? '')}
-                submission={activeSubmission}
-                userId={profile!.id}
-                courseId={courseId!}
-              />
-            </div>
-          </div>
-
-          {/* Mobile layout — page scrolls naturally */}
-          <div className="block md:hidden">
-            <div className="px-4 pt-4 pb-1">{backLink}</div>
-            <Tabs defaultValue="content">
-              <TabsList className="w-full h-12 rounded-none border-b bg-transparent p-0 gap-0">
-                <TabsTrigger
-                  value="content"
-                  className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-medium"
-                >
-                  Nội dung
-                </TabsTrigger>
-                <TabsTrigger
-                  value="outline"
-                  className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-medium"
-                >
-                  Mục lục
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="content" className="mt-0">
+        isEnrolled ? (
+          <>
+            {/* Full mode — existing desktop layout */}
+            <div className="hidden md:flex h-[calc(100vh-48px)]">
+              <div className="w-[280px] shrink-0 bg-sidebar border-r border-sidebar-border">
+                <LessonSidebar
+                  chapters={chapters}
+                  lessonsByChapter={lessonsByChapter}
+                  completedLessonIds={completedLessonIds}
+                  activeLessonId={activeLessonId}
+                  onSelectLesson={(lesson) => setActiveLessonId(lesson.id)}
+                  progress={progress}
+                />
+              </div>
+              <div className="flex-1 overflow-y-auto">
+                <div className="px-8 pt-4 pb-1">{backLink}</div>
                 <LessonContent
                   lesson={activeLesson}
                   isCompleted={completedLessonIds.has(activeLessonId ?? '')}
@@ -231,21 +203,101 @@ export default function CourseDetailPage() {
                   userId={profile!.id}
                   courseId={courseId!}
                 />
-              </TabsContent>
-              <TabsContent value="outline" className="mt-0">
-                <LessonSidebar
-                  chapters={chapters}
-                  lessonsByChapter={lessonsByChapter}
-                  completedLessonIds={completedLessonIds}
-                  activeLessonId={activeLessonId}
-                  onSelectLesson={(lesson) => { setActiveLessonId(lesson.id) }}
-                  progress={progress}
-                  scrollable={false}
-                />
-              </TabsContent>
-            </Tabs>
+              </div>
+            </div>
+
+            {/* Full mode — existing mobile layout */}
+            <div className="block md:hidden">
+              <div className="px-4 pt-4 pb-1">{backLink}</div>
+              <Tabs defaultValue="content">
+                <TabsList className="w-full h-12 rounded-none border-b bg-transparent p-0 gap-0">
+                  <TabsTrigger
+                    value="content"
+                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-medium"
+                  >
+                    Nội dung
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="outline"
+                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-medium"
+                  >
+                    Mục lục
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="content" className="mt-0">
+                  <LessonContent
+                    lesson={activeLesson}
+                    isCompleted={completedLessonIds.has(activeLessonId ?? '')}
+                    submission={activeSubmission}
+                    userId={profile!.id}
+                    courseId={courseId!}
+                  />
+                </TabsContent>
+                <TabsContent value="outline" className="mt-0">
+                  <LessonSidebar
+                    chapters={chapters}
+                    lessonsByChapter={lessonsByChapter}
+                    completedLessonIds={completedLessonIds}
+                    activeLessonId={activeLessonId}
+                    onSelectLesson={(lesson) => { setActiveLessonId(lesson.id) }}
+                    progress={progress}
+                    scrollable={false}
+                  />
+                </TabsContent>
+              </Tabs>
+            </div>
+          </>
+        ) : (
+          /* Preview mode — non-enrolled students */
+          <div className="px-4 md:px-8 py-4">
+            <div className="mb-4">{backLink}</div>
+
+            {/* Course header */}
+            <div className="mb-6">
+              <div className="flex items-start gap-3 mb-2">
+                <h1 className="text-2xl font-semibold">{course?.title}</h1>
+                {course && (
+                  <Badge className={GRADE_BADGE[course.target_grade].className}>
+                    {GRADE_BADGE[course.target_grade].label}
+                  </Badge>
+                )}
+              </div>
+              {course?.description && (
+                <p className="text-muted-foreground text-sm">{course.description}</p>
+              )}
+            </div>
+
+            {/* Lock notice banner */}
+            <div className="bg-muted border border-border rounded-lg p-4 mb-4 flex items-center gap-2">
+              <Lock className="h-5 w-5 text-muted-foreground shrink-0" aria-hidden="true" />
+              <p className="text-sm text-muted-foreground">
+                Bạn chưa đăng ký khóa học này.
+              </p>
+            </div>
+
+            {/* Chapter accordion list */}
+            {chapters.map(chapter => (
+              <div key={chapter.id} className="border rounded-lg p-4 mb-4">
+                <h3 className="text-base font-semibold mb-2">{chapter.title}</h3>
+                <ul>
+                  {(lessonsByChapter.get(chapter.id) ?? []).map(lesson => (
+                    <li key={lesson.id} className="flex items-center gap-2 py-2">
+                      <Lock className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                      <span className="text-sm text-muted-foreground">{lesson.title}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+
+            {/* Contact CTA */}
+            <div className="mt-6 p-4 bg-muted rounded-lg text-center">
+              <p className="text-sm text-muted-foreground">
+                Vui lòng liên hệ giảng viên để được đăng ký khóa học này.
+              </p>
+            </div>
           </div>
-        </>
+        )
       )}
     </StudentLayout>
   )
