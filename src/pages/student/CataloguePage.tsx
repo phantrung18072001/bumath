@@ -86,7 +86,7 @@ export default function CataloguePage() {
             key={f.value}
             onClick={() => setGrade(f.value)}
             className={[
-              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors border',
+              'rounded-full px-4 py-2 text-sm font-semibold transition-colors border',
               activeGrade === f.value
                 ? 'bg-primary text-primary-foreground border-primary'
                 : 'bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground',

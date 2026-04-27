@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Loader2 } from 'lucide-react'
+import { Check, ChevronsUpDown, Loader2 } from 'lucide-react'
 import { getUngraded, UngradedSubmission } from '@/lib/api/submissions'
 import { GRADE_BADGE } from '@/lib/constants/grades'
+import { cn } from '@/lib/utils'
 import {
   Table,
   TableBody,
@@ -12,16 +13,74 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+
+interface ComboboxOption { value: string; label: string }
+
+function SearchableSelect({
+  options,
+  value,
+  onChange,
+  placeholder,
+  disabled,
+  width = 'w-[180px]',
+}: {
+  options: ComboboxOption[]
+  value: string
+  onChange: (v: string) => void
+  placeholder: string
+  disabled?: boolean
+  width?: string
+}) {
+  const [open, setOpen] = useState(false)
+  const selected = options.find(o => o.value === value)
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          disabled={disabled}
+          className={cn('justify-between font-normal', width)}
+        >
+          <span className="truncate">{selected ? selected.label : placeholder}</span>
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="p-0" style={{ minWidth: 'var(--radix-popover-trigger-width)', width: 'auto' }}>
+        <Command>
+          <CommandInput placeholder="Tìm..." />
+          <CommandList>
+            <CommandEmpty>Không tìm thấy.</CommandEmpty>
+            <CommandGroup>
+              <CommandItem className="px-4 py-2" value="all" onSelect={() => { onChange('all'); setOpen(false) }}>
+                <Check className={cn('mr-2 h-4 w-4', value === 'all' ? 'opacity-100' : 'opacity-0')} />
+                {placeholder}
+              </CommandItem>
+              {options.map(opt => (
+                <CommandItem className="px-4 py-2" key={opt.value} value={opt.label} onSelect={() => { onChange(opt.value); setOpen(false) }}>
+                  <Check className={cn('mr-2 h-4 w-4', value === opt.value ? 'opacity-100' : 'opacity-0')} />
+                  {opt.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  )
+}
 
 export default function SubmissionsPage() {
   const navigate = useNavigate()
@@ -35,16 +94,16 @@ export default function SubmissionsPage() {
     queryFn: getUngraded,
   })
 
-  // Derive unique filter options from loaded data
+  // Derive cascading filter options
   const uniqueGrades = Array.from(
     new Set(data.map(r => r.lessons.chapters.courses.target_grade))
   ).filter(Boolean)
-  const uniqueCourses = Array.from(
-    new Set(data.map(r => r.lessons.chapters.courses.title))
-  )
-  const uniqueLessons = Array.from(
-    new Set(data.map(r => r.lessons.title))
-  )
+
+  const gradeFiltered = filterGrade === 'all' ? data : data.filter(r => r.lessons.chapters.courses.target_grade === filterGrade)
+  const uniqueCourses = Array.from(new Set(gradeFiltered.map(r => r.lessons.chapters.courses.title)))
+
+  const courseFiltered = filterCourse === 'all' ? gradeFiltered : gradeFiltered.filter(r => r.lessons.chapters.courses.title === filterCourse)
+  const uniqueLessons = Array.from(new Set(courseFiltered.map(r => r.lessons.title)))
 
   // Apply client-side filters
   const filteredData = data.filter(row =>
@@ -69,56 +128,40 @@ export default function SubmissionsPage() {
       {!isLoading && data.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-6 p-4 bg-muted/50 rounded-lg border border-border">
           {/* Grade filter */}
-          <Select value={filterGrade} onValueChange={setFilterGrade}>
-            <SelectTrigger className="w-[140px]" aria-label="Lọc theo lớp">
-              <SelectValue placeholder="Tất cả lớp" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tất cả lớp</SelectItem>
-              {uniqueGrades.map(grade => (
-                <SelectItem key={grade} value={grade}>
-                  {GRADE_BADGE[grade].label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            options={uniqueGrades.map(g => ({ value: g, label: GRADE_BADGE[g].label }))}
+            value={filterGrade}
+            onChange={(v) => { setFilterGrade(v); setFilterCourse('all'); setFilterLesson('all') }}
+            placeholder="Tất cả lớp"
+            width="w-full"
+          />
 
-          {/* Course filter */}
-          <Select value={filterCourse} onValueChange={setFilterCourse}>
-            <SelectTrigger className="w-[180px]" aria-label="Lọc theo khóa học">
-              <SelectValue placeholder="Tất cả khóa học" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tất cả khóa học</SelectItem>
-              {uniqueCourses.map(course => (
-                <SelectItem key={course} value={course}>
-                  {course}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {/* Course filter — depends on grade */}
+          <SearchableSelect
+            options={uniqueCourses.map(c => ({ value: c, label: c }))}
+            value={filterCourse}
+            onChange={(v) => { setFilterCourse(v); setFilterLesson('all') }}
+            placeholder="Tất cả khóa học"
+            disabled={filterGrade === 'all'}
+            width="w-full"
+          />
 
-          {/* Lesson filter */}
-          <Select value={filterLesson} onValueChange={setFilterLesson}>
-            <SelectTrigger className="w-[180px]" aria-label="Lọc theo bài học">
-              <SelectValue placeholder="Tất cả bài học" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tất cả bài học</SelectItem>
-              {uniqueLessons.map(lesson => (
-                <SelectItem key={lesson} value={lesson}>
-                  {lesson}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {/* Lesson filter — depends on course */}
+          <SearchableSelect
+            options={uniqueLessons.map(l => ({ value: l, label: l }))}
+            value={filterLesson}
+            onChange={setFilterLesson}
+            placeholder="Tất cả bài học"
+            disabled={filterCourse === 'all'}
+            width="w-full"
+          />
 
           {/* Student name filter */}
           <Input
             placeholder="Tìm học sinh..."
             value={filterStudent}
             onChange={(e) => setFilterStudent(e.target.value)}
-            className="w-[180px]"
+            className="w-full"
             aria-label="Tìm học sinh theo tên"
           />
         </div>
