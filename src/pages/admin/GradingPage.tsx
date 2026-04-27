@@ -162,7 +162,7 @@ export default function GradingPage() {
                 <img
                   src={signedUrls[carouselIndex]}
                   alt={`Bài làm ${carouselIndex + 1}`}
-                  className="w-full object-contain max-h-[60vh]"
+                  className="w-full object-contain max-h-[82vh] cursor-zoom-in"
                 />
                 {totalImages > 1 && (
                   <>
@@ -193,7 +193,7 @@ export default function GradingPage() {
         </div>
 
         {/* Right: Grading form */}
-        <div className="lg:w-80 space-y-5">
+        <div className="lg:w-[420px] space-y-5">
           {/* Score */}
           <div>
             <label className="block text-sm font-semibold mb-1.5 leading-relaxed" htmlFor="grade-score">
@@ -223,7 +223,7 @@ export default function GradingPage() {
             <Textarea
               id="grade-comment"
               placeholder="Ví dụ: Làm đúng bước 1, cần kiểm tra lại dấu..."
-              rows={4}
+              rows={8}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               className="leading-relaxed"
