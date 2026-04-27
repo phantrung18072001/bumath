@@ -104,9 +104,9 @@ Declared values (Tailwind 8-point scale):
 | 3xl | 64px | `py-16` | Loader centered vertical space |
 
 **Exceptions:**
-- Touch targets: all interactive elements MUST be ≥ 48×48px (UX-02). Nav links use `px-3 py-1.5` + min-h enforcement.
+- Touch targets: all interactive elements MUST be ≥ 48×48px (UX-02). Nav links use `px-3 py-2` + min-h enforcement via header flex centering.
 - Logo image: 32×32px (`h-8 w-8`) — intentionally smaller than touch target, surrounded by 48px Link hit area.
-- Filter section: `flex-wrap gap-3` — 12px gap between filter controls (between sm and md).
+- Filter section: `flex-wrap gap-2` — 8px gap between filter controls.
 
 ---
 
@@ -116,15 +116,19 @@ Font: **"Be Vietnam Pro"** — loaded via Google Fonts CDN, weights 400/500/600/
 
 | Role | Size | Tailwind | Weight | Weight Name | Line Height | Usage |
 |------|------|----------|--------|-------------|-------------|-------|
-| Body | 14px | `text-sm` | 400 | Regular | 1.5 | Table cells, card descriptions, filter labels, progress caption |
-| Label | 14px | `text-sm` | 500 | Medium | 1.4 | Nav links, badge text, button text, form labels |
+| Body | 14px | `text-sm` | 400 | Regular | 1.5 | Table cells, card descriptions, filter labels, progress caption, nav link default text |
+| Interactive | 14px | `text-sm` | 600 | Semibold | 1.4 | Nav links (`font-medium` → renders as semibold), badge text, button text, form labels |
 | Heading | 20px | `text-xl` | 600 | Semibold | 1.3 | Page section headings (admin queue "Chấm bài", student "Khóa học của tôi") |
 | Sub-heading | 24px | `text-2xl` | 600 | Semibold | 1.25 | Course titles on CoursesPage, Catalogue page |
-| Display | 36px | `text-4xl` | 700 | Bold | 1.2 | 404 error number only |
+| Display | 36px | `text-4xl` | 700 | Bold | 1.2 | **404 error number only — single-element exception, not in global weight scale** |
+
+> **Declared weight scale: 400 (Regular) + 600 (Semibold) only.**
+> Weight 500 (Medium) is removed — all previously "medium" interactive elements (nav links, buttons, badge text, form labels) use 600 Semibold instead.
+> Weight 700 (Bold) is a single-element undeclared exception for the 404 number; it does not appear on any normal screen and is not part of the global scale.
 
 **Rules:**
 - Maximum 4 type sizes on any single screen. Never introduce a 5th.
-- Maximum 2 weights per screen. Semibold (600) + Regular (400), or Bold (700) + Regular (400) on 404 only.
+- Maximum 2 weights per screen. Semibold (600) + Regular (400) on all screens except 404.
 - Never use `font-bold` (700) except on the 404 number.
 - Vietnamese text renders well at 14px and above — do not go below 14px for any user-facing copy.
 - `text-muted-foreground` at `text-sm` = secondary/supporting copy (captions, empty state body, placeholder text).
@@ -188,7 +192,7 @@ All components below are **already installed** in `src/components/ui/`. Zero new
 
 **Nav links (desktop, hidden on mobile):**
 - Container: `<nav className="ml-4 hidden sm:flex items-center gap-1">`
-- "Khóa học của tôi" link: `to="/courses"`, `className="text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-muted transition-colors"`
+- "Khóa học của tôi" link: `to="/courses"`, `className="text-sm font-semibold px-3 py-2 rounded-lg hover:bg-muted transition-colors"`
 - "Khám phá khóa học" link: `to="/catalogue"`, same className
 - Active state: add `text-primary font-semibold` when on matching route (use `useLocation` or `NavLink`)
 - Min touch target: `min-h-[48px]` implicit via header height + flex centering
@@ -248,14 +252,14 @@ All components below are **already installed** in `src/components/ui/`. Zero new
 ```
 [Page heading: "Chấm bài"] [Badge: N bài chờ chấm]
 
-[Filter bar — flex-wrap gap-3]
+[Filter bar — flex-wrap gap-2]
   [Grade Select]  [Course Select]  [Lesson Select]  [Student name Input]  [Clear button?]
 
 [Table — existing layout unchanged]
 ```
 
 **Filter bar container:**
-- `className="flex flex-wrap gap-3 mb-6 p-4 bg-muted/50 rounded-lg border border-border"`
+- `className="flex flex-wrap gap-2 mb-6 p-4 bg-muted/50 rounded-lg border border-border"`
 
 **Filter 1 — Grade (Lớp):**
 - Component: `<Select>` with `<SelectTrigger className="w-[140px]">`
@@ -295,6 +299,7 @@ All components below are **already installed** in `src/components/ui/`. Zero new
 
 **Route:** `/catalogue` (ProtectedRoute requiredRole="student")
 **Layout:** Wrapped in `<StudentLayout>`
+**Primary focal point:** Page heading `Khám phá khóa học` (text-2xl font-semibold, first rendered element, top-left of content area)
 
 **Page structure:**
 ```
@@ -350,6 +355,7 @@ All components below are **already installed** in `src/components/ui/`. Zero new
 ### Screen 6: Course Preview Mode (CourseDetailPage — non-enrolled)
 
 **Context:** Triggered when `isEnrolled === false` AND course data loads successfully (after RLS migration allows all approved users to query).
+**Primary focal point:** Course title h1 (text-2xl font-semibold), followed immediately by the lock notice banner — together they communicate the "view-only" state within the first viewport.
 
 **Both enrollment and chapter queries must resolve before mode decision.** Show unified loading skeleton until both are done.
 
@@ -557,6 +563,10 @@ No new packages. No third-party registries. No registry vetting required.
 | No "clear filters" button | Each Select reverts to placeholder = filter cleared. Input cleared by user typing. Simplest UX for low filter count | UX |
 | GRADE_BADGE reused for catalogue | Existing constant maps `target_grade` to labels and Tailwind classes — single source of truth | RESEARCH.md §1 |
 | Vietnamese throughout | UX-03 requirement — all UI text must be Vietnamese | REQUIREMENTS.md |
+| Weight 500 (Medium) removed | Reduces on-screen weight count from 4 to 2 (400+600). All formerly "medium" interactive elements (nav links, buttons, badges, form labels) use 600 Semibold. 700 Bold retained as undeclared single-element exception for 404 number only. | gsd-ui-checker Issue 1 |
+| Nav link `py-1.5` → `py-2` | 6px is off the 4-point grid. 8px (`py-2`) keeps padding grid-compliant. Touch target is enforced by header `min-h-[48px]` + flex centering, not by link padding. | gsd-ui-checker Issue 2 |
+| Filter bar `gap-3` → `gap-2` | 12px is not in the standard spacing set {4,8,16,24,32,48,64}. 8px gap (`gap-2`) keeps the filter bar compact and grid-compliant. | gsd-ui-checker Issue 3 |
+| Focal points added for Screen 5 and Screen 6 | Explicit primary visual anchor declarations per Dimension 2 requirement. | gsd-ui-checker FLAG |
 
 ---
 
