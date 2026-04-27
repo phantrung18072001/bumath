@@ -105,7 +105,8 @@ export default function GradingPage() {
       await gradeSubmission(submissionId, parseFloat(score), comment, paths)
       toast.success('Đã lưu điểm thành công!')
       navigate('/admin/submissions')
-    } catch {
+    } catch (err) {
+      console.error('[GradingPage] handleConfirm error:', err)
       toast.error('Lưu điểm thất bại. Vui lòng thử lại.')
       setPendingConfirm(false)
     } finally {
@@ -139,7 +140,7 @@ export default function GradingPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 max-w-5xl px-4">
+    <div className="container mx-auto py-8 max-w-6xl px-4">
       {/* Back link */}
       <Link
         to="/admin/submissions"
@@ -167,7 +168,7 @@ export default function GradingPage() {
                   <img
                     src={signedUrls[carouselIndex]}
                     alt={`Bài làm ${carouselIndex + 1}`}
-                    className="w-full object-contain max-h-[80vh] cursor-zoom-in"
+                    className="w-full object-contain cursor-zoom-in"
                   />
                 </Zoom>
                 {totalImages > 1 && (
