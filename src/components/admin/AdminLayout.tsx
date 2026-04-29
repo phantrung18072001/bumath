@@ -1,6 +1,8 @@
-import { Link, useLocation } from 'react-router-dom'
-import { Users, BookOpen, ClipboardList, LayoutDashboard } from 'lucide-react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Users, BookOpen, ClipboardList, LayoutDashboard, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/contexts/AuthContext'
+import { Button } from '@/components/ui/button'
 
 const navItems = [
   { label: 'Quản lý tài khoản', to: '/admin/users', icon: Users },
@@ -10,6 +12,13 @@ const navItems = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
+  const { signOut } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    await signOut()
+    navigate('/login')
+  }
 
   return (
     <div className="min-h-screen flex">
@@ -39,13 +48,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             )
           })}
         </nav>
-        <div className="p-3 border-t">
+        <div className="p-3 border-t space-y-1">
           <Link
             to="/"
             className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
           >
             ← Về trang chủ
           </Link>
+          <Button
+            variant="ghost"
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          >
+            <LogOut className="h-4 w-4 shrink-0" />
+            Đăng xuất
+          </Button>
         </div>
       </aside>
 
