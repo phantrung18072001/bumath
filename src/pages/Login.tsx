@@ -9,7 +9,7 @@ import { useAuth } from '@/contexts/AuthContext'
 
 export default function Login() {
   const navigate = useNavigate()
-  const { user, loading } = useAuth()
+  const { user, loading, profile } = useAuth()
 
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
@@ -18,12 +18,22 @@ export default function Login() {
   const [formError, setFormError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Redirect already-authenticated users
+  // Redirect already-authenticated users based on role and approval status
   useEffect(() => {
-    if (!loading && user) {
-      navigate('/')
+    if (!loading && user && profile) {
+      if (profile.approval_status === 'pending' || profile.approval_status === 'rejected') {
+        navigate('/pending')
+      } else if (profile.role === 'admin') {
+        navigate('/admin/users')
+      } else if (profile.role === 'teacher') {
+        // Teacher redirects to landing page until Phase 8 adds teacher routes
+        navigate('/')
+      } else {
+        // Student (approved)
+        navigate('/courses')
+      }
     }
-  }, [user, loading, navigate])
+  }, [user, loading, profile, navigate])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -52,8 +62,8 @@ export default function Login() {
           setFormError('Số điện thoại hoặc mật khẩu không đúng.')
         }
       } else {
-        navigate('/')
-      }
+          // Redirect handled by useEffect once profile loads via AuthContext
+        }
     } catch {
       setFormError('Lỗi kết nối. Vui lòng thử lại.')
     } finally {
