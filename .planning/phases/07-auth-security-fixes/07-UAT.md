@@ -61,22 +61,34 @@ blocked: 0
 
 ## Gaps
 
-- truth: "Pending students are redirected to /pending after login"
+- truth: "approval_status field removed from codebase and database"
   status: failed
-  reason: "User reported: Bỏ trạng thái pending — quản lý access bằng enrollment vào khóa học thay vì approval_status"
+  reason: "User reported: Bỏ hoàn toàn approval_status — quản lý access bằng enrollment thay vì approval status"
   severity: major
   test: 2
-  artifacts: []
-- truth: "Rejected students are redirected to /pending after login"
+  root_cause: "approval_status embedded across entire auth stack: Profile type, ProtectedRoute (redirects pending/rejected), Login.tsx useEffect, Pending.tsx page, UsersPage.tsx (approve/reject buttons), RLS in 2 migrations (_04_, _05_), test files"
+  artifacts:
+    - src/types/auth.ts
+    - src/components/auth/ProtectedRoute.tsx
+    - src/pages/Login.tsx
+    - src/pages/Pending.tsx
+    - src/pages/admin/UsersPage.tsx
+    - supabase/migrations/20260324_01_profiles.sql
+    - supabase/migrations/20260324_04_course_management_rls.sql
+    - supabase/migrations/20260324_05_course_management_storage.sql
+  missing:
+    - New migration to drop approval_status column and update RLS policies to enrollment-based
+
+- truth: "Admin users see StudentLayout top nav (logo, courses, back to landing) plus an admin panel link"
   status: failed
-  reason: "User reported: Bỏ hoàn toàn field approval_status — không cần trạng thái pending/rejected/approved"
-  severity: major
-  test: 3
-  artifacts: []
-- truth: "Admin users see a full header with navigation (landing, courses) in addition to the admin panel link"
-  status: failed
-  reason: "User reported: Admin nên có header bình thường (về landing, xem courses) — chỉ khác student ở chỗ có thêm link vào trang quản lý"
+  reason: "User reported: Admin nên có header bình thường — chỉ khác student ở chỗ có thêm link vào trang quản lý"
   severity: major
   test: 5
-  artifacts: []
-  missing: []
+  root_cause: "App.tsx wraps all /admin/* routes with standalone AdminLayout (sidebar-only, no top header). StudentLayout never rendered for admin role."
+  artifacts:
+    - src/App.tsx
+    - src/components/admin/AdminLayout.tsx
+    - src/components/student/StudentLayout.tsx
+  missing:
+    - Role-conditional admin link in StudentLayout when profile.role === 'admin'
+    - App.tsx admin routes use StudentLayout instead of AdminLayout
