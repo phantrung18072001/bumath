@@ -15,14 +15,14 @@
 
 - [x] **AUTH-01**: Học sinh có thể tạo tài khoản bằng email và mật khẩu
 - [x] **AUTH-02**: Học sinh có thể đăng nhập và duy trì session qua các lần reload
-- [x] **AUTH-03**: Học sinh/giảng viên/admin có thể đăng xuất từ bất kỳ trang nào
-- [x] **AUTH-04**: Tài khoản học sinh mới ở trạng thái "pending" cho đến khi admin duyệt
+- [ ] **AUTH-03**: Học sinh/giảng viên/admin có thể đăng xuất từ bất kỳ trang nào
+- [ ] **AUTH-04**: Tài khoản học sinh mới ở trạng thái "pending" cho đến khi admin duyệt
 - [x] **AUTH-05**: Admin có thể xem danh sách tài khoản đang chờ duyệt và duyệt/từ chối
 
 ### Roles & Access Control
 
-- [x] **ROLE-01**: Hệ thống có 3 roles: student, teacher, admin với quyền khác nhau
-- [x] **ROLE-02**: Route được bảo vệ theo role — học sinh không thể truy cập trang admin/teacher
+- [ ] **ROLE-01**: Hệ thống có 3 roles: student, teacher, admin với quyền khác nhau
+- [ ] **ROLE-02**: Route được bảo vệ theo role — học sinh không thể truy cập trang admin/teacher
 - [ ] **ROLE-03**: RLS policies trong Supabase ngăn học sinh xem dữ liệu của nhau
 
 ### Course Management (Admin)
@@ -50,9 +50,9 @@
 
 ### Grading (Teacher/Admin)
 
-- [x] **GRADE-01**: Giảng viên thấy danh sách tất cả bài đã nộp chưa được chấm
-- [x] **GRADE-02**: Giảng viên có thể xem ảnh bài làm của học sinh đầy đủ
-- [x] **GRADE-03**: Giảng viên có thể nhập điểm số và comment nhận xét trên bài nộp
+- [ ] **GRADE-01**: Giảng viên thấy danh sách tất cả bài đã nộp chưa được chấm
+- [ ] **GRADE-02**: Giảng viên có thể xem ảnh bài làm của học sinh đầy đủ
+- [ ] **GRADE-03**: Giảng viên có thể nhập điểm số và comment nhận xét trên bài nộp
 - [x] **GRADE-04**: Học sinh nhận email thông báo khi bài được chấm
 - [x] **GRADE-05**: Học sinh có thể xem điểm và comment của giảng viên trên bài nộp của mình
 
@@ -115,12 +115,12 @@
 | INFRA-03 | Phase 1 — Foundation | Complete |
 | AUTH-01 | Phase 2 — Auth & Access Control | Complete |
 | AUTH-02 | Phase 2 — Auth & Access Control | Complete |
-| AUTH-03 | Phase 2 — Auth & Access Control | Complete |
-| AUTH-04 | Phase 2 — Auth & Access Control | Complete |
+| AUTH-03 | Phase 7 — Auth & Security Fixes | Pending |
+| AUTH-04 | Phase 7 — Auth & Security Fixes | Pending |
 | AUTH-05 | Phase 2 — Auth & Access Control | Complete |
-| ROLE-01 | Phase 2 — Auth & Access Control | Complete |
-| ROLE-02 | Phase 2 — Auth & Access Control | Complete |
-| ROLE-03 | Phase 2 — Auth & Access Control | Pending |
+| ROLE-01 | Phase 8 — Teacher Role Access | Pending |
+| ROLE-02 | Phase 8 — Teacher Role Access | Pending |
+| ROLE-03 | Phase 7 — Auth & Security Fixes | Pending |
 | UX-03 | Phase 2 — Auth & Access Control | Complete |
 | COURSE-01 | Phase 3 — Course Management | Pending |
 | COURSE-02 | Phase 3 — Course Management | Pending |
@@ -138,9 +138,9 @@
 | SUBMIT-04 | Phase 4 — Student Learning & Submission | Complete |
 | UX-01 | Phase 4 — Student Learning & Submission | Complete |
 | UX-02 | Phase 4 — Student Learning & Submission | Complete |
-| GRADE-01 | Phase 5 — Grading & Notification | Complete |
-| GRADE-02 | Phase 5 — Grading & Notification | Complete |
-| GRADE-03 | Phase 5 — Grading & Notification | Complete |
+| GRADE-01 | Phase 8 — Teacher Role Access | Pending |
+| GRADE-02 | Phase 8 — Teacher Role Access | Pending |
+| GRADE-03 | Phase 8 — Teacher Role Access | Pending |
 | GRADE-04 | Phase 5 — Grading & Notification | Complete |
 | GRADE-05 | Phase 5 — Grading & Notification | Complete |
 | UX-P6-01 | Phase 6 — UX Polish | Complete |

@@ -17,6 +17,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 3: Course Management** - Admin CRUD for courses, lessons, assignments, and enrollment
 - [ ] **Phase 4: Student Learning & Submission** - Course browsing, video lessons, progress tracking, photo upload
 - [x] **Phase 5: Grading & Notification** - Teacher grading queue, score/comment entry, student grade view, email notification (completed 2026-04-08)
+- [x] **Phase 6: UX Polish** - Grading filters, course catalogue, course preview, nav fixes, progress bar color (completed 2026-04-27)
+- [ ] **Phase 7: Auth & Security Fixes** - Profiles RLS, login redirect for pending students, AdminLayout logout
+- [ ] **Phase 8: Teacher Role Access** - Teacher-accessible grading routes, teacher navigation, role-aware Header CTA
 
 ## Phase Details
 
@@ -119,6 +122,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 4. Student Learning & Submission | 5/5 | Complete | 2026-04-07 |
 | 5. Grading & Notification | 4/4 | Complete   | 2026-04-08 |
 | 6. UX Polish | 6/6 | Complete   | 2026-04-27 |
+| 7. Auth & Security Fixes | 0/TBD | Pending |  |
+| 8. Teacher Role Access | 0/TBD | Pending |  |
 
 ### Phase 6: UX Polish
 
@@ -139,3 +144,17 @@ Plans:
 - Student: fix 404 pages; clear entry point to "my courses"; browsable course catalogue before enrollment; course preview (chapters/lessons list) before purchase
 - Navigation: BuMath logo click → home page; show logo + name together
 - Course progress column: use gray/neutral color instead of current blue
+
+### Phase 7: Auth & Security Fixes
+**Goal:** Close three auth/security gaps identified in v1.0 milestone audit — add profiles table RLS so students cannot see each other's data, fix login redirect for pending students, and add logout to AdminLayout
+**Depends on:** Phase 6
+**Requirements:** ROLE-03, AUTH-03, AUTH-04
+**Gap Closure:** Closes gaps from v1.0-MILESTONE-AUDIT.md
+**Plans:** TBD
+
+### Phase 8: Teacher Role Access
+**Goal:** Make the `teacher` role fully functional — teachers can log in, navigate to the grading queue, and grade submissions without needing an `admin` account
+**Depends on:** Phase 7
+**Requirements:** ROLE-01, ROLE-02, GRADE-01, GRADE-02, GRADE-03
+**Gap Closure:** Closes critical integration gap from v1.0-MILESTONE-AUDIT.md (teacher role has zero accessible routes)
+**Plans:** TBD
