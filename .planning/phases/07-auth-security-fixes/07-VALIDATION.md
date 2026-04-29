@@ -17,18 +17,18 @@ created: 2026-04-29
 
 | Property | Value |
 |----------|-------|
-| **Framework** | {pytest 7.x / jest 29.x / vitest / go test / other} |
-| **Config file** | {path or "none — Wave 0 installs"} |
-| **Quick run command** | `{quick command}` |
-| **Full suite command** | `{full command}` |
+| **Framework** | vitest |
+| **Config file** | vitest.config.ts |
+| **Quick run command** | `yarn test --run` |
+| **Full suite command** | `yarn test --run` |
 | **Estimated runtime** | ~7 seconds |
 
 ---
 
 ## Sampling Rate
 
-- **After every task commit:** Run `{quick run command}`
-- **After every plan wave:** Run `{full suite command}`
+- **After every task commit:** Run `yarn test --run`
+- **After every plan wave:** Run `yarn test --run`
 - **Before `/gsd-verify-work`:** Full suite must be green
 - **Max feedback latency:** 7 seconds
 
@@ -38,7 +38,12 @@ created: 2026-04-29
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 7-01-01 | 01 | 1 | REQ-{XX} | unit | `{command}` | ✅ / ❌ W0 | ⬜ pending |
+| 07-00-T1 | 00 | 0 | AUTH-03, AUTH-04 | unit stub | `yarn test src/pages/Login.test.tsx --run` | ✅ W0 creates | ⬜ pending |
+| 07-00-T2 | 00 | 0 | AUTH-03, AUTH-04 | unit stub | `yarn test src/components/admin/AdminLayout.test.tsx --run` | ✅ W0 creates | ⬜ pending |
+| 07-01-T1 | 01 | 1 | ROLE-03 | manual | *(SQL migration — manual verification via Supabase Dashboard)* | ✅ created | ⬜ pending |
+| 07-01-T2 | 01 | 1 | ROLE-03 | manual | *(Supabase Dashboard — no CLI runner configured)* | n/a | ⬜ pending |
+| 07-02-T1 | 02 | 1 | AUTH-04 | unit | `yarn test src/pages/Login.test.tsx --run` | ✅ W0 stub | ⬜ pending |
+| 07-02-T2 | 02 | 1 | AUTH-03 | unit | `yarn test src/components/admin/AdminLayout.test.tsx --run` | ✅ W0 stub | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -46,11 +51,10 @@ created: 2026-04-29
 
 ## Wave 0 Requirements
 
-- [ ] `{tests/test_file.py}` — stubs for REQ-{XX}
-- [ ] `{tests/conftest.py}` — shared fixtures
-- [ ] `{framework install}` — if no framework detected
+- [ ] `src/pages/Login.test.tsx` — stub file for AUTH-04 redirect tests (07-00-T1)
+- [ ] `src/components/admin/AdminLayout.test.tsx` — stub file for AUTH-03 logout tests (07-00-T2)
 
-*If none: "Existing infrastructure covers all phase requirements."*
+*Existing vitest infrastructure covers all phase requirements — no framework install needed.*
 
 ---
 
@@ -58,9 +62,7 @@ created: 2026-04-29
 
 | Behavior | Requirement | Why Manual | Test Instructions |
 |----------|-------------|------------|-------------------|
-| {behavior} | REQ-{XX} | {reason} | {steps} |
-
-*If none: "All phase behaviors have automated verification."*
+| Profiles RLS policies applied on live Supabase | ROLE-03 | No CLI runner configured for Supabase — requires Dashboard SQL Editor | Open Supabase Dashboard > SQL Editor > paste `supabase/migrations/20260429_16_profiles_rls.sql` > Run; verify 3 policies appear in Table Editor > profiles > Policies |
 
 ---
 
