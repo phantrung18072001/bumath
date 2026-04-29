@@ -150,7 +150,12 @@ Plans:
 **Depends on:** Phase 6
 **Requirements:** ROLE-03, AUTH-03, AUTH-04
 **Gap Closure:** Closes gaps from v1.0-MILESTONE-AUDIT.md
-**Plans:** TBD
+**Plans:** 3 plans
+
+Plans:
+- [ ] 07-00-PLAN.md — Wave 0 test stubs for Login and AdminLayout
+- [ ] 07-01-PLAN.md — Profiles RLS idempotent migration (ROLE-03)
+- [ ] 07-02-PLAN.md — Login redirect fix (AUTH-04) + AdminLayout logout (AUTH-03)
 
 ### Phase 8: Teacher Role Access
 **Goal:** Make the `teacher` role fully functional — teachers can log in, navigate to the grading queue, and grade submissions without needing an `admin` account
