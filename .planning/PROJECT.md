@@ -53,6 +53,12 @@ Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ t
 - ✓ CourseDetailPage preview mode cho học sinh chưa đăng ký — Validated in Phase 6: UX Polish
 - ✓ Progress bar track color fix (bg-muted thay vì bg-secondary) — Validated in Phase 6: UX Polish
 
+**Teacher Role Access (Phase 8)**
+- ✓ Teacher role có thể đăng nhập và tự động chuyển đến /admin/submissions — Validated in Phase 8: Teacher Role Access
+- ✓ AdminLayout sidebar hiển thị chỉ "Chấm bài" cho giảng viên — Validated in Phase 8: Teacher Role Access
+- ✓ Giảng viên truy cập /admin/submissions và /admin/submissions/:id mà không cần quyền admin — Validated in Phase 8: Teacher Role Access
+- ✓ Admin-only routes (/admin/users, /admin/courses) redirect giảng viên về /admin/submissions — Validated in Phase 8: Teacher Role Access
+
 **Progress Tracking**
 - [ ] Hiển thị bài nào đã xem / chưa xem trong từng khóa
 - [ ] Progress bar % hoàn thành theo khóa học
@@ -98,7 +104,7 @@ Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ t
 
 This document evolves at phase transitions and milestone boundaries.
 
-Last updated: Phase 6 complete — all 6 milestone phases delivered. BuMath v1.0 MVP complete.
+Last updated: Phase 8 complete — all 8 milestone phases delivered. BuMath v1.0 MVP complete with teacher role fully functional.
 
 **After each phase transition** (via `/gsd:transition`):
 1. Requirements invalidated? → Move to Out of Scope with reason
