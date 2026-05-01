@@ -26,7 +26,7 @@ Full details: [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-R
 ### 🚧 v2.0 UI Refactor (Phases 9–13)
 
 - [x] **Phase 9: URL Standardization** — Rename all routes to Vietnamese, update all redirects and internal links (7/7 plans, UAT 6/6 ✅ 2026-05-01)
-- [ ] **Phase 10: Auth Pages UI** — Refactor /dang-nhap, /dang-ky, /cho-duyet with modern design
+- [x] **Phase 10: Auth Pages UI** — Refactor /dang-nhap, /dang-ky, /cho-duyet with modern design (completed 2026-05-01)
 - [ ] **Phase 11: Admin List Pages** — Refactor users + courses list pages with pagination, filters, search
 - [ ] **Phase 12: Admin Detail Pages** — Refactor course/chapter/lesson management + grading queue + grading page
 - [ ] **Phase 13: Student Pages** — Refactor courses list, course detail/lesson view, catalogue with filters + pagination
@@ -63,8 +63,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 10-01-PLAN.md — Foundation: CSS variables, Tailwind fontFamily, utility classes
-- [ ] 10-02-PLAN.md — Page refactors: Login.tsx + Register.tsx Claymorphism design
+- [x] 10-01-PLAN.md — Foundation: CSS variables, Tailwind fontFamily, utility classes
+- [x] 10-02-PLAN.md — Page refactors: Login.tsx + Register.tsx Claymorphism design
 
 **UI hint**: yes
 
