@@ -11,7 +11,7 @@
   border-radius: 24px;
   box-shadow:
     0 8px 0 var(--bm-border),
-    0 12px 24px rgba(13, 148, 136, 0.10);
+    0 12px 24px rgba(37, 99, 235, 0.10);
   padding: 32px;
   transition: box-shadow 200ms ease, transform 200ms ease;
 }
@@ -31,8 +31,8 @@
   position: absolute;
   font-family: 'Comic Neue', cursive;
   font-weight: 700;
-  color: var(--bm-primary);
-  opacity: 0.08;
+  color: rgba(255, 255, 255, 1);
+  opacity: 0.18;
   pointer-events: none;
   user-select: none;
   animation: bm-float ease-in-out infinite;
@@ -44,6 +44,14 @@
 .bm-float-symbol:nth-child(4) { animation-duration: 3.5s; }
 .bm-float-symbol:nth-child(5) { animation-duration: 4.5s; }
 .bm-float-symbol:nth-child(6) { animation-duration: 6.0s; }
+
+/* === BuMath Chalkboard Background === */
+.bm-chalk-bg {
+  background-color: #1e3a5f;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
 
 /* === BuMath CTA Button === */
 .bm-btn-cta {
@@ -109,14 +117,14 @@
     --sidebar-ring: 24 95% 53%;
 
     /* === BuMath Design System v2 === */
-    --bm-primary: #0D9488;
-    --bm-secondary: #2DD4BF;
+    --bm-primary: #2563EB;
+    --bm-secondary: #60A5FA;
     --bm-cta: #F97316;
-    --bm-bg: #F0FDFA;
-    --bm-text: #134E4A;
+    --bm-bg: #1e3a5f;
+    --bm-text: #1e3a5f;
     --bm-card: #FFFFFF;
-    --bm-border: #0D9488;
-    --bm-muted: #5EADA5;
+    --bm-border: #2563EB;
+    --bm-muted: #93C5FD;
   }
 
   .dark {

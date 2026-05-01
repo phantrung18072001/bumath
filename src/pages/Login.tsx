@@ -70,7 +70,7 @@ export default function Login() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden" style={{ background: '#F0FDFA' }}>
+    <div className="relative min-h-screen overflow-hidden bm-chalk-bg">
       <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '8%', left: '6%', fontSize: '36px' }}>π</span>
       <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '15%', right: '8%', fontSize: '40px' }}>√</span>
       <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '55%', left: '4%', fontSize: '32px' }}>±</span>
@@ -81,16 +81,16 @@ export default function Login() {
       <div className="relative flex flex-col items-center justify-center min-h-screen px-4 py-12">
         <div className="flex items-center gap-2 mb-8">
           <img src="/bumath.jpeg" alt="BuMath logo" className="h-11 w-auto rounded-lg" />
-          <span className="font-baloo text-[30px] font-bold" style={{ color: '#0D9488' }}>BuMath</span>
+          <span className="font-baloo text-[30px] font-bold" style={{ color: '#ffffff' }}>BuMath</span>
         </div>
 
         <div className="bm-clay-card max-w-[400px] w-full">
-          <h1 className="font-baloo text-2xl font-bold mb-6" style={{ color: '#134E4A' }}>Đăng nhập</h1>
+          <h1 className="font-baloo text-2xl font-bold mb-6" style={{ color: '#1e3a5f' }}>Đăng nhập</h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Số điện thoại */}
             <div className="space-y-1">
-              <label className="font-comic text-base font-normal" style={{ color: '#134E4A' }} htmlFor="phone">
+              <label className="font-comic text-base font-normal" style={{ color: '#1e3a5f' }} htmlFor="phone">
                 Số điện thoại
               </label>
             <Input
@@ -108,7 +108,7 @@ export default function Login() {
 
           {/* Mật khẩu */}
           <div className="space-y-1">
-            <label className="font-comic text-base font-normal" style={{ color: '#134E4A' }} htmlFor="password">
+            <label className="font-comic text-base font-normal" style={{ color: '#1e3a5f' }} htmlFor="password">
               Mật khẩu
             </label>
             <div className="relative">
@@ -148,9 +148,9 @@ export default function Login() {
           </Button>
         </form>
 
-        <p className="mt-4 text-center text-sm font-comic" style={{ color: '#5EADA5' }}>
+        <p className="mt-4 text-center text-sm font-comic" style={{ color: '#93C5FD' }}>
           Chưa có tài khoản?{' '}
-          <Link to="/dang-ky" className="font-bold hover:underline" style={{ color: '#0D9488' }}>
+          <Link to="/dang-ky" className="font-bold hover:underline" style={{ color: '#2563EB' }}>
             Đăng ký
           </Link>
         </p>
