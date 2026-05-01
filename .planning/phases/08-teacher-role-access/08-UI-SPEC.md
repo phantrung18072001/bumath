@@ -54,9 +54,11 @@ Standard 8-point scale. No new layout surfaces in this phase — reuse existing 
 | 3xl | 64px | Page-level spacing |
 
 Exceptions:
-- Sidebar nav links: `px-3 py-2.5` (12px / 10px) — existing AdminLayout contract, do not change.
 - Sidebar width: `w-60` (240px) — existing, do not change.
 - Sticky header: 48px — existing StudentLayout contract, do not change.
+
+Pre-existing unmigrated value (not a spacing contract entry):
+- Sidebar nav links use `px-3 py-2.5` (12px / 10px) in the existing AdminLayout. `py-2.5` = 10px is not a multiple of 4 and pre-dates this contract. Do not change it; do not replicate the pattern in new code.
 
 ---
 
@@ -64,12 +66,16 @@ Exceptions:
 
 Taken from existing Login.tsx and AdminLayout.tsx — no new type roles needed.
 
+**Declared scale: 2 weights — `font-medium` (500) for Body/Label, `font-semibold` (600) for Heading/Display.**
+
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
-| Body | 16px (text-base) | 400 (font-normal) | 1.5 | Form labels, nav link descriptions |
+| Body | 16px (text-base) | 500 (font-medium) | 1.5 | Form labels, nav link descriptions |
 | Label | 14px (text-sm) | 500 (font-medium) | 1.5 | Sidebar nav item labels (`text-sm font-medium`) |
 | Heading | 20px (text-xl) | 600 (font-semibold) | 1.3 | Page-level h1 (`text-xl font-semibold leading-[1.3]`) |
-| Display | 24px (text-2xl) | 800 (font-extrabold) | — | BuMath-X logotype only |
+| Display | 24px (text-2xl) | 600 (font-semibold) | — | Section display text |
+
+Logo-only exception (outside the type scale): The BuMath-X logotype uses `font-extrabold` (800). This is a single pre-existing decorative element, not a scale weight. Do not use weight 800 on any element other than the logotype.
 
 Source: measured from `Login.tsx` (h1: text-xl/font-semibold, labels: text-base/font-normal), `AdminLayout.tsx` (nav: text-sm/font-medium).
 
