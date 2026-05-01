@@ -1,7 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&family=Comic+Neue:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* === BuMath Claymorphism Card === */
+.bm-clay-card {
+  background: var(--bm-card);
+  border: 3px solid var(--bm-border);
+  border-radius: 24px;
+  box-shadow:
+    0 8px 0 var(--bm-border),
+    0 12px 24px rgba(13, 148, 136, 0.10);
+  padding: 32px;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+
+/* === BuMath Float Animation (math symbols) === */
+@keyframes bm-float {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bm-float-symbol { animation: none !important; }
+}
+
+.bm-float-symbol {
+  position: absolute;
+  font-family: 'Comic Neue', cursive;
+  font-weight: 700;
+  color: var(--bm-primary);
+  opacity: 0.08;
+  pointer-events: none;
+  user-select: none;
+  animation: bm-float ease-in-out infinite;
+}
+
+.bm-float-symbol:nth-child(1) { animation-duration: 3.0s; }
+.bm-float-symbol:nth-child(2) { animation-duration: 4.0s; }
+.bm-float-symbol:nth-child(3) { animation-duration: 5.0s; }
+.bm-float-symbol:nth-child(4) { animation-duration: 3.5s; }
+.bm-float-symbol:nth-child(5) { animation-duration: 4.5s; }
+.bm-float-symbol:nth-child(6) { animation-duration: 6.0s; }
+
+/* === BuMath CTA Button === */
+.bm-btn-cta {
+  background: var(--bm-cta) !important;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-family: 'Baloo 2', sans-serif;
+  min-height: 48px;
+  cursor: pointer;
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+.bm-btn-cta:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+.bm-btn-cta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
 
 @layer base {
   :root {
@@ -43,6 +107,16 @@
     --sidebar-accent-foreground: 20 30% 12%;
     --sidebar-border: 30 15% 90%;
     --sidebar-ring: 24 95% 53%;
+
+    /* === BuMath Design System v2 === */
+    --bm-primary: #0D9488;
+    --bm-secondary: #2DD4BF;
+    --bm-cta: #F97316;
+    --bm-bg: #F0FDFA;
+    --bm-text: #134E4A;
+    --bm-card: #FFFFFF;
+    --bm-border: #0D9488;
+    --bm-muted: #5EADA5;
   }
 
   .dark {

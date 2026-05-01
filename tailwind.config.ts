@@ -14,6 +14,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        'baloo': ['"Baloo 2"', 'sans-serif'],
+        'comic': ['"Comic Neue"', 'cursive'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
