@@ -12,8 +12,8 @@ interface ProtectedRouteProps {
 
 function redirectFor(role: Role | undefined): string {
   // D-06: role-aware fallback when allowedRoles excludes the user
-  if (role === 'teacher') return '/admin/submissions'
-  if (role === 'student') return '/courses'
+  if (role === 'teacher') return '/quan-tri/bai-nop'
+  if (role === 'student') return '/khoa-hoc'
   return '/'
 }
 
@@ -36,7 +36,7 @@ export function ProtectedRoute({
     )
   }
 
-  if (!user) return <Navigate to="/login" replace />
+  if (!user) return <Navigate to="/dang-nhap" replace />
 
   // D-05: allowedRoles takes precedence; new API
   if (allowedRoles && (!profile?.role || !allowedRoles.includes(profile.role))) {

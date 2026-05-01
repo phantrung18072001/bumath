@@ -32,18 +32,18 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/dang-nhap" element={<Login />} />
+            <Route path="/dang-ky" element={<Register />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="/admin/users" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><UsersPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
-            <Route path="/admin/courses" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><CoursesPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
-            <Route path="/admin/courses/:courseSlug" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><ChaptersPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
-            <Route path="/admin/courses/:courseSlug/chapters/:chapterSlug" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><LessonsPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
-            <Route path="/admin/submissions" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><StudentLayout><AdminLayout><SubmissionsPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
-            <Route path="/admin/submissions/:submissionId" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><StudentLayout><AdminLayout><GradingPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
-            <Route path="/courses" element={<ProtectedRoute><StudentCoursesPage /></ProtectedRoute>} />
-            <Route path="/courses/:courseSlug" element={<StudentCourseDetailPage />} />
-            <Route path="/catalogue" element={<StudentCataloguePage />} />
+            <Route path="/quan-tri/nguoi-dung" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><UsersPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
+            <Route path="/quan-tri/khoa-hoc" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><CoursesPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
+            <Route path="/quan-tri/khoa-hoc/:courseSlug" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><ChaptersPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
+            <Route path="/quan-tri/khoa-hoc/:courseSlug/chuong/:chapterSlug" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><LessonsPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
+            <Route path="/quan-tri/bai-nop" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><StudentLayout><AdminLayout><SubmissionsPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
+            <Route path="/quan-tri/bai-nop/:submissionId" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><StudentLayout><AdminLayout><GradingPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
+            <Route path="/khoa-hoc" element={<ProtectedRoute><StudentCoursesPage /></ProtectedRoute>} />
+            <Route path="/khoa-hoc/:courseSlug" element={<StudentCourseDetailPage />} />
+            <Route path="/danh-muc" element={<StudentCataloguePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
