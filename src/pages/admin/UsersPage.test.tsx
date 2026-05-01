@@ -124,8 +124,16 @@ describe('UsersPage', () => {
     resetMocksWithData([])
     renderUsersPage()
     await waitFor(() => {
-      expect(screen.getByText('Chưa có tài khoản nào được tạo.')).toBeInTheDocument()
+      expect(screen.getByText('Chưa có tài khoản nào')).toBeInTheDocument()
+      expect(screen.getByText('Hệ thống chưa có người dùng nào đăng ký.')).toBeInTheDocument()
     })
+  })
+
+  it('shows skeleton loading during fetch', async () => {
+    // Override mock to never resolve
+    __order.mockImplementation(() => new Promise(() => {}))
+    renderUsersPage()
+    expect(screen.getByLabelText('Đang tải...')).toBeInTheDocument()
   })
 })
 
