@@ -2,7 +2,7 @@
 phase: 11
 slug: admin-list-pages
 status: draft
-nyquist_compliant: false
+nyquist_compliant: true
 wave_0_complete: false
 created: 2026-05-01
 ---
@@ -38,14 +38,13 @@ created: 2026-05-01
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 11-W0-01 | W0 | 0 | ADMIN-UI-02 | unit | `yarn test src/pages/admin/CoursesPage.test.tsx` | ❌ W0 | ⬜ pending |
-| 11-W0-02 | W0 | 0 | ADMIN-UI-01 | unit | `yarn test src/pages/admin/UsersPage.test.tsx` | ✅ update | ⬜ pending |
-| 11-01-01 | 01 | 1 | ADMIN-UI-01 | unit | `yarn test src/pages/admin/UsersPage.test.tsx` | ✅ | ⬜ pending |
-| 11-01-02 | 01 | 1 | ADMIN-UI-01 | unit | `yarn test src/pages/admin/UsersPage.test.tsx` | ✅ | ⬜ pending |
-| 11-01-03 | 01 | 1 | DS-02 | unit | `yarn test src/pages/admin/UsersPage.test.tsx` | ✅ | ⬜ pending |
-| 11-02-01 | 02 | 1 | ADMIN-UI-02 | unit | `yarn test src/pages/admin/CoursesPage.test.tsx` | ❌ W0 | ⬜ pending |
-| 11-02-02 | 02 | 1 | ADMIN-UI-02 | unit | `yarn test src/pages/admin/CoursesPage.test.tsx` | ❌ W0 | ⬜ pending |
-| 11-02-03 | 02 | 1 | DS-02 | unit | `yarn test src/pages/admin/CoursesPage.test.tsx` | ❌ W0 | ⬜ pending |
+| 11-00-01 | 00 | 0 | ADMIN-UI-02, DS-02 | unit | `yarn test src/pages/admin/CoursesPage.test.tsx` | ❌ → ✅ | ⬜ pending |
+| 11-00-02 | 00 | 0 | ADMIN-UI-01 | unit | `yarn test src/pages/admin/UsersPage.test.tsx` | ✅ update | ⬜ pending |
+| 11-01-01 | 01 | 1 | ADMIN-UI-01, DS-02 | build | `yarn build` | ✅ | ⬜ pending |
+| 11-01-02 | 01 | 1 | ADMIN-UI-01 | build | `yarn build` | ✅ | ⬜ pending |
+| 11-01-03 | 01 | 1 | ADMIN-UI-01 | unit | `yarn test src/pages/admin/UsersPage.test.tsx` | ✅ | ⬜ pending |
+| 11-02-01 | 02 | 1 | ADMIN-UI-02, DS-02 | build | `yarn build` | ✅ | ⬜ pending |
+| 11-02-02 | 02 | 1 | ADMIN-UI-02 | unit | `yarn test src/pages/admin/CoursesPage.test.tsx` | ✅ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -53,8 +52,8 @@ created: 2026-05-01
 
 ## Wave 0 Requirements
 
-- [ ] `src/pages/admin/CoursesPage.test.tsx` — create stub file with skeleton tests for ADMIN-UI-02 + DS-02. Use `vi.mock('@/lib/api/courses', ...)` (NOT supabase direct mock)
-- [ ] Update `src/pages/admin/UsersPage.test.tsx` — fix existing empty-state test (line ~125): old message `"Chưa có tài khoản nào được tạo."` → new heading `"Chưa có tài khoản nào"`
+- [x] `src/pages/admin/CoursesPage.test.tsx` — create stub file with skeleton tests for ADMIN-UI-02 + DS-02. Use `vi.mock('@/lib/api/courses', ...)` (NOT supabase direct mock)
+- [x] Update `src/pages/admin/UsersPage.test.tsx` — fix existing empty-state test: old message `"Chưa có tài khoản nào được tạo."` → new heading `"Chưa có tài khoản nào"`
 
 ---
 
@@ -68,11 +67,11 @@ created: 2026-05-01
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 15s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references
+- [x] No watch-mode flags
+- [x] Feedback latency < 15s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** approved

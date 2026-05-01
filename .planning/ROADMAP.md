@@ -73,10 +73,16 @@ Plans:
 **Depends on**: Phase 10
 **Requirements**: ADMIN-UI-01, ADMIN-UI-02, DS-01, DS-02
 **Success Criteria** (what must be TRUE):
-  1. Users page: paginated table (25/page), filter by role (student/teacher/admin), search by name or email
-  2. Courses page: paginated grid or table (20/page), filter by grade (7/8/9/chuyên), search by course name
+  1. Users page: paginated table (25/page), filter by role (student/teacher/admin), search by name or phone
+  2. Courses page: paginated table (20/page), filter by grade (7/8/9/chuyên), search by course name
   3. Both pages show skeleton loading, empty state with CTA, and total count
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 11-00-PLAN.md — Wave 0: Test foundation (CoursesPage.test.tsx + UsersPage.test.tsx updates)
+- [ ] 11-01-PLAN.md — UsersPage: filter toolbar, search, pagination, skeleton loading
+- [ ] 11-02-PLAN.md — CoursesPage: filter toolbar, search, pagination, skeleton loading
+
 **UI hint**: yes
 
 ### Phase 12: Admin Detail Pages
