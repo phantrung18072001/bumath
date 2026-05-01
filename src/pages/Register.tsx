@@ -97,8 +97,8 @@ export default function Register() {
         toast.error(error.message)
       }
     } else {
-      toast.success('Tài khoản đã được tạo. Vui lòng chờ xét duyệt.')
-      navigate('/pending')
+      toast.success('Đăng ký thành công! Vui lòng đăng nhập.')
+      navigate('/login')
     }
   }
 
