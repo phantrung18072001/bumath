@@ -54,7 +54,7 @@ describe('NotFound', () => {
 
     renderNotFound()
     const link = screen.getByText('Về trang chủ')
-    expect(link.closest('a')).toHaveAttribute('href', '/courses')
+    expect(link.closest('a')).toHaveAttribute('href', '/khoa-hoc')
   })
 
   it('links to / when user is not a student (admin)', () => {

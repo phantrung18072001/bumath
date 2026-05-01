@@ -47,14 +47,14 @@ describe('StudentLayout', () => {
     await renderStudentLayout()
     const myCoursesLink = screen.getByRole('link', { name: 'Khóa học của tôi' })
     expect(myCoursesLink).toBeInTheDocument()
-    expect(myCoursesLink).toHaveAttribute('href', '/courses')
+    expect(myCoursesLink).toHaveAttribute('href', '/khoa-hoc')
   })
 
   it('renders nav link "Khám phá khóa học" pointing to /catalogue', async () => {
     await renderStudentLayout()
     const catalogueLink = screen.getByRole('link', { name: 'Khám phá khóa học' })
     expect(catalogueLink).toBeInTheDocument()
-    expect(catalogueLink).toHaveAttribute('href', '/catalogue')
+    expect(catalogueLink).toHaveAttribute('href', '/danh-muc')
   })
 
   it('renders Quản trị link to /admin/users when role is admin', async () => {
@@ -67,7 +67,7 @@ describe('StudentLayout', () => {
     await renderStudentLayout()
     const adminLink = screen.getByRole('link', { name: /quản trị/i })
     expect(adminLink).toBeInTheDocument()
-    expect(adminLink).toHaveAttribute('href', '/admin/users')
+    expect(adminLink).toHaveAttribute('href', '/quan-tri/nguoi-dung')
   })
 
   it('does NOT render Quản trị link when role is student', async () => {

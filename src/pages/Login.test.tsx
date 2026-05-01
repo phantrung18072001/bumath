@@ -54,7 +54,7 @@ describe('Login', () => {
     await renderLogin()
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/courses')
+      expect(mockNavigate).toHaveBeenCalledWith('/khoa-hoc')
     })
   })
 
@@ -70,7 +70,7 @@ describe('Login', () => {
     await renderLogin()
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/admin/users')
+      expect(mockNavigate).toHaveBeenCalledWith('/quan-tri/nguoi-dung')
     })
   })
 
@@ -86,7 +86,7 @@ describe('Login', () => {
     await renderLogin()
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/admin/submissions')
+      expect(mockNavigate).toHaveBeenCalledWith('/quan-tri/bai-nop')
     })
   })
 

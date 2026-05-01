@@ -63,12 +63,12 @@ describe('CourseDetailPage — Preview Mode', () => {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Routes>
-            <Route path="/courses/:courseSlug" element={<CourseDetailPage />} />
+            <Route path="/khoa-hoc/:courseSlug" element={<CourseDetailPage />} />
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>,
       { wrapper: ({ children }) => {
-        window.history.pushState({}, '', `/courses/${slug}`)
+        window.history.pushState({}, '', `/khoa-hoc/${slug}`)
         return children
       }}
     )

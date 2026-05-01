@@ -49,9 +49,9 @@ describe('AdminLayout', () => {
 
   it('nav links point to correct /admin/* paths', async () => {
     await renderAdminLayout()
-    expect(screen.getByRole('link', { name: /quản lý tài khoản/i })).toHaveAttribute('href', '/admin/users')
-    expect(screen.getByRole('link', { name: /quản lý khóa học/i })).toHaveAttribute('href', '/admin/courses')
-    expect(screen.getByRole('link', { name: /chấm bài/i })).toHaveAttribute('href', '/admin/submissions')
+    expect(screen.getByRole('link', { name: /quản lý tài khoản/i })).toHaveAttribute('href', '/quan-tri/nguoi-dung')
+    expect(screen.getByRole('link', { name: /quản lý khóa học/i })).toHaveAttribute('href', '/quan-tri/khoa-hoc')
+    expect(screen.getByRole('link', { name: /chấm bài/i })).toHaveAttribute('href', '/quan-tri/bai-nop')
   })
 
   it('hides admin-only nav items when role is teacher', async () => {
@@ -66,7 +66,7 @@ describe('AdminLayout', () => {
     setRole('teacher')
     await renderAdminLayout()
     const link = screen.getByRole('link', { name: /chấm bài/i })
-    expect(link).toHaveAttribute('href', '/admin/submissions')
+    expect(link).toHaveAttribute('href', '/quan-tri/bai-nop')
   })
 })
 

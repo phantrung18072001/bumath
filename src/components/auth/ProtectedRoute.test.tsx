@@ -185,7 +185,7 @@ describe('allowedRoles prop', () => {
     })
     renderProtectedCheckRedirect({ allowedRoles: ['admin', 'teacher'] })
     expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument()
-    expect(screen.getByTestId('redirect-target').textContent).toBe('/courses')
+    expect(screen.getByTestId('redirect-target').textContent).toBe('/khoa-hoc')
   })
 
   it('redirects teacher to /admin/submissions when allowedRoles=[admin]', () => {
@@ -198,7 +198,7 @@ describe('allowedRoles prop', () => {
     })
     renderProtectedCheckRedirect({ allowedRoles: ['admin'] })
     expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument()
-    expect(screen.getByTestId('redirect-target').textContent).toBe('/admin/submissions')
+    expect(screen.getByTestId('redirect-target').textContent).toBe('/quan-tri/bai-nop')
   })
 
   it('redirects student to /courses when allowedRoles=[admin]', () => {
@@ -211,6 +211,6 @@ describe('allowedRoles prop', () => {
     })
     renderProtectedCheckRedirect({ allowedRoles: ['admin'] })
     expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument()
-    expect(screen.getByTestId('redirect-target').textContent).toBe('/courses')
+    expect(screen.getByTestId('redirect-target').textContent).toBe('/khoa-hoc')
   })
 })
