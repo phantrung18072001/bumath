@@ -227,11 +227,11 @@ describe('UsersPage - Role Filter', () => {
 })
 
 describe('UsersPage - Pagination', () => {
-  it('shows pagination when more than 25 users', async () => {
-    const manyUsers = Array.from({ length: 30 }, (_, i) => ({
-      id: `user-${i}`,
-      full_name: `User ${i}`,
-      phone: `+8491234${String(i).padStart(4, '0')}`,
+  it('shows pagination when more than 10 users', async () => {
+    const manyUsers = Array.from({ length: 15 }, (_, i) => ({
+      id: String(i + 1),
+      full_name: `User ${i + 1}`,
+      phone: null,
       year_of_birth: 2010,
       address: 'Ha Noi',
       role: 'student' as const,
@@ -241,17 +241,18 @@ describe('UsersPage - Pagination', () => {
 
     renderUsersPage()
     await waitFor(() => {
-      expect(screen.getByText('User 0')).toBeInTheDocument()
+      expect(screen.getByText('User 1')).toBeInTheDocument()
     })
 
     expect(screen.getByLabelText('Go to previous page')).toBeInTheDocument()
     expect(screen.getByLabelText('Go to next page')).toBeInTheDocument()
 
-    expect(screen.getByText('User 24')).toBeInTheDocument()
-    expect(screen.queryByText('User 25')).not.toBeInTheDocument()
+    expect(screen.getByText('User 9')).toBeInTheDocument()
+    expect(screen.getByText('User 10')).toBeInTheDocument()
+    expect(screen.queryByText('User 11')).not.toBeInTheDocument()
   })
 
-  it('hides pagination when 25 or fewer users', async () => {
+  it('hides pagination when 10 or fewer users', async () => {
     renderUsersPage()
     await waitFor(() => {
       expect(screen.getByText('Nguyen Van A')).toBeInTheDocument()

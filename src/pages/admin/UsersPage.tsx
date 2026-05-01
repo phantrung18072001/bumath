@@ -33,6 +33,10 @@ import {
 } from '@/components/ui/pagination'
 import UserEnrollmentDialog from '@/components/admin/UserEnrollmentDialog'
 
+function normalizePhone(phone: string): string {
+  return phone.replace(/^\+84|^84/, '0')
+}
+
 function RoleBadge({ role }: { role: Profile['role'] }) {
   if (role === 'admin') {
     return <Badge className="bg-purple-600 hover:bg-purple-600 text-white">Admin</Badge>
@@ -52,9 +56,13 @@ function buildPageNumbers(current: number, total: number): (number | 'ellipsis')
 
 function UsersTable({
   users,
+  currentPage,
+  pageSize,
   onManageEnrollments,
 }: {
   users: Profile[]
+  currentPage: number
+  pageSize: number
   onManageEnrollments: (user: Profile) => void
 }) {
   return (
@@ -62,6 +70,7 @@ function UsersTable({
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-12">STT</TableHead>
             <TableHead>Tên</TableHead>
             <TableHead>Số điện thoại</TableHead>
             <TableHead>Năm sinh</TableHead>
@@ -71,8 +80,9 @@ function UsersTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map((user) => (
+          {users.map((user, index) => (
             <TableRow key={user.id}>
+              <TableCell className="w-12 text-muted-foreground">{(currentPage - 1) * pageSize + index + 1}</TableCell>
               <TableCell>{user.full_name}</TableCell>
               <TableCell>{user.phone}</TableCell>
               <TableCell>{user.year_of_birth}</TableCell>
@@ -104,7 +114,7 @@ export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [roleFilter, setRoleFilter] = useState<'all' | Profile['role']>('all')
   const [currentPage, setCurrentPage] = useState(1)
-  const PAGE_SIZE = 25
+  const [pageSize, setPageSize] = useState(10)
 
   const { data: users = [], isLoading } = useQuery<Profile[]>({
     queryKey: ['admin', 'profiles'],
@@ -128,20 +138,25 @@ export default function UsersPage() {
     setCurrentPage(1)
   }
 
+  function handlePageSizeChange(value: string) {
+    setPageSize(Number(value))
+    setCurrentPage(1)
+  }
+
   const filtered = users.filter((u) => {
     const matchesRole = roleFilter === 'all' || u.role === roleFilter
     const q = searchQuery.toLowerCase()
     const matchesSearch =
       q === '' ||
       u.full_name.toLowerCase().includes(q) ||
-      (u.phone && u.phone.toLowerCase().includes(q))
+      (u.phone && normalizePhone(u.phone.toLowerCase()).includes(normalizePhone(q)))
     return matchesRole && matchesSearch
   })
 
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const totalPages = Math.ceil(filtered.length / pageSize)
   const paginated = filtered.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
   )
 
   const countCopy = isLoading
@@ -211,10 +226,26 @@ export default function UsersPage() {
         <>
           <UsersTable
             users={paginated}
+            currentPage={currentPage}
+            pageSize={pageSize}
             onManageEnrollments={(user) => setEnrollmentUser(user)}
           />
-          {totalPages > 1 && (
-            <div className="mt-6 flex justify-center">
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Hiển thị</span>
+              <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
+                <SelectTrigger className="w-[72px] h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+              <span>/ trang</span>
+            </div>
+            {totalPages > 1 && (
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
@@ -250,8 +281,8 @@ export default function UsersPage() {
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>
-            </div>
-          )}
+            )}
+          </div>
         </>
       )}
 
