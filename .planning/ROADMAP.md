@@ -53,14 +53,19 @@ Plans:
 - [ ] 09-07-PLAN.md — Test file updates + yarn test green
 
 ### Phase 10: Auth Pages UI
-**Goal**: Login, Register, and Pending pages have polished, modern designs consistent with a professional education platform
+**Goal**: Login and Register pages have polished Claymorphism design with BuMath branding (Pending page removed per D-05)
 **Depends on**: Phase 9
-**Requirements**: AUTH-UI-01, AUTH-UI-02, AUTH-UI-03, DS-01
+**Requirements**: AUTH-UI-01, AUTH-UI-02, AUTH-UI-03 (descoped), DS-01
 **Success Criteria** (what must be TRUE):
-  1. Login page: centered card with BuMath logo, inline validation, no page-level error messages
-  2. Register page: clear field grouping, validation feedback as user types
-  3. Pending page: clear status message, next steps visible, Zalo contact easily accessible
-**Plans**: TBD
+  1. Login page: centered Claymorphism card with BuMath logo, inline validation, floating math symbols
+  2. Register page: 2-column responsive grid (desktop), same Claymorphism design, orange CTA buttons
+  3. ~~Pending page~~: REMOVED per D-05 — users go directly to /khoa-hoc after registration
+**Plans**: 2 plans
+
+Plans:
+- [ ] 10-01-PLAN.md — Foundation: CSS variables, Tailwind fontFamily, utility classes
+- [ ] 10-02-PLAN.md — Page refactors: Login.tsx + Register.tsx Claymorphism design
+
 **UI hint**: yes
 
 ### Phase 11: Admin List Pages
