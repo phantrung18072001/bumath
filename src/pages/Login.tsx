@@ -70,22 +70,29 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4">
-      <div className="mb-6">
-        <span className="text-2xl font-extrabold tracking-tight">
-          Bu<span className="text-primary">Math</span>-X
-        </span>
-      </div>
+    <div className="relative min-h-screen overflow-hidden" style={{ background: '#F0FDFA' }}>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '8%', left: '6%', fontSize: '36px' }}>π</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '15%', right: '8%', fontSize: '40px' }}>√</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '55%', left: '4%', fontSize: '32px' }}>±</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '20%', right: '15%', fontSize: '44px' }}>×</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '70%', right: '6%', fontSize: '36px' }}>÷</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '40%', left: '12%', fontSize: '48px' }}>∑</span>
 
-      <div className="rounded-2xl border bg-card p-6 shadow-lg max-w-[400px] w-full mx-4">
-        <h1 className="text-xl font-semibold leading-[1.3] mb-6">Đăng nhập</h1>
+      <div className="relative flex flex-col items-center justify-center min-h-screen px-4 py-12">
+        <div className="flex items-center gap-2 mb-8">
+          <img src="/bumath.jpeg" alt="BuMath logo" className="h-11 w-auto rounded-lg" />
+          <span className="font-baloo text-[30px] font-bold" style={{ color: '#0D9488' }}>BuMath</span>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Số điện thoại */}
-          <div className="space-y-1">
-            <label className="text-base font-normal leading-[1.5]" htmlFor="phone">
-              Số điện thoại
-            </label>
+        <div className="bm-clay-card max-w-[400px] w-full">
+          <h1 className="font-baloo text-2xl font-bold mb-6" style={{ color: '#134E4A' }}>Đăng nhập</h1>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Số điện thoại */}
+            <div className="space-y-1">
+              <label className="font-comic text-base font-normal" style={{ color: '#134E4A' }} htmlFor="phone">
+                Số điện thoại
+              </label>
             <Input
               id="phone"
               type="tel"
@@ -101,7 +108,7 @@ export default function Login() {
 
           {/* Mật khẩu */}
           <div className="space-y-1">
-            <label className="text-base font-normal leading-[1.5]" htmlFor="password">
+            <label className="font-comic text-base font-normal" style={{ color: '#134E4A' }} htmlFor="password">
               Mật khẩu
             </label>
             <div className="relative">
@@ -133,22 +140,22 @@ export default function Login() {
 
           <Button
             type="submit"
-            size="lg"
-            className="w-full min-h-[48px]"
+            className="bm-btn-cta w-full"
             disabled={isSubmitting}
           >
-            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
             Đăng nhập
           </Button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-muted-foreground">
+        <p className="mt-4 text-center text-sm font-comic" style={{ color: '#5EADA5' }}>
           Chưa có tài khoản?{' '}
-          <Link to="/dang-ky" className="text-primary font-medium">
+          <Link to="/dang-ky" className="font-bold hover:underline" style={{ color: '#0D9488' }}>
             Đăng ký
           </Link>
         </p>
       </div>
     </div>
+  </div>
   )
 }
