@@ -3,74 +3,53 @@ status: complete
 phase: 10-auth-pages-ui
 source: [10-01-SUMMARY.md, 10-02-SUMMARY.md]
 started: 2026-05-01T12:30:57Z
-updated: 2026-05-01T12:40:14Z
+updated: 2026-05-01T13:22:00Z
 ---
 
 ## Current Test
 
-[testing complete]
+[testing complete — all passed]
 
 ## Tests
 
 ### 1. Login Page — BuMath Design
 expected: |
-  Mở http://localhost:8080/dang-nhap (yarn dev).
-  Trang có nền màu xanh nhạt (#F0FDFA).
-  Logo BuMath (ảnh + chữ "BuMath" màu teal) hiện phía trên card.
-  Card trắng với viền teal đậm 3px và bóng đổ "clay" (dày, có shadow dưới).
-  Nút "Đăng nhập" màu cam (#F97316).
-  Nhãn form dùng font Comic Neue (chữ tròn, thân thiện).
-result: issue
-reported: "Để mỗi nền xanh tôi thấy không hợp mắt lắm"
-severity: cosmetic
+  Trang có nền chalkboard (navy #1e3a5f) với chalk texture.
+  Logo BuMath trắng. Card trắng với viền cam. Nút "Đăng nhập" màu cam.
+result: pass
+note: "Chalkboard navy + orange brand — user approved"
 
 ### 2. Login Page — Floating Math Symbols
 expected: |
-  Trên màn hình desktop (≥640px): 6 ký hiệu toán học (π √ ± × ÷ ∑)
-  lơ lửng nhẹ nhàng trong nền với opacity rất mờ.
-  Trên mobile (375px): ký hiệu bị ẩn, không bị tràn màn hình ngang.
+  Trên desktop (≥640px): 14 ký hiệu toán học lơ lửng khắp màn hình.
+  Trên mobile (375px): ký hiệu bị ẩn.
 result: pass
-note: "Symbols visible and animated, nhưng hơi mờ — sẽ được fix khi đổi sang chalkboard background (symbols sẽ dùng màu phấn trắng, nổi bật hơn)"
+note: "Tăng từ 6 → 14 symbols (π θ ∞ √ ∑ Δ ≠ × ± α ≤ ÷ ∫ β)"
 
 ### 3. Login — Form hoạt động
 expected: |
-  Nhập số điện thoại không hợp lệ → hiện lỗi "Số điện thoại không hợp lệ".
-  Nút đăng nhập disabled khi đang submit (có spinner).
-  Password show/hide toggle hoạt động (icon mắt).
+  Nhập số điện thoại không hợp lệ → hiện lỗi. Password show/hide toggle hoạt động.
 result: pass
 
-### 4. Register Page — Claymorphism + 2 cột
+### 4. Register Page — 2 cột
 expected: |
-  Mở http://localhost:8080/dang-ky.
-  Card rộng hơn Login (520px), cùng thiết kế clay card.
-  Trên desktop: 6 trường form xếp thành 3 hàng × 2 cột
-  (Số ĐT | Tên học sinh), (Năm sinh | Địa chỉ), (Mật khẩu | Xác nhận MK).
-  Trên mobile (375px): 1 cột, các trường xếp dọc.
+  Card 520px, 3 hàng × 2 cột trên desktop, 1 cột trên mobile.
 result: pass
 
 ### 5. Register — Form logic
 expected: |
-  Dropdown "Năm sinh" hiện danh sách từ 2020 xuống 1990.
-  Mật khẩu < 8 ký tự → lỗi validation.
-  Mật khẩu không khớp → lỗi "Mật khẩu xác nhận không khớp".
-  Nút "Đăng ký" màu cam, disabled khi đang submit.
+  Dropdown năm sinh, validation mật khẩu, nút cam disabled khi submit.
 result: pass
 
 ## Summary
 
 total: 5
-passed: 4
-issues: 1
+passed: 5
+issues: 0
 pending: 0
 skipped: 0
 blocked: 0
 
 ## Gaps
 
-- truth: "Trang auth có nền màu xanh nhạt (#F0FDFA) theo BuMath design system"
-  status: failed
-  reason: "User reported: Để mỗi nền xanh tôi thấy không hợp mắt lắm — muốn nền kiểu học sinh hơn, chọn: Chalkboard / bảng đen — nền tối với họa tiết phấn trắng"
-  severity: cosmetic
-  test: 1
-  artifacts: [src/pages/Login.tsx, src/pages/Register.tsx]
-  missing: [chalkboard dark background với chalk-texture pattern]
+(none — all gaps resolved)
