@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 11-admin-list-pages
 source: [11-01-SUMMARY.md, 11-02-SUMMARY.md]
 started: 2026-05-01T15:00:00Z
@@ -66,13 +66,29 @@ blocked: 0
   reason: "User reported: search does not normalize +84 (international) and 0 (local) Vietnamese phone prefixes as equivalent"
   severity: major
   test: 1
-  artifacts: []
-  missing: []
+  root_cause: "UsersPage.tsx line 137: phone search uses raw substring match with no normalization. Neither stored value nor query is converted to canonical form before comparison."
+  artifacts:
+    - path: "src/pages/admin/UsersPage.tsx"
+      issue: "line 137 — u.phone.toLowerCase().includes(q) has no +84/0 normalization"
+  missing:
+    - "normalizePhone() helper: replace /^\\+84|^84/ with '0'"
+    - "Apply normalization to both stored phone and search query before includes()"
+  debug_session: ""
 
 - truth: "Pagination có STT column và page size selector (10/20/50)"
   status: failed
   reason: "User reported: cần thêm cột STT (tính theo trang), page size selector (10/20/50) cạnh pagination, cho cả UsersPage và CoursesPage"
   severity: minor
   test: 3
-  artifacts: []
-  missing: []
+  root_cause: "PAGE_SIZE is a hardcoded const (25 in UsersPage, 20 in CoursesPage), never exposed as state. No STT column/cell exists in either table. UsersTable is an extracted sub-component with no access to currentPage/pageSize."
+  artifacts:
+    - path: "src/pages/admin/UsersPage.tsx"
+      issue: "line 107: const PAGE_SIZE = 25 (hardcoded); UsersTable sub-component has no currentPage/pageSize props; no STT column"
+    - path: "src/pages/admin/CoursesPage.tsx"
+      issue: "line 80: const PAGE_SIZE = 20 (hardcoded); no STT column in inline table"
+  missing:
+    - "Replace const PAGE_SIZE with useState(10); reset page on size change"
+    - "Add STT TableHead + TableCell with formula: (currentPage-1)*pageSize + index + 1"
+    - "Pass currentPage/pageSize props to UsersTable sub-component"
+    - "Add Select (10/20/50) next to Pagination in both pages"
+  debug_session: ""
