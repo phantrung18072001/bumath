@@ -71,12 +71,24 @@ export default function Login() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bm-chalk-bg">
-      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '8%', left: '6%', fontSize: '36px' }}>π</span>
-      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '15%', right: '8%', fontSize: '40px' }}>√</span>
-      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '55%', left: '4%', fontSize: '32px' }}>±</span>
+      {/* Row 1 — top area */}
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '8%',  left: '6%',   fontSize: '36px' }}>π</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '12%', left: '22%',  fontSize: '28px' }}>θ</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '5%',  right: '18%', fontSize: '32px' }}>∞</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '15%', right: '8%',  fontSize: '40px' }}>√</span>
+      {/* Row 2 — middle area */}
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '30%', left: '3%',   fontSize: '44px' }}>∑</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '35%', left: '18%',  fontSize: '30px' }}>Δ</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '28%', right: '20%', fontSize: '34px' }}>≠</span>
       <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '20%', right: '15%', fontSize: '44px' }}>×</span>
-      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '70%', right: '6%', fontSize: '36px' }}>÷</span>
-      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '40%', left: '12%', fontSize: '48px' }}>∑</span>
+      {/* Row 3 — lower area */}
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '55%', left: '4%',   fontSize: '32px' }}>±</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '60%', left: '20%',  fontSize: '38px' }}>α</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '58%', right: '18%', fontSize: '30px' }}>≤</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '70%', right: '6%',  fontSize: '36px' }}>÷</span>
+      {/* Row 4 — bottom area */}
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '80%', left: '8%',   fontSize: '42px' }}>∫</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '85%', right: '12%', fontSize: '34px' }}>β</span>
 
       <div className="relative flex flex-col items-center justify-center min-h-screen px-4 py-12">
         <div className="flex items-center gap-2 mb-8">
