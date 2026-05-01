@@ -148,9 +148,9 @@ export default function Login() {
           </Button>
         </form>
 
-        <p className="mt-4 text-center text-sm" style={{ color: '#93C5FD' }}>
+        <p className="mt-4 text-center text-sm" style={{ color: '#FED7AA' }}>
           Chưa có tài khoản?{' '}
-          <Link to="/dang-ky" className="font-bold hover:underline" style={{ color: '#2563EB' }}>
+          <Link to="/dang-ky" className="font-bold hover:underline" style={{ color: '#F97316' }}>
             Đăng ký
           </Link>
         </p>

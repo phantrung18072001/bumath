@@ -10,7 +10,7 @@
   border-radius: 24px;
   box-shadow:
     0 8px 0 var(--bm-border),
-    0 12px 24px rgba(37, 99, 235, 0.10);
+    0 12px 24px rgba(249, 115, 22, 0.10);
   padding: 32px;
   transition: box-shadow 200ms ease, transform 200ms ease;
 }
@@ -114,14 +114,14 @@
     --sidebar-ring: 24 95% 53%;
 
     /* === BuMath Design System v2 === */
-    --bm-primary: #2563EB;
-    --bm-secondary: #60A5FA;
+    --bm-primary: #F97316;
+    --bm-secondary: #FB923C;
     --bm-cta: #F97316;
     --bm-bg: #1e3a5f;
     --bm-text: #1e3a5f;
     --bm-card: #FFFFFF;
-    --bm-border: #2563EB;
-    --bm-muted: #93C5FD;
+    --bm-border: #F97316;
+    --bm-muted: #FED7AA;
   }
 
   .dark {
