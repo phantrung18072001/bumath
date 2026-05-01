@@ -24,8 +24,8 @@ export default function Login() {
       if (profile.role === 'admin') {
         navigate('/admin/users')
       } else if (profile.role === 'teacher') {
-        // Teacher redirects to landing page until Phase 8 adds teacher routes
-        navigate('/')
+          // D-07: teacher lands on grading queue
+          navigate('/admin/submissions')
       } else {
         // Student
         navigate('/courses')

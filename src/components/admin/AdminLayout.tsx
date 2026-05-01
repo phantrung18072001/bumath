@@ -1,22 +1,35 @@
 import { Link, useLocation } from 'react-router-dom'
 import { Users, BookOpen, ClipboardList } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/contexts/AuthContext'
 
-const navItems = [
-  { label: 'Quản lý tài khoản', to: '/admin/users', icon: Users },
-  { label: 'Quản lý khóa học', to: '/admin/courses', icon: BookOpen },
+type NavItem = {
+  label: string
+  to: string
+  icon: typeof Users
+  adminOnly?: boolean
+}
+
+const navItems: NavItem[] = [
+  { label: 'Quản lý tài khoản', to: '/admin/users', icon: Users, adminOnly: true },
+  { label: 'Quản lý khóa học', to: '/admin/courses', icon: BookOpen, adminOnly: true },
   { label: 'Chấm bài', to: '/admin/submissions', icon: ClipboardList },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
+  const { profile } = useAuth()
+  const isAdmin = profile?.role === 'admin'
+
+  // D-03: hide adminOnly items when role is teacher
+  const visibleItems = navItems.filter((item) => !item.adminOnly || isAdmin)
 
   return (
     <div className="flex min-h-[calc(100vh-48px)]">
       {/* Sidebar — min-h offset accounts for StudentLayout 48px sticky header */}
       <aside className="w-60 shrink-0 border-r bg-card">
         <nav className="p-3 space-y-1">
-          {navItems.map(({ label, to, icon: Icon }) => {
+          {visibleItems.map(({ label, to, icon: Icon }) => {
             const active = location.pathname.startsWith(to)
             return (
               <Link

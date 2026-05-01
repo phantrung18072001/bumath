@@ -74,7 +74,7 @@ describe('Login', () => {
     })
   })
 
-  it('redirects to / when role is teacher', async () => {
+  it('redirects to /admin/submissions when role is teacher', async () => {
     vi.mocked(useAuth).mockReturnValue({
       user: { id: 'user-1' } as never,
       session: {} as never,
@@ -86,7 +86,7 @@ describe('Login', () => {
     await renderLogin()
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/')
+      expect(mockNavigate).toHaveBeenCalledWith('/admin/submissions')
     })
   })
 
