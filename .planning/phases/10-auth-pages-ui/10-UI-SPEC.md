@@ -26,7 +26,7 @@ created: 2026-05-01
 | Preset            | default / slate / cssVariables                                 |
 | Component library | Radix UI (via shadcn)                                          |
 | Icon library      | Lucide React (already installed — Eye, EyeOff, Loader2)       |
-| Heading font      | **Baloo 2** — Google Fonts, weights 400/600/700               |
+| Heading font      | **Baloo 2** — Google Fonts, weights 400/700                   |
 | Body / label font | **Comic Neue** — Google Fonts, weights 400/700                |
 | Existing font     | Be Vietnam Pro — stays in `body {}` for non-auth pages        |
 | Style theme       | **Claymorphism** — thick borders, double shadows, bubbly      |
@@ -38,7 +38,7 @@ shadcn CSS variables (they are used by other pages):
 
 ```css
 /* === BuMath Design System v2 — Google Fonts === */
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&family=Comic+Neue:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&family=Comic+Neue:wght@400;700&display=swap');
 
 /* === BuMath Design System v2 — Custom Properties === */
 :root {
@@ -102,7 +102,7 @@ shadcn CSS variables (they are used by other pages):
   border: none;
   border-radius: 8px;
   padding: 12px 24px;
-  font-weight: 600;
+  font-weight: 700;
   font-family: 'Baloo 2', sans-serif;
   min-height: 48px;
   cursor: pointer;
@@ -287,7 +287,7 @@ except touch targets.
   │
   └── <div>  ← flex flex-col items-center justify-center, min-h-screen, px-4, py-12
         │
-        ├── Logo block  ← flex items-center gap-3, mb-8
+        ├── Logo block  ← flex items-center gap-2, mb-8
         │     ├── <img src="/bumath.jpeg" alt="BuMath logo" height="44px" border-radius: 8px>
         │     └── <span> "BuMath"  ← font-baloo, text-[30px], font-bold, color #0D9488
         │
@@ -312,7 +312,7 @@ except touch targets.
   │         "Đăng nhập" / "[spinner] Đang đăng nhập…"
   │
   └── Footer link  ← mt-4, text-center, text-sm, font-comic
-        "Chưa có tài khoản? " + <Link> "Đăng ký" (color #0D9488, font-medium)
+        "Chưa có tài khoản? " + <Link> "Đăng ký" (color #0D9488, font-bold)
 ```
 
 ### Register Card Interior
@@ -343,7 +343,7 @@ except touch targets.
   │             "Đăng ký" / "[spinner] Đang đăng ký…"
   │
   └── Footer link  ← mt-4, text-center, text-sm, font-comic
-        "Đã có tài khoản? " + <Link> "Đăng nhập" (color #0D9488, font-medium)
+        "Đã có tài khoản? " + <Link> "Đăng nhập" (color #0D9488, font-bold)
 ```
 
 ---
@@ -373,7 +373,7 @@ except touch targets.
 ### Show/Hide Password Toggle
 
 - Icon: `Eye` (password hidden) → `EyeOff` (password visible) — Lucide, h-4 w-4
-- Position: `absolute right-3 top-1/2 -translate-y-1/2`
+- Position: `absolute right-2 top-1/2 -translate-y-1/2`
 - Color: `text-[#5EADA5]` default, `text-[#134E4A]` on hover
 - Touch target: 24×24px minimum (existing implementation acceptable)
 - `tabIndex={-1}` (existing pattern — preserved)
@@ -415,7 +415,7 @@ All symbols:
 
 Logo block renders:
 ```jsx
-<div className="flex items-center gap-3 mb-8">
+<div className="flex items-center gap-2 mb-8">
   <img
     src="/bumath.jpeg"
     alt="BuMath logo"
@@ -465,7 +465,7 @@ Logo block renders:
 | Keyboard navigation          | Tab order: phone → password → submit → footer link (Login)       |
 
 > **Note on CTA contrast:** `#F97316` white text ≈ 2.68:1 — below WCAG AA for normal text.
-> Accepted tradeoff — BuMath design system locks this value. Button text is 16px semibold;
+> Accepted tradeoff — BuMath design system locks this value. Button text is 16px bold;
 > recommend `font-size: 18px` on CTA to shift to "large text" (3:1 threshold) if audited.
 
 ---
