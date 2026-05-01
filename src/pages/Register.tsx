@@ -107,210 +107,223 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4">
-      <div className="mb-6">
-        <span className="text-2xl font-extrabold tracking-tight">
-          Bu<span className="text-primary">Math</span>-X
-        </span>
-      </div>
+    <div className="relative min-h-screen overflow-hidden" style={{ background: '#F0FDFA' }}>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '8%', left: '6%', fontSize: '36px' }}>π</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '15%', right: '8%', fontSize: '40px' }}>√</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '55%', left: '4%', fontSize: '32px' }}>±</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '20%', right: '15%', fontSize: '44px' }}>×</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '70%', right: '6%', fontSize: '36px' }}>÷</span>
+      <span className="bm-float-symbol hidden sm:block" aria-hidden="true" style={{ top: '40%', left: '12%', fontSize: '48px' }}>∑</span>
 
-      <div className="rounded-2xl border bg-card p-6 shadow-lg max-w-[480px] w-full mx-4">
-        <h1 className="text-xl font-semibold leading-[1.3] mb-6">Tạo tài khoản</h1>
+      <div className="relative flex flex-col items-center justify-center min-h-screen px-4 py-12">
+        <div className="flex items-center gap-2 mb-8">
+          <img src="/bumath.jpeg" alt="BuMath logo" className="h-11 w-auto rounded-lg" />
+          <span className="font-baloo text-[30px] font-bold" style={{ color: '#0D9488' }}>BuMath</span>
+        </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Số điện thoại */}
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-base font-normal leading-[1.5]">
-                    Số điện thoại
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="tel"
-                      placeholder="0912 345 678"
-                      disabled={isSubmitting}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <div className="bm-clay-card max-w-[520px] w-full">
+          <h1 className="font-baloo text-2xl font-bold mb-6" style={{ color: '#134E4A' }}>Tạo tài khoản</h1>
 
-            {/* Tên học sinh */}
-            <FormField
-              control={form.control}
-              name="fullName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-base font-normal leading-[1.5]">
-                    Tên học sinh
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="Nguyễn Văn A"
-                      disabled={isSubmitting}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Số điện thoại */}
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-comic text-base font-normal" style={{ color: '#134E4A' }}>
+                        Số điện thoại
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="tel"
+                          placeholder="0912 345 678"
+                          disabled={isSubmitting}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            {/* Năm sinh */}
-            <FormField
-              control={form.control}
-              name="yearOfBirth"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-base font-normal leading-[1.5]">
-                    Năm sinh
-                  </FormLabel>
-                  <Select
-                    disabled={isSubmitting}
-                    onValueChange={(val) => field.onChange(Number(val))}
-                    value={field.value ? String(field.value) : ''}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Chọn năm sinh" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {Array.from({ length: 31 }, (_, i) => 2020 - i).map((year) => (
-                        <SelectItem key={year} value={String(year)}>
-                          {year}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                {/* Tên học sinh */}
+                <FormField
+                  control={form.control}
+                  name="fullName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-comic text-base font-normal" style={{ color: '#134E4A' }}>
+                        Tên học sinh
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Nguyễn Văn A"
+                          disabled={isSubmitting}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-            {/* Địa chỉ */}
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-base font-normal leading-[1.5]">
-                    Địa chỉ
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="Hà Nội"
-                      disabled={isSubmitting}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Mật khẩu */}
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-base font-normal leading-[1.5]">
-                    Mật khẩu
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={showPassword ? 'text' : 'password'}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Năm sinh */}
+                <FormField
+                  control={form.control}
+                  name="yearOfBirth"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-comic text-base font-normal" style={{ color: '#134E4A' }}>
+                        Năm sinh
+                      </FormLabel>
+                      <Select
                         disabled={isSubmitting}
-                        className="pr-10"
-                        {...field}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword((v) => !v)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                        tabIndex={-1}
-                        aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                        onValueChange={(val) => field.onChange(Number(val))}
+                        value={field.value ? String(field.value) : ''}
                       >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn năm sinh" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {Array.from({ length: 31 }, (_, i) => 2020 - i).map((year) => (
+                            <SelectItem key={year} value={String(year)}>
+                              {year}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            {/* Xác nhận mật khẩu */}
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-base font-normal leading-[1.5]">
-                    Xác nhận mật khẩu
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        disabled={isSubmitting}
-                        className="pr-10"
-                        {...field}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword((v) => !v)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                        tabIndex={-1}
-                        aria-label={
-                          showConfirmPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'
-                        }
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                {/* Địa chỉ */}
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-comic text-base font-normal" style={{ color: '#134E4A' }}>
+                        Địa chỉ
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Hà Nội"
+                          disabled={isSubmitting}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full min-h-[48px]"
-              disabled={isSubmitting}
-            >
-              {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-              Đăng ký
-            </Button>
-          </form>
-        </Form>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Mật khẩu */}
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-comic text-base font-normal" style={{ color: '#134E4A' }}>
+                        Mật khẩu
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            type={showPassword ? 'text' : 'password'}
+                            disabled={isSubmitting}
+                            className="pr-10"
+                            {...field}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword((v) => !v)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            tabIndex={-1}
+                            aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-        <p className="mt-4 text-center text-sm text-muted-foreground">
-          Đã có tài khoản?{' '}
-          <Link to="/dang-nhap" className="text-primary font-medium">
-            Đăng nhập
-          </Link>
-        </p>
+                {/* Xác nhận mật khẩu */}
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-comic text-base font-normal" style={{ color: '#134E4A' }}>
+                        Xác nhận mật khẩu
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            type={showConfirmPassword ? 'text' : 'password'}
+                            disabled={isSubmitting}
+                            className="pr-10"
+                            {...field}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword((v) => !v)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            tabIndex={-1}
+                            aria-label={
+                              showConfirmPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'
+                            }
+                          >
+                            {showConfirmPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="bm-btn-cta w-full"
+                disabled={isSubmitting}
+              >
+                {isSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                Đăng ký
+              </Button>
+            </form>
+          </Form>
+
+          <p className="mt-4 text-center text-sm font-comic" style={{ color: '#5EADA5' }}>
+            Đã có tài khoản?{' '}
+            <Link to="/dang-nhap" className="font-bold hover:underline" style={{ color: '#0D9488' }}>
+              Đăng nhập
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )
