@@ -1,169 +1,28 @@
 # Roadmap: BuMath LMS
 
-## Overview
+## Milestones
 
-BuMath evolves from a static marketing landing page into a full async LMS. The journey: establish a production-grade deployment and Supabase foundation, then layer in user authentication with role-based access control, then give admins the tools to build course content, then give students the core learning and submission experience, and finally close the feedback loop with teacher grading and student notifications. Each phase delivers a coherent, independently verifiable capability that unlocks the next.
+- ✅ **v1.0 MVP** — Phases 1-8, 38 plans (shipped 2026-05-01) — [Archive](.planning/milestones/v1.0-ROADMAP.md)
+- 🚧 **v2.0 UI Refactor** — Phases 9+ (in planning)
 
 ## Phases
 
-**Phase Numbering:**
-- Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+<details>
+<summary>✅ v1.0 MVP (Phases 1–8) — SHIPPED 2026-05-01</summary>
 
-Decimal phases appear between their surrounding integers in numeric order.
+- [x] Phase 1: Foundation (2/2 plans) — completed
+- [x] Phase 2: Auth & Access Control (7/7 plans) — completed 2026-03-24
+- [x] Phase 3: Course Management (6/6 plans) — completed
+- [x] Phase 4: Student Learning & Submission (5/5 plans) — completed 2026-04-07
+- [x] Phase 5: Grading & Notification (5/5 plans) — completed 2026-04-08
+- [x] Phase 6: UX Polish (6/6 plans) — completed 2026-04-27
+- [x] Phase 7: Auth & Security Fixes (5/5 plans) — completed 2026-04-29
+- [x] Phase 8: Teacher Role Access (2/2 plans) — completed 2026-05-01
 
-- [ ] **Phase 1: Foundation** - Deploy to Vercel, wire up Supabase client, establish infrastructure baseline
-- [ ] **Phase 2: Auth & Access Control** - Registration, login, session, role-based routing, admin approval workflow
-- [ ] **Phase 3: Course Management** - Admin CRUD for courses, lessons, assignments, and enrollment
-- [ ] **Phase 4: Student Learning & Submission** - Course browsing, video lessons, progress tracking, photo upload
-- [x] **Phase 5: Grading & Notification** - Teacher grading queue, score/comment entry, student grade view, email notification (completed 2026-04-08)
-- [x] **Phase 6: UX Polish** - Grading filters, course catalogue, course preview, nav fixes, progress bar color (completed 2026-04-27)
-- [ ] **Phase 7: Auth & Security Fixes** - Profiles RLS, login redirect for pending students, AdminLayout logout
-- [ ] **Phase 8: Teacher Role Access** - Teacher-accessible grading routes, teacher navigation, role-aware Header CTA
+Full details: [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-ROADMAP.md)
 
-## Phase Details
+</details>
 
-### Phase 1: Foundation
-**Goal**: Production infrastructure is in place — app is served from Vercel with SPA routing, and Supabase is wired in as the backend client
-**Depends on**: Nothing (first phase)
-**Requirements**: INFRA-01, INFRA-02, INFRA-03
-**Success Criteria** (what must be TRUE):
-  1. Navigating directly to any deep URL (e.g. `/courses/123`) returns the app, not a 404
-  2. The Supabase client can be imported anywhere in the codebase from `src/lib/supabase.ts` without errors
-  3. Environment variables for Supabase URL and anon key are loaded by Vite in both dev and production builds
-**Plans**: 2 plans
+### 🚧 v2.0 UI Refactor (In Planning)
 
-Plans:
-- [x] 01-01-PLAN.md — Vercel migration, Supabase client install and singleton creation
-- [ ] 01-02-PLAN.md — Vercel + Supabase dashboard setup and deployment verification
-
-### Phase 2: Auth & Access Control
-**Goal**: Users can securely register, log in, and access only the areas their role permits — with an admin approval gate before students reach any content
-**Depends on**: Phase 1
-**Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, ROLE-01, ROLE-02, ROLE-03, UX-03
-**Success Criteria** (what must be TRUE):
-  1. A new visitor can register with email and password and lands on a "pending approval" screen
-  2. A logged-in user's session persists across browser reloads without re-authenticating
-  3. Any logged-in user can log out from any page and is redirected to the login screen
-  4. Admin can view a list of pending accounts and approve or reject each one
-  5. A student who has not been approved cannot access course pages — they see the pending screen
-  6. All UI text, labels, and messages are in Vietnamese
-**Plans**: 6 plans
-**UI hint**: yes
-
-Plans:
-- [x] 02-01-PLAN.md — Auth types, validators, AuthContext, ProtectedRoute
-- [x] 02-02-PLAN.md — Login, Register, Pending pages
-- [x] 02-03-PLAN.md — Admin UsersPage with approve/reject
-- [x] 02-04-PLAN.md — Gap closure: Wire admin route in App.tsx with ProtectedRoute
-- [x] 02-05-PLAN.md — Gap closure: Add auth-aware logout to Header
-- [x] 02-06-PLAN.md — Gap closure: RLS policies SQL migration for profiles table
-
-### Phase 3: Course Management
-**Goal**: Admin has full control to build the course catalogue — courses, ordered lessons with YouTube videos, assignment attachments, and student enrollment — so content exists for students to consume
-**Depends on**: Phase 2
-**Requirements**: COURSE-01, COURSE-02, COURSE-03, COURSE-04, COURSE-05
-**Success Criteria** (what must be TRUE):
-  1. Admin can create, edit, and delete a course with a name, description, and grade target (7, 8, 9, or chuyên)
-  2. Admin can add lessons to a course with a title, YouTube URL, description, and sort order, and reorder them
-  3. Admin can attach a PDF or image file as an assignment to any lesson
-  4. Admin can enroll a specific student in a course, making that course visible only to enrolled students
-**Plans**: TBD
-**UI hint**: yes
-
-### Phase 4: Student Learning & Submission
-**Goal**: Enrolled, approved students can browse their courses, watch lessons, track their own progress, and submit handwritten assignment photos
-**Depends on**: Phase 3
-**Requirements**: LEARN-01, LEARN-02, LEARN-03, LEARN-04, LEARN-05, SUBMIT-01, SUBMIT-02, SUBMIT-03, SUBMIT-04, UX-01, UX-02
-**Success Criteria** (what must be TRUE):
-  1. After login, a student immediately sees only the courses they are enrolled in
-  2. A student can open a lesson and watch the embedded YouTube video without leaving the app
-  3. A student can mark a lesson as complete, and the course progress bar updates to reflect the new percentage
-  4. A student can photograph their handwritten work and upload it as a submission — the image is compressed client-side before upload
-  5. Each assignment shows a clear status label: "Chưa nộp," "Đã nộp," or "Đã chấm"
-  6. All submission and lesson interactions work correctly on a 375px mobile viewport with 48px tap targets
-**Plans**: 5 plans
-**UI hint**: yes
-
-Plans:
-- [x] 04-01-PLAN.md — Install deps, DB schema SQL, API modules (lesson-progress, submissions)
-- [x] 04-02-PLAN.md — StudentLayout, CoursesPage, student route wiring
-- [x] 04-03-PLAN.md — CourseDetailPage with sidebar, YouTube embed, mark complete
-- [x] 04-04-PLAN.md — SubmissionArea with image compression and upload
-- [x] 04-05-PLAN.md — Visual and functional verification checkpoint
-
-### Phase 5: Grading & Notification
-**Goal**: Teachers can efficiently work through ungraded submissions, enter scores and comments, and students are notified and can view their results — completing the async feedback loop that is the product's core value
-**Depends on**: Phase 4
-**Requirements**: GRADE-01, GRADE-02, GRADE-03, GRADE-04, GRADE-05
-**Success Criteria** (what must be TRUE):
-  1. A teacher sees a queue of all ungraded submissions and can open any submission to view the student's photo at full resolution
-  2. A teacher can enter a numeric score and a text comment on a submission and save it
-  3. After a teacher saves a grade, the student receives an in-app bell notification (email deferred to v2)
-  4. A student can open their graded submission and see the score and teacher comment alongside their submitted photo
-**Plans**: 4 plans
-
-Plans:
-- [x] 05-00-PLAN.md — Wave 0: Test stub files for all Phase 5 components (Nyquist compliance)
-- [x] 05-01-PLAN.md — Migration (student_viewed_at + RPC) and API layer (4 new functions in submissions.ts)
-- [x] 05-02-PLAN.md — Teacher grading queue (SubmissionsPage + GradingDialog + route wiring + nav link)
-- [x] 05-03-PLAN.md — Student bell notification (BellNotification) and grade result view (SubmissionArea extension)
-
-## Progress
-
-**Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Foundation | 1/2 | In Progress|  |
-| 2. Auth & Access Control | 6/6 | Complete | 2026-03-24 |
-| 3. Course Management | 4/5 | In Progress|  |
-| 4. Student Learning & Submission | 5/5 | Complete | 2026-04-07 |
-| 5. Grading & Notification | 4/4 | Complete   | 2026-04-08 |
-| 6. UX Polish | 6/6 | Complete   | 2026-04-27 |
-| 7. Auth & Security Fixes | 0/TBD | Pending |  |
-| 8. Teacher Role Access | 0/2 | Pending |  |
-
-### Phase 6: UX Polish
-
-**Goal:** Improve usability across the platform — grading filters, student course discovery flow, navigation fixes, and visual polish
-**Requirements**: UX-P6-01, UX-P6-02, UX-P6-03, UX-P6-04, UX-P6-05, UX-P6-06
-**Depends on:** Phase 5
-**Plans:** 6/6 plans complete
-
-Plans:
-- [x] 06-00-PLAN.md — Wave 0: Test stubs for Nyquist compliance
-- [x] 06-01-PLAN.md — Quick wins: NotFound Vietnamese, StudentLayout nav, Progress bar color
-- [x] 06-02-PLAN.md — Admin grading filters (SubmissionsPage)
-- [x] 06-03-PLAN.md — Course catalogue page + RLS migration
-- [x] 06-04-PLAN.md — Course preview mode (CourseDetailPage)
-
-**Scope:**
-- Admin grading queue: filter by class (grade), course, lesson, student name
-- Student: fix 404 pages; clear entry point to "my courses"; browsable course catalogue before enrollment; course preview (chapters/lessons list) before purchase
-- Navigation: BuMath logo click → home page; show logo + name together
-- Course progress column: use gray/neutral color instead of current blue
-
-### Phase 7: Auth & Security Fixes
-**Goal:** Close three auth/security gaps identified in v1.0 milestone audit — add profiles table RLS so students cannot see each other's data, fix login redirect for pending students, and add logout to AdminLayout
-**Depends on:** Phase 6
-**Requirements:** ROLE-03, AUTH-03, AUTH-04
-**Gap Closure:** Closes gaps from v1.0-MILESTONE-AUDIT.md
-**Plans:** 3 plans
-
-Plans:
-- [ ] 07-00-PLAN.md — Wave 0 test stubs for Login and AdminLayout
-- [ ] 07-01-PLAN.md — Profiles RLS idempotent migration (ROLE-03)
-- [ ] 07-02-PLAN.md — Login redirect fix (AUTH-04) + AdminLayout logout (AUTH-03)
-
-### Phase 8: Teacher Role Access
-**Goal:** Make the `teacher` role fully functional — teachers can log in, navigate to the grading queue, and grade submissions without needing an `admin` account
-**Depends on:** Phase 7
-**Requirements:** ROLE-01, ROLE-02, GRADE-01, GRADE-02, GRADE-03
-**Gap Closure:** Closes critical integration gap from v1.0-MILESTONE-AUDIT.md (teacher role has zero accessible routes)
-**Plans:** 2 plans
-
-Plans:
-- [ ] 08-01-PLAN.md — Extend ProtectedRoute with allowedRoles prop; apply to grading routes in App.tsx
-- [ ] 08-02-PLAN.md — AdminLayout role-aware nav filtering + Login.tsx teacher redirect to /admin/submissions
+Phase numbering continues from 9+. Requirements and roadmap to be defined via `/gsd-new-milestone`.

@@ -16,53 +16,34 @@ Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ t
 - ✓ Form tư vấn/đăng ký quan tâm gửi về Google Sheets — existing
 - ✓ Responsive design, hỗ trợ tiếng Việt (font Be Vietnam Pro) — existing
 - ✓ Navigation header với placeholder cho login/register — existing
-- ✓ Vercel SPA hosting với deep-link routing — Validated in Phase 1: Foundation
-- ✓ Supabase client singleton (`src/lib/supabase.ts`) với env var plumbing — Validated in Phase 1: Foundation
-- ✓ `@supabase/supabase-js@2.78.0` installed (Node 18 compatible) — Validated in Phase 1: Foundation
+- ✓ Vercel SPA hosting với deep-link routing — v1.0
+- ✓ Supabase client singleton (`src/lib/supabase.ts`) với env var plumbing — v1.0
+- ✓ Đăng ký / đăng nhập / đăng xuất từ mọi trang — v1.0
+- ✓ Admin approval gate cho học sinh (pending → approved → /courses) — v1.0
+- ✓ Role-based access control (student / teacher / admin) — v1.0
+- ✓ Profiles table RLS (học sinh không thấy data của nhau) — v1.0
+- ✓ Admin CRUD khóa học, chương, bài học với YouTube embed — v1.0
+- ✓ Admin đính kèm đề bài (PDF/image) vào bài học — v1.0
+- ✓ Admin gán học sinh vào khóa học — v1.0
+- ✓ Học sinh xem và phát video bài giảng (YouTube embed) — v1.0
+- ✓ Học sinh đánh dấu bài đã xem → tự động tính % hoàn thành — v1.0
+- ✓ Học sinh nộp bài tập bằng ảnh chụp (compress < 500KB) — v1.0
+- ✓ Trạng thái bài tập: Chưa nộp / Đã nộp / Đã chấm — v1.0
+- ✓ Giảng viên xem hàng đợi bài nộp, nhập điểm + comment — v1.0
+- ✓ Teacher role: đăng nhập → redirect /admin/submissions, thấy sidebar "Chấm bài" — v1.0
+- ✓ Học sinh nhận bell notification khi bài được chấm — v1.0
+- ✓ Admin grading queue với bộ lọc (lớp, khóa học, bài học, học sinh) — v1.0
+- ✓ Student course catalogue tại /catalogue với badge đã/chưa đăng ký — v1.0
+- ✓ CourseDetailPage preview mode cho học sinh chưa đăng ký — v1.0
+- ✓ Responsive 375px, tap targets 48px, giao diện tiếng Việt — v1.0
 
-### Active
+### Active (v2.0 — UI Refactor)
 
-**Auth & Accounts**
-- [ ] Học sinh tự đăng ký tài khoản (email + password)
-- [ ] Admin duyệt tài khoản học sinh trước khi học được
-- [ ] Giảng viên/admin có tài khoản với quyền riêng biệt
-- [ ] Đăng nhập, đăng xuất, session persistent
-
-**Course Management (Admin)**
-- ✓ Admin tạo/sửa/xóa khóa học (tên, mô tả, lớp mục tiêu) — Validated in Phase 3: Course Management
-- ✓ Admin thêm bài học vào khóa học (tiêu đề, video YouTube, mô tả) — Validated in Phase 3: Course Management
-- ✓ Admin sắp xếp thứ tự bài học trong khóa — Validated in Phase 3: Course Management
-- ✓ Admin đính kèm bài tập vào bài học (file PDF hoặc hình ảnh đề bài) — Validated in Phase 3: Course Management
-
-**Learning Experience (Student)**
-- ✓ Học sinh xem danh sách khóa học được phép truy cập — Validated in Phase 4: Student Learning & Submission
-- ✓ Học sinh xem và phát video bài giảng (YouTube embed) — Validated in Phase 4: Student Learning & Submission
-- ✓ Học sinh đánh dấu bài đã xem → tự động tính % hoàn thành khóa — Validated in Phase 4: Student Learning & Submission
-- ✓ Học sinh nộp bài tập bằng cách upload ảnh chụp bài làm — Validated in Phase 4: Student Learning & Submission
-
-**Grading (Giảng viên)**
-- ✓ Giảng viên xem danh sách bài nộp của học sinh — Validated in Phase 5: Grading & Notification
-- ✓ Giảng viên nhập điểm và viết nhận xét/comment trên bài nộp — Validated in Phase 5: Grading & Notification
-- ✓ Học sinh nhận thông báo và xem kết quả chấm bài — Validated in Phase 5: Grading & Notification
-
-**UX Polish (Phase 6)**
-- ✓ Admin grading queue với bộ lọc (lớp, khóa học, bài học, học sinh) — Validated in Phase 6: UX Polish
-- ✓ Trang 404 tiếng Việt với link điều hướng theo role — Validated in Phase 6: UX Polish
-- ✓ StudentLayout: logo link về trang chủ + nav links tới /courses và /catalogue — Validated in Phase 6: UX Polish
-- ✓ Student course catalogue tại /catalogue với badge đã/chưa đăng ký — Validated in Phase 6: UX Polish
-- ✓ CourseDetailPage preview mode cho học sinh chưa đăng ký — Validated in Phase 6: UX Polish
-- ✓ Progress bar track color fix (bg-muted thay vì bg-secondary) — Validated in Phase 6: UX Polish
-
-**Teacher Role Access (Phase 8)**
-- ✓ Teacher role có thể đăng nhập và tự động chuyển đến /admin/submissions — Validated in Phase 8: Teacher Role Access
-- ✓ AdminLayout sidebar hiển thị chỉ "Chấm bài" cho giảng viên — Validated in Phase 8: Teacher Role Access
-- ✓ Giảng viên truy cập /admin/submissions và /admin/submissions/:id mà không cần quyền admin — Validated in Phase 8: Teacher Role Access
-- ✓ Admin-only routes (/admin/users, /admin/courses) redirect giảng viên về /admin/submissions — Validated in Phase 8: Teacher Role Access
-
-**Progress Tracking**
-- [ ] Hiển thị bài nào đã xem / chưa xem trong từng khóa
-- [ ] Progress bar % hoàn thành theo khóa học
-- [ ] Trạng thái bài tập: chưa nộp / đã nộp / đã chấm + điểm
+- [ ] Toàn bộ UI ngoài landing page được refactor với thiết kế hiện đại, đẹp hơn
+- [ ] Các trang danh sách (admin users, courses, submissions; student catalogue, courses) có pagination
+- [ ] Các trang danh sách có bộ filter phù hợp (search, grade, status…)
+- [ ] URL đồng nhất (English-only hoặc Vietnamese-only — cần quyết định)
+- [ ] Email notification khi bài được chấm (GRADE-04 original requirement)
 
 ### Out of Scope
 
@@ -75,13 +56,29 @@ Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ t
 
 ## Context
 
-**Codebase hiện tại:** React 18 + TypeScript + Vite SPA. Landing page đã hoàn chỉnh. Routing (React Router v6), form handling (React Hook Form + Zod), server state (TanStack Query), UI (shadcn/ui + Tailwind) đã sẵn sàng mở rộng. Hiện deploy lên GitHub Pages (static).
+**Shipped v1.0 (2026-05-01):** 8 phases, 38 plans, ~12,128 LOC TypeScript. Full async LMS — auth with role-based access, admin course/enrollment management, student learning + submission, teacher grading + bell notifications, UX polish, security hardening.
 
-**Backend strategy:** Supabase — cung cấp Auth, PostgreSQL database, Storage (cho file bài tập), và Realtime. Đây là lựa chọn phù hợp nhất cho MVP: không cần tự maintain server, có Row Level Security cho phân quyền học sinh/giảng viên/admin.
+**Current routes:**
+- `/` — Landing page (marketing, untouched)
+- `/login`, `/register` — Public auth pages
+- `/pending` — Approval pending screen
+- `/admin/users` — Admin: user management
+- `/admin/courses` — Admin: course list
+- `/admin/courses/:courseSlug` — Admin: course detail / chapters
+- `/admin/courses/:courseSlug/chapters/:chapterSlug` — Admin: chapter detail / lessons
+- `/admin/submissions` — Admin+Teacher: grading queue
+- `/admin/submissions/:submissionId` — Admin+Teacher: grade submission
+- `/courses` — Student: enrolled courses
+- `/courses/:courseSlug` — Student: course detail / lesson view
+- `/catalogue` — Student: all courses catalogue
 
-**Deployment:** Cần chuyển từ GitHub Pages thuần tĩnh sang hosting có thể gọi Supabase client (Vercel hoặc Netlify phù hợp hơn về lâu dài).
+**Backend strategy:** Supabase — Auth, PostgreSQL, Storage, RLS. All policies implemented. No server to maintain.
 
-**Target users:** Học sinh THCS lớp 7, 8, 9 — ưu tiên UX đơn giản, dễ dùng trên điện thoại. Giảng viên toán — cần dashboard chấm bài gọn gàng, nhanh.
+**Deployment:** Vercel (SPA routing). Live at production URL.
+
+**Target users:** Học sinh THCS lớp 7–9 và ôn thi chuyên Toán — UX đơn giản, mobile-first. Giảng viên và admin — dashboard gọn gàng, nhanh.
+
+**Known tech debt:** `requireApproved` dead code in ProtectedRoute; `GRADE_BADGE` duplicated in UserEnrollmentDialog; hardcoded ADMIN_ZALO_NUMBER in Pending.tsx.
 
 ## Constraints
 
@@ -95,10 +92,12 @@ Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ t
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Supabase làm backend | Auth + DB + Storage trong một, không cần tự maintain server, RLS cho phân quyền | — Pending |
-| YouTube embed cho video MVP | Tiết kiệm storage/bandwidth, đủ dùng cho giai đoạn đầu | — Pending |
-| Bài tập nộp ảnh → chấm thủ công | Phù hợp với bài toán tự luận, dễ triển khai nhanh | — Pending |
-| Admin duyệt tài khoản học sinh | Kiểm soát chất lượng học sinh, tránh truy cập không mong muốn | — Pending |
+| Supabase làm backend | Auth + DB + Storage trong một, không cần tự maintain server, RLS cho phân quyền | ✓ Good — no issues, all RLS policies delivered |
+| YouTube embed cho video MVP | Tiết kiệm storage/bandwidth, đủ dùng cho giai đoạn đầu | ✓ Good — works well, students have no issues |
+| Bài tập nộp ảnh → chấm thủ công | Phù hợp với bài toán tự luận, dễ triển khai nhanh | ✓ Good — fits Vietnamese handwritten math |
+| Admin duyệt tài khoản học sinh | Kiểm soát chất lượng học sinh, tránh truy cập không mong muốn | ✓ Good — approval flow works, simplified in Phase 7 |
+| GRADE-04 email → bell notification | Email phức tạp hơn dự kiến; in-app bell đủ dùng cho MVP | ✓ Good — accepted scope adjustment |
+| ProtectedRoute `allowedRoles` array API | Backward-compatible extension; teacher+admin share routes cleanly | ✓ Good — clean DX, 0 regressions |
 
 ## Evolution
 
@@ -120,4 +119,4 @@ Last updated: Phase 8 complete — all 8 milestone phases delivered. BuMath v1.0
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-08 — Phase 5 (Grading & Notification) complete — MVP grading loop complete*
+*Last updated: 2026-05-01 after v1.0 milestone — full async LMS shipped, 38/38 requirements delivered*

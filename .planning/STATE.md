@@ -1,10 +1,9 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: milestone
-status: Milestone complete
-stopped_at: Phase 8 UI-SPEC approved
-last_updated: "2026-05-01T09:31:37.613Z"
+milestone_name: BuMath LMS MVP
+status: Milestone archived — v2.0 in planning
+last_updated: "2026-05-01T10:00:00.000Z"
 progress:
   total_phases: 8
   completed_phases: 8
@@ -16,15 +15,14 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-24)
+See: .planning/PROJECT.md (updated 2026-05-01 — v1.0 complete)
 
 **Core value:** Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ thể từ giảng viên trên từng bài làm
-**Current focus:** Phase 08 — teacher-role-access
+**Current focus:** v2.0 planning — UI Refactor
 
 ## Current Position
 
-Phase: 08
-Plan: Not started
+Milestone v1.0 archived. All 8 phases, 38 plans complete. Ready for `/gsd-new-milestone` to begin v2.0.
 
 ## Performance Metrics
 
