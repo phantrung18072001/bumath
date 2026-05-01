@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Loader2, Plus, Pencil, Trash2, BookOpen, Globe, EyeOff } from 'lucide-react'
+import { Loader2, Plus, Pencil, Trash2, BookOpen, Globe, EyeOff, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Table,
@@ -13,6 +13,24 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,12 +61,23 @@ function GradeBadge({ grade }: { grade: Course['target_grade'] }) {
   )
 }
 
+function buildPageNumbers(current: number, total: number): (number | 'ellipsis')[] {
+  if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1)
+  if (current <= 3) return [1, 2, 3, 4, 'ellipsis', total]
+  if (current >= total - 2) return [1, 'ellipsis', total - 3, total - 2, total - 1, total]
+  return [1, 'ellipsis', current - 1, current, current + 1, 'ellipsis', total]
+}
+
 export default function CoursesPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingCourse, setEditingCourse] = useState<Course | null>(null)
   const [deletingCourse, setDeletingCourse] = useState<Course | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [gradeFilter, setGradeFilter] = useState<'all' | Course['target_grade']>('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const PAGE_SIZE = 20
 
   const { data: courses = [], isLoading } = useQuery<Course[]>({
     queryKey: ['admin', 'courses'],
@@ -95,6 +124,38 @@ export default function CoursesPage() {
     setEditingCourse(null)
   }
 
+  function handleSearch(value: string) {
+    setSearchQuery(value)
+    setCurrentPage(1)
+  }
+
+  function handleGradeFilter(value: string) {
+    setGradeFilter(value as 'all' | Course['target_grade'])
+    setCurrentPage(1)
+  }
+
+  // Filter logic: grade AND search (case-insensitive)
+  const filtered = courses.filter((c) => {
+    const matchesGrade = gradeFilter === 'all' || c.target_grade === gradeFilter
+    const q = searchQuery.toLowerCase()
+    const matchesSearch = q === '' || c.title.toLowerCase().includes(q)
+    return matchesGrade && matchesSearch
+  })
+
+  // Pagination slicing
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const paginated = filtered.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  )
+
+  // Count copy logic
+  const countCopy = isLoading
+    ? ''
+    : gradeFilter !== 'all' || searchQuery
+      ? `${filtered.length} / ${courses.length} khóa học`
+      : `${courses.length} khóa học`
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
@@ -121,100 +182,193 @@ export default function CoursesPage() {
 
       <h1 className="text-xl font-semibold leading-[1.3] mb-6">Quản lý khóa học</h1>
 
+      {/* Toolbar */}
+      <div className="flex flex-col sm:flex-row gap-2 mb-6">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+          <Input
+            className="pl-9"
+            placeholder="Tìm theo tên khóa học…"
+            aria-label="Tìm kiếm khóa học"
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+          />
+        </div>
+        <Select value={gradeFilter} onValueChange={handleGradeFilter}>
+          <SelectTrigger className="w-full sm:w-[160px]" aria-label="Lọc theo lớp">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tất cả lớp</SelectItem>
+            <SelectItem value="grade_7">Lớp 7</SelectItem>
+            <SelectItem value="grade_8">Lớp 8</SelectItem>
+            <SelectItem value="grade_9">Lớp 9</SelectItem>
+            <SelectItem value="advanced">Ôn chuyên</SelectItem>
+          </SelectContent>
+        </Select>
+        {!isLoading && (
+          <span className="text-sm text-muted-foreground self-center whitespace-nowrap">
+            {countCopy}
+          </span>
+        )}
+      </div>
+
+      {/* Content: Loading / Empty / Table + Pagination */}
       {isLoading ? (
-        <div className="flex justify-center items-center py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" aria-label="Đang tải..." />
+        <div aria-busy="true" aria-label="Đang tải...">
+          <div className="space-y-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-full rounded-md" />
+            ))}
+          </div>
         </div>
-      ) : courses.length === 0 ? (
-        <p className="text-center text-muted-foreground py-8">
-          Chưa có khóa học nào. Nhấn "Tạo khóa học" để bắt đầu.
-        </p>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-16">
+          {courses.length === 0 ? (
+            <>
+              <p className="text-base font-semibold text-foreground mb-1">Chưa có khóa học nào</p>
+              <p className="text-sm text-muted-foreground mb-4">Nhấn "Tạo khóa học" để bắt đầu.</p>
+              <Button onClick={handleOpenCreate}>
+                <Plus className="h-4 w-4 mr-1" />
+                Tạo khóa học
+              </Button>
+            </>
+          ) : (
+            <>
+              <p className="text-base font-semibold text-foreground mb-1">Không tìm thấy kết quả</p>
+              <p className="text-sm text-muted-foreground">Thử thay đổi từ khóa hoặc bộ lọc.</p>
+            </>
+          )}
+        </div>
       ) : (
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tên khóa học</TableHead>
-                <TableHead>Mô tả</TableHead>
-                <TableHead>Lớp mục tiêu</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead>Hành động</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {courses.map((course) => (
-                <TableRow key={course.id}>
-                  <TableCell className="font-medium">{course.title}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
-                    {course.description ?? '—'}
-                  </TableCell>
-                  <TableCell>
-                    <GradeBadge grade={course.target_grade} />
-                  </TableCell>
-                  <TableCell>
-                    {course.is_published ? (
-                      <Badge className="bg-green-100 text-green-700 hover:bg-green-100 gap-1">
-                        <Globe className="h-3 w-3" />
-                        Công khai
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-muted-foreground gap-1">
-                        <EyeOff className="h-3 w-3" />
-                        Nháp
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2 flex-wrap">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="min-h-[48px]"
-                        aria-label="Xem chuyên đề"
-                        onClick={() => navigate(`/quan-tri/khoa-hoc/${course.slug}`)}
-                      >
-                        <BookOpen className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="min-h-[48px]"
-                        aria-label="Chỉnh sửa"
-                        onClick={() => handleOpenEdit(course)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant={course.is_published ? 'outline' : 'default'}
-                        size="sm"
-                        className="min-h-[48px] text-xs"
-                        disabled={publishMutation.isPending}
-                        onClick={() => publishMutation.mutate({ id: course.id, published: !course.is_published })}
-                      >
-                        {publishMutation.isPending ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : course.is_published ? (
-                          <><EyeOff className="h-3.5 w-3.5 mr-1" />Ẩn</>
-                        ) : (
-                          <><Globe className="h-3.5 w-3.5 mr-1" />Công khai</>
-                        )}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="min-h-[48px] text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
-                        aria-label="Xóa"
-                        onClick={() => setDeletingCourse(course)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
+        <>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Tên khóa học</TableHead>
+                  <TableHead>Mô tả</TableHead>
+                  <TableHead>Lớp mục tiêu</TableHead>
+                  <TableHead>Trạng thái</TableHead>
+                  <TableHead>Hành động</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {paginated.map((course) => (
+                  <TableRow key={course.id}>
+                    <TableCell className="font-medium">{course.title}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
+                      {course.description ?? '—'}
+                    </TableCell>
+                    <TableCell>
+                      <GradeBadge grade={course.target_grade} />
+                    </TableCell>
+                    <TableCell>
+                      {course.is_published ? (
+                        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 gap-1">
+                          <Globe className="h-3 w-3" />
+                          Công khai
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-muted-foreground gap-1">
+                          <EyeOff className="h-3 w-3" />
+                          Nháp
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2 flex-wrap">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="min-h-[48px]"
+                          aria-label="Xem chuyên đề"
+                          onClick={() => navigate(`/quan-tri/khoa-hoc/${course.slug}`)}
+                        >
+                          <BookOpen className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="min-h-[48px]"
+                          aria-label="Chỉnh sửa"
+                          onClick={() => handleOpenEdit(course)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant={course.is_published ? 'outline' : 'default'}
+                          size="sm"
+                          className="min-h-[48px] text-xs"
+                          disabled={publishMutation.isPending}
+                          onClick={() => publishMutation.mutate({ id: course.id, published: !course.is_published })}
+                        >
+                          {publishMutation.isPending ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : course.is_published ? (
+                            <><EyeOff className="h-3.5 w-3.5 mr-1" />Ẩn</>
+                          ) : (
+                            <><Globe className="h-3.5 w-3.5 mr-1" />Công khai</>
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="min-h-[48px] text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+                          aria-label="Xóa"
+                          onClick={() => setDeletingCourse(course)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Pagination - only render when totalPages > 1 */}
+          {totalPages > 1 && (
+            <div className="mt-6 flex justify-center">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      aria-disabled={currentPage === 1}
+                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    />
+                  </PaginationItem>
+                  {buildPageNumbers(currentPage, totalPages).map((page, idx) =>
+                    page === 'ellipsis' ? (
+                      <PaginationItem key={`ellipsis-${idx}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          isActive={page === currentPage}
+                          onClick={() => setCurrentPage(page)}
+                          className="cursor-pointer"
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  )}
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      aria-disabled={currentPage === totalPages}
+                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </>
       )}
 
       <CourseFormDialog
@@ -254,3 +408,4 @@ export default function CoursesPage() {
     </div>
   )
 }
+
