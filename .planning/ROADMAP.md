@@ -41,7 +41,16 @@ Full details: [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-R
   1. Navigating to `/login` redirects to `/dang-nhap`; all other English routes redirect similarly
   2. All post-login redirects, ProtectedRoute redirects, and `navigate()` calls use Vietnamese URLs
   3. No broken internal links anywhere in the app
-**Plans**: TBD
+**Plans**: 7 plans
+
+Plans:
+- [ ] 09-01-PLAN.md — Rename route path definitions (App.tsx + ProtectedRoute.tsx)
+- [ ] 09-02-PLAN.md — Auth/shared pages (Login, Register, NotFound)
+- [ ] 09-03-PLAN.md — Admin components (AdminLayout, GradingPage, SubmissionsPage)
+- [ ] 09-04-PLAN.md — Admin content pages (CoursesPage, ChaptersPage, LessonsPage)
+- [ ] 09-05-PLAN.md — Student layout + pages (StudentLayout, CataloguePage + LOI_MAP logic, CoursesPage)
+- [ ] 09-06-PLAN.md — Student CourseDetailPage + all 4 landing components
+- [ ] 09-07-PLAN.md — Test file updates + yarn test green
 
 ### Phase 10: Auth Pages UI
 **Goal**: Login, Register, and Pending pages have polished, modern designs consistent with a professional education platform
