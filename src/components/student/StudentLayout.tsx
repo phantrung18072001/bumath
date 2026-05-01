@@ -14,7 +14,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
 
   const handleLogout = async () => {
     await signOut()
-    navigate('/login')
+    navigate('/dang-nhap')
   }
 
   return (

@@ -92,7 +92,7 @@ const Header = () => {
                   Đăng nhập
                 </Button>
               </Link>
-              <Link to="/register">
+              <Link to="/dang-ky">
                 <Button size="sm" className="h-7 text-sm">
                   Đăng ký
                 </Button>
@@ -193,7 +193,7 @@ const Header = () => {
               <Link to="/dang-nhap" className="flex-1">
                 <Button variant="outline" className="w-full" size="sm">Đăng nhập</Button>
               </Link>
-              <Link to="/register" className="flex-1">
+              <Link to="/dang-ky" className="flex-1">
                 <Button className="w-full" size="sm">Đăng ký</Button>
               </Link>
             </div>
