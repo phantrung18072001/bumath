@@ -77,7 +77,7 @@ export default function CoursesPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [gradeFilter, setGradeFilter] = useState<'all' | Course['target_grade']>('all')
   const [currentPage, setCurrentPage] = useState(1)
-  const PAGE_SIZE = 20
+  const [pageSize, setPageSize] = useState(10)
 
   const { data: courses = [], isLoading } = useQuery<Course[]>({
     queryKey: ['admin', 'courses'],
@@ -134,6 +134,11 @@ export default function CoursesPage() {
     setCurrentPage(1)
   }
 
+  function handlePageSizeChange(value: string) {
+    setPageSize(Number(value))
+    setCurrentPage(1)
+  }
+
   // Filter logic: grade AND search (case-insensitive)
   const filtered = courses.filter((c) => {
     const matchesGrade = gradeFilter === 'all' || c.target_grade === gradeFilter
@@ -143,10 +148,10 @@ export default function CoursesPage() {
   })
 
   // Pagination slicing
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const totalPages = Math.ceil(filtered.length / pageSize)
   const paginated = filtered.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
   )
 
   // Count copy logic
@@ -246,6 +251,7 @@ export default function CoursesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-12">STT</TableHead>
                   <TableHead>Tên khóa học</TableHead>
                   <TableHead>Mô tả</TableHead>
                   <TableHead>Lớp mục tiêu</TableHead>
@@ -254,8 +260,9 @@ export default function CoursesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginated.map((course) => (
+                {paginated.map((course, index) => (
                   <TableRow key={course.id}>
+                    <TableCell className="w-12 text-muted-foreground">{(currentPage - 1) * pageSize + index + 1}</TableCell>
                     <TableCell className="font-medium">{course.title}</TableCell>
                     <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
                       {course.description ?? '—'}
@@ -328,44 +335,60 @@ export default function CoursesPage() {
             </Table>
           </div>
 
-          {/* Pagination - only render when totalPages > 1 */}
-          {totalPages > 1 && (
-            <div className="mt-6 flex justify-center">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      aria-disabled={currentPage === 1}
-                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                    />
-                  </PaginationItem>
-                  {buildPageNumbers(currentPage, totalPages).map((page, idx) =>
-                    page === 'ellipsis' ? (
-                      <PaginationItem key={`ellipsis-${idx}`}>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    ) : (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          isActive={page === currentPage}
-                          onClick={() => setCurrentPage(page)}
-                          className="cursor-pointer"
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    )
-                  )}
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                      aria-disabled={currentPage === totalPages}
-                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
+          {/* Pagination + Page size selector */}
+          {filtered.length > 0 && (
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>Hiển thị</span>
+                <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
+                  <SelectTrigger className="w-[72px] h-8">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                  </SelectContent>
+                </Select>
+                <span>/ trang</span>
+              </div>
+              {totalPages > 1 && (
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        aria-disabled={currentPage === 1}
+                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                    {buildPageNumbers(currentPage, totalPages).map((page, idx) =>
+                      page === 'ellipsis' ? (
+                        <PaginationItem key={`ellipsis-${idx}`}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      ) : (
+                        <PaginationItem key={page}>
+                          <PaginationLink
+                            isActive={page === currentPage}
+                            onClick={() => setCurrentPage(page)}
+                            className="cursor-pointer"
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      )
+                    )}
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                        aria-disabled={currentPage === totalPages}
+                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              )}
             </div>
           )}
         </>

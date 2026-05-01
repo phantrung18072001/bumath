@@ -177,11 +177,11 @@ describe('CoursesPage - Grade Filter', () => {
 })
 
 describe('CoursesPage - Pagination', () => {
-  it('shows pagination when more than 20 courses', async () => {
-    const manyCourses = Array.from({ length: 25 }, (_, i) => ({
-      id: `course-${i}`,
-      title: `Khóa học ${i}`,
-      slug: `khoa-hoc-${i}`,
+  it('shows pagination when more than 10 courses', async () => {
+    const manyCourses = Array.from({ length: 15 }, (_, i) => ({
+      id: `course-${i + 1}`,
+      title: `Khóa học ${i + 1}`,
+      slug: `khoa-hoc-${i + 1}`,
       description: null,
       target_grade: 'grade_7' as const,
       is_published: true,
@@ -192,17 +192,18 @@ describe('CoursesPage - Pagination', () => {
 
     renderCoursesPage()
     await waitFor(() => {
-      expect(screen.getByText('Khóa học 0')).toBeInTheDocument()
+      expect(screen.getByText('Khóa học 1')).toBeInTheDocument()
     })
 
     expect(screen.getByLabelText('Go to previous page')).toBeInTheDocument()
     expect(screen.getByLabelText('Go to next page')).toBeInTheDocument()
 
-    expect(screen.getByText('Khóa học 19')).toBeInTheDocument()
-    expect(screen.queryByText('Khóa học 20')).not.toBeInTheDocument()
+    expect(screen.getByText('Khóa học 9')).toBeInTheDocument()
+    expect(screen.getByText('Khóa học 10')).toBeInTheDocument()
+    expect(screen.queryByText('Khóa học 11')).not.toBeInTheDocument()
   })
 
-  it('hides pagination when 20 or fewer courses', async () => {
+  it('hides pagination when 10 or fewer courses', async () => {
     renderCoursesPage()
     await waitFor(() => {
       expect(screen.getByText('Toán lớp 7 nâng cao')).toBeInTheDocument()
