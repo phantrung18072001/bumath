@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -22,14 +22,50 @@ const mockAdminProfile = {
   role: 'admin' as const,
 }
 
+const mockTeacherProfile = {
+  ...mockApprovedStudentProfile,
+  role: 'teacher' as const,
+}
+
 function renderProtected(
-  props: Partial<{ requiredRole: 'student' | 'teacher' | 'admin' }> = {}
+  props: Partial<{
+    requiredRole: 'student' | 'teacher' | 'admin'
+    allowedRoles: Array<'student' | 'teacher' | 'admin'>
+  }> = {}
 ) {
   return render(
     <MemoryRouter>
       <ProtectedRoute {...props}>
         <div data-testid="protected-content">Protected</div>
       </ProtectedRoute>
+    </MemoryRouter>
+  )
+}
+
+function RedirectTarget() {
+  const location = useLocation()
+  return <div data-testid="redirect-target">{location.pathname}</div>
+}
+
+function renderProtectedCheckRedirect(
+  props: Partial<{
+    requiredRole: 'student' | 'teacher' | 'admin'
+    allowedRoles: Array<'student' | 'teacher' | 'admin'>
+  }> = {}
+) {
+  return render(
+    <MemoryRouter initialEntries={['/protected']}>
+      <Routes>
+        <Route
+          path="/protected"
+          element={
+            <ProtectedRoute {...props}>
+              <div data-testid="protected-content">Protected</div>
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<RedirectTarget />} />
+      </Routes>
     </MemoryRouter>
   )
 }
@@ -111,5 +147,70 @@ describe('ProtectedRoute', () => {
     renderProtected()
     expect(screen.getByTestId('protected-content')).toBeInTheDocument()
     expect(screen.getByText('Protected')).toBeInTheDocument()
+  })
+})
+
+describe('allowedRoles prop', () => {
+  it('renders children when user role is in allowedRoles (teacher in [admin,teacher])', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      user: { id: 'user-123' } as never,
+      session: {} as never,
+      profile: mockTeacherProfile,
+      loading: false,
+      signOut: vi.fn(),
+    })
+    renderProtected({ allowedRoles: ['admin', 'teacher'] })
+    expect(screen.getByTestId('protected-content')).toBeInTheDocument()
+  })
+
+  it('renders children when user role is in allowedRoles (admin in [admin,teacher])', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      user: { id: 'user-123' } as never,
+      session: {} as never,
+      profile: mockAdminProfile,
+      loading: false,
+      signOut: vi.fn(),
+    })
+    renderProtected({ allowedRoles: ['admin', 'teacher'] })
+    expect(screen.getByTestId('protected-content')).toBeInTheDocument()
+  })
+
+  it('redirects student to /courses when allowedRoles=[admin,teacher]', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      user: { id: 'user-123' } as never,
+      session: {} as never,
+      profile: mockApprovedStudentProfile,
+      loading: false,
+      signOut: vi.fn(),
+    })
+    renderProtectedCheckRedirect({ allowedRoles: ['admin', 'teacher'] })
+    expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument()
+    expect(screen.getByTestId('redirect-target').textContent).toBe('/courses')
+  })
+
+  it('redirects teacher to /admin/submissions when allowedRoles=[admin]', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      user: { id: 'user-123' } as never,
+      session: {} as never,
+      profile: mockTeacherProfile,
+      loading: false,
+      signOut: vi.fn(),
+    })
+    renderProtectedCheckRedirect({ allowedRoles: ['admin'] })
+    expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument()
+    expect(screen.getByTestId('redirect-target').textContent).toBe('/admin/submissions')
+  })
+
+  it('redirects student to /courses when allowedRoles=[admin]', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      user: { id: 'user-123' } as never,
+      session: {} as never,
+      profile: mockApprovedStudentProfile,
+      loading: false,
+      signOut: vi.fn(),
+    })
+    renderProtectedCheckRedirect({ allowedRoles: ['admin'] })
+    expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument()
+    expect(screen.getByTestId('redirect-target').textContent).toBe('/courses')
   })
 })
