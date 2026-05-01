@@ -156,14 +156,13 @@ export default function CoursesPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-end mb-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl font-semibold leading-[1.3]">Quản lý khóa học</h1>
         <Button className="min-h-[48px]" onClick={handleOpenCreate}>
           <Plus className="h-4 w-4 mr-1" />
           Tạo khóa học
         </Button>
       </div>
-
-      <h1 className="text-xl font-semibold leading-[1.3] mb-6">Quản lý khóa học</h1>
 
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row gap-2 mb-6">
@@ -314,7 +313,7 @@ export default function CoursesPage() {
           </div>
 
           {totalPages > 1 && (
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <div className="mt-6 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <span>Hiển thị</span>
                 <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
