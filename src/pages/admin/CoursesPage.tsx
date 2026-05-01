@@ -41,13 +41,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from '@/components/ui/breadcrumb'
-import { Link } from 'react-router-dom'
 import { fetchCourses, deleteCourse, publishCourse, Course } from '@/lib/api/courses'
 import CourseFormDialog from '@/components/admin/CourseFormDialog'
 import { GRADE_BADGE } from '@/lib/constants/grades'
@@ -163,26 +156,11 @@ export default function CoursesPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbPage>Khóa học</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-        <div className="flex items-center gap-3">
-          <Link
-            to="/quan-tri/bai-nop"
-            className="text-sm text-primary hover:underline"
-          >
-            Chấm bài →
-          </Link>
-          <Button className="min-h-[48px]" onClick={handleOpenCreate}>
-            <Plus className="h-4 w-4 mr-1" />
-            Tạo khóa học
-          </Button>
-        </div>
+      <div className="flex justify-end mb-6">
+        <Button className="min-h-[48px]" onClick={handleOpenCreate}>
+          <Plus className="h-4 w-4 mr-1" />
+          Tạo khóa học
+        </Button>
       </div>
 
       <h1 className="text-xl font-semibold leading-[1.3] mb-6">Quản lý khóa học</h1>
@@ -335,9 +313,8 @@ export default function CoursesPage() {
             </Table>
           </div>
 
-          {/* Pagination + Page size selector */}
-          {filtered.length > 0 && (
-            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+          {totalPages > 1 && (
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <span>Hiển thị</span>
                 <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
@@ -352,43 +329,41 @@ export default function CoursesPage() {
                 </Select>
                 <span>/ trang</span>
               </div>
-              {totalPages > 1 && (
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                        aria-disabled={currentPage === 1}
-                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                      />
-                    </PaginationItem>
-                    {buildPageNumbers(currentPage, totalPages).map((page, idx) =>
-                      page === 'ellipsis' ? (
-                        <PaginationItem key={`ellipsis-${idx}`}>
-                          <PaginationEllipsis />
-                        </PaginationItem>
-                      ) : (
-                        <PaginationItem key={page}>
-                          <PaginationLink
-                            isActive={page === currentPage}
-                            onClick={() => setCurrentPage(page)}
-                            className="cursor-pointer"
-                          >
-                            {page}
-                          </PaginationLink>
-                        </PaginationItem>
-                      )
-                    )}
-                    <PaginationItem>
-                      <PaginationNext
-                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                        aria-disabled={currentPage === totalPages}
-                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              )}
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      aria-disabled={currentPage === 1}
+                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    />
+                  </PaginationItem>
+                  {buildPageNumbers(currentPage, totalPages).map((page, idx) =>
+                    page === 'ellipsis' ? (
+                      <PaginationItem key={`ellipsis-${idx}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          isActive={page === currentPage}
+                          onClick={() => setCurrentPage(page)}
+                          className="cursor-pointer"
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  )}
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      aria-disabled={currentPage === totalPages}
+                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
             </div>
           )}
         </>

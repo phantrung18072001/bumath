@@ -230,22 +230,22 @@ export default function UsersPage() {
             pageSize={pageSize}
             onManageEnrollments={(user) => setEnrollmentUser(user)}
           />
-          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Hiển thị</span>
-              <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
-                <SelectTrigger className="w-[72px] h-8">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                </SelectContent>
-              </Select>
-              <span>/ trang</span>
-            </div>
-            {totalPages > 1 && (
+          {totalPages > 1 && (
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>Hiển thị</span>
+                <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
+                  <SelectTrigger className="w-[72px] h-8">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                  </SelectContent>
+                </Select>
+                <span>/ trang</span>
+              </div>
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
@@ -281,8 +281,8 @@ export default function UsersPage() {
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>
-            )}
-          </div>
+            </div>
+          )}
         </>
       )}
 
