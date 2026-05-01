@@ -18,18 +18,16 @@ export default function Login() {
   const [formError, setFormError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Redirect already-authenticated users based on role and approval status
+  // Redirect already-authenticated users based on role
   useEffect(() => {
     if (!loading && user && profile) {
-      if (profile.approval_status === 'pending' || profile.approval_status === 'rejected') {
-        navigate('/pending')
-      } else if (profile.role === 'admin') {
+      if (profile.role === 'admin') {
         navigate('/admin/users')
       } else if (profile.role === 'teacher') {
         // Teacher redirects to landing page until Phase 8 adds teacher routes
         navigate('/')
       } else {
-        // Student (approved)
+        // Student
         navigate('/courses')
       }
     }

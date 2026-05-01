@@ -5,7 +5,6 @@ export interface Profile {
   year_of_birth: number
   address: string
   role: 'student' | 'teacher' | 'admin'
-  approval_status: 'pending' | 'approved' | 'rejected'
   created_at: string
 }
 

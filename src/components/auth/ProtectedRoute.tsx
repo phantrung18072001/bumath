@@ -5,13 +5,11 @@ import { Loader2 } from 'lucide-react'
 interface ProtectedRouteProps {
   children: React.ReactNode
   requiredRole?: 'student' | 'teacher' | 'admin'
-  requireApproved?: boolean
 }
 
 export function ProtectedRoute({
   children,
   requiredRole,
-  requireApproved = false,
 }: ProtectedRouteProps) {
   const { user, profile, loading } = useAuth()
 
@@ -28,10 +26,6 @@ export function ProtectedRoute({
   }
 
   if (!user) return <Navigate to="/login" replace />
-
-  if (profile?.approval_status === 'pending' || profile?.approval_status === 'rejected') {
-    return <Navigate to="/pending" replace />
-  }
 
   if (requiredRole && profile?.role !== requiredRole) {
     return <Navigate to="/" replace />

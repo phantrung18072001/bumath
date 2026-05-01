@@ -22,7 +22,6 @@ const mockProfile = {
   year_of_birth: 2000,
   address: 'Test Address',
   role: 'student' as const,
-  approval_status: 'approved' as const,
   created_at: '2024-01-01T00:00:00Z',
 }
 
@@ -43,43 +42,11 @@ describe('Login', () => {
     )
   }
 
-  it('redirects to /pending when approval_status is pending', async () => {
+  it('redirects to /courses when role is student', async () => {
     vi.mocked(useAuth).mockReturnValue({
       user: { id: 'user-1' } as never,
       session: {} as never,
-      profile: { ...mockProfile, approval_status: 'pending' },
-      loading: false,
-      signOut: vi.fn(),
-    })
-
-    await renderLogin()
-
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/pending')
-    })
-  })
-
-  it('redirects to /pending when approval_status is rejected', async () => {
-    vi.mocked(useAuth).mockReturnValue({
-      user: { id: 'user-1' } as never,
-      session: {} as never,
-      profile: { ...mockProfile, approval_status: 'rejected' },
-      loading: false,
-      signOut: vi.fn(),
-    })
-
-    await renderLogin()
-
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/pending')
-    })
-  })
-
-  it('redirects to /courses when role is student and approved', async () => {
-    vi.mocked(useAuth).mockReturnValue({
-      user: { id: 'user-1' } as never,
-      session: {} as never,
-      profile: { ...mockProfile, role: 'student', approval_status: 'approved' },
+      profile: { ...mockProfile, role: 'student' },
       loading: false,
       signOut: vi.fn(),
     })
@@ -91,11 +58,11 @@ describe('Login', () => {
     })
   })
 
-  it('redirects to /admin/users when role is admin and approved', async () => {
+  it('redirects to /admin/users when role is admin', async () => {
     vi.mocked(useAuth).mockReturnValue({
       user: { id: 'user-1' } as never,
       session: {} as never,
-      profile: { ...mockProfile, role: 'admin', approval_status: 'approved' },
+      profile: { ...mockProfile, role: 'admin' },
       loading: false,
       signOut: vi.fn(),
     })
@@ -107,11 +74,11 @@ describe('Login', () => {
     })
   })
 
-  it('redirects to / when role is teacher and approved', async () => {
+  it('redirects to / when role is teacher', async () => {
     vi.mocked(useAuth).mockReturnValue({
       user: { id: 'user-1' } as never,
       session: {} as never,
-      profile: { ...mockProfile, role: 'teacher', approval_status: 'approved' },
+      profile: { ...mockProfile, role: 'teacher' },
       loading: false,
       signOut: vi.fn(),
     })
