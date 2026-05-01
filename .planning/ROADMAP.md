@@ -123,7 +123,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 5. Grading & Notification | 4/4 | Complete   | 2026-04-08 |
 | 6. UX Polish | 6/6 | Complete   | 2026-04-27 |
 | 7. Auth & Security Fixes | 0/TBD | Pending |  |
-| 8. Teacher Role Access | 0/TBD | Pending |  |
+| 8. Teacher Role Access | 0/2 | Pending |  |
 
 ### Phase 6: UX Polish
 
@@ -162,4 +162,8 @@ Plans:
 **Depends on:** Phase 7
 **Requirements:** ROLE-01, ROLE-02, GRADE-01, GRADE-02, GRADE-03
 **Gap Closure:** Closes critical integration gap from v1.0-MILESTONE-AUDIT.md (teacher role has zero accessible routes)
-**Plans:** TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — Extend ProtectedRoute with allowedRoles prop; apply to grading routes in App.tsx
+- [ ] 08-02-PLAN.md — AdminLayout role-aware nav filtering + Login.tsx teacher redirect to /admin/submissions
