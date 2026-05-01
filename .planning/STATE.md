@@ -1,14 +1,14 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: BuMath LMS MVP
-status: Milestone archived — v2.0 in planning
+milestone: v2.0
+milestone_name: UI Refactor
+status: In planning — Phase 9 not started
 last_updated: "2026-05-01T10:00:00.000Z"
 progress:
-  total_phases: 8
-  completed_phases: 8
-  total_plans: 38
-  completed_plans: 38
+  total_phases: 5
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # Project State
@@ -18,11 +18,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-01 — v1.0 complete)
 
 **Core value:** Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ thể từ giảng viên trên từng bài làm
-**Current focus:** v2.0 planning — UI Refactor
+**Current focus:** v2.0 — Phase 9: URL Standardization (next up)
 
 ## Current Position
 
-Milestone v1.0 archived. All 8 phases, 38 plans complete. Ready for `/gsd-new-milestone` to begin v2.0.
+Phase: 09 — URL Standardization
+Plan: Not started
 
 ## Performance Metrics
 
