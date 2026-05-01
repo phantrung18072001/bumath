@@ -66,6 +66,16 @@ All student routes use `<ProtectedRoute requiredRole="student">`.
 3. If a component exists but isn't installed: `yarn dlx shadcn@latest add <name>`
 4. Only build custom if shadcn/Radix genuinely doesn't cover the use case
 
+### UI Design Rule
+
+**Always invoke the `ui-ux-pro-max` skill before designing or significantly changing UI.**
+
+Run the design system query before implementing any new page, component, or visual change:
+```bash
+python3 .claude/skills/ui-ux-pro-max/scripts/search.py "<product_type> <keywords>" --design-system -p "BuMath"
+```
+Follow the pre-delivery checklist (no emoji icons, cursor-pointer on clickables, 4.5:1 contrast, smooth transitions 150–300ms, focus states, responsive at 375/768/1024/1440px).
+
 ### Database Schema (Supabase)
 
 Tables: `profiles`, `courses`, `chapters`, `lessons`, `enrollments`, `lesson_progress`, `submissions`.

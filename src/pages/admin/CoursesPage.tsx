@@ -55,10 +55,8 @@ function GradeBadge({ grade }: { grade: Course['target_grade'] }) {
 }
 
 function buildPageNumbers(current: number, total: number): (number | 'ellipsis')[] {
-  if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1)
-  if (current <= 3) return [1, 2, 3, 4, 'ellipsis', total]
-  if (current >= total - 2) return [1, 'ellipsis', total - 3, total - 2, total - 1, total]
-  return [1, 'ellipsis', current - 1, current, current + 1, 'ellipsis', total]
+  if (total <= 4) return Array.from({ length: total }, (_, i) => i + 1)
+  return [1, 2, 'ellipsis', total - 1, total]
 }
 
 export default function CoursesPage() {
@@ -233,7 +231,7 @@ export default function CoursesPage() {
                   <TableHead>Mô tả</TableHead>
                   <TableHead>Lớp mục tiêu</TableHead>
                   <TableHead>Trạng thái</TableHead>
-                  <TableHead>Hành động</TableHead>
+                  <TableHead className="text-right">Hành động</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -260,8 +258,8 @@ export default function CoursesPage() {
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2 flex-wrap">
+                    <TableCell className="text-right">
+                      <div className="flex gap-2 flex-wrap justify-end">
                         <Button
                           variant="outline"
                           size="sm"

@@ -48,10 +48,8 @@ function RoleBadge({ role }: { role: Profile['role'] }) {
 }
 
 function buildPageNumbers(current: number, total: number): (number | 'ellipsis')[] {
-  if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1)
-  if (current <= 3) return [1, 2, 3, 4, 'ellipsis', total]
-  if (current >= total - 2) return [1, 'ellipsis', total - 3, total - 2, total - 1, total]
-  return [1, 'ellipsis', current - 1, current, current + 1, 'ellipsis', total]
+  if (total <= 4) return Array.from({ length: total }, (_, i) => i + 1)
+  return [1, 2, 'ellipsis', total - 1, total]
 }
 
 function UsersTable({
@@ -76,7 +74,7 @@ function UsersTable({
             <TableHead>Năm sinh</TableHead>
             <TableHead>Địa chỉ</TableHead>
             <TableHead>Vai trò</TableHead>
-            <TableHead>Hành động</TableHead>
+            <TableHead className="text-right">Hành động</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -90,7 +88,7 @@ function UsersTable({
               <TableCell>
                 <RoleBadge role={user.role} />
               </TableCell>
-              <TableCell>
+              <TableCell className="text-right">
                 <Button
                   variant="outline"
                   size="sm"
@@ -166,7 +164,7 @@ export default function UsersPage() {
       : `${users.length} người dùng`
 
   return (
-    <div>
+    <div className="container mx-auto px-4 py-8">
       <h1 className="text-xl font-semibold leading-[1.3] mb-6">Quản lý tài khoản</h1>
 
       {/* Toolbar */}
@@ -232,20 +230,6 @@ export default function UsersPage() {
           />
           {totalPages > 1 && (
             <div className="mt-6 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>Hiển thị</span>
-                <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
-                  <SelectTrigger className="w-[72px] h-8">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                  </SelectContent>
-                </Select>
-                <span>/ trang</span>
-              </div>
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
@@ -281,6 +265,20 @@ export default function UsersPage() {
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>Hiển thị</span>
+                <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
+                  <SelectTrigger className="w-[72px] h-8">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                  </SelectContent>
+                </Select>
+                <span>/ trang</span>
+              </div>
             </div>
           )}
         </>
