@@ -81,16 +81,16 @@ export default function Login() {
       <div className="relative flex flex-col items-center justify-center min-h-screen px-4 py-12">
         <div className="flex items-center gap-2 mb-8">
           <img src="/bumath.jpeg" alt="BuMath logo" className="h-11 w-auto rounded-lg" />
-          <span className="font-baloo text-[30px] font-bold" style={{ color: '#ffffff' }}>BuMath</span>
+          <span className="text-[30px] font-bold" style={{ color: '#ffffff' }}>BuMath</span>
         </div>
 
         <div className="bm-clay-card max-w-[400px] w-full">
-          <h1 className="font-baloo text-2xl font-bold mb-6" style={{ color: '#1e3a5f' }}>Đăng nhập</h1>
+          <h1 className="text-2xl font-bold mb-6" style={{ color: '#1e3a5f' }}>Đăng nhập</h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Số điện thoại */}
             <div className="space-y-1">
-              <label className="font-comic text-base font-normal" style={{ color: '#1e3a5f' }} htmlFor="phone">
+              <label className="text-base font-normal" style={{ color: '#1e3a5f' }} htmlFor="phone">
                 Số điện thoại
               </label>
             <Input
@@ -108,7 +108,7 @@ export default function Login() {
 
           {/* Mật khẩu */}
           <div className="space-y-1">
-            <label className="font-comic text-base font-normal" style={{ color: '#1e3a5f' }} htmlFor="password">
+            <label className="text-base font-normal" style={{ color: '#1e3a5f' }} htmlFor="password">
               Mật khẩu
             </label>
             <div className="relative">
@@ -148,7 +148,7 @@ export default function Login() {
           </Button>
         </form>
 
-        <p className="mt-4 text-center text-sm font-comic" style={{ color: '#93C5FD' }}>
+        <p className="mt-4 text-center text-sm" style={{ color: '#93C5FD' }}>
           Chưa có tài khoản?{' '}
           <Link to="/dang-ky" className="font-bold hover:underline" style={{ color: '#2563EB' }}>
             Đăng ký

@@ -118,11 +118,11 @@ export default function Register() {
       <div className="relative flex flex-col items-center justify-center min-h-screen px-4 py-12">
         <div className="flex items-center gap-2 mb-8">
           <img src="/bumath.jpeg" alt="BuMath logo" className="h-11 w-auto rounded-lg" />
-          <span className="font-baloo text-[30px] font-bold" style={{ color: '#ffffff' }}>BuMath</span>
+          <span className="text-[30px] font-bold" style={{ color: '#ffffff' }}>BuMath</span>
         </div>
 
         <div className="bm-clay-card max-w-[520px] w-full">
-          <h1 className="font-baloo text-2xl font-bold mb-6" style={{ color: '#1e3a5f' }}>Tạo tài khoản</h1>
+          <h1 className="text-2xl font-bold mb-6" style={{ color: '#1e3a5f' }}>Tạo tài khoản</h1>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -133,7 +133,7 @@ export default function Register() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-comic text-base font-normal" style={{ color: '#1e3a5f' }}>
+                      <FormLabel className="text-base font-normal" style={{ color: '#1e3a5f' }}>
                         Số điện thoại
                       </FormLabel>
                       <FormControl>
@@ -155,7 +155,7 @@ export default function Register() {
                   name="fullName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-comic text-base font-normal" style={{ color: '#1e3a5f' }}>
+                      <FormLabel className="text-base font-normal" style={{ color: '#1e3a5f' }}>
                         Tên học sinh
                       </FormLabel>
                       <FormControl>
@@ -179,7 +179,7 @@ export default function Register() {
                   name="yearOfBirth"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-comic text-base font-normal" style={{ color: '#1e3a5f' }}>
+                      <FormLabel className="text-base font-normal" style={{ color: '#1e3a5f' }}>
                         Năm sinh
                       </FormLabel>
                       <Select
@@ -211,7 +211,7 @@ export default function Register() {
                   name="address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-comic text-base font-normal" style={{ color: '#1e3a5f' }}>
+                      <FormLabel className="text-base font-normal" style={{ color: '#1e3a5f' }}>
                         Địa chỉ
                       </FormLabel>
                       <FormControl>
@@ -235,7 +235,7 @@ export default function Register() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-comic text-base font-normal" style={{ color: '#1e3a5f' }}>
+                      <FormLabel className="text-base font-normal" style={{ color: '#1e3a5f' }}>
                         Mật khẩu
                       </FormLabel>
                       <FormControl>
@@ -272,7 +272,7 @@ export default function Register() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-comic text-base font-normal" style={{ color: '#1e3a5f' }}>
+                      <FormLabel className="text-base font-normal" style={{ color: '#1e3a5f' }}>
                         Xác nhận mật khẩu
                       </FormLabel>
                       <FormControl>
@@ -317,7 +317,7 @@ export default function Register() {
             </form>
           </Form>
 
-          <p className="mt-4 text-center text-sm font-comic" style={{ color: '#93C5FD' }}>
+          <p className="mt-4 text-center text-sm" style={{ color: '#93C5FD' }}>
             Đã có tài khoản?{' '}
             <Link to="/dang-nhap" className="font-bold hover:underline" style={{ color: '#2563EB' }}>
               Đăng nhập
