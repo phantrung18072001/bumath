@@ -21,11 +21,18 @@ const GRADE_FILTERS: { value: Course['target_grade'] | 'all'; label: string }[] 
   { value: 'advanced', label: 'Ôn chuyên' },
 ]
 
+const LOI_MAP: Record<string, Course['target_grade']> = {
+  '7': 'grade_7', '8': 'grade_8', '9': 'grade_9', 'nang-cao': 'advanced',
+}
+const LOI_REVERSE: Record<Course['target_grade'], string> = {
+  grade_7: '7', grade_8: '8', grade_9: '9', advanced: 'nang-cao',
+}
+
 export default function CataloguePage() {
   const { user, profile, loading: authLoading } = useAuth()
   const isAuthenticated = !authLoading && !!user
   const [searchParams, setSearchParams] = useSearchParams()
-  const activeGrade = (searchParams.get('grade') ?? 'all') as Course['target_grade'] | 'all'
+  const activeGrade = LOI_MAP[searchParams.get('lop') ?? ''] ?? 'all' as Course['target_grade'] | 'all'
 
   // Always fetch all courses — works for both anon and authenticated users
   const {
@@ -56,7 +63,7 @@ export default function CataloguePage() {
     if (grade === 'all') {
       setSearchParams({})
     } else {
-      setSearchParams({ grade })
+      setSearchParams({ lop: LOI_REVERSE[grade] })
     }
   }
 
@@ -70,7 +77,7 @@ export default function CataloguePage() {
           </p>
         </div>
         {!isAuthenticated && !authLoading && (
-          <Link to="/login">
+          <Link to="/dang-nhap">
             <Button size="sm" className="gap-1.5 shrink-0">
               <LogIn className="h-4 w-4" />
               Đăng nhập để học
@@ -139,7 +146,7 @@ export default function CataloguePage() {
             return (
               <Link
                 key={course.id}
-                to={`/courses/${course.slug}`}
+                to={`/khoa-hoc/${course.slug}`}
                 className="block"
               >
                 <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">

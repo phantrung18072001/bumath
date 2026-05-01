@@ -11,9 +11,9 @@ type NavItem = {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Quản lý tài khoản', to: '/admin/users', icon: Users, adminOnly: true },
-  { label: 'Quản lý khóa học', to: '/admin/courses', icon: BookOpen, adminOnly: true },
-  { label: 'Chấm bài', to: '/admin/submissions', icon: ClipboardList },
+  { label: 'Quản lý tài khoản', to: '/quan-tri/nguoi-dung', icon: Users, adminOnly: true },
+  { label: 'Quản lý khóa học', to: '/quan-tri/khoa-hoc', icon: BookOpen, adminOnly: true },
+  { label: 'Chấm bài', to: '/quan-tri/bai-nop', icon: ClipboardList },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

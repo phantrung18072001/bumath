@@ -72,9 +72,9 @@ export default function Register() {
   useEffect(() => {
     if (!loading && user && profile) {
       if (profile.role === 'admin') {
-        navigate('/admin/users')
+        navigate('/quan-tri/nguoi-dung')
       } else {
-        navigate('/courses')
+        navigate('/khoa-hoc')
       }
     }
   }, [user, loading, profile, navigate])
@@ -307,7 +307,7 @@ export default function Register() {
 
         <p className="mt-4 text-center text-sm text-muted-foreground">
           Đã có tài khoản?{' '}
-          <Link to="/login" className="text-primary font-medium">
+          <Link to="/dang-nhap" className="text-primary font-medium">
             Đăng nhập
           </Link>
         </p>

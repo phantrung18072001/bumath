@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { Menu, X, Phone, CreditCard, HelpCircle, LogOut, LayoutDashboard, BookOpen, Library } from "lucide-react";
+import { Menu, X, Phone, CreditCard, HelpCircle, LogOut, LayoutDashboard, BookOpen } from "lucide-react";
 
 const staticNavItems = [
   { label: "Giới thiệu", to: "/gioi-thieu" },
+  { label: "Danh mục", to: "/catalogue" },
   { label: "Đề thi", to: "/de-thi" },
   { label: "Tài liệu", to: "/tai-lieu" },
   { label: "Tản mạn Toán & Cuộc sống", to: "/tan-man" },
@@ -16,11 +17,7 @@ const Header = () => {
   const { user, profile, loading, signOut } = useAuth();
   const isAuthenticated = !loading && !!user;
 
-  const navItems = [
-    staticNavItems[0],
-    { label: isAuthenticated ? "Danh mục" : "Học thử", to: "/catalogue" },
-    ...staticNavItems.slice(1),
-  ];
+  const navItems = staticNavItems;
 
   return (
     <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
@@ -63,20 +60,12 @@ const Header = () => {
                 {profile?.full_name || 'Tài khoản'}
               </span>
               {profile?.role === 'student' && (
-                <>
-                  <Link to="/courses">
-                    <Button variant="ghost" size="sm" className="h-7 text-sm gap-1">
-                      <BookOpen className="h-3.5 w-3.5" />
-                      Vào học
-                    </Button>
-                  </Link>
-                  <Link to="/catalogue">
-                    <Button variant="ghost" size="sm" className="h-7 text-sm gap-1">
-                      <Library className="h-3.5 w-3.5" />
-                      Danh mục
-                    </Button>
-                  </Link>
-                </>
+                <Link to="/khoa-hoc">
+                  <Button variant="ghost" size="sm" className="h-7 text-sm gap-1">
+                    <BookOpen className="h-3.5 w-3.5" />
+                    Vào học
+                  </Button>
+                </Link>
               )}
               {profile?.role === 'admin' && (
                 <Link to="/admin/users">
@@ -98,7 +87,7 @@ const Header = () => {
             </>
           ) : (
             <>
-              <Link to="/login">
+              <Link to="/dang-nhap">
                 <Button variant="ghost" size="sm" className="h-7 text-sm">
                   Đăng nhập
                 </Button>
@@ -174,20 +163,12 @@ const Header = () => {
                 </span>
               </div>
               {profile?.role === 'student' && (
-                <>
-                  <Link to="/courses" onClick={() => setMobileOpen(false)}>
-                    <Button variant="ghost" className="w-full min-h-[48px] gap-1 mb-1 justify-start" size="sm">
-                      <BookOpen className="h-4 w-4" />
-                      Vào học
-                    </Button>
-                  </Link>
-                  <Link to="/catalogue" onClick={() => setMobileOpen(false)}>
-                    <Button variant="ghost" className="w-full min-h-[48px] gap-1 mb-1 justify-start" size="sm">
-                      <Library className="h-4 w-4" />
-                      Danh mục
-                    </Button>
-                  </Link>
-                </>
+                <Link to="/khoa-hoc" onClick={() => setMobileOpen(false)}>
+                  <Button variant="ghost" className="w-full min-h-[48px] gap-1 mb-1 justify-start" size="sm">
+                    <BookOpen className="h-4 w-4" />
+                    Vào học
+                  </Button>
+                </Link>
               )}
               {profile?.role === 'admin' && (
                 <Link to="/admin/users" onClick={() => setMobileOpen(false)}>
@@ -209,7 +190,7 @@ const Header = () => {
             </div>
           ) : (
             <div className="mt-3 flex gap-2">
-              <Link to="/login" className="flex-1">
+              <Link to="/dang-nhap" className="flex-1">
                 <Button variant="outline" className="w-full" size="sm">Đăng nhập</Button>
               </Link>
               <Link to="/register" className="flex-1">

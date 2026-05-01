@@ -136,7 +136,7 @@ export default function CourseDetailPage() {
 
   const backLink = (
     <Link
-      to={isAuthenticated ? '/courses' : '/catalogue'}
+      to={isAuthenticated ? '/khoa-hoc' : '/danh-muc'}
       className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
     >
       <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
@@ -291,7 +291,7 @@ export default function CourseDetailPage() {
                         <p className="text-sm text-muted-foreground leading-relaxed">Đăng nhập để học và theo dõi tiến độ của bạn.</p>
                       )}
                       {!isAuthenticated && (
-                        <Link to="/login" className="w-full">
+                        <Link to="/dang-nhap" className="w-full">
                           <Button className="w-full gap-1.5">
                             <LogIn className="h-4 w-4" />
                             Đăng nhập để học
@@ -335,7 +335,7 @@ export default function CourseDetailPage() {
                         <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">Đăng nhập để học và theo dõi tiến độ của bạn.</p>
                       )}
                     {!isAuthenticated && (
-                      <Link to="/login">
+                      <Link to="/dang-nhap">
                         <Button className="gap-1.5">
                           <LogIn className="h-4 w-4" />
                           Đăng nhập để học

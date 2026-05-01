@@ -129,7 +129,7 @@ export default function ChaptersPage() {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link to="/admin/courses">Khóa học</Link>
+                <Link to="/quan-tri/khoa-hoc">Khóa học</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
@@ -204,7 +204,7 @@ export default function ChaptersPage() {
                         className="min-h-[48px]"
                         aria-label="Quản lý bài học"
                         onClick={() =>
-                          navigate(`/admin/courses/${courseSlug}/chapters/${chapter.slug}`)
+                          navigate(`/quan-tri/khoa-hoc/${courseSlug}/chuong/${chapter.slug}`)
                         }
                       >
                         <BookOpen className="h-4 w-4" />

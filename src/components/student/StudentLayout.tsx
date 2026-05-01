@@ -35,7 +35,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
         </Link>
         <nav className="ml-4 hidden sm:flex items-center gap-1">
           <NavLink
-            to="/courses"
+            to="/khoa-hoc"
             className={({ isActive }) =>
               `text-sm font-semibold px-3 py-2 rounded-lg transition-colors ${
                 isActive ? 'text-primary' : 'text-foreground hover:bg-muted'
@@ -45,7 +45,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
             Khóa học của tôi
           </NavLink>
           <NavLink
-            to="/catalogue"
+            to="/danh-muc"
             className={({ isActive }) =>
               `text-sm font-semibold px-3 py-2 rounded-lg transition-colors ${
                 isActive ? 'text-primary' : 'text-foreground hover:bg-muted'

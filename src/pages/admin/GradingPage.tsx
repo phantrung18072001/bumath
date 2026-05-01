@@ -104,7 +104,7 @@ export default function GradingPage() {
       const paths = await uploadTeacherImages()
       await gradeSubmission(submissionId, parseFloat(score), comment, paths)
       toast.success('Đã lưu điểm thành công!')
-      navigate('/admin/submissions')
+      navigate('/quan-tri/bai-nop')
     } catch (err) {
       console.error('[GradingPage] handleConfirm error:', err)
       toast.error('Lưu điểm thất bại. Vui lòng thử lại.')
@@ -128,7 +128,7 @@ export default function GradingPage() {
     return (
       <div className="container mx-auto py-8 max-w-5xl">
         <Link
-          to="/admin/submissions"
+          to="/quan-tri/bai-nop"
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -143,7 +143,7 @@ export default function GradingPage() {
     <div className="container mx-auto py-8 max-w-6xl px-4">
       {/* Back link */}
       <Link
-        to="/admin/submissions"
+        to="/quan-tri/bai-nop"
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 leading-relaxed"
       >
         <ArrowLeft className="h-4 w-4" />

@@ -95,7 +95,7 @@ export default function CoursesPage() {
               <p className="text-muted-foreground">
                 Bạn chưa được gán vào khóa học nào. Vui lòng liên hệ giảng viên để được thêm vào khóa học.
               </p>
-              <Link to="/catalogue" className="text-primary underline mt-4 block">
+              <Link to="/danh-muc" className="text-primary underline mt-4 block">
                 Khám phá tất cả khóa học →
               </Link>
             </Card>

@@ -107,7 +107,7 @@ export default function CoursesPage() {
         </Breadcrumb>
         <div className="flex items-center gap-3">
           <Link
-            to="/admin/submissions"
+            to="/quan-tri/bai-nop"
             className="text-sm text-primary hover:underline"
           >
             Chấm bài →
@@ -171,7 +171,7 @@ export default function CoursesPage() {
                         size="sm"
                         className="min-h-[48px]"
                         aria-label="Xem chuyên đề"
-                        onClick={() => navigate(`/admin/courses/${course.slug}`)}
+                        onClick={() => navigate(`/quan-tri/khoa-hoc/${course.slug}`)}
                       >
                         <BookOpen className="h-4 w-4" />
                       </Button>

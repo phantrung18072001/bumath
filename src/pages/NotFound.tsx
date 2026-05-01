@@ -7,7 +7,7 @@ const NotFound = () => {
   const { profile } = useAuth();
 
   // Role-aware redirect: students go to /courses, others go to /
-  const homeLink = profile?.role === 'student' ? '/courses' : '/';
+  const homeLink = profile?.role === 'student' ? '/khoa-hoc' : '/';
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);

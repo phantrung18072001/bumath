@@ -146,13 +146,13 @@ export default function LessonsPage() {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link to="/admin/courses">Khóa học</Link>
+                <Link to="/quan-tri/khoa-hoc">Khóa học</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link to={`/admin/courses/${courseSlug}`}>{course?.title ?? 'Chuyên đề'}</Link>
+                <Link to={`/quan-tri/khoa-hoc/${courseSlug}`}>{course?.title ?? 'Chuyên đề'}</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />

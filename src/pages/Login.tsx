@@ -22,13 +22,13 @@ export default function Login() {
   useEffect(() => {
     if (!loading && user && profile) {
       if (profile.role === 'admin') {
-        navigate('/admin/users')
+        navigate('/quan-tri/nguoi-dung')
       } else if (profile.role === 'teacher') {
           // D-07: teacher lands on grading queue
-          navigate('/admin/submissions')
+          navigate('/quan-tri/bai-nop')
       } else {
         // Student
-        navigate('/courses')
+        navigate('/khoa-hoc')
       }
     }
   }, [user, loading, profile, navigate])
@@ -144,7 +144,7 @@ export default function Login() {
 
         <p className="mt-4 text-center text-sm text-muted-foreground">
           Chưa có tài khoản?{' '}
-          <Link to="/register" className="text-primary font-medium">
+          <Link to="/dang-ky" className="text-primary font-medium">
             Đăng ký
           </Link>
         </p>

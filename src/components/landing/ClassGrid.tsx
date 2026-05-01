@@ -31,7 +31,7 @@ const ClassGrid = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
             >
-              <Link to={`/catalogue?grade=${c.grade}`}>
+              <Link to={`/danh-muc?lop=${c.level}`}>
                 <Card className="group cursor-pointer overflow-hidden border-0 shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
                   <div className={`h-2 bg-gradient-to-r ${c.color}`} />
                   <CardContent className="p-5">

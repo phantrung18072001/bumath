@@ -214,7 +214,7 @@ export default function SubmissionsPage() {
                   <TableCell>
                     <Button
                       size="sm"
-                      onClick={() => navigate(`/admin/submissions/${row.id}`)}
+                      onClick={() => navigate(`/quan-tri/bai-nop/${row.id}`)}
                     >
                       Chấm
                     </Button>
