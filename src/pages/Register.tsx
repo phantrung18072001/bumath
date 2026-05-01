@@ -33,7 +33,7 @@ const registerSchema = z
       .refine(isValidVnPhone, { message: 'Số điện thoại không hợp lệ (VD: 0912345678)' }),
     fullName: z.string().min(1, 'Vui lòng nhập tên học sinh'),
     yearOfBirth: z.coerce
-      .number()
+      .number({ invalid_type_error: 'Vui lòng chọn năm sinh' })
       .min(1990, 'Năm sinh không hợp lệ')
       .max(2020, 'Năm sinh không hợp lệ'),
     address: z.string().min(1, 'Vui lòng nhập địa chỉ'),
@@ -49,7 +49,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>
 
 export default function Register() {
   const navigate = useNavigate()
-  const { user, loading } = useAuth()
+  const { user, loading, profile } = useAuth()
 
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -68,12 +68,16 @@ export default function Register() {
 
   const { formState: { isSubmitting } } = form
 
-  // Redirect already-authenticated users
+  // Redirect authenticated users (handles both pre-existing session and post-registration auto-login)
   useEffect(() => {
-    if (!loading && user) {
-      navigate('/')
+    if (!loading && user && profile) {
+      if (profile.role === 'admin') {
+        navigate('/admin/users')
+      } else {
+        navigate('/courses')
+      }
     }
-  }, [user, loading, navigate])
+  }, [user, loading, profile, navigate])
 
   const onSubmit = async (values: RegisterFormValues) => {
     const { error } = await supabase.auth.signUp({
@@ -97,8 +101,8 @@ export default function Register() {
         toast.error(error.message)
       }
     } else {
-      toast.success('Đăng ký thành công! Vui lòng đăng nhập.')
-      navigate('/login')
+      toast.success('Đăng ký thành công!')
+      // useEffect will redirect once profile loads
     }
   }
 
