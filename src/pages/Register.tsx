@@ -317,7 +317,7 @@ export default function Register() {
             </form>
           </Form>
 
-          <p className="mt-4 text-center text-sm" style={{ color: '#FED7AA' }}>
+          <p className="mt-4 text-center text-sm" style={{ color: '#6B7280' }}>
             Đã có tài khoản?{' '}
             <Link to="/dang-nhap" className="font-bold hover:underline" style={{ color: '#F97316' }}>
               Đăng nhập
