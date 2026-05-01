@@ -41,7 +41,7 @@ const App = () => (
             <Route path="/admin/courses/:courseSlug/chapters/:chapterSlug" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><LessonsPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
             <Route path="/admin/submissions" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><SubmissionsPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
             <Route path="/admin/submissions/:submissionId" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><GradingPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
-            <Route path="/courses" element={<ProtectedRoute requiredRole="student"><StudentCoursesPage /></ProtectedRoute>} />
+            <Route path="/courses" element={<ProtectedRoute><StudentCoursesPage /></ProtectedRoute>} />
             <Route path="/courses/:courseSlug" element={<StudentCourseDetailPage />} />
             <Route path="/catalogue" element={<StudentCataloguePage />} />
             <Route path="*" element={<NotFound />} />
