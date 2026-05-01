@@ -29,13 +29,14 @@ CREATE POLICY "student_upload_own_submissions"
 --    New: auth.uid() IS NOT NULL (any authenticated user)
 -- ============================================================
 DROP POLICY IF EXISTS "approved_user_read_all_courses" ON courses;
+DROP POLICY IF EXISTS "approved_user_read_published_courses" ON courses;
 DROP POLICY IF EXISTS "approved_user_read_all_chapters" ON chapters;
 DROP POLICY IF EXISTS "approved_user_read_all_lessons" ON lessons;
 
-CREATE POLICY "authenticated_read_all_courses"
+CREATE POLICY "authenticated_read_published_courses"
   ON courses FOR SELECT
   TO authenticated
-  USING (auth.uid() IS NOT NULL);
+  USING (is_published = true AND auth.uid() IS NOT NULL);
 
 CREATE POLICY "authenticated_read_all_chapters"
   ON chapters FOR SELECT
