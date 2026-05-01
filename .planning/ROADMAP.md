@@ -27,7 +27,7 @@ Full details: [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-R
 
 - [x] **Phase 9: URL Standardization** — Rename all routes to Vietnamese, update all redirects and internal links (7/7 plans, UAT 6/6 ✅ 2026-05-01)
 - [x] **Phase 10: Auth Pages UI** — Refactor /dang-nhap, /dang-ky, /cho-duyet with modern design (completed 2026-05-01)
-- [ ] **Phase 11: Admin List Pages** — Refactor users + courses list pages with pagination, filters, search
+- [x] **Phase 11: Admin List Pages** — Refactor users + courses list pages with pagination, filters, search (completed 2026-05-01)
 - [ ] **Phase 12: Admin Detail Pages** — Refactor course/chapter/lesson management + grading queue + grading page
 - [ ] **Phase 13: Student Pages** — Refactor courses list, course detail/lesson view, catalogue with filters + pagination
 
@@ -79,9 +79,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 11-00-PLAN.md — Wave 0: Test foundation (CoursesPage.test.tsx + UsersPage.test.tsx updates)
-- [ ] 11-01-PLAN.md — UsersPage: filter toolbar, search, pagination, skeleton loading
-- [ ] 11-02-PLAN.md — CoursesPage: filter toolbar, search, pagination, skeleton loading
+- [x] 11-00-PLAN.md — Wave 0: Test foundation (CoursesPage.test.tsx + UsersPage.test.tsx updates)
+- [x] 11-01-PLAN.md — UsersPage: filter toolbar, search, pagination, skeleton loading
+- [x] 11-02-PLAN.md — CoursesPage: filter toolbar, search, pagination, skeleton loading
 
 **UI hint**: yes
 
