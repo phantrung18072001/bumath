@@ -1,5 +1,5 @@
 import { useNavigate, Link, NavLink } from 'react-router-dom'
-import { LogOut } from 'lucide-react'
+import { LogOut, Shield } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import BellNotification from '@/components/student/BellNotification'
@@ -54,6 +54,19 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
           >
             Khám phá khóa học
           </NavLink>
+          {profile?.role === 'admin' && (
+            <NavLink
+              to="/admin/users"
+              className={({ isActive }) =>
+                `text-sm font-semibold px-3 py-2 rounded-lg transition-colors flex items-center gap-1 ${
+                  isActive ? 'text-primary' : 'text-foreground hover:bg-muted'
+                }`
+              }
+            >
+              <Shield className="h-3.5 w-3.5" />
+              Quản trị
+            </NavLink>
+          )}
         </nav>
         <div className="ml-auto flex items-center gap-2">
           {profile?.full_name && (

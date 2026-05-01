@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import AdminLayout from "./components/admin/AdminLayout";
+import StudentLayout from "./components/student/StudentLayout";
 import UsersPage from "./pages/admin/UsersPage";
 import CoursesPage from "./pages/admin/CoursesPage";
 import ChaptersPage from "./pages/admin/ChaptersPage";
@@ -34,12 +35,12 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="/admin/users" element={<ProtectedRoute requiredRole="admin"><AdminLayout><UsersPage /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/courses" element={<ProtectedRoute requiredRole="admin"><AdminLayout><CoursesPage /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/courses/:courseSlug" element={<ProtectedRoute requiredRole="admin"><AdminLayout><ChaptersPage /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/courses/:courseSlug/chapters/:chapterSlug" element={<ProtectedRoute requiredRole="admin"><AdminLayout><LessonsPage /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/submissions" element={<ProtectedRoute requiredRole="admin"><AdminLayout><SubmissionsPage /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/submissions/:submissionId" element={<ProtectedRoute requiredRole="admin"><AdminLayout><GradingPage /></AdminLayout></ProtectedRoute>} />
+            <Route path="/admin/users" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><UsersPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
+            <Route path="/admin/courses" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><CoursesPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
+            <Route path="/admin/courses/:courseSlug" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><ChaptersPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
+            <Route path="/admin/courses/:courseSlug/chapters/:chapterSlug" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><LessonsPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
+            <Route path="/admin/submissions" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><SubmissionsPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
+            <Route path="/admin/submissions/:submissionId" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><GradingPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
             <Route path="/courses" element={<ProtectedRoute requiredRole="student"><StudentCoursesPage /></ProtectedRoute>} />
             <Route path="/courses/:courseSlug" element={<StudentCourseDetailPage />} />
             <Route path="/catalogue" element={<StudentCataloguePage />} />

@@ -56,4 +56,23 @@ describe('StudentLayout', () => {
     expect(catalogueLink).toBeInTheDocument()
     expect(catalogueLink).toHaveAttribute('href', '/catalogue')
   })
+
+  it('renders Quản trị link to /admin/users when role is admin', async () => {
+    const { useAuth } = await import('@/contexts/AuthContext')
+    vi.mocked(useAuth).mockReturnValueOnce({
+      profile: { id: 'admin-1', full_name: 'Admin User', role: 'admin' },
+      loading: false,
+      signOut: vi.fn(),
+    } as never)
+    await renderStudentLayout()
+    const adminLink = screen.getByRole('link', { name: /quản trị/i })
+    expect(adminLink).toBeInTheDocument()
+    expect(adminLink).toHaveAttribute('href', '/admin/users')
+  })
+
+  it('does NOT render Quản trị link when role is student', async () => {
+    // Default mock returns role: 'student' — no override needed
+    await renderStudentLayout()
+    expect(screen.queryByRole('link', { name: /quản trị/i })).not.toBeInTheDocument()
+  })
 })
