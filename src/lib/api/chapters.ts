@@ -87,6 +87,23 @@ export async function removeChapter(id: string): Promise<void> {
 }
 
 /**
+ * Batch-update order_index for all chapters after drag-and-drop reorder.
+ * Only updates items whose order_index actually changed.
+ * @param updates Array of {id, order_index} representing new positions
+ */
+export async function batchReorderChapters(
+  updates: { id: string; order_index: number }[]
+): Promise<void> {
+  for (const { id, order_index } of updates) {
+    const { error } = await supabase
+      .from('chapters')
+      .update({ order_index })
+      .eq('id', id)
+    if (error) throw error
+  }
+}
+
+/**
  * Swaps the order_index of two chapters.
  */
 export async function reorderChapters(

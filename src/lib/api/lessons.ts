@@ -72,6 +72,23 @@ export async function removeLesson(id: string): Promise<void> {
 // ─────────────────────────────────────────────────────────────────
 
 /**
+ * Batch-update order_index for all lessons after drag-and-drop reorder.
+ * Only updates items whose order_index actually changed.
+ * @param updates Array of {id, order_index} representing new positions
+ */
+export async function batchReorderLessons(
+  updates: { id: string; order_index: number }[]
+): Promise<void> {
+  for (const { id, order_index } of updates) {
+    const { error } = await supabase
+      .from('lessons')
+      .update({ order_index })
+      .eq('id', id)
+    if (error) throw error
+  }
+}
+
+/**
  * Swaps the order_index of two lessons. Both updates are issued sequentially
  * (Supabase JS client does not support transactions).
  */

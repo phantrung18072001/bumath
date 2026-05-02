@@ -200,6 +200,67 @@ export async function getSubmissionSignedUrl(path: string): Promise<string> {
   return urls[0]
 }
 
+export interface SubmissionsFilter {
+  status: 'all' | 'graded' | 'ungraded'
+  grade: string          // 'all' | 'grade_7' | 'grade_8' | 'grade_9' | 'advanced'
+  course: string         // 'all' | course title string
+  lesson: string         // 'all' | lesson title string
+  studentName: string    // '' = no filter
+  page: number
+  pageSize: number
+}
+
+export interface PaginatedSubmissions {
+  data: (UngradedSubmission & { score: number | null; status: string })[]
+  total: number
+}
+
+/**
+ * Fetch submissions with server-side filtering and pagination.
+ * Uses Supabase .range() for pagination and .eq()/.ilike() for filters.
+ * Per D-04: replaces getUngraded with full filter support.
+ */
+export async function getAllSubmissions(
+  filters: SubmissionsFilter
+): Promise<PaginatedSubmissions> {
+  const { status, grade, course, lesson, studentName, page, pageSize } = filters
+  const from = (page - 1) * pageSize
+  const to = from + pageSize - 1
+
+  let query = supabase
+    .from('submissions')
+    .select(`
+      id, user_id, lesson_id, file_path, submitted_at, score, status,
+      profiles!inner ( full_name ),
+      lessons!inner (
+        title,
+        chapters!inner ( course_id, courses!inner ( title, target_grade ) )
+      )
+    `, { count: 'exact' })
+    .order('submitted_at', { ascending: true })
+
+  // Status filter (D-04)
+  if (status === 'ungraded') query = query.eq('status', 'submitted')
+  else if (status === 'graded') query = query.eq('status', 'graded')
+  // status === 'all' — no filter
+
+  // Nested column filters (PostgREST embedded resource filter)
+  if (grade !== 'all') query = query.eq('lessons.chapters.courses.target_grade', grade)
+  if (course !== 'all') query = query.eq('lessons.chapters.courses.title', course)
+  if (lesson !== 'all') query = query.eq('lessons.title', lesson)
+  if (studentName) query = query.ilike('profiles.full_name', `%${studentName}%`)
+
+  // Pagination
+  query = query.range(from, to)
+
+  const { data, error, count } = await query
+  if (error) throw error
+  return {
+    data: (data ?? []) as PaginatedSubmissions['data'],
+    total: count ?? 0
+  }
+}
+
 /**
  * Get all ungraded submissions for the teacher grading queue (D-03, GRADE-01).
  * Joins profiles (student name), lessons (title), chapters, and courses.
