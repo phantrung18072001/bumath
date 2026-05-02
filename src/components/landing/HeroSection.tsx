@@ -55,7 +55,7 @@ const HeroSection = () => {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
           >
-            <Link to={isAuthenticated ? "/courses" : "/catalogue"}>
+            <Link to={isAuthenticated ? "/khoa-hoc" : "/danh-muc"}>
               <Button size="lg" className="gap-2 text-base font-semibold shadow-lg shadow-primary/25">
                 Bắt đầu học ngay <ArrowRight className="h-5 w-5" />
               </Button>

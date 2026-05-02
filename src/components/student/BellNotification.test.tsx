@@ -5,7 +5,7 @@ import BellNotification from './BellNotification'
 // --- Mocks ---
 
 vi.mock('@/lib/api/submissions', () => ({
-  getUnviewedGradeCount: vi.fn().mockResolvedValue(0),
+  getGradedUnviewed: vi.fn().mockResolvedValue([]),
 }))
 
 // --- Helpers ---
@@ -45,8 +45,12 @@ describe('BellNotification', () => {
   })
 
   it('shows badge with count when unviewed grades exist', async () => {
-    const { getUnviewedGradeCount } = await import('@/lib/api/submissions')
-    ;(getUnviewedGradeCount as ReturnType<typeof vi.fn>).mockResolvedValue(3)
+    const { getGradedUnviewed } = await import('@/lib/api/submissions')
+    ;(getGradedUnviewed as ReturnType<typeof vi.fn>).mockResolvedValue([
+      { id: '1', score: 8, lesson: { id: 'l1', title: 'Bài 1', chapter: { course_id: 'c1', course: { title: 'Toán 7', slug: 'toan-7' } } } },
+      { id: '2', score: 9, lesson: { id: 'l2', title: 'Bài 2', chapter: { course_id: 'c1', course: { title: 'Toán 7', slug: 'toan-7' } } } },
+      { id: '3', score: 7, lesson: { id: 'l3', title: 'Bài 3', chapter: { course_id: 'c1', course: { title: 'Toán 7', slug: 'toan-7' } } } },
+    ])
 
     renderBellNotification()
     await waitFor(() => {

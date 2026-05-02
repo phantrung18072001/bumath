@@ -57,7 +57,7 @@ export default function BellNotification() {
               {items.map(item => (
                 <li key={item.id}>
                   <Link
-                    to={`/courses/${item.lesson.chapter.course.slug}?lesson=${item.lesson.id}`}
+                    to={`/khoa-hoc/${item.lesson.chapter.course.slug}?lesson=${item.lesson.id}`}
                     className="block px-3 py-3 hover:bg-muted transition-colors"
                     onClick={() => setOpen(false)}
                   >
