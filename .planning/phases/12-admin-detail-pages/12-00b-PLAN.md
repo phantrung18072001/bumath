@@ -8,6 +8,8 @@ files_modified:
   - src/pages/admin/ChaptersPage.test.tsx
   - src/pages/admin/LessonsPage.test.tsx
   - src/pages/admin/SubmissionsPage.test.tsx
+  - src/pages/admin/UsersPage.test.tsx
+  - src/pages/admin/CoursesPage.test.tsx
 autonomous: true
 requirements:
   - DS-02
@@ -17,6 +19,8 @@ must_haves:
   truths:
     - "Test scaffolds exist for ChaptersPage and LessonsPage"
     - "SubmissionsPage test mocks getAllSubmissions (not getUngraded)"
+    - "UsersPage test mocks fetchProfilesPaginated (not inline supabase query)"
+    - "CoursesPage test mocks fetchCoursesPaginated (not inline supabase query)"
   artifacts:
     - path: "src/pages/admin/ChaptersPage.test.tsx"
       provides: "Test scaffold for drag-and-drop"
@@ -27,18 +31,32 @@ must_haves:
     - path: "src/pages/admin/SubmissionsPage.test.tsx"
       provides: "Updated mocks for getAllSubmissions"
       contains: "getAllSubmissions"
+    - path: "src/pages/admin/UsersPage.test.tsx"
+      provides: "Updated mocks for fetchProfilesPaginated"
+      contains: "fetchProfilesPaginated"
+    - path: "src/pages/admin/CoursesPage.test.tsx"
+      provides: "Updated mocks for fetchCoursesPaginated"
+      contains: "fetchCoursesPaginated"
   key_links:
     - from: "src/pages/admin/ChaptersPage.test.tsx"
       to: "src/lib/api/chapters"
       via: "vi.mock"
       pattern: "batchReorderChapters"
+    - from: "src/pages/admin/UsersPage.test.tsx"
+      to: "src/lib/api/profiles"
+      via: "vi.mock"
+      pattern: "fetchProfilesPaginated"
+    - from: "src/pages/admin/CoursesPage.test.tsx"
+      to: "src/lib/api/courses"
+      via: "vi.mock"
+      pattern: "fetchCoursesPaginated"
 ---
 
 <objective>
-Wave 0b foundation: Create test scaffolds for drag-and-drop pages and update SubmissionsPage tests.
+Wave 0b foundation: Create test scaffolds for drag-and-drop pages and update all admin page tests for server-side APIs.
 
-Purpose: Test-first approach — these RED tests validate implementation tasks in Plans 12-01 and 12-02.
-Output: ChaptersPage.test.tsx, LessonsPage.test.tsx scaffolds; SubmissionsPage.test.tsx updated for getAllSubmissions
+Purpose: Test-first approach — these RED tests validate implementation tasks in Plans 12-01, 12-02, and 12-04.
+Output: ChaptersPage.test.tsx, LessonsPage.test.tsx scaffolds; SubmissionsPage/UsersPage/CoursesPage test mocks updated for server-side API functions
 </objective>
 
 <execution_context>
@@ -362,6 +380,91 @@ These tests will FAIL initially (Wave 0 RED state) until Plan 12-02 refactors th
   <done>SubmissionsPage.test.tsx mocks getAllSubmissions and tests status filter + pagination</done>
 </task>
 
+<task type="auto">
+  <name>Task 3: Update UsersPage.test.tsx and CoursesPage.test.tsx for server-side API mocks</name>
+  <files>src/pages/admin/UsersPage.test.tsx, src/pages/admin/CoursesPage.test.tsx</files>
+  <read_first>
+    - src/pages/admin/UsersPage.test.tsx (existing tests to update mocks)
+    - src/pages/admin/CoursesPage.test.tsx (existing tests to update mocks)
+    - src/lib/api/profiles.ts (new fetchProfilesPaginated from Plan 00a)
+    - src/lib/api/courses.ts (new fetchCoursesPaginated from Plan 00a)
+  </read_first>
+  <action>
+Per checker feedback: Plan 12-04 Tasks 3/4 migrate UsersPage/CoursesPage to server-side APIs. Tests must mock `fetchProfilesPaginated` and `fetchCoursesPaginated` instead of inline supabase queries.
+
+**Update src/pages/admin/UsersPage.test.tsx:**
+
+Add or update the mock for `@/lib/api/profiles`:
+
+```typescript
+vi.mock('@/lib/api/profiles', () => ({
+  fetchProfilesPaginated: vi.fn(() => Promise.resolve({
+    data: [
+      {
+        id: 'user-1',
+        full_name: 'Nguyễn Văn A',
+        phone: '0901234567',
+        role: 'student',
+        created_at: '2026-01-01T00:00:00Z',
+      },
+      {
+        id: 'user-2',
+        full_name: 'Trần Thị B',
+        phone: '0907654321',
+        role: 'teacher',
+        created_at: '2026-01-02T00:00:00Z',
+      },
+    ],
+    total: 2
+  })),
+}))
+```
+
+**Update src/pages/admin/CoursesPage.test.tsx:**
+
+Add or update the mock for `@/lib/api/courses`:
+
+```typescript
+vi.mock('@/lib/api/courses', () => ({
+  fetchCoursesPaginated: vi.fn(() => Promise.resolve({
+    data: [
+      {
+        id: 'course-1',
+        slug: 'toan-7',
+        title: 'Toán 7',
+        target_grade: 'grade_7',
+        is_published: true,
+        created_at: '2026-01-01T00:00:00Z',
+      },
+      {
+        id: 'course-2',
+        slug: 'toan-8',
+        title: 'Toán 8',
+        target_grade: 'grade_8',
+        is_published: false,
+        created_at: '2026-01-02T00:00:00Z',
+      },
+    ],
+    total: 2
+  })),
+  deleteCourse: vi.fn(),
+  publishCourse: vi.fn(),
+}))
+```
+
+**Key changes:**
+1. Mock returns `{ data: [...], total: N }` structure (PaginatedProfiles/PaginatedCourses)
+2. Remove any direct supabase mocking for profiles/courses queries
+3. Keep existing test assertions — they should still pass with the new mock structure
+
+These tests will FAIL initially (Wave 0 RED state) until Plan 12-04 refactors the pages.
+  </action>
+  <verify>
+    <automated>grep -q "fetchProfilesPaginated" src/pages/admin/UsersPage.test.tsx && grep -q "fetchCoursesPaginated" src/pages/admin/CoursesPage.test.tsx && echo "PASS"</automated>
+  </verify>
+  <done>UsersPage.test.tsx and CoursesPage.test.tsx mock server-side API functions</done>
+</task>
+
 </tasks>
 
 <verification>
@@ -376,6 +479,10 @@ grep -q "Kéo để sắp xếp" src/pages/admin/LessonsPage.test.tsx && echo "L
 
 # Verify getAllSubmissions mock
 grep -q "getAllSubmissions" src/pages/admin/SubmissionsPage.test.tsx && echo "SubmissionsPage getAllSubmissions: OK"
+
+# Verify server-side API mocks for UsersPage and CoursesPage
+grep -q "fetchProfilesPaginated" src/pages/admin/UsersPage.test.tsx && echo "UsersPage fetchProfilesPaginated: OK"
+grep -q "fetchCoursesPaginated" src/pages/admin/CoursesPage.test.tsx && echo "CoursesPage fetchCoursesPaginated: OK"
 ```
 </verification>
 
@@ -383,6 +490,8 @@ grep -q "getAllSubmissions" src/pages/admin/SubmissionsPage.test.tsx && echo "Su
 - ChaptersPage.test.tsx exists with skeleton and drag handle tests
 - LessonsPage.test.tsx exists with skeleton and drag handle tests
 - SubmissionsPage.test.tsx updated to mock getAllSubmissions
+- UsersPage.test.tsx updated to mock fetchProfilesPaginated
+- CoursesPage.test.tsx updated to mock fetchCoursesPaginated
 - Tests reference correct aria-labels (`Đang tải...`, `Kéo để sắp xếp`)
 </success_criteria>
 
