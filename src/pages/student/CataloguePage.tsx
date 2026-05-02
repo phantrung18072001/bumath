@@ -141,10 +141,10 @@ export default function CataloguePage() {
         </p>
       )}
 
-      {/* Loading state — 5-col on xl */}
+      {/* Loading state — 4-col on lg */}
       {coursesLoading && (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {Array.from({ length: 10 }).map((_, i) => (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
             <Skeleton key={i} className="h-36 rounded-2xl" />
           ))}
         </div>
@@ -172,9 +172,9 @@ export default function CataloguePage() {
         </div>
       )}
 
-      {/* Course grid — 5 columns on xl */}
+      {/* Course grid — 4 columns on lg */}
       {!coursesLoading && !coursesError && filteredCourses.length > 0 && (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {filteredCourses.map((course) => {
             const isEnrolled = isAuthenticated && enrolledCourseIds.has(course.id)
             const gradeBadge = GRADE_BADGE[course.target_grade]
@@ -186,22 +186,22 @@ export default function CataloguePage() {
                 className="block"
               >
                 <Card className="bm-clay-card-student border-0 shadow-none p-0 h-full overflow-hidden">
-                  <CardHeader className="p-3 pb-1">
-                    <div className="flex items-start justify-between gap-1">
-                      <CardTitle className="text-sm font-bold leading-snug text-[#92400E]">
+                  <CardHeader className="p-4 pb-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <CardTitle className="text-base font-bold leading-snug text-[#92400E]">
                         {course.title}
                       </CardTitle>
                       <div className="flex flex-col gap-1 items-end shrink-0">
-                        <Badge className={`${gradeBadge.className} text-xs px-1.5 py-0`}>
+                        <Badge className={gradeBadge.className}>
                           {gradeBadge.label}
                         </Badge>
                         {isAuthenticated && (
                           isEnrolled ? (
-                            <Badge className="bg-green-100 text-green-700 hover:bg-green-100 text-xs px-1.5 py-0">
+                            <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
                               Đã đăng ký
                             </Badge>
                           ) : (
-                            <Badge variant="outline" className="text-muted-foreground text-xs px-1.5 py-0">
+                            <Badge variant="outline" className="text-muted-foreground">
                               Chưa đăng ký
                             </Badge>
                           )
@@ -209,9 +209,9 @@ export default function CataloguePage() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-3 pt-1">
+                  <CardContent className="p-4 pt-2">
                     {course.description && (
-                      <p className="text-xs text-muted-foreground line-clamp-2">
+                      <p className="text-sm text-muted-foreground line-clamp-2">
                         {course.description}
                       </p>
                     )}

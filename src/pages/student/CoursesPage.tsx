@@ -79,7 +79,7 @@ export default function CoursesPage() {
 
         {/* Loading state — skeleton cards */}
         {isLoading && (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="h-36 rounded-2xl" />
             ))}
@@ -104,7 +104,7 @@ export default function CoursesPage() {
 
         {/* Course grid */}
         {!isLoading && !enrollmentsError && enrollments && enrollments.length > 0 && (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {enrollments.map((enrollment) => {
               const course = enrollment.course
               const courseId = enrollment.course_id
@@ -119,19 +119,19 @@ export default function CoursesPage() {
                   className="block"
                 >
                   <Card className="bm-clay-card-student border-0 shadow-none p-0 overflow-hidden h-full">
-                    <CardHeader className="p-3 pb-1">
-                      <div className="flex items-start justify-between gap-1">
-                        <CardTitle className="text-sm font-bold leading-snug text-[#92400E]">
+                    <CardHeader className="p-4 pb-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <CardTitle className="text-base font-bold leading-snug text-[#92400E]">
                           {course.title}
                         </CardTitle>
-                        <Badge className={`${gradeBadge.className} text-xs px-1.5 py-0`}>
+                        <Badge className={gradeBadge.className}>
                           {gradeBadge.label}
                         </Badge>
                       </div>
                     </CardHeader>
-                    <CardContent className="p-3 pt-1">
+                    <CardContent className="p-4 pt-2">
                       {course.description && (
-                        <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
                           {course.description}
                         </p>
                       )}
