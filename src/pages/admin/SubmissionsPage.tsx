@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Check, ChevronsUpDown, Loader2 } from 'lucide-react'
-import { getUngraded, UngradedSubmission } from '@/lib/api/submissions'
+import { Check, ChevronsUpDown } from 'lucide-react'
+import { getAllSubmissions, SubmissionsFilter } from '@/lib/api/submissions'
 import { GRADE_BADGE } from '@/lib/constants/grades'
 import { cn } from '@/lib/utils'
 import {
@@ -25,6 +25,25 @@ import {
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
+
+const PAGE_SIZE = 20
 
 interface ComboboxOption { value: string; label: string }
 
@@ -82,108 +101,126 @@ function SearchableSelect({
   )
 }
 
+function buildPageNumbers(current: number, total: number): (number | 'ellipsis')[] {
+  if (total <= 4) return Array.from({ length: total }, (_, i) => i + 1)
+  if (current <= 2) return [1, 2, 3, 'ellipsis', total]
+  if (current >= total - 1) return [1, 'ellipsis', total - 2, total - 1, total]
+  return [1, 'ellipsis', current - 1, current, current + 1, 'ellipsis', total]
+}
+
+const GRADE_OPTIONS: ComboboxOption[] = Object.entries(GRADE_BADGE).map(([value, { label }]) => ({ value, label }))
+
 export default function SubmissionsPage() {
   const navigate = useNavigate()
-  const [filterGrade, setFilterGrade] = useState('all')
-  const [filterCourse, setFilterCourse] = useState('all')
-  const [filterLesson, setFilterLesson] = useState('all')
-  const [filterStudent, setFilterStudent] = useState('')
+  const [statusFilter, setStatusFilter] = useState<'all' | 'graded' | 'ungraded'>('all')
+  const [gradeFilter, setGradeFilter] = useState('all')
+  const [courseFilter, setCourseFilter] = useState('all')
+  const [lessonFilter, setLessonFilter] = useState('all')
+  const [studentSearch, setStudentSearch] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
 
-  const { data = [], isLoading } = useQuery<UngradedSubmission[]>({
-    queryKey: ['admin', 'submissions', 'ungraded'],
-    queryFn: getUngraded,
+  const filters: SubmissionsFilter = {
+    status: statusFilter,
+    grade: gradeFilter,
+    course: courseFilter,
+    lesson: lessonFilter,
+    studentName: studentSearch,
+    page: currentPage,
+    pageSize: PAGE_SIZE,
+  }
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin', 'submissions', filters],
+    queryFn: () => getAllSubmissions(filters),
   })
 
-  // Derive cascading filter options
-  const uniqueGrades = Array.from(
-    new Set(data.map(r => r.lessons.chapters.courses.target_grade))
-  ).filter(Boolean)
+  const submissions = data?.data ?? []
+  const totalCount = data?.total ?? 0
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
 
-  const gradeFiltered = filterGrade === 'all' ? data : data.filter(r => r.lessons.chapters.courses.target_grade === filterGrade)
-  const uniqueCourses = Array.from(new Set(gradeFiltered.map(r => r.lessons.chapters.courses.title)))
+  const hasActiveFilter = statusFilter !== 'all' || gradeFilter !== 'all' || courseFilter !== 'all' || lessonFilter !== 'all' || studentSearch !== ''
 
-  const courseFiltered = filterCourse === 'all' ? gradeFiltered : gradeFiltered.filter(r => r.lessons.chapters.courses.title === filterCourse)
-  const uniqueLessons = Array.from(new Set(courseFiltered.map(r => r.lessons.title)))
-
-  // Apply client-side filters
-  const filteredData = data.filter(row =>
-    (filterGrade === 'all' || row.lessons.chapters.courses.target_grade === filterGrade) &&
-    (filterCourse === 'all' || row.lessons.chapters.courses.title === filterCourse) &&
-    (filterLesson === 'all' || row.lessons.title === filterLesson) &&
-    (!filterStudent || row.profiles.full_name.toLowerCase().includes(filterStudent.toLowerCase()))
-  )
+  const handleStatusChange = (value: string) => { setStatusFilter(value as 'all' | 'graded' | 'ungraded'); setCurrentPage(1) }
+  const handleGradeChange = (v: string) => { setGradeFilter(v); setCourseFilter('all'); setLessonFilter('all'); setCurrentPage(1) }
+  const handleCourseChange = (v: string) => { setCourseFilter(v); setLessonFilter('all'); setCurrentPage(1) }
+  const handleStudentSearch = (v: string) => { setStudentSearch(v); setCurrentPage(1) }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center gap-3 mb-6">
         <h1 className="text-xl font-semibold leading-[1.3]">Chấm bài</h1>
-        {data.length > 0 && (
+        {totalCount > 0 && (
           <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100">
-            {data.length} bài chờ chấm
+            {totalCount} bài nộp
           </Badge>
         )}
       </div>
 
-      {/* Filter bar */}
-      {!isLoading && data.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-6 p-4 bg-muted/50 rounded-lg border border-border">
-          {/* Grade filter */}
-          <SearchableSelect
-            options={uniqueGrades.map(g => ({ value: g, label: GRADE_BADGE[g].label }))}
-            value={filterGrade}
-            onChange={(v) => { setFilterGrade(v); setFilterCourse('all'); setFilterLesson('all') }}
-            placeholder="Tất cả lớp"
-            width="w-full"
-          />
+      {/* Filter bar — always visible */}
+      <div className="flex flex-wrap gap-2 mb-6 p-4 bg-muted/50 rounded-lg border border-border">
+        {/* Status filter — FIRST per UI-SPEC */}
+        <Select value={statusFilter} onValueChange={handleStatusChange}>
+          <SelectTrigger className="w-[180px]" aria-label="Lọc theo trạng thái">
+            <SelectValue placeholder="Tất cả trạng thái" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tất cả trạng thái</SelectItem>
+            <SelectItem value="ungraded">Chưa chấm</SelectItem>
+            <SelectItem value="graded">Đã chấm</SelectItem>
+          </SelectContent>
+        </Select>
 
-          {/* Course filter — depends on grade */}
-          <SearchableSelect
-            options={uniqueCourses.map(c => ({ value: c, label: c }))}
-            value={filterCourse}
-            onChange={(v) => { setFilterCourse(v); setFilterLesson('all') }}
-            placeholder="Tất cả khóa học"
-            disabled={filterGrade === 'all'}
-            width="w-full"
-          />
+        {/* Grade filter */}
+        <SearchableSelect
+          options={GRADE_OPTIONS}
+          value={gradeFilter}
+          onChange={handleGradeChange}
+          placeholder="Tất cả lớp"
+          width="w-[150px]"
+        />
 
-          {/* Lesson filter — depends on course */}
-          <SearchableSelect
-            options={uniqueLessons.map(l => ({ value: l, label: l }))}
-            value={filterLesson}
-            onChange={setFilterLesson}
-            placeholder="Tất cả bài học"
-            disabled={filterCourse === 'all'}
-            width="w-full"
-          />
+        {/* Course filter */}
+        <SearchableSelect
+          options={[]}
+          value={courseFilter}
+          onChange={handleCourseChange}
+          placeholder="Tất cả khóa học"
+          disabled={gradeFilter === 'all'}
+          width="w-[180px]"
+        />
 
-          {/* Student name filter */}
-          <Input
-            placeholder="Tìm học sinh..."
-            value={filterStudent}
-            onChange={(e) => setFilterStudent(e.target.value)}
-            className="w-full"
-            aria-label="Tìm học sinh theo tên"
-          />
-        </div>
-      )}
+        {/* Lesson filter */}
+        <SearchableSelect
+          options={[]}
+          value={lessonFilter}
+          onChange={setLessonFilter}
+          placeholder="Tất cả bài học"
+          disabled={courseFilter === 'all'}
+          width="w-[180px]"
+        />
 
-      {/* Result count */}
-      {!isLoading && data.length > 0 && (
-        <p className="text-sm text-muted-foreground mb-4">
-          Hiển thị {filteredData.length} / {data.length} bài nộp
-        </p>
-      )}
+        {/* Student name search */}
+        <Input
+          placeholder="Tìm học sinh..."
+          value={studentSearch}
+          onChange={(e) => handleStudentSearch(e.target.value)}
+          className="w-full sm:w-[200px]"
+          aria-label="Tìm học sinh theo tên"
+        />
+      </div>
 
       {isLoading ? (
-        <div className="flex justify-center items-center py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div aria-busy="true" aria-label="Đang tải...">
+          <div className="space-y-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-full rounded-md" />
+            ))}
+          </div>
         </div>
-      ) : filteredData.length === 0 && data.length > 0 ? (
-        <p className="text-center text-muted-foreground py-8">
-          Không tìm thấy bài nộp nào phù hợp với bộ lọc.
-        </p>
-      ) : data.length === 0 ? (
-        <p className="text-center text-muted-foreground py-8">Không có bài nào chờ chấm.</p>
+      ) : submissions.length === 0 ? (
+        <div className="text-center py-8 text-muted-foreground">
+          {hasActiveFilter ? 'Không có kết quả cho bộ lọc này.' : 'Không có bài nộp nào.'}
+        </div>
       ) : (
         <div className="overflow-x-auto">
           <Table>
@@ -193,11 +230,12 @@ export default function SubmissionsPage() {
                 <TableHead>Khóa học</TableHead>
                 <TableHead>Bài học</TableHead>
                 <TableHead>Ngày nộp</TableHead>
-                <TableHead>Hành động</TableHead>
+                <TableHead>Điểm</TableHead>
+                <TableHead className="text-right">Thao tác</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredData.map((row) => (
+              {submissions.map((row) => (
                 <TableRow key={row.id}>
                   <TableCell>{row.profiles.full_name}</TableCell>
                   <TableCell>{row.lessons.chapters.courses.title}</TableCell>
@@ -212,6 +250,15 @@ export default function SubmissionsPage() {
                     })}
                   </TableCell>
                   <TableCell>
+                    {row.score !== null ? (
+                      <Badge className="bg-teal-100 text-teal-800 border-0 font-mono">
+                        {row.score}/10
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary">Chưa chấm</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
                     <Button
                       size="sm"
                       onClick={() => navigate(`/quan-tri/bai-nop/${row.id}`)}
@@ -225,6 +272,46 @@ export default function SubmissionsPage() {
           </Table>
         </div>
       )}
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-4">
+          <p className="text-sm text-muted-foreground">{totalCount} bài nộp</p>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                />
+              </PaginationItem>
+              {buildPageNumbers(currentPage, totalPages).map((page, i) =>
+                page === 'ellipsis' ? (
+                  <PaginationItem key={`ellipsis-${i}`}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                ) : (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => setCurrentPage(page)}
+                      isActive={currentPage === page}
+                      className="cursor-pointer"
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              )}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   )
 }
+
