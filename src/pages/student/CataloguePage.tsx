@@ -85,7 +85,7 @@ export default function CataloguePage() {
   })
 
   const content = (
-    <div className="p-6 md:p-8">
+    <div className="p-8 md:p-10">
       <div className="flex items-start justify-between gap-4 mb-2 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-[#92400E]">Khám phá khóa học</h1>
@@ -143,7 +143,7 @@ export default function CataloguePage() {
 
       {/* Loading state — 4-col on lg */}
       {coursesLoading && (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-40 rounded-2xl" />
           ))}
@@ -174,7 +174,7 @@ export default function CataloguePage() {
 
       {/* Course grid — 3 columns on lg */}
       {!coursesLoading && !coursesError && filteredCourses.length > 0 && (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {filteredCourses.map((course) => {
             const isEnrolled = isAuthenticated && enrolledCourseIds.has(course.id)
             const gradeBadge = GRADE_BADGE[course.target_grade]

@@ -67,7 +67,7 @@ export default function CoursesPage() {
 
   return (
     <StudentLayout>
-      <div className="p-6 md:p-8">
+      <div className="p-8 md:p-10">
         <h1 className="text-2xl font-bold mb-4 text-[#92400E]">Khóa học của tôi</h1>
 
         {/* Error state */}
@@ -79,7 +79,7 @@ export default function CoursesPage() {
 
         {/* Loading state — skeleton cards */}
         {isLoading && (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="h-[200px] rounded-2xl" />
             ))}
@@ -104,7 +104,7 @@ export default function CoursesPage() {
 
         {/* Course grid */}
         {!isLoading && !enrollmentsError && enrollments && enrollments.length > 0 && (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {enrollments.map((enrollment) => {
               const course = enrollment.course
               const courseId = enrollment.course_id
