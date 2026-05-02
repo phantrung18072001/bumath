@@ -106,3 +106,49 @@ export async function publishCourse(id: string, isPublished: boolean): Promise<v
     .eq('id', id)
   if (error) throw error
 }
+
+export interface CoursesFilter {
+  page: number
+  pageSize: number
+  grade: 'all' | Course['target_grade']
+  search: string
+}
+
+export interface PaginatedCourses {
+  data: Course[]
+  total: number
+}
+
+/**
+ * Fetch courses with server-side filtering and pagination.
+ * Uses Supabase .range() for pagination and .eq()/.ilike() for filters.
+ * Per D-01: replaces client-side filter/slice pattern in CoursesPage.
+ */
+export async function fetchCoursesPaginated(
+  params: CoursesFilter
+): Promise<PaginatedCourses> {
+  const { page, pageSize, grade, search } = params
+  const from = (page - 1) * pageSize
+  const to = from + pageSize - 1
+
+  let query = supabase
+    .from('courses')
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .range(from, to)
+
+  if (grade !== 'all') {
+    query = query.eq('target_grade', grade)
+  }
+
+  if (search) {
+    query = query.ilike('title', `%${search}%`)
+  }
+
+  const { data, error, count } = await query
+  if (error) throw error
+  return {
+    data: (data ?? []) as Course[],
+    total: count ?? 0,
+  }
+}

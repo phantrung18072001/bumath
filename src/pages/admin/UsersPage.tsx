@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { BookOpen, Search } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
 import { Profile } from '@/types/auth'
+import { fetchProfilesPaginated } from '@/lib/api/profiles'
 import {
   Table,
   TableBody,
@@ -112,19 +112,17 @@ export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [roleFilter, setRoleFilter] = useState<'all' | Profile['role']>('all')
   const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
 
-  const { data: users = [], isLoading } = useQuery<Profile[]>({
-    queryKey: ['admin', 'profiles'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false })
-      if (error) throw error
-      return data as Profile[]
-    },
+  const PAGE_SIZE = 25
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin', 'profiles', { page: currentPage, pageSize: PAGE_SIZE, role: roleFilter, search: searchQuery }],
+    queryFn: () => fetchProfilesPaginated({ page: currentPage, pageSize: PAGE_SIZE, role: roleFilter, search: searchQuery }),
   })
+
+  const users = data?.data ?? []
+  const totalCount = data?.total ?? 0
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
 
   function handleSearch(value: string) {
     setSearchQuery(value)
@@ -136,32 +134,7 @@ export default function UsersPage() {
     setCurrentPage(1)
   }
 
-  function handlePageSizeChange(value: string) {
-    setPageSize(Number(value))
-    setCurrentPage(1)
-  }
-
-  const filtered = users.filter((u) => {
-    const matchesRole = roleFilter === 'all' || u.role === roleFilter
-    const q = searchQuery.toLowerCase()
-    const matchesSearch =
-      q === '' ||
-      u.full_name.toLowerCase().includes(q) ||
-      (u.phone && normalizePhone(u.phone.toLowerCase()).includes(normalizePhone(q)))
-    return matchesRole && matchesSearch
-  })
-
-  const totalPages = Math.ceil(filtered.length / pageSize)
-  const paginated = filtered.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  )
-
-  const countCopy = isLoading
-    ? ''
-    : roleFilter !== 'all' || searchQuery
-      ? `${filtered.length} / ${users.length} người dùng`
-      : `${users.length} người dùng`
+  const countCopy = isLoading ? '' : `${totalCount} người dùng`
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -206,9 +179,9 @@ export default function UsersPage() {
             ))}
           </div>
         </div>
-      ) : filtered.length === 0 ? (
+      ) : users.length === 0 ? (
         <div className="text-center py-16">
-          {users.length === 0 ? (
+          {!searchQuery && roleFilter === 'all' ? (
             <>
               <p className="text-base font-semibold text-foreground mb-1">Chưa có tài khoản nào</p>
               <p className="text-sm text-muted-foreground">Hệ thống chưa có người dùng nào đăng ký.</p>
@@ -223,9 +196,9 @@ export default function UsersPage() {
       ) : (
         <>
           <UsersTable
-            users={paginated}
+            users={users}
             currentPage={currentPage}
-            pageSize={pageSize}
+            pageSize={PAGE_SIZE}
             onManageEnrollments={(user) => setEnrollmentUser(user)}
           />
           {totalPages > 1 && (
@@ -265,20 +238,6 @@ export default function UsersPage() {
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>Hiển thị</span>
-                <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
-                  <SelectTrigger className="w-[72px] h-8">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                  </SelectContent>
-                </Select>
-                <span>/ trang</span>
-              </div>
             </div>
           )}
         </>

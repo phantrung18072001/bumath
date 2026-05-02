@@ -37,51 +37,8 @@ const defaultProfiles = [
 
 // --- Mocks ---
 
-vi.mock('@/lib/supabase', () => {
-  const order = vi.fn()
-  const select = vi.fn().mockReturnValue({ order })
-  const from = vi.fn().mockReturnValue({ select })
-
-  return {
-    supabase: { from },
-    __order: order,
-    __from: from,
-  }
-})
-
 vi.mock('@/lib/api/profiles', () => ({
-  fetchProfilesPaginated: vi.fn(() => Promise.resolve({
-    data: [
-      {
-        id: 'user-1',
-        full_name: 'Nguyen Van A',
-        phone: '+84912345678',
-        year_of_birth: 2010,
-        address: 'Ha Noi',
-        role: 'student',
-        created_at: '2026-01-01T00:00:00Z',
-      },
-      {
-        id: 'user-2',
-        full_name: 'Tran Thi B',
-        phone: '+84987654321',
-        year_of_birth: 2011,
-        address: 'Ho Chi Minh',
-        role: 'admin',
-        created_at: '2026-01-02T00:00:00Z',
-      },
-      {
-        id: 'user-3',
-        full_name: 'Le Van C',
-        phone: '+84999888777',
-        year_of_birth: 2012,
-        address: 'Da Nang',
-        role: 'teacher',
-        created_at: '2026-01-03T00:00:00Z',
-      },
-    ],
-    total: 3
-  })),
+  fetchProfilesPaginated: vi.fn(),
 }))
 
 vi.mock('@/components/admin/UserEnrollmentDialog', () => ({
@@ -91,22 +48,22 @@ vi.mock('@/components/admin/UserEnrollmentDialog', () => ({
 
 // --- Helpers ---
 
-let __order: ReturnType<typeof vi.fn>
-let __from: ReturnType<typeof vi.fn>
-
-beforeAll(async () => {
-  const mod = await import('@/lib/supabase')
-  const m = mod as unknown as {
-    __order: ReturnType<typeof vi.fn>
-    __from: ReturnType<typeof vi.fn>
-  }
-  __order = m.__order
-  __from = m.__from
-})
-
-function resetMocksWithData(profiles = defaultProfiles) {
-  __order.mockResolvedValue({ data: profiles, error: null })
-  __from.mockReturnValue({ select: vi.fn().mockReturnValue({ order: __order }) })
+async function setupMock(profiles = defaultProfiles) {
+  const { fetchProfilesPaginated } = await import('@/lib/api/profiles')
+  vi.mocked(fetchProfilesPaginated).mockImplementation(({ role, search, page, pageSize }) => {
+    let filtered = profiles
+    if (role !== 'all') filtered = filtered.filter(u => u.role === role)
+    if (search) {
+      const q = search.toLowerCase()
+      filtered = filtered.filter(u =>
+        u.full_name.toLowerCase().includes(q) ||
+        (u.phone && u.phone.includes(search))
+      )
+    }
+    const total = filtered.length
+    const start = (page - 1) * pageSize
+    return Promise.resolve({ data: filtered.slice(start, start + pageSize), total })
+  })
 }
 
 function renderUsersPage() {
@@ -120,9 +77,9 @@ function renderUsersPage() {
   )
 }
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.clearAllMocks()
-  resetMocksWithData()
+  await setupMock()
 })
 
 // --- Tests ---
@@ -166,7 +123,7 @@ describe('UsersPage', () => {
   })
 
   it('shows empty state message when no users exist', async () => {
-    resetMocksWithData([])
+    await setupMock([])
     renderUsersPage()
     await waitFor(() => {
       expect(screen.getByText('Chưa có tài khoản nào')).toBeInTheDocument()
@@ -175,8 +132,8 @@ describe('UsersPage', () => {
   })
 
   it('shows skeleton loading during fetch', async () => {
-    // Override mock to never resolve
-    __order.mockImplementation(() => new Promise(() => {}))
+    const { fetchProfilesPaginated } = await import('@/lib/api/profiles')
+    vi.mocked(fetchProfilesPaginated).mockImplementation(() => new Promise(() => {}))
     renderUsersPage()
     expect(screen.getByLabelText('Đang tải...')).toBeInTheDocument()
   })
@@ -245,7 +202,7 @@ describe('UsersPage - Role Filter', () => {
     expect(screen.queryByText('Le Van C')).not.toBeInTheDocument()
   })
 
-  it('shows count as "X / Y người dùng" when filtered', async () => {
+  it('shows count as "X người dùng" (total from server)', async () => {
     const user = userEvent.setup()
     renderUsersPage()
     await waitFor(() => {
@@ -257,13 +214,15 @@ describe('UsersPage - Role Filter', () => {
     const studentOption = screen.getByRole('option', { name: 'Học sinh' })
     await user.click(studentOption)
 
-    expect(screen.getByText('1 / 3 người dùng')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('1 người dùng')).toBeInTheDocument()
+    })
   })
 })
 
 describe('UsersPage - Pagination', () => {
-  it('shows pagination when more than 10 users', async () => {
-    const manyUsers = Array.from({ length: 15 }, (_, i) => ({
+  it('shows pagination when more than 25 users (PAGE_SIZE)', async () => {
+    const manyUsers = Array.from({ length: 30 }, (_, i) => ({
       id: String(i + 1),
       full_name: `User ${i + 1}`,
       phone: null,
@@ -272,7 +231,7 @@ describe('UsersPage - Pagination', () => {
       role: 'student' as const,
       created_at: '2026-01-01T00:00:00Z',
     }))
-    resetMocksWithData(manyUsers)
+    await setupMock(manyUsers)
 
     renderUsersPage()
     await waitFor(() => {
@@ -282,12 +241,11 @@ describe('UsersPage - Pagination', () => {
     expect(screen.getByLabelText('Go to previous page')).toBeInTheDocument()
     expect(screen.getByLabelText('Go to next page')).toBeInTheDocument()
 
-    expect(screen.getByText('User 9')).toBeInTheDocument()
-    expect(screen.getByText('User 10')).toBeInTheDocument()
-    expect(screen.queryByText('User 11')).not.toBeInTheDocument()
+    expect(screen.getByText('User 25')).toBeInTheDocument()
+    expect(screen.queryByText('User 26')).not.toBeInTheDocument()
   })
 
-  it('hides pagination when 10 or fewer users', async () => {
+  it('hides pagination when 25 or fewer users', async () => {
     renderUsersPage()
     await waitFor(() => {
       expect(screen.getByText('Nguyen Van A')).toBeInTheDocument()
@@ -299,7 +257,8 @@ describe('UsersPage - Pagination', () => {
 
 describe('UsersPage - Skeleton Loading', () => {
   it('shows skeleton with aria-label during loading', async () => {
-    __order.mockImplementation(() => new Promise(() => {}))
+    const { fetchProfilesPaginated } = await import('@/lib/api/profiles')
+    vi.mocked(fetchProfilesPaginated).mockImplementation(() => new Promise(() => {}))
     renderUsersPage()
 
     const skeleton = screen.getByLabelText('Đang tải...')

@@ -41,7 +41,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { fetchCourses, deleteCourse, publishCourse, Course } from '@/lib/api/courses'
+import { fetchCourses, fetchCoursesPaginated, deleteCourse, publishCourse, Course } from '@/lib/api/courses'
 import CourseFormDialog from '@/components/admin/CourseFormDialog'
 import { GRADE_BADGE } from '@/lib/constants/grades'
 
@@ -68,12 +68,17 @@ export default function CoursesPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [gradeFilter, setGradeFilter] = useState<'all' | Course['target_grade']>('all')
   const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
 
-  const { data: courses = [], isLoading } = useQuery<Course[]>({
-    queryKey: ['admin', 'courses'],
-    queryFn: fetchCourses,
+  const PAGE_SIZE = 20
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin', 'courses', { page: currentPage, pageSize: PAGE_SIZE, grade: gradeFilter, search: searchQuery }],
+    queryFn: () => fetchCoursesPaginated({ page: currentPage, pageSize: PAGE_SIZE, grade: gradeFilter, search: searchQuery }),
   })
+
+  const courses = data?.data ?? []
+  const totalCount = data?.total ?? 0
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteCourse(id),
@@ -125,32 +130,7 @@ export default function CoursesPage() {
     setCurrentPage(1)
   }
 
-  function handlePageSizeChange(value: string) {
-    setPageSize(Number(value))
-    setCurrentPage(1)
-  }
-
-  // Filter logic: grade AND search (case-insensitive)
-  const filtered = courses.filter((c) => {
-    const matchesGrade = gradeFilter === 'all' || c.target_grade === gradeFilter
-    const q = searchQuery.toLowerCase()
-    const matchesSearch = q === '' || c.title.toLowerCase().includes(q)
-    return matchesGrade && matchesSearch
-  })
-
-  // Pagination slicing
-  const totalPages = Math.ceil(filtered.length / pageSize)
-  const paginated = filtered.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  )
-
-  // Count copy logic
-  const countCopy = isLoading
-    ? ''
-    : gradeFilter !== 'all' || searchQuery
-      ? `${filtered.length} / ${courses.length} khóa học`
-      : `${courses.length} khóa học`
+  const countCopy = isLoading ? '' : `${totalCount} khóa học`
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -202,9 +182,9 @@ export default function CoursesPage() {
             ))}
           </div>
         </div>
-      ) : filtered.length === 0 ? (
+      ) : courses.length === 0 ? (
         <div className="text-center py-16">
-          {courses.length === 0 ? (
+          {!searchQuery && gradeFilter === 'all' ? (
             <>
               <p className="text-base font-semibold text-foreground mb-1">Chưa có khóa học nào</p>
               <p className="text-sm text-muted-foreground mb-4">Nhấn "Tạo khóa học" để bắt đầu.</p>
@@ -235,9 +215,9 @@ export default function CoursesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginated.map((course, index) => (
+                {courses.map((course, index) => (
                   <TableRow key={course.id}>
-                    <TableCell className="w-12 text-muted-foreground">{(currentPage - 1) * pageSize + index + 1}</TableCell>
+                    <TableCell className="w-12 text-muted-foreground">{(currentPage - 1) * PAGE_SIZE + index + 1}</TableCell>
                     <TableCell className="font-medium">{course.title}</TableCell>
                     <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
                       {course.description ?? '—'}
@@ -311,21 +291,7 @@ export default function CoursesPage() {
           </div>
 
           {totalPages > 1 && (
-            <div className="mt-6 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>Hiển thị</span>
-                <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
-                  <SelectTrigger className="w-[72px] h-8">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                  </SelectContent>
-                </Select>
-                <span>/ trang</span>
-              </div>
+            <div className="mt-6 flex items-center justify-end gap-3">
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
