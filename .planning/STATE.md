@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: UI Refactor
-status: Ready to plan
-stopped_at: Phase 12 context gathered
-last_updated: "2026-05-02T09:18:05.183Z"
+status: Executing Phase 12
+stopped_at: Phase 12 UI-SPEC approved
+last_updated: "2026-05-02T10:15:22.099Z"
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 15
+  total_plans: 21
   completed_plans: 14
 ---
 
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-01 — v1.0 complete)
 
 **Core value:** Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ thể từ giảng viên trên từng bài làm
-**Current focus:** Phase 11 — admin-list-pages
+**Current focus:** Phase 12 — admin-detail-pages
 
 ## Current Position
 
-Phase: 12
-Plan: Not started
+Phase: 12 (admin-detail-pages) — EXECUTING
+Plan: 1 of 6
 
 ## Performance Metrics
 
@@ -146,6 +146,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-02T09:18:05.180Z
-Stopped at: Phase 12 context gathered
-Resume file: .planning/phases/12-admin-detail-pages/12-CONTEXT.md
+Last session: 2026-05-02T09:27:39.445Z
+Stopped at: Phase 12 UI-SPEC approved
+Resume file: .planning/phases/12-admin-detail-pages/12-UI-SPEC.md
