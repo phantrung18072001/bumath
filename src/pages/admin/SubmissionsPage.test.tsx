@@ -35,6 +35,10 @@ const mockUngraded = [
 
 vi.mock('@/lib/api/submissions', () => ({
   getUngraded: vi.fn().mockResolvedValue([]),
+  getAllSubmissions: vi.fn(() => Promise.resolve({
+    data: [],
+    total: 0
+  })),
   gradeSubmission: vi.fn().mockResolvedValue(undefined),
   getSubmissionSignedUrl: vi.fn().mockResolvedValue('https://example.com/photo.jpg'),
 }))
@@ -157,5 +161,62 @@ describe('SubmissionsPage', () => {
     await waitFor(() => {
       expect(screen.getByText('Không tìm thấy bài nộp nào phù hợp với bộ lọc.')).toBeInTheDocument()
     })
+  })
+})
+
+describe('SubmissionsPage status filter', () => {
+  it('renders status filter Select with "Tất cả trạng thái" default', async () => {
+    const { getAllSubmissions } = await import('@/lib/api/submissions')
+    vi.mocked(getAllSubmissions).mockResolvedValue({
+      data: [
+        {
+          id: 'sub-1',
+          user_id: 'user-1',
+          lesson_id: 'les-1',
+          file_path: 'path/to/file.jpg',
+          submitted_at: '2026-05-01T10:00:00Z',
+          score: null,
+          status: 'submitted',
+          profiles: { full_name: 'Nguyễn Văn A' },
+          lessons: {
+            title: 'Bài 1',
+            chapters: {
+              course_id: 'course-1',
+              courses: { title: 'Toán 7', target_grade: 'grade_7' }
+            }
+          }
+        }
+      ],
+      total: 1
+    })
+
+    await renderSubmissionsPage()
+
+    await screen.findByText('Nguyễn Văn A')
+
+    expect(screen.getByText('Tất cả trạng thái')).toBeInTheDocument()
+  })
+
+  it('calls getAllSubmissions with status filter on selection', async () => {
+    const { getAllSubmissions } = await import('@/lib/api/submissions')
+    vi.mocked(getAllSubmissions).mockResolvedValue({ data: [], total: 0 })
+    await renderSubmissionsPage()
+
+    await waitFor(() => {
+      expect(getAllSubmissions).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 'all' })
+      )
+    })
+  })
+})
+
+describe('SubmissionsPage loading', () => {
+  it('shows skeleton loading state', async () => {
+    const { getAllSubmissions } = await import('@/lib/api/submissions')
+    vi.mocked(getAllSubmissions).mockImplementation(() => new Promise(() => {}))
+
+    await renderSubmissionsPage()
+
+    expect(screen.getByLabelText('Đang tải...')).toBeInTheDocument()
   })
 })

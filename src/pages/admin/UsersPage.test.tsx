@@ -49,6 +49,41 @@ vi.mock('@/lib/supabase', () => {
   }
 })
 
+vi.mock('@/lib/api/profiles', () => ({
+  fetchProfilesPaginated: vi.fn(() => Promise.resolve({
+    data: [
+      {
+        id: 'user-1',
+        full_name: 'Nguyen Van A',
+        phone: '+84912345678',
+        year_of_birth: 2010,
+        address: 'Ha Noi',
+        role: 'student',
+        created_at: '2026-01-01T00:00:00Z',
+      },
+      {
+        id: 'user-2',
+        full_name: 'Tran Thi B',
+        phone: '+84987654321',
+        year_of_birth: 2011,
+        address: 'Ho Chi Minh',
+        role: 'admin',
+        created_at: '2026-01-02T00:00:00Z',
+      },
+      {
+        id: 'user-3',
+        full_name: 'Le Van C',
+        phone: '+84999888777',
+        year_of_birth: 2012,
+        address: 'Da Nang',
+        role: 'teacher',
+        created_at: '2026-01-03T00:00:00Z',
+      },
+    ],
+    total: 3
+  })),
+}))
+
 vi.mock('@/components/admin/UserEnrollmentDialog', () => ({
   default: ({ open }: { open: boolean }) =>
     open ? <div data-testid="enrollment-dialog" /> : null,

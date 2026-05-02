@@ -35,6 +35,31 @@ const defaultCourses = [
 
 vi.mock('@/lib/api/courses', () => ({
   fetchCourses: vi.fn(),
+  fetchCoursesPaginated: vi.fn(() => Promise.resolve({
+    data: [
+      {
+        id: 'course-1',
+        title: 'Toán lớp 7 nâng cao',
+        slug: 'toan-lop-7-nang-cao',
+        description: 'Khóa học toán cho học sinh lớp 7',
+        target_grade: 'grade_7' as const,
+        is_published: true,
+        created_at: '2026-01-01T00:00:00Z',
+        updated_at: '2026-01-01T00:00:00Z',
+      },
+      {
+        id: 'course-2',
+        title: 'Ôn thi chuyên toán',
+        slug: 'on-thi-chuyen-toan',
+        description: 'Luyện đề thi vào chuyên',
+        target_grade: 'advanced' as const,
+        is_published: false,
+        created_at: '2026-01-02T00:00:00Z',
+        updated_at: '2026-01-02T00:00:00Z',
+      },
+    ],
+    total: 2
+  })),
   deleteCourse: vi.fn(),
   publishCourse: vi.fn(),
 }))
