@@ -39,9 +39,9 @@ Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ t
 
 ### Active (v2.0 — UI Refactor)
 
-- [ ] Toàn bộ UI ngoài landing page được refactor với thiết kế hiện đại, đẹp hơn
-- [ ] Các trang danh sách (admin users, courses, submissions; student catalogue, courses) có pagination
-- [ ] Các trang danh sách có bộ filter phù hợp (search, grade, status…)
+- [x] Toàn bộ UI ngoài landing page được refactor với thiết kế hiện đại, đẹp hơn — Validated in Phase 13: student-pages (Claymorphism Teal design system)
+- [x] Các trang danh sách (admin users, courses, submissions; student catalogue, courses) có pagination — Validated in Phase 11: admin-pages
+- [x] Các trang danh sách có bộ filter phù hợp (search, grade, status…) — Validated in Phase 11: admin-pages + Phase 13: student-pages
 - [ ] URL đồng nhất (English-only hoặc Vietnamese-only — cần quyết định)
 - [ ] Email notification khi bài được chấm (GRADE-04 original requirement)
 
@@ -119,4 +119,4 @@ Last updated: Phase 12.1 complete — UI gap closure: touch targets, typography,
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-02 after Phase 12.1 gap closure — UI violations fixed in 6 admin pages, v2.0 UI Refactor milestone in progress*
+*Last updated: 2026-05-02 after Phase 13 student-pages — Claymorphism Teal design applied to CoursesPage, CataloguePage, CourseDetailPage; infinite scroll, Sheet drawer mobile nav, URL slug bug fixed; v2.0 UI Refactor milestone complete*
