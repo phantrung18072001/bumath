@@ -18,13 +18,13 @@
 
 | Role | Hex | CSS Variable |
 |------|-----|--------------|
-| Primary | `#0D9488` | `--color-primary` |
+| Primary | `#F97316` | `--color-primary` |
 | Secondary | `#2DD4BF` | `--color-secondary` |
 | CTA/Accent | `#F97316` | `--color-cta` |
-| Background | `#F0FDFA` | `--color-background` |
-| Text | `#134E4A` | `--color-text` |
+| Background | `#F3F0ED` | `--color-background` |
+| Text | `#92400E` | `--color-text` |
 
-**Color Notes:** Progress teal + achievement orange
+**Color Notes:** Progress orange + achievement orange
 
 ### Typography
 
@@ -85,8 +85,8 @@
 /* Secondary Button */
 .btn-secondary {
   background: transparent;
-  color: #0D9488;
-  border: 2px solid #0D9488;
+  color: #F97316;
+  border: 2px solid #F97316;
   padding: 12px 24px;
   border-radius: 8px;
   font-weight: 600;
@@ -99,7 +99,7 @@
 
 ```css
 .card {
-  background: #F0FDFA;
+  background: #F3F0ED;
   border-radius: 12px;
   padding: 24px;
   box-shadow: var(--shadow-md);
@@ -125,9 +125,9 @@
 }
 
 .input:focus {
-  border-color: #0D9488;
+  border-color: #F97316;
   outline: none;
-  box-shadow: 0 0 0 3px #0D948820;
+  box-shadow: 0 0 0 3px #F9731620;
 }
 ```
 

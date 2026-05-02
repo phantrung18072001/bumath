@@ -255,7 +255,7 @@ export default function SubmissionsPage() {
                   </TableCell>
                   <TableCell>
                     {row.score !== null ? (
-                      <Badge className="bg-teal-100 text-teal-800 border-0 font-mono">
+                      <Badge className="bg-orange-100 text-orange-800 border-0 font-mono">
                         {row.score}/10
                       </Badge>
                     ) : (

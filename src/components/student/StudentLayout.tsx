@@ -110,7 +110,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
       </header>
 
       {/* Page content — remaining viewport height */}
-      <main className="relative z-10 min-h-[calc(100vh-48px)] bg-white/80 backdrop-blur-[1px]">
+      <main className="relative z-10 min-h-[calc(100vh-48px)]">
         {children}
       </main>
     </div>

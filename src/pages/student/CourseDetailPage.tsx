@@ -191,7 +191,7 @@ export default function CourseDetailPage() {
           <>
             {/* Desktop layout — visible at lg and above */}
             <div className="hidden lg:flex h-[calc(100vh-48px)]">
-              <div className="w-[280px] shrink-0 bg-white border-r border-[#0D9488]/20">
+              <div className="w-[280px] shrink-0 bg-white border-r border-[#F97316]/20">
                 <LessonSidebar
                   chapters={chapters}
                   lessonsByChapter={lessonsByChapter}
@@ -201,14 +201,7 @@ export default function CourseDetailPage() {
                   progress={progress}
                 />
               </div>
-              <div className="flex-1 overflow-y-auto bg-[#F0FDFA]">
-                <LessonContent
-                  lesson={activeLesson}
-                  isCompleted={completedLessonIds.has(activeLessonId ?? '')}
-                  submission={activeSubmission}
-                  userId={profile!.id}
-                  courseId={courseId!}
-                />
+              <div className="flex-1 overflow-y-auto bg-white">
               </div>
             </div>
 
@@ -219,7 +212,7 @@ export default function CourseDetailPage() {
                 <Button
                   variant="outline"
                   onClick={() => setDrawerOpen(true)}
-                  className="min-h-[48px] gap-2 border-[#0D9488] text-[#0D9488] hover:bg-[#F0FDFA]"
+                  className="min-h-[48px] gap-2 border-[#F97316] text-[#F97316] hover:bg-[#F3F0ED]"
                   aria-label="Mở danh sách bài học"
                 >
                   <Menu className="h-4 w-4" />
@@ -228,7 +221,7 @@ export default function CourseDetailPage() {
               </div>
 
               {/* Main content area */}
-              <div className="overflow-y-auto bg-[#F0FDFA]">
+              <div className="overflow-y-auto bg-white">
                 <LessonContent
                   lesson={activeLesson}
                   isCompleted={completedLessonIds.has(activeLessonId ?? '')}
@@ -242,7 +235,7 @@ export default function CourseDetailPage() {
               <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
                 <SheetContent side="left" className="w-[85vw] max-w-[320px] p-0">
                   <SheetHeader className="px-4 pt-4 pb-2 border-b border-border">
-                    <SheetTitle className="text-base font-bold text-[#134E4A]">
+                    <SheetTitle className="text-base font-bold text-[#92400E]">
                       Danh sách bài học
                     </SheetTitle>
                   </SheetHeader>
@@ -269,7 +262,7 @@ export default function CourseDetailPage() {
           <>
             {/* Desktop preview — visible at lg and above */}
             <div className="hidden lg:flex h-[calc(100vh-48px)]">
-              <div className="w-[280px] shrink-0 bg-white border-r border-[#0D9488]/20">
+              <div className="w-[280px] shrink-0 bg-white border-r border-[#F97316]/20">
                 <LessonSidebar
                   chapters={chapters}
                   lessonsByChapter={lessonsByChapter}
@@ -279,16 +272,16 @@ export default function CourseDetailPage() {
                   progress={0}
                 />
               </div>
-              <div className="flex-1 overflow-y-auto bg-[#F0FDFA] flex flex-col">
+              <div className="flex-1 overflow-y-auto bg-white flex flex-col">
                 <div className="flex-1 flex items-start justify-center px-8 pt-12 pb-8">
                   <Card className="bm-clay-card-student border-0 shadow-none w-full max-w-sm p-0">
                     <CardContent className="pt-8 pb-8 flex flex-col items-center text-center gap-4">
                       {/* Lock icon in teal circle */}
-                      <div className="w-16 h-16 rounded-full bg-[#CCFBF1] border-2 border-[#0D9488] flex items-center justify-center">
-                        <Lock className="h-7 w-7 text-[#0D9488]" aria-hidden="true" />
+                      <div className="w-16 h-16 rounded-full bg-[#FFEDD5] border-2 border-[#F97316] flex items-center justify-center">
+                        <Lock className="h-7 w-7 text-[#F97316]" aria-hidden="true" />
                       </div>
                       <div className="space-y-2">
-                        <h2 className="text-xl font-bold leading-snug text-[#134E4A]">{course?.title}</h2>
+                        <h2 className="text-xl font-bold leading-snug text-[#92400E]">{course?.title}</h2>
                         {course && (
                           <Badge className={GRADE_BADGE[course.target_grade].className}>
                             {GRADE_BADGE[course.target_grade].label}
@@ -324,21 +317,21 @@ export default function CourseDetailPage() {
                 <TabsList className="w-full h-12 rounded-none border-b bg-transparent p-0 gap-0">
                   <TabsTrigger
                     value="content"
-                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-[#0D9488] data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-bold"
+                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-[#F97316] data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-bold"
                   >
                     Nội dung
                   </TabsTrigger>
                   <TabsTrigger
                     value="outline"
-                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-[#0D9488] data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-bold"
+                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-[#F97316] data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-bold"
                   >
                     Mục lục
                   </TabsTrigger>
                 </TabsList>
-                <TabsContent value="content" className="mt-0 bg-[#F0FDFA]">
+                <TabsContent value="content" className="mt-0 bg-white">
                   <div className="flex flex-col items-center text-center px-6 pt-12 pb-8 gap-4">
-                    <div className="w-14 h-14 rounded-full bg-[#CCFBF1] border-2 border-[#0D9488] flex items-center justify-center">
-                      <Lock className="h-6 w-6 text-[#0D9488]" aria-hidden="true" />
+                    <div className="w-14 h-14 rounded-full bg-[#FFEDD5] border-2 border-[#F97316] flex items-center justify-center">
+                      <Lock className="h-6 w-6 text-[#F97316]" aria-hidden="true" />
                     </div>
                     {isAuthenticated ? (
                       <div className="text-sm text-muted-foreground leading-relaxed max-w-xs">
@@ -382,7 +375,7 @@ export default function CourseDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F0FDFA]">
+    <div className="min-h-screen bg-white">
       <Header />
       <main>{pageContent}</main>
     </div>

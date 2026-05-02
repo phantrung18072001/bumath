@@ -27,10 +27,10 @@ export default function LessonSidebar({
   return (
     <div className={scrollable ? 'flex flex-col h-full' : 'flex flex-col'}>
       {/* Progress header */}
-      <div className="px-4 py-4 border-b border-[#0D9488]/20 shrink-0">
+      <div className="px-4 py-4 border-b border-[#F97316]/20 shrink-0">
         <Progress
           value={progress}
-          className="h-2 bg-[#CCFBF1] bm-progress-teal"
+          className="h-2 bg-[#FFEDD5] bm-progress-teal"
           aria-label={`Tiến độ hoàn thành: ${progress}%`}
         />
         <span className="text-sm text-muted-foreground mt-1 block">{progress}% hoàn thành</span>

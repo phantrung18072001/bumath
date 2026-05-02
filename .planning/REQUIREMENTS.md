@@ -32,7 +32,7 @@
 
 - [x] **STUDENT-UI-01**: Trang danh sách khóa học của tôi (`/khoa-hoc`) — card layout, progress bar nổi bật, empty state rõ ràng
 - [x] **STUDENT-UI-02**: Trang xem bài học (`/khoa-hoc/:courseSlug`) — sidebar responsive, video embed chiếm phần chính, UX mark complete nổi bật
-- [ ] **STUDENT-UI-03**: Trang danh mục khóa học (`/danh-muc`) — card grid, filter theo lớp, tìm kiếm tên khóa học, phân trang hoặc infinite scroll
+- [x] **STUDENT-UI-03**: Trang danh mục khóa học (`/danh-muc`) — card grid, filter theo lớp, tìm kiếm tên khóa học, phân trang hoặc infinite scroll
 - [x] **STUDENT-UI-04**: Empty states đẹp trên tất cả trang học sinh (khi chưa có khóa học, chưa có bài nộp…)
 
 ### Design System
@@ -57,7 +57,7 @@
 | ADMIN-UI-05 | Phase 12 — Admin Detail Pages | Pending |
 | STUDENT-UI-01 | Phase 13 — Student Pages | Complete |
 | STUDENT-UI-02 | Phase 13 — Student Pages | Complete |
-| STUDENT-UI-03 | Phase 13 — Student Pages | Pending |
+| STUDENT-UI-03 | Phase 13 — Student Pages | Complete |
 | STUDENT-UI-04 | Phase 13 — Student Pages | Complete |
 | DS-01 | Phase 10–13 (cross-cutting) | Complete |
 | DS-02 | Phase 10–13 (cross-cutting) | Complete |

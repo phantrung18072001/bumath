@@ -36,6 +36,15 @@ Single-page React application for a Vietnamese math education platform (grades 7
 
 ### UI Component Rule
 **Always use shadcn/ui or Radix primitives before implementing custom components.** Check `src/components/ui/` and https://ui.shadcn.com/docs/components first. If a component is missing, install it with `yarn dlx shadcn@latest add <name>` before building from scratch.
+
+### UI Design Rule
+**Always invoke the `ui-ux-pro-max` skill before designing or significantly changing UI.**
+
+Run the design system query before implementing any new page, component, or visual change:
+```bash
+python3 .claude/skills/ui-ux-pro-max/scripts/search.py "<product_type> <keywords>" --design-system -p "BuMath"
+```
+Follow the pre-delivery checklist (no emoji icons, cursor-pointer on clickables, 4.5:1 contrast, smooth transitions 150–300ms, focus states, responsive at 375/768/1024/1440px).
 - `src/hooks/` — Custom hooks (`use-toast`, `use-mobile`)
 - `src/lib/utils.ts` — `cn()` utility (clsx + tailwind-merge)
 
