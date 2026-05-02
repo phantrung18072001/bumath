@@ -129,7 +129,7 @@ export default function SubmissionsPage() {
     pageSize: PAGE_SIZE,
   }
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['admin', 'submissions', filters],
     queryFn: () => getAllSubmissions(filters),
   })
@@ -150,7 +150,7 @@ export default function SubmissionsPage() {
       <div className="flex items-center gap-3 mb-6">
         <h1 className="text-xl font-semibold leading-[1.3]">Chấm bài</h1>
         {totalCount > 0 && (
-          <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100">
+          <Badge className="bg-muted text-muted-foreground hover:bg-muted">
             {totalCount} bài nộp
           </Badge>
         )}
@@ -209,7 +209,11 @@ export default function SubmissionsPage() {
         />
       </div>
 
-      {isLoading ? (
+      {isError ? (
+        <p className="text-destructive py-8 text-center">
+          Không thể tải dữ liệu. Vui lòng thử lại.
+        </p>
+      ) : isLoading ? (
         <div aria-busy="true" aria-label="Đang tải...">
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (

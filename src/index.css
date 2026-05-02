@@ -182,3 +182,10 @@
     font-family: 'Be Vietnam Pro', sans-serif;
   }
 }
+
+/* Accessibility: Disable dnd-kit drag animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  [aria-roledescription="sortable"] {
+    transition: none !important;
+  }
+}

@@ -92,7 +92,7 @@ function SortableLessonRow({ lesson, index, onEdit, onDelete }: SortableLessonRo
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </button>
       </TableCell>
-      <TableCell className="font-medium w-16">{index + 1}</TableCell>
+      <TableCell className="font-normal w-16">{index + 1}</TableCell>
       <TableCell className="w-32">
         {videoId ? (
           <img
@@ -178,7 +178,7 @@ export default function LessonsPage() {
   const chapter = chapters.find((ch) => ch.slug === chapterSlug)
 
   // Fetch lessons for this chapter
-  const { data: lessons = [], isLoading } = useQuery<Lesson[]>({
+  const { data: lessons = [], isLoading, isError } = useQuery<Lesson[]>({
     queryKey: ['admin', 'lessons', chapter?.id],
     queryFn: () => fetchLessons(chapter!.id),
     enabled: !!chapter?.id,
@@ -284,7 +284,11 @@ export default function LessonsPage() {
         Quản lý bài học{chapter ? `: ${chapter.title}` : ''}
       </h1>
 
-      {isLoading ? (
+      {isError ? (
+        <p className="text-destructive py-8 text-center">
+          Không thể tải dữ liệu. Vui lòng thử lại.
+        </p>
+      ) : isLoading ? (
         <div aria-busy="true" aria-label="Đang tải...">
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (

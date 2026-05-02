@@ -86,7 +86,7 @@ function SortableChapterRow({ chapter, index, onEdit, onDelete, onViewLessons }:
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </button>
       </TableCell>
-      <TableCell className="font-medium w-16">{index + 1}</TableCell>
+      <TableCell className="font-normal w-16">{index + 1}</TableCell>
       <TableCell>{chapter.title}</TableCell>
       <TableCell className="text-right space-x-2">
         <Button
@@ -138,7 +138,7 @@ export default function ChaptersPage() {
   const course = courses.find((c) => c.slug === courseSlug)
 
   // Fetch chapters for this course
-  const { data: chapters = [], isLoading } = useQuery<Chapter[]>({
+  const { data: chapters = [], isLoading, isError } = useQuery<Chapter[]>({
     queryKey: ['admin', 'chapters', course?.id],
     queryFn: () => fetchChapters(course!.id),
     enabled: !!course?.id,
@@ -233,7 +233,11 @@ export default function ChaptersPage() {
         Quản lý chuyên đề{course ? `: ${course.title}` : ''}
       </h1>
 
-      {isLoading ? (
+      {isError ? (
+        <p className="text-destructive py-8 text-center">
+          Không thể tải dữ liệu. Vui lòng thử lại.
+        </p>
+      ) : isLoading ? (
         <div aria-busy="true" aria-label="Đang tải...">
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -294,7 +298,7 @@ export default function ChaptersPage() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Xóa chuyên đề</AlertDialogTitle>
+            <AlertDialogTitle>Xóa chuyên đề?</AlertDialogTitle>
             <AlertDialogDescription>
               Bạn có chắc muốn xóa chuyên đề "{deletingChapter?.title}"? Toàn bộ bài học trong
               chuyên đề sẽ bị xóa theo. Hành động này không thể hoàn tác.
