@@ -13,8 +13,9 @@ const staticNavItems = [
 ];
 
 const authNavItems = [
+  { label: "Giới thiệu", to: "/gioi-thieu" },
   { label: "Vào học", to: "/khoa-hoc" },
-  { label: "Khám phá", to: "/danh-muc" },
+  { label: "Danh mục", to: "/danh-muc" },
   { label: "Đề thi", to: "/de-thi" },
   { label: "Tài liệu", to: "/tai-lieu" },
   { label: "Tản mạn Toán & Cuộc sống", to: "/tan-man" },
