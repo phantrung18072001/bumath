@@ -16,7 +16,7 @@ export interface EnrollmentWithCourse extends Enrollment {
 export async function getUserEnrollments(userId: string): Promise<EnrollmentWithCourse[]> {
   const { data, error } = await supabase
     .from('enrollments')
-    .select('id, user_id, course_id, enrolled_at, course:courses(id, title, slug, target_grade)')
+    .select('id, user_id, course_id, enrolled_at, course:courses(id, title, slug, target_grade, description)')
     .eq('user_id', userId)
     .order('enrolled_at', { ascending: false })
   if (error) throw error
