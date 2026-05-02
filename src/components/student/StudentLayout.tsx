@@ -18,9 +18,9 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
+    <div className="min-h-screen bg-white relative overflow-hidden isolate">
       {/* Floating math symbols background */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10" aria-hidden="true">
         <span className="bm-float-symbol-light" style={{ top: '4%',  left: '2%',   fontSize: '52px' }}>π</span>
         <span className="bm-float-symbol-light" style={{ top: '8%',  left: '18%',  fontSize: '36px' }}>θ</span>
         <span className="bm-float-symbol-light" style={{ top: '3%',  left: '38%',  fontSize: '44px' }}>∑</span>
@@ -110,7 +110,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
       </header>
 
       {/* Page content — remaining viewport height */}
-      <main className="relative z-10 min-h-[calc(100vh-48px)]">
+      <main className="min-h-[calc(100vh-48px)]">
         {children}
       </main>
     </div>

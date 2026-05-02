@@ -202,6 +202,13 @@ export default function CourseDetailPage() {
                 />
               </div>
               <div className="flex-1 overflow-y-auto bg-white">
+                <LessonContent
+                  lesson={activeLesson}
+                  isCompleted={completedLessonIds.has(activeLessonId ?? '')}
+                  submission={activeSubmission}
+                  userId={profile!.id}
+                  courseId={courseId!}
+                />
               </div>
             </div>
 
