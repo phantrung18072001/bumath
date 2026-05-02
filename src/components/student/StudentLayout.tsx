@@ -18,7 +18,28 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white relative overflow-hidden">
+      {/* Floating math symbols background */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <span className="bm-float-symbol-light" style={{ top: '4%',  left: '2%',   fontSize: '52px' }}>π</span>
+        <span className="bm-float-symbol-light" style={{ top: '8%',  left: '18%',  fontSize: '36px' }}>θ</span>
+        <span className="bm-float-symbol-light" style={{ top: '3%',  left: '38%',  fontSize: '44px' }}>∑</span>
+        <span className="bm-float-symbol-light" style={{ top: '6%',  right: '22%', fontSize: '40px' }}>∞</span>
+        <span className="bm-float-symbol-light" style={{ top: '4%',  right: '6%',  fontSize: '48px' }}>√</span>
+        <span className="bm-float-symbol-light" style={{ top: '25%', left: '1%',   fontSize: '60px' }}>∫</span>
+        <span className="bm-float-symbol-light" style={{ top: '30%', left: '14%',  fontSize: '38px' }}>Δ</span>
+        <span className="bm-float-symbol-light" style={{ top: '22%', left: '48%',  fontSize: '44px' }}>×</span>
+        <span className="bm-float-symbol-light" style={{ top: '28%', right: '16%', fontSize: '34px' }}>≠</span>
+        <span className="bm-float-symbol-light" style={{ top: '20%', right: '4%',  fontSize: '50px' }}>÷</span>
+        <span className="bm-float-symbol-light" style={{ top: '50%', left: '3%',   fontSize: '42px' }}>α</span>
+        <span className="bm-float-symbol-light" style={{ top: '55%', left: '20%',  fontSize: '56px' }}>±</span>
+        <span className="bm-float-symbol-light" style={{ top: '48%', left: '55%',  fontSize: '38px' }}>β</span>
+        <span className="bm-float-symbol-light" style={{ top: '52%', right: '10%', fontSize: '46px' }}>≤</span>
+        <span className="bm-float-symbol-light" style={{ top: '72%', left: '6%',   fontSize: '48px' }}>∂</span>
+        <span className="bm-float-symbol-light" style={{ top: '78%', left: '28%',  fontSize: '40px' }}>λ</span>
+        <span className="bm-float-symbol-light" style={{ top: '68%', right: '20%', fontSize: '54px' }}>μ</span>
+        <span className="bm-float-symbol-light" style={{ top: '82%', right: '5%',  fontSize: '44px' }}>∇</span>
+      </div>
       {/* Compact header — h-12 (48px), satisfies UX-02 */}
       <header className="h-12 bg-card border-b border-border flex items-center px-4 sticky top-0 z-10">
         <Link
@@ -89,7 +110,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
       </header>
 
       {/* Page content — remaining viewport height */}
-      <main className="min-h-[calc(100vh-48px)] bg-white">
+      <main className="relative z-10 min-h-[calc(100vh-48px)] bg-white/80 backdrop-blur-[1px]">
         {children}
       </main>
     </div>

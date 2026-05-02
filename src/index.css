@@ -58,6 +58,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .bm-float-symbol { animation: none !important; }
+  .bm-float-symbol-light { animation: none !important; }
 }
 
 .bm-float-symbol {
@@ -70,20 +71,49 @@
   animation: bm-float ease-in-out infinite;
 }
 
-.bm-float-symbol:nth-child(1) { animation-duration: 3.0s; }
-.bm-float-symbol:nth-child(2)  { animation-duration: 4.0s; }
-.bm-float-symbol:nth-child(3)  { animation-duration: 5.0s; }
-.bm-float-symbol:nth-child(4)  { animation-duration: 3.5s; }
-.bm-float-symbol:nth-child(5)  { animation-duration: 4.5s; }
-.bm-float-symbol:nth-child(6)  { animation-duration: 6.0s; }
-.bm-float-symbol:nth-child(7)  { animation-duration: 3.2s; }
-.bm-float-symbol:nth-child(8)  { animation-duration: 5.5s; }
-.bm-float-symbol:nth-child(9)  { animation-duration: 4.2s; }
-.bm-float-symbol:nth-child(10) { animation-duration: 3.8s; }
-.bm-float-symbol:nth-child(11) { animation-duration: 6.5s; }
-.bm-float-symbol:nth-child(12) { animation-duration: 5.2s; }
-.bm-float-symbol:nth-child(13) { animation-duration: 4.8s; }
-.bm-float-symbol:nth-child(14) { animation-duration: 3.6s; }
+/* === Math symbols for white/light backgrounds === */
+.bm-float-symbol-light {
+  position: absolute;
+  font-weight: 700;
+  color: #F97316;
+  opacity: 0.07;
+  pointer-events: none;
+  user-select: none;
+  animation: bm-float ease-in-out infinite;
+}
+
+.bm-float-symbol:nth-child(1),
+.bm-float-symbol-light:nth-child(1) { animation-duration: 3.0s; }
+.bm-float-symbol:nth-child(2),
+.bm-float-symbol-light:nth-child(2)  { animation-duration: 4.0s; }
+.bm-float-symbol:nth-child(3),
+.bm-float-symbol-light:nth-child(3)  { animation-duration: 5.0s; }
+.bm-float-symbol:nth-child(4),
+.bm-float-symbol-light:nth-child(4)  { animation-duration: 3.5s; }
+.bm-float-symbol:nth-child(5),
+.bm-float-symbol-light:nth-child(5)  { animation-duration: 4.5s; }
+.bm-float-symbol:nth-child(6),
+.bm-float-symbol-light:nth-child(6)  { animation-duration: 6.0s; }
+.bm-float-symbol:nth-child(7),
+.bm-float-symbol-light:nth-child(7)  { animation-duration: 3.2s; }
+.bm-float-symbol:nth-child(8),
+.bm-float-symbol-light:nth-child(8)  { animation-duration: 5.5s; }
+.bm-float-symbol:nth-child(9),
+.bm-float-symbol-light:nth-child(9)  { animation-duration: 4.2s; }
+.bm-float-symbol:nth-child(10),
+.bm-float-symbol-light:nth-child(10) { animation-duration: 3.8s; }
+.bm-float-symbol:nth-child(11),
+.bm-float-symbol-light:nth-child(11) { animation-duration: 6.5s; }
+.bm-float-symbol:nth-child(12),
+.bm-float-symbol-light:nth-child(12) { animation-duration: 5.2s; }
+.bm-float-symbol:nth-child(13),
+.bm-float-symbol-light:nth-child(13) { animation-duration: 4.8s; }
+.bm-float-symbol:nth-child(14),
+.bm-float-symbol-light:nth-child(14) { animation-duration: 3.6s; }
+.bm-float-symbol-light:nth-child(15) { animation-duration: 7.0s; }
+.bm-float-symbol-light:nth-child(16) { animation-duration: 5.8s; }
+.bm-float-symbol-light:nth-child(17) { animation-duration: 4.3s; }
+.bm-float-symbol-light:nth-child(18) { animation-duration: 6.2s; }
 
 /* === BuMath Chalkboard Background === */
 .bm-chalk-bg {
