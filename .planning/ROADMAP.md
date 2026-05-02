@@ -106,6 +106,17 @@ Plans:
 
 **UI hint**: yes
 
+### Phase 12.1: UI Fix — Error States, Typography, Touch Targets (INSERTED)
+
+**Goal:** Fix all UI violations flagged in Phase 12 UI Review (17/24 → target 22+/24): error states on 3 list pages, typography fixes (text-sm/font-normal), touch target upgrade, badge color, copywriting, and prefers-reduced-motion accessibility
+**Requirements**: DS-01, ADMIN-UI-03, ADMIN-UI-04, ADMIN-UI-05
+**Depends on:** Phase 12
+**Plans:** 2 plans
+
+Plans:
+- [ ] 12.1-01-PLAN.md — Wave 1: GradingPage touch target + accessibility, CoursesPage + UsersPage typography fixes
+- [ ] 12.1-02-PLAN.md — Wave 2: Error states (3 pages), badge color, copywriting, prefers-reduced-motion CSS
+
 ### Phase 13: Student Pages
 **Goal**: Student-facing pages (courses, lesson view, catalogue) have polished layouts with filters and intuitive navigation
 **Depends on**: Phase 12
