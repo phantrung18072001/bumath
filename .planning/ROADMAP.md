@@ -111,7 +111,7 @@ Plans:
 **Goal:** Fix all UI violations flagged in Phase 12 UI Review (17/24 → target 22+/24): error states on 3 list pages, typography fixes (text-sm/font-normal), touch target upgrade, badge color, copywriting, and prefers-reduced-motion accessibility
 **Requirements**: DS-01, ADMIN-UI-03, ADMIN-UI-04, ADMIN-UI-05
 **Depends on:** Phase 12
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
 - [ ] 12.1-01-PLAN.md — Wave 1: GradingPage touch target + accessibility, CoursesPage + UsersPage typography fixes
