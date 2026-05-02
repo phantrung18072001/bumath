@@ -185,10 +185,10 @@ export default function CataloguePage() {
                 to={`/khoa-hoc/${course.slug}`}
                 className="block"
               >
-                <Card className="bm-clay-card-student border-0 shadow-none p-0 h-full overflow-hidden min-h-[200px]">
-                  <CardHeader className="p-5 pb-2">
-                    <div className="flex items-start justify-between gap-2">
-                      <CardTitle className="text-base font-bold leading-snug text-[#92400E]">
+                <Card className="bm-clay-card-student border-0 shadow-none p-0 h-full overflow-hidden flex flex-col">
+                  <CardHeader className="p-5 pb-3">
+                    <div className="flex items-start gap-2">
+                      <CardTitle className="text-base font-bold leading-snug text-[#92400E] flex-1">
                         {course.title}
                       </CardTitle>
                       <div className="flex flex-col gap-1 items-end shrink-0">
@@ -209,9 +209,9 @@ export default function CataloguePage() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-5 pt-2">
+                  <CardContent className="p-5 pt-0 flex-1">
                     {course.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-3">
+                      <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
                         {course.description}
                       </p>
                     )}

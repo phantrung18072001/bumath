@@ -118,31 +118,35 @@ export default function CoursesPage() {
                   to={`/khoa-hoc/${course.slug}`}
                   className="block"
                 >
-                  <Card className="bm-clay-card-student border-0 shadow-none p-0 overflow-hidden h-full min-h-[200px]">
-                    <CardHeader className="p-5 pb-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <CardTitle className="text-base font-bold leading-snug text-[#92400E]">
+                  <Card className="bm-clay-card-student border-0 shadow-none p-0 overflow-hidden h-full flex flex-col">
+                    <CardHeader className="p-5 pb-3">
+                      <div className="flex items-start gap-2">
+                        <CardTitle className="text-base font-bold leading-snug text-[#92400E] flex-1">
                           {course.title}
                         </CardTitle>
-                        <Badge className={gradeBadge.className}>
+                        <Badge className={`${gradeBadge.className} shrink-0`}>
                           {gradeBadge.label}
                         </Badge>
                       </div>
                     </CardHeader>
-                    <CardContent className="p-5 pt-2">
-                      {course.description && (
-                        <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
+                    <CardContent className="p-5 pt-0 flex flex-col flex-1 justify-between gap-3">
+                      {course.description ? (
+                        <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
                           {course.description}
                         </p>
+                      ) : (
+                        <div />
                       )}
-                      <Progress
-                        value={progress}
-                        className="h-2 bg-[#FFEDD5] bm-progress-teal"
-                        aria-label={`Tiến độ hoàn thành: ${progress}%`}
-                      />
-                      <span className="text-xs text-muted-foreground mt-1 block">
-                        {progress}% hoàn thành
-                      </span>
+                      <div>
+                        <Progress
+                          value={progress}
+                          className="h-1.5 bg-[#FFEDD5] bm-progress-teal"
+                          aria-label={`Tiến độ hoàn thành: ${progress}%`}
+                        />
+                        <span className="text-xs text-muted-foreground mt-1.5 block">
+                          {progress}% hoàn thành
+                        </span>
+                      </div>
                     </CardContent>
                   </Card>
                 </Link>
