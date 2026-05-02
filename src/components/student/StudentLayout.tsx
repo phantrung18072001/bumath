@@ -18,7 +18,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#F3F0ED]">
       {/* Compact header — h-12 (48px), satisfies UX-02 */}
       <header className="h-12 bg-card border-b border-border flex items-center px-4 sticky top-0 z-10">
         <Link
@@ -89,7 +89,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
       </header>
 
       {/* Page content — remaining viewport height */}
-      <main className="min-h-[calc(100vh-48px)] bg-[#F0FDFA]">
+      <main className="min-h-[calc(100vh-48px)] bg-[#F3F0ED]">
         {children}
       </main>
     </div>

@@ -15,14 +15,14 @@
   transition: box-shadow 200ms ease, transform 200ms ease;
 }
 
-/* === BuMath Student Claymorphism Card (Teal) === */
+/* === BuMath Student Card (Orange accent) === */
 .bm-clay-card-student {
   background: #FFFFFF;
-  border: 3px solid #0D9488;
-  border-radius: 24px;
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  border-radius: 16px;
   box-shadow:
-    0 8px 0 #0D9488,
-    0 2px 0 rgba(255, 255, 255, 0.8) inset;
+    0 2px 8px rgba(249, 115, 22, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.06);
   transition: box-shadow 200ms ease, transform 200ms ease;
   cursor: pointer;
 }
@@ -30,8 +30,8 @@
 .bm-clay-card-student:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 10px 0 #0D9488,
-    0 2px 0 rgba(255, 255, 255, 0.8) inset;
+    0 6px 16px rgba(249, 115, 22, 0.15),
+    0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -43,10 +43,10 @@
   }
 }
 
-/* === BuMath Teal Progress Bar Override === */
+/* === BuMath Orange Progress Bar Override === */
 .bm-progress-teal [data-slot="progress-indicator"],
 .bm-progress-teal > div {
-  background-color: #0D9488 !important;
+  background-color: #F97316 !important;
 }
 
 /* === BuMath Float Animation (math symbols) === */
@@ -116,7 +116,7 @@
 
 @layer base {
   :root {
-    --background: 30 50% 98%;
+    --background: 30 20% 94%;
     --foreground: 20 30% 12%;
 
     --card: 0 0% 100%;
