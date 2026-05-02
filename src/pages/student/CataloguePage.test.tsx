@@ -11,16 +11,28 @@ const mockEnrollments = [
   { id: 'e1', user_id: 'user-1', course_id: 'c1', enrolled_at: '2026-01-01' },
 ]
 
-// Mocks
+// Mock IntersectionObserver (not available in jsdom)
+const mockIntersectionObserver = vi.fn(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}))
+Object.defineProperty(window, 'IntersectionObserver', {
+  writable: true,
+  configurable: true,
+  value: mockIntersectionObserver,
+})
+
 vi.mock('@/contexts/AuthContext', () => ({
   useAuth: vi.fn().mockReturnValue({
+    user: { id: 'user-1' },
     profile: { id: 'user-1', role: 'student' },
     loading: false,
   }),
 }))
 
 vi.mock('@/lib/api/courses', () => ({
-  fetchAllCourses: vi.fn().mockResolvedValue([]),
+  fetchCoursesPaginated: vi.fn().mockResolvedValue({ data: [], total: 0 }),
 }))
 
 vi.mock('@/lib/api/enrollments', () => ({
@@ -65,8 +77,8 @@ describe('CataloguePage', () => {
   })
 
   it('shows course cards with titles when courses exist', async () => {
-    const { fetchAllCourses } = await import('@/lib/api/courses')
-    ;(fetchAllCourses as ReturnType<typeof vi.fn>).mockResolvedValue(mockCourses)
+    const { fetchCoursesPaginated } = await import('@/lib/api/courses')
+    ;(fetchCoursesPaginated as ReturnType<typeof vi.fn>).mockResolvedValue({ data: mockCourses, total: 2 })
 
     await renderCataloguePage()
     await waitFor(() => {
@@ -76,9 +88,9 @@ describe('CataloguePage', () => {
   })
 
   it('shows "Đã đăng ký" badge for enrolled courses', async () => {
-    const { fetchAllCourses } = await import('@/lib/api/courses')
+    const { fetchCoursesPaginated } = await import('@/lib/api/courses')
     const { getUserEnrollments } = await import('@/lib/api/enrollments')
-    ;(fetchAllCourses as ReturnType<typeof vi.fn>).mockResolvedValue(mockCourses)
+    ;(fetchCoursesPaginated as ReturnType<typeof vi.fn>).mockResolvedValue({ data: mockCourses, total: 2 })
     ;(getUserEnrollments as ReturnType<typeof vi.fn>).mockResolvedValue(mockEnrollments)
 
     await renderCataloguePage()
@@ -88,9 +100,9 @@ describe('CataloguePage', () => {
   })
 
   it('shows "Chưa đăng ký" badge for non-enrolled courses', async () => {
-    const { fetchAllCourses } = await import('@/lib/api/courses')
+    const { fetchCoursesPaginated } = await import('@/lib/api/courses')
     const { getUserEnrollments } = await import('@/lib/api/enrollments')
-    ;(fetchAllCourses as ReturnType<typeof vi.fn>).mockResolvedValue(mockCourses)
+    ;(fetchCoursesPaginated as ReturnType<typeof vi.fn>).mockResolvedValue({ data: mockCourses, total: 2 })
     ;(getUserEnrollments as ReturnType<typeof vi.fn>).mockResolvedValue(mockEnrollments)
 
     await renderCataloguePage()
@@ -100,12 +112,26 @@ describe('CataloguePage', () => {
   })
 
   it('shows empty state when no courses exist', async () => {
-    const { fetchAllCourses } = await import('@/lib/api/courses')
-    ;(fetchAllCourses as ReturnType<typeof vi.fn>).mockResolvedValue([])
+    const { fetchCoursesPaginated } = await import('@/lib/api/courses')
+    ;(fetchCoursesPaginated as ReturnType<typeof vi.fn>).mockResolvedValue({ data: [], total: 0 })
 
     await renderCataloguePage()
     await waitFor(() => {
       expect(screen.getByText('Chưa có khóa học nào')).toBeInTheDocument()
     })
   })
+
+  // Phase 13: Search filtering (STUDENT-UI-03)
+  it.todo('filters courses by search query (case-insensitive)')
+  it.todo('shows all courses when search is cleared')
+
+  // Phase 13: Claymorphism card styling (DS-01)
+  it.todo('course cards have bm-clay-card-student class')
+
+  // Phase 13: Empty state when filtered (STUDENT-UI-04)
+  it.todo('shows "Không tìm thấy kết quả" when search returns no results')
+  it.todo('shows Search icon in filtered empty state')
+
+  // Phase 13: Skeleton loading (DS-02)
+  it.todo('renders Skeleton components during loading')
 })
