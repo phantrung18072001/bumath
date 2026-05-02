@@ -6,7 +6,7 @@ import { Menu, X, Phone, CreditCard, HelpCircle, LogOut, LayoutDashboard, BookOp
 
 const staticNavItems = [
   { label: "Giới thiệu", to: "/gioi-thieu" },
-  { label: "Danh mục", to: "/catalogue" },
+  { label: "Danh mục", to: "/danh-muc" },
   { label: "Đề thi", to: "/de-thi" },
   { label: "Tài liệu", to: "/tai-lieu" },
   { label: "Tản mạn Toán & Cuộc sống", to: "/tan-man" },
@@ -68,7 +68,7 @@ const Header = () => {
                 </Link>
               )}
               {profile?.role === 'admin' && (
-                <Link to="/admin/users">
+                <Link to="/quan-tri/nguoi-dung">
                   <Button variant="outline" size="sm" className="h-7 text-sm gap-1">
                     <LayoutDashboard className="h-3.5 w-3.5" />
                     Trang quản lý
@@ -171,7 +171,7 @@ const Header = () => {
                 </Link>
               )}
               {profile?.role === 'admin' && (
-                <Link to="/admin/users" onClick={() => setMobileOpen(false)}>
+                <Link to="/quan-tri/nguoi-dung" onClick={() => setMobileOpen(false)}>
                   <Button variant="outline" className="w-full min-h-[48px] gap-1 mb-1" size="sm">
                     <LayoutDashboard className="h-4 w-4" />
                     Trang quản lý
