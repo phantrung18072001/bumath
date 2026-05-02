@@ -199,8 +199,8 @@ export default function GradingPage() {
           )}
         </div>
 
-        {/* Right: Grading form — sticky sidebar */}
-        <div className="w-full lg:w-80 shrink-0 lg:sticky lg:top-8 space-y-5">
+        {/* Right: Grading form — sticky sidebar (desktop only) */}
+        <div className="hidden lg:block w-80 shrink-0 lg:sticky lg:top-8 space-y-5">
           {/* Score */}
           <div>
             <label className="block text-sm font-semibold mb-1.5 leading-relaxed" htmlFor="grade-score">
@@ -315,6 +315,60 @@ export default function GradingPage() {
           )}
         </div>
       </div>
+
+      {/* Mobile: sticky bottom bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-30 bg-background border-t p-4 lg:hidden space-y-3">
+        <div className="flex items-center gap-2">
+          <Input
+            type="number"
+            min={0}
+            max={10}
+            step={0.5}
+            className="w-24"
+            value={score}
+            onChange={(e) => setScore(e.target.value)}
+            placeholder="0–10"
+            aria-label="Điểm số (mobile)"
+          />
+          <span className="text-sm text-muted-foreground">/10</span>
+        </div>
+        {!pendingConfirm ? (
+          <Button
+            className="w-full min-h-[48px]"
+            onClick={handleSave}
+            disabled={score === '' || uploadingImages}
+          >
+            Lưu điểm
+          </Button>
+        ) : (
+          <div className="space-y-2">
+            <p className="text-sm font-semibold leading-relaxed">
+              Bạn chắc chắn muốn lưu điểm {score}/10?
+            </p>
+            <div className="flex gap-2">
+              <Button
+                className="flex-1 min-h-[48px]"
+                onClick={handleConfirm}
+                disabled={saving}
+              >
+                {saving && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+                Xác nhận
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1 min-h-[48px]"
+                onClick={handleCancel}
+                disabled={saving}
+              >
+                Hủy
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Spacer to prevent content from being hidden behind mobile sticky bar */}
+      <div className="h-32 lg:hidden" />
     </div>
   )
 }
