@@ -17,6 +17,7 @@ const authNavItems = [
   { label: "Khám phá", to: "/danh-muc" },
   { label: "Đề thi", to: "/de-thi" },
   { label: "Tài liệu", to: "/tai-lieu" },
+  { label: "Tản mạn Toán & Cuộc sống", to: "/tan-man" },
 ];
 
 const Header = () => {
