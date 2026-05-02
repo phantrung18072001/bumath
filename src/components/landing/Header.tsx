@@ -12,12 +12,19 @@ const staticNavItems = [
   { label: "Tản mạn Toán & Cuộc sống", to: "/tan-man" },
 ];
 
+const authNavItems = [
+  { label: "Vào học", to: "/khoa-hoc" },
+  { label: "Khám phá", to: "/danh-muc" },
+  { label: "Đề thi", to: "/de-thi" },
+  { label: "Tài liệu", to: "/tai-lieu" },
+];
+
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, profile, loading, signOut } = useAuth();
   const isAuthenticated = !loading && !!user;
 
-  const navItems = staticNavItems;
+  const navItems = isAuthenticated ? authNavItems : staticNavItems;
 
   return (
     <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
