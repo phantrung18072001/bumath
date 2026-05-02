@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { BookOpen } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { getUserEnrollments } from '@/lib/api/enrollments'
 import { fetchChapters } from '@/lib/api/chapters'
@@ -11,7 +12,7 @@ import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 
 export default function CoursesPage() {
   const { profile } = useAuth()
@@ -67,38 +68,37 @@ export default function CoursesPage() {
   return (
     <StudentLayout>
       <div className="p-6 md:p-8">
-        <h1 className="text-2xl font-semibold mb-6">Khóa học của tôi</h1>
+        <h1 className="text-2xl font-bold mb-6 text-[#134E4A]">Khóa học của tôi</h1>
 
         {/* Error state */}
         {enrollmentsError && (
-          <Alert variant="destructive">
-            <AlertDescription>
-              Không thể tải khóa học. Vui lòng làm mới trang.
-            </AlertDescription>
-          </Alert>
+          <p className="text-destructive text-center py-8">
+            Không thể tải dữ liệu. Vui lòng thử lại.
+          </p>
         )}
 
         {/* Loading state — 4 skeleton cards */}
         {isLoading && (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-40 rounded-xl" />
+              <Skeleton key={i} className="h-36 rounded-3xl" />
             ))}
           </div>
         )}
 
         {/* Empty state */}
         {!isLoading && !enrollmentsError && enrollments?.length === 0 && (
-          <div className="flex justify-center">
-            <Card className="max-w-md w-full p-6 text-center">
-              <h2 className="text-xl font-semibold mb-2">Chưa có khóa học nào</h2>
-              <p className="text-muted-foreground">
-                Bạn chưa được gán vào khóa học nào. Vui lòng liên hệ giảng viên để được thêm vào khóa học.
-              </p>
-              <Link to="/danh-muc" className="text-primary underline mt-4 block">
-                Khám phá tất cả khóa học →
-              </Link>
-            </Card>
+          <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
+            <BookOpen className="h-16 w-16 text-[#0D9488]" aria-hidden="true" />
+            <h2 className="text-xl font-bold text-[#134E4A]">Bạn chưa có khóa học nào</h2>
+            <p className="text-base text-muted-foreground max-w-sm">
+              Liên hệ giảng viên để được thêm vào khóa học, hoặc khám phá danh mục.
+            </p>
+            <Link to="/danh-muc">
+              <Button className="bm-btn-cta min-h-[48px] px-6">
+                Khám phá khóa học
+              </Button>
+            </Link>
           </div>
         )}
 
@@ -115,13 +115,13 @@ export default function CoursesPage() {
               return (
                 <Link
                   key={enrollment.id}
-                  to={`/courses/${course.slug}`}
+                  to={`/khoa-hoc/${course.slug}`}
                   className="block"
                 >
-                  <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+                  <Card className="bm-clay-card-student border-0 shadow-none p-0 overflow-hidden h-full">
                     <CardHeader className="p-4 pb-2">
                       <div className="flex items-start justify-between gap-2">
-                        <CardTitle className="text-xl font-semibold leading-snug">
+                        <CardTitle className="text-xl font-bold leading-snug text-[#134E4A]">
                           {course.title}
                         </CardTitle>
                         <Badge className={gradeBadge.className}>
@@ -132,10 +132,10 @@ export default function CoursesPage() {
                     <CardContent className="p-4 pt-2">
                       <Progress
                         value={progress}
-                        className="h-2 mt-2 bg-muted"
+                        className="h-3 mt-2 bg-[#CCFBF1] bm-progress-teal"
                         aria-label={`Tiến độ hoàn thành: ${progress}%`}
                       />
-                      <span className="text-sm text-muted-foreground mt-1 block">
+                      <span className="text-sm text-muted-foreground mt-2 block">
                         {progress}% hoàn thành
                       </span>
                     </CardContent>
