@@ -85,10 +85,10 @@ export default function CataloguePage() {
   })
 
   const content = (
-    <div className="p-6 md:p-8 max-w-5xl mx-auto">
+    <div className="p-4 md:p-6">
       <div className="flex items-start justify-between gap-4 mb-2 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-[#134E4A]">Khám phá khóa học</h1>
+          <h1 className="text-2xl font-bold text-[#92400E]">Khám phá khóa học</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Tất cả các khóa học đang có tại BuMath
           </p>
@@ -111,7 +111,7 @@ export default function CataloguePage() {
           placeholder="Tìm kiếm khóa học..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9 min-h-[48px] rounded-xl border-[#0D9488] focus-visible:ring-[#0D9488]"
+          className="pl-9 min-h-[48px] rounded-xl border-[#F97316] focus-visible:ring-[#F97316]"
           aria-label="Tìm kiếm khóa học"
         />
       </div>
@@ -125,7 +125,7 @@ export default function CataloguePage() {
             className={[
               'rounded-full px-4 py-2 text-sm font-bold transition-colors duration-150 cursor-pointer min-h-[44px] border',
               activeGrade === f.value
-                ? 'bg-[#0D9488] text-white border-[#0D9488]'
+                ? 'bg-[#F97316] text-white border-[#F97316]'
                 : 'bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground',
             ].join(' ')}
           >
@@ -141,11 +141,11 @@ export default function CataloguePage() {
         </p>
       )}
 
-      {/* Loading state — 6 skeleton cards, 3-col on lg */}
+      {/* Loading state — 5-col on xl */}
       {coursesLoading && (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-36 rounded-3xl" />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <Skeleton key={i} className="h-36 rounded-2xl" />
           ))}
         </div>
       )}
@@ -153,8 +153,8 @@ export default function CataloguePage() {
       {/* Empty state — filtered zero results (D-18) */}
       {!coursesLoading && !coursesError && allCourses.length > 0 && filteredCourses.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-          <Search className="h-16 w-16 text-[#0D9488]" aria-hidden="true" />
-          <h2 className="text-xl font-bold text-[#134E4A]">Không tìm thấy kết quả</h2>
+          <Search className="h-16 w-16 text-[#F97316]" aria-hidden="true" />
+          <h2 className="text-xl font-bold text-[#92400E]">Không tìm thấy kết quả</h2>
           <p className="text-base text-muted-foreground max-w-sm">
             Thử thay đổi từ khóa hoặc chọn lớp khác.
           </p>
@@ -164,17 +164,17 @@ export default function CataloguePage() {
       {/* Empty state — no courses at all */}
       {!coursesLoading && !coursesError && allCourses.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-          <BookOpen className="h-16 w-16 text-[#0D9488]" aria-hidden="true" />
-          <h2 className="text-xl font-bold text-[#134E4A]">Chưa có khóa học nào</h2>
+          <BookOpen className="h-16 w-16 text-[#F97316]" aria-hidden="true" />
+          <h2 className="text-xl font-bold text-[#92400E]">Chưa có khóa học nào</h2>
           <p className="text-base text-muted-foreground max-w-sm">
             Hiện tại chưa có khóa học nào. Vui lòng quay lại sau.
           </p>
         </div>
       )}
 
-      {/* Course grid — 3 columns on lg, Claymorphism cards */}
+      {/* Course grid — 5 columns on xl */}
       {!coursesLoading && !coursesError && filteredCourses.length > 0 && (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {filteredCourses.map((course) => {
             const isEnrolled = isAuthenticated && enrolledCourseIds.has(course.id)
             const gradeBadge = GRADE_BADGE[course.target_grade]
@@ -186,22 +186,22 @@ export default function CataloguePage() {
                 className="block"
               >
                 <Card className="bm-clay-card-student border-0 shadow-none p-0 h-full overflow-hidden">
-                  <CardHeader className="p-4 pb-2">
-                    <div className="flex items-start justify-between gap-2">
-                      <CardTitle className="text-xl font-bold leading-snug text-[#134E4A]">
+                  <CardHeader className="p-3 pb-1">
+                    <div className="flex items-start justify-between gap-1">
+                      <CardTitle className="text-sm font-bold leading-snug text-[#92400E]">
                         {course.title}
                       </CardTitle>
                       <div className="flex flex-col gap-1 items-end shrink-0">
-                        <Badge className={gradeBadge.className}>
+                        <Badge className={`${gradeBadge.className} text-xs px-1.5 py-0`}>
                           {gradeBadge.label}
                         </Badge>
                         {isAuthenticated && (
                           isEnrolled ? (
-                            <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+                            <Badge className="bg-green-100 text-green-700 hover:bg-green-100 text-xs px-1.5 py-0">
                               Đã đăng ký
                             </Badge>
                           ) : (
-                            <Badge variant="outline" className="text-muted-foreground">
+                            <Badge variant="outline" className="text-muted-foreground text-xs px-1.5 py-0">
                               Chưa đăng ký
                             </Badge>
                           )
@@ -209,9 +209,9 @@ export default function CataloguePage() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-4 pt-2">
+                  <CardContent className="p-3 pt-1">
                     {course.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-2">
+                      <p className="text-xs text-muted-foreground line-clamp-2">
                         {course.description}
                       </p>
                     )}
@@ -244,7 +244,7 @@ export default function CataloguePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F0FDFA]">
+    <div className="min-h-screen bg-white">
       <Header />
       <main>{content}</main>
     </div>

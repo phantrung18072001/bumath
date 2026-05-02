@@ -67,8 +67,8 @@ export default function CoursesPage() {
 
   return (
     <StudentLayout>
-      <div className="p-6 md:p-8">
-        <h1 className="text-2xl font-bold mb-6 text-[#134E4A]">Khóa học của tôi</h1>
+      <div className="p-4 md:p-6">
+        <h1 className="text-2xl font-bold mb-4 text-[#92400E]">Khóa học của tôi</h1>
 
         {/* Error state */}
         {enrollmentsError && (
@@ -77,11 +77,11 @@ export default function CoursesPage() {
           </p>
         )}
 
-        {/* Loading state — 4 skeleton cards */}
+        {/* Loading state — skeleton cards */}
         {isLoading && (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-36 rounded-3xl" />
+              <Skeleton key={i} className="h-36 rounded-2xl" />
             ))}
           </div>
         )}
@@ -89,8 +89,8 @@ export default function CoursesPage() {
         {/* Empty state */}
         {!isLoading && !enrollmentsError && enrollments?.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-            <BookOpen className="h-16 w-16 text-[#0D9488]" aria-hidden="true" />
-            <h2 className="text-xl font-bold text-[#134E4A]">Bạn chưa có khóa học nào</h2>
+            <BookOpen className="h-16 w-16 text-[#F97316]" aria-hidden="true" />
+            <h2 className="text-xl font-bold text-[#92400E]">Bạn chưa có khóa học nào</h2>
             <p className="text-base text-muted-foreground max-w-sm">
               Liên hệ giảng viên để được thêm vào khóa học, hoặc khám phá danh mục.
             </p>
@@ -104,7 +104,7 @@ export default function CoursesPage() {
 
         {/* Course grid */}
         {!isLoading && !enrollmentsError && enrollments && enrollments.length > 0 && (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {enrollments.map((enrollment) => {
               const course = enrollment.course
               const courseId = enrollment.course_id
@@ -119,23 +119,28 @@ export default function CoursesPage() {
                   className="block"
                 >
                   <Card className="bm-clay-card-student border-0 shadow-none p-0 overflow-hidden h-full">
-                    <CardHeader className="p-4 pb-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <CardTitle className="text-xl font-bold leading-snug text-[#134E4A]">
+                    <CardHeader className="p-3 pb-1">
+                      <div className="flex items-start justify-between gap-1">
+                        <CardTitle className="text-sm font-bold leading-snug text-[#92400E]">
                           {course.title}
                         </CardTitle>
-                        <Badge className={gradeBadge.className}>
+                        <Badge className={`${gradeBadge.className} text-xs px-1.5 py-0`}>
                           {gradeBadge.label}
                         </Badge>
                       </div>
                     </CardHeader>
-                    <CardContent className="p-4 pt-2">
+                    <CardContent className="p-3 pt-1">
+                      {course.description && (
+                        <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+                          {course.description}
+                        </p>
+                      )}
                       <Progress
                         value={progress}
-                        className="h-3 mt-2 bg-[#CCFBF1] bm-progress-teal"
+                        className="h-2 bg-[#FFEDD5] bm-progress-teal"
                         aria-label={`Tiến độ hoàn thành: ${progress}%`}
                       />
-                      <span className="text-sm text-muted-foreground mt-2 block">
+                      <span className="text-xs text-muted-foreground mt-1 block">
                         {progress}% hoàn thành
                       </span>
                     </CardContent>
