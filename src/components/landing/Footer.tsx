@@ -23,9 +23,9 @@ const Footer = () => {
           <div>
             <h4 className="mb-3 font-bold">Khóa học</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              {[7, 8, 9].map((l) => (
-                <li key={l}>
-                  <Link to={`/class/lop-${l}`} className="transition-colors hover:text-primary">
+              {([['grade_7', 7], ['grade_8', 8], ['grade_9', 9]] as const).map(([grade, l]) => (
+                <li key={grade}>
+                  <Link to={`/danh-muc?lop=${grade}`} className="transition-colors hover:text-primary">
                     Toán lớp {l}
                   </Link>
                 </li>
@@ -37,9 +37,9 @@ const Footer = () => {
           <div>
             <h4 className="mb-3 font-bold">Chương trình</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/on-thi-chuyen" className="transition-colors hover:text-primary">Ôn thi chuyên</Link></li>
-              <li><Link to="#" className="transition-colors hover:text-primary">Học cơ bản</Link></li>
-              <li><Link to="#" className="transition-colors hover:text-primary">Học nâng cao</Link></li>
+              <li><Link to="/danh-muc?lop=advanced" className="transition-colors hover:text-primary">Ôn thi chuyên</Link></li>
+              <li><Link to="/danh-muc" className="transition-colors hover:text-primary">Học cơ bản</Link></li>
+              <li><Link to="/danh-muc?lop=advanced" className="transition-colors hover:text-primary">Học nâng cao</Link></li>
             </ul>
           </div>
 
