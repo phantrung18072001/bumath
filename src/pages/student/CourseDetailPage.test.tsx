@@ -149,4 +149,15 @@ describe('CourseDetailPage — Preview Mode', () => {
       expect(screen.queryByText('Bạn chưa đăng ký khóa học này.')).not.toBeInTheDocument()
     })
   })
+
+  // Phase 13: Sheet drawer mobile (STUDENT-UI-02)
+  it.todo('renders Sheet when mobile trigger button is clicked')
+  it.todo('trigger button shows text "Danh sách bài học"')
+  it.todo('Sheet opens from left side')
+
+  // Phase 13: Claymorphism styling (DS-01)
+  it.todo('preview mode card has bm-clay-card-student class')
+
+  // Phase 13: Breakpoint changes
+  it.todo('uses lg: breakpoint for desktop/mobile split (not md:)')
 })
