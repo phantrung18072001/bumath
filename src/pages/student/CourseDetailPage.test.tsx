@@ -10,6 +10,7 @@ const mockLessons = [{ id: 'l1', title: 'Bài 1', chapter_id: 'ch1', order_index
 // Mocks
 vi.mock('@/contexts/AuthContext', () => ({
   useAuth: vi.fn().mockReturnValue({
+    user: { id: 'user-1' },
     profile: { id: 'user-1', role: 'student' },
     loading: false,
     signOut: vi.fn(),

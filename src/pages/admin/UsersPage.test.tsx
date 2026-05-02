@@ -238,11 +238,11 @@ describe('UsersPage - Pagination', () => {
       expect(screen.getByText('User 1')).toBeInTheDocument()
     })
 
-    expect(screen.getByLabelText('Go to previous page')).toBeInTheDocument()
-    expect(screen.getByLabelText('Go to next page')).toBeInTheDocument()
+    expect(screen.getByLabelText('Trang trước')).toBeInTheDocument()
+    expect(screen.getByLabelText('Trang sau')).toBeInTheDocument()
 
-    expect(screen.getByText('User 25')).toBeInTheDocument()
-    expect(screen.queryByText('User 26')).not.toBeInTheDocument()
+    expect(screen.getByText('User 20')).toBeInTheDocument()
+    expect(screen.queryByText('User 21')).not.toBeInTheDocument()
   })
 
   it('hides pagination when 25 or fewer users', async () => {
@@ -251,7 +251,7 @@ describe('UsersPage - Pagination', () => {
       expect(screen.getByText('Nguyen Van A')).toBeInTheDocument()
     })
 
-    expect(screen.queryByLabelText('Go to previous page')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Trang trước')).not.toBeInTheDocument()
   })
 })
 

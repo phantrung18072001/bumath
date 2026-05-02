@@ -110,7 +110,7 @@ function UsersTable({
 export default function UsersPage() {
   const [enrollmentUser, setEnrollmentUser] = useState<Profile | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const [roleFilter, setRoleFilter] = useState<'all' | Profile['role']>('student')
+  const [roleFilter, setRoleFilter] = useState<'all' | Profile['role']>('all')
   const [currentPage, setCurrentPage] = useState(1)
 
   const PAGE_SIZE = 20

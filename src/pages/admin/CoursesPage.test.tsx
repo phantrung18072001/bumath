@@ -214,8 +214,8 @@ describe('CoursesPage - Pagination', () => {
       expect(screen.getByText('Khóa học 1')).toBeInTheDocument()
     })
 
-    expect(screen.getByLabelText('Go to previous page')).toBeInTheDocument()
-    expect(screen.getByLabelText('Go to next page')).toBeInTheDocument()
+    expect(screen.getByLabelText('Trang trước')).toBeInTheDocument()
+    expect(screen.getByLabelText('Trang sau')).toBeInTheDocument()
 
     expect(screen.getByText('Khóa học 20')).toBeInTheDocument()
     expect(screen.queryByText('Khóa học 21')).not.toBeInTheDocument()
@@ -227,7 +227,7 @@ describe('CoursesPage - Pagination', () => {
       expect(screen.getByText('Toán lớp 7 nâng cao')).toBeInTheDocument()
     })
 
-    expect(screen.queryByLabelText('Go to previous page')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Trang trước')).not.toBeInTheDocument()
   })
 })
 
