@@ -45,7 +45,7 @@ const Header = () => {
         </Link>
 
         {/* Row 1: SĐT / Hướng dẫn / Đăng nhập / Đăng ký / Thanh toán */}
-        <div className="flex h-14 items-center justify-end gap-4 border-b border-border/50 pl-6">
+        <div className="flex h-14 items-center justify-end gap-3 border-b border-border/50 pl-6">
           <a
             href="tel:0123456789"
             className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
@@ -61,7 +61,7 @@ const Header = () => {
             Hướng dẫn
           </Link>
           {loading ? (
-            <div className="h-7 w-24 rounded bg-muted animate-pulse" />
+            <div className="h-9 w-24 rounded bg-muted animate-pulse" />
           ) : isAuthenticated ? (
             <>
               <span className="text-sm font-medium text-foreground">
@@ -69,7 +69,7 @@ const Header = () => {
               </span>
               {profile?.role === 'student' && (
                 <Link to="/khoa-hoc">
-                  <Button variant="ghost" size="sm" className="h-7 text-sm gap-1">
+                  <Button variant="ghost" className="h-9 px-4 text-sm gap-1.5">
                     <BookOpen className="h-3.5 w-3.5" />
                     Vào học
                   </Button>
@@ -77,7 +77,7 @@ const Header = () => {
               )}
               {profile?.role === 'admin' && (
                 <Link to="/quan-tri/nguoi-dung">
-                  <Button variant="outline" size="sm" className="h-7 text-sm gap-1">
+                  <Button variant="outline" className="h-9 px-4 text-sm gap-1.5">
                     <LayoutDashboard className="h-3.5 w-3.5" />
                     Trang quản lý
                   </Button>
@@ -85,8 +85,7 @@ const Header = () => {
               )}
               <Button
                 variant="ghost"
-                size="sm"
-                className="h-7 text-sm gap-1"
+                className="h-9 px-4 text-sm gap-1.5"
                 onClick={() => signOut()}
               >
                 <LogOut className="h-3.5 w-3.5" />
@@ -96,19 +95,19 @@ const Header = () => {
           ) : (
             <>
               <Link to="/dang-nhap">
-                <Button variant="ghost" size="sm" className="h-7 text-sm">
+                <Button variant="ghost" className="h-9 px-4 text-sm">
                   Đăng nhập
                 </Button>
               </Link>
               <Link to="/dang-ky">
-                <Button size="sm" className="h-7 text-sm">
+                <Button className="h-9 px-4 text-sm">
                   Đăng ký
                 </Button>
               </Link>
             </>
           )}
           <Link to="/thanh-toan">
-            <Button variant="outline" size="sm" className="h-7 text-sm gap-1">
+            <Button variant="outline" className="h-9 px-4 text-sm gap-1.5">
               <CreditCard className="h-3.5 w-3.5" />
               Thanh toán
             </Button>
