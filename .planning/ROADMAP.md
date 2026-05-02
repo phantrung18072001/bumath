@@ -118,13 +118,20 @@ Plans:
 - [ ] 12.1-02-PLAN.md — Wave 2: Error states (3 pages), badge color, copywriting, prefers-reduced-motion CSS
 
 ### Phase 13: Student Pages
-**Goal**: Student-facing pages (courses, lesson view, catalogue) have polished layouts with filters and intuitive navigation
+**Goal**: Student-facing pages (courses, lesson view, catalogue) have polished Claymorphism layouts with search, infinite scroll, Sheet drawer, and intuitive navigation
 **Depends on**: Phase 12
 **Requirements**: STUDENT-UI-01, STUDENT-UI-02, STUDENT-UI-03, STUDENT-UI-04, DS-01, DS-02
 **Success Criteria** (what must be TRUE):
-  1. Courses page: card grid with progress bars prominent, empty state with link to catalogue
-  2. Course detail: sidebar collapses on mobile, video embed is primary content area
-  3. Catalogue: filter by grade, search by name, clear enrolled/unenrolled badge, scroll or pagination
-  4. All pages have empty states with clear messaging and CTAs
-**Plans**: TBD
+  1. Courses page: Claymorphism card grid with teal progress bars, polished empty state with CTA to catalogue
+  2. Course detail: Sheet drawer on mobile (< lg), video embed is primary content area, teal styling
+  3. Catalogue: search bar + grade filter, infinite scroll, Claymorphism cards, 3-col grid on lg
+  4. All pages have empty states with Lucide icons, correct messaging and CTAs
+**Plans**: 4 plans
+
+Plans:
+- [ ] 13-00-PLAN.md — Wave 0: CSS foundation (.bm-clay-card-student, .bm-progress-teal, fonts) + test scaffold
+- [ ] 13-01-PLAN.md — CoursesPage: Claymorphism cards, teal progress bars, empty state, URL bug fix
+- [ ] 13-02-PLAN.md — CataloguePage: search bar, infinite scroll, Claymorphism cards, empty states
+- [ ] 13-03-PLAN.md — CourseDetailPage: Sheet drawer mobile layout, lg breakpoint, Claymorphism preview card
+
 **UI hint**: yes
