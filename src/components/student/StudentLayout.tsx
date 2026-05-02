@@ -40,8 +40,8 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
         <span className="bm-float-symbol-light" style={{ top: '68%', right: '20%', fontSize: '54px' }}>μ</span>
         <span className="bm-float-symbol-light" style={{ top: '82%', right: '5%',  fontSize: '44px' }}>∇</span>
       </div>
-      {/* Compact header — h-12 (48px), satisfies UX-02 */}
-      <header className="h-12 bg-card border-b border-border flex items-center px-4 sticky top-0 z-10">
+      {/* Header — h-14 (56px) */}
+      <header className="h-14 bg-card border-b border-border flex items-center px-4 sticky top-0 z-10">
         <Link
           to="/"
           className="flex items-center gap-2"
@@ -110,7 +110,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
       </header>
 
       {/* Page content — remaining viewport height */}
-      <main className="min-h-[calc(100vh-48px)]">
+      <main className="min-h-[calc(100vh-56px)]">
         {children}
       </main>
     </div>
