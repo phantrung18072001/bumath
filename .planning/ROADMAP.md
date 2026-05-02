@@ -98,7 +98,7 @@ Plans:
 
 Plans:
 - [x] 12-00a-PLAN.md — Wave 0: Install dnd-kit, add batch reorder APIs + getAllSubmissions
-- [ ] 12-00b-PLAN.md — Wave 0: Create test scaffolds for ChaptersPage, LessonsPage, SubmissionsPage
+- [x] 12-00b-PLAN.md — Wave 0: Create test scaffolds for ChaptersPage, LessonsPage, SubmissionsPage
 - [ ] 12-01-PLAN.md — ChaptersPage + LessonsPage: dnd-kit drag-and-drop reordering
 - [ ] 12-02-PLAN.md — SubmissionsPage: server-side pagination + status filter
 - [ ] 12-03-PLAN.md — GradingPage: mobile sticky bottom bar
