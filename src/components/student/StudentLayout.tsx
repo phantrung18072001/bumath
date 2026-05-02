@@ -40,25 +40,25 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
         <span className="bm-float-symbol-light" style={{ top: '68%', right: '20%', fontSize: '54px' }}>μ</span>
         <span className="bm-float-symbol-light" style={{ top: '82%', right: '5%',  fontSize: '44px' }}>∇</span>
       </div>
-      {/* Header — h-14 (56px) */}
-      <header className="h-20 bg-card border-b border-border flex items-center px-4 sticky top-0 z-10">
+      {/* Header — h-20 (80px) */}
+      <header className="h-20 bg-card border-b border-border flex items-center px-6 sticky top-0 z-10">
         <Link
           to="/"
-          className="flex items-center gap-2"
+          className="flex items-center gap-3"
           aria-label="Trang chủ BuMath"
         >
           <img
             src={`${import.meta.env.BASE_URL}bumath.jpeg`}
             alt="BuMath"
-            className="h-8 w-8 rounded-lg object-cover"
+            className="h-11 w-11 rounded-xl object-cover"
           />
-          <span className="font-semibold text-primary text-base">BuMath</span>
+          <span className="font-bold text-primary text-lg">BuMath</span>
         </Link>
-        <nav className="ml-4 hidden sm:flex items-center gap-1">
+        <nav className="ml-6 hidden sm:flex items-center gap-1">
           <NavLink
             to="/khoa-hoc"
             className={({ isActive }) =>
-              `text-sm font-semibold px-3 py-2 rounded-lg transition-colors ${
+              `text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors ${
                 isActive ? 'text-primary' : 'text-foreground hover:bg-muted'
               }`
             }
@@ -68,7 +68,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
           <NavLink
             to="/danh-muc"
             className={({ isActive }) =>
-              `text-sm font-semibold px-3 py-2 rounded-lg transition-colors ${
+              `text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors ${
                 isActive ? 'text-primary' : 'text-foreground hover:bg-muted'
               }`
             }
@@ -79,7 +79,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
             <NavLink
               to="/quan-tri/nguoi-dung"
               className={({ isActive }) =>
-                `text-sm font-semibold px-3 py-2 rounded-lg transition-colors flex items-center gap-1 ${
+                `text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors flex items-center gap-1 ${
                   isActive ? 'text-primary' : 'text-foreground hover:bg-muted'
                 }`
               }
@@ -89,7 +89,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
             </NavLink>
           )}
         </nav>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-3">
           {profile?.full_name && (
             <span className="text-sm text-muted-foreground hidden sm:inline">
               {profile.full_name}
@@ -98,9 +98,8 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
           <BellNotification />
           <Button
             variant="ghost"
-            size="sm"
             onClick={handleLogout}
-            className="min-h-[48px] min-w-[48px] flex items-center gap-1 px-2"
+            className="flex items-center gap-1.5 px-4 py-2.5 h-auto"
             aria-label="Đăng xuất"
           >
             <LogOut className="h-4 w-4" />
