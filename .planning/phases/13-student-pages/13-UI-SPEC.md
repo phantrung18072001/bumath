@@ -1,7 +1,8 @@
 ---
 phase: 13
 slug: student-pages
-status: draft
+status: approved
+reviewed_at: "2026-05-02"
 shadcn_initialized: true
 preset: "default / slate / css-variables"
 created: 2026-05-02
