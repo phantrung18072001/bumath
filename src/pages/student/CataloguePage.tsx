@@ -185,7 +185,7 @@ export default function CataloguePage() {
                 to={`/khoa-hoc/${course.slug}`}
                 className="block"
               >
-                <Card className="bm-clay-card-student border-0 shadow-none p-0 h-full min-h-[220px] overflow-hidden flex flex-col">
+                <Card className="bm-clay-card-student border-0 shadow-none p-0 h-full min-h-[210px] overflow-hidden flex flex-col">
                   <CardHeader className="p-5 pb-3">
                     <CardTitle className="text-base font-bold leading-snug text-[#92400E] mb-2">
                       {course.title}
