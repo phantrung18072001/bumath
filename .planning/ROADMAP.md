@@ -93,7 +93,14 @@ Plans:
   1. Grading queue: paginated (20/page), existing filters retained, added status filter (graded/ungraded)
   2. Grading detail: 2-column layout (submission photo left, grade form right), works on mobile
   3. Course detail: chapter/lesson list with drag-to-reorder or clear order management UX
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 12-00-PLAN.md — Wave 0: Install dnd-kit, add batch reorder APIs, create test scaffolds
+- [ ] 12-01-PLAN.md — ChaptersPage + LessonsPage: dnd-kit drag-and-drop reordering
+- [ ] 12-02-PLAN.md — SubmissionsPage: server-side pagination + status filter
+- [ ] 12-03-PLAN.md — GradingPage: mobile sticky bottom bar
+
 **UI hint**: yes
 
 ### Phase 13: Student Pages
