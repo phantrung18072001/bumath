@@ -89,7 +89,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
       </header>
 
       {/* Page content — remaining viewport height */}
-      <main className="min-h-[calc(100vh-48px)] bg-background">
+      <main className="min-h-[calc(100vh-48px)] bg-[#F0FDFA]">
         {children}
       </main>
     </div>
