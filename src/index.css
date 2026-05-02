@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&family=Comic+Neue:wght@400;700&family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,6 +13,40 @@
     0 12px 24px rgba(249, 115, 22, 0.10);
   padding: 32px;
   transition: box-shadow 200ms ease, transform 200ms ease;
+}
+
+/* === BuMath Student Claymorphism Card (Teal) === */
+.bm-clay-card-student {
+  background: #FFFFFF;
+  border: 3px solid #0D9488;
+  border-radius: 24px;
+  box-shadow:
+    0 8px 0 #0D9488,
+    0 2px 0 rgba(255, 255, 255, 0.8) inset;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+  cursor: pointer;
+}
+
+.bm-clay-card-student:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 0 #0D9488,
+    0 2px 0 rgba(255, 255, 255, 0.8) inset;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bm-clay-card-student {
+    transition: none;
+  }
+  .bm-clay-card-student:hover {
+    transform: none;
+  }
+}
+
+/* === BuMath Teal Progress Bar Override === */
+.bm-progress-teal [data-slot="progress-indicator"],
+.bm-progress-teal > div {
+  background-color: #0D9488 !important;
 }
 
 /* === BuMath Float Animation (math symbols) === */
