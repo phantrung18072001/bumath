@@ -129,7 +129,7 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 13-00-PLAN.md — Wave 0: CSS foundation (.bm-clay-card-student, .bm-progress-teal, fonts) + test scaffold
+- [x] 13-00-PLAN.md — Wave 0: CSS foundation (.bm-clay-card-student, .bm-progress-teal, fonts) + test scaffold
 - [ ] 13-01-PLAN.md — CoursesPage: Claymorphism cards, teal progress bars, empty state, URL bug fix
 - [ ] 13-02-PLAN.md — CataloguePage: search bar, infinite scroll, Claymorphism cards, empty states
 - [ ] 13-03-PLAN.md — CourseDetailPage: Sheet drawer mobile layout, lg breakpoint, Claymorphism preview card

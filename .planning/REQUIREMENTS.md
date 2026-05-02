@@ -37,8 +37,8 @@
 
 ### Design System
 
-- [ ] **DS-01**: Hệ thống màu, spacing, typography đồng nhất trên tất cả trang (không phải landing)
-- [ ] **DS-02**: Loading skeleton thay thế spinner trên các trang fetch data
+- [x] **DS-01**: Hệ thống màu, spacing, typography đồng nhất trên tất cả trang (không phải landing)
+- [x] **DS-02**: Loading skeleton thay thế spinner trên các trang fetch data
 
 ## Traceability
 
@@ -59,8 +59,8 @@
 | STUDENT-UI-02 | Phase 13 — Student Pages | Pending |
 | STUDENT-UI-03 | Phase 13 — Student Pages | Pending |
 | STUDENT-UI-04 | Phase 13 — Student Pages | Pending |
-| DS-01 | Phase 10–13 (cross-cutting) | Pending |
-| DS-02 | Phase 10–13 (cross-cutting) | Pending |
+| DS-01 | Phase 10–13 (cross-cutting) | Complete |
+| DS-02 | Phase 10–13 (cross-cutting) | Complete |
 
 **Coverage:**
 - v2 requirements: 17 total
