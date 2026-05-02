@@ -54,12 +54,11 @@ Font: Be Vietnam Pro across all admin pages.
 
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
-| Body / table cell | 14px | 400 | 1.5 |
-| Label / filter text | 14px | 500 | 1.5 |
+| Body / table cell / label / filter text | 14px | 400 | 1.5 |
 | Heading / page title | 20px | 600 | 1.2 |
 | Score display (badge) | 13px | 600 | 1 |
 
-Size set rationale: admin UI is data-dense; 14px body keeps rows compact while 20px titles provide hierarchy. Only 3 sizes used (13, 14, 20) to minimize visual noise. Only 2 weights (400, 600) — 500 is used for labels but treated as the "medium label" variant of the regular tier.
+Size set rationale: admin UI is data-dense; 14px body keeps rows compact while 20px titles provide hierarchy. Only 3 sizes used (13, 14, 20) to minimize visual noise. Exactly 2 weights: 400 (body, labels, filter text) and 600 (headings, score badges). Labels and filter text are distinguished from body content by context and placement, not by weight.
 
 ---
 
@@ -123,7 +122,7 @@ All components already installed in `src/components/ui/`. No new shadcn installs
 ### ChaptersPage + LessonsPage — Drag-and-Drop Reordering
 
 - Replace `ChevronUp` / `ChevronDown` buttons with dnd-kit `DndContext` + `SortableContext` (array strategy, `closestCenter` collision detection — from CONTEXT.md Claude's Discretion).
-- Drag handle: first column in table, 40px wide. Uses `<GripVertical className="h-4 w-4 text-muted-foreground" />`. `cursor-grab` on idle, `cursor-grabbing` on active drag.
+- Drag handle: first column in table, 40px wide. Uses `<GripVertical className="h-4 w-4 text-muted-foreground" />` with `aria-label="Kéo để sắp xếp"`. `cursor-grab` on idle, `cursor-grabbing` on active drag.
 - Optimistic UI update: reorder rows visually on drop before Supabase confirms (from CONTEXT.md Claude's Discretion). On mutation error, invalidate query to restore server state.
 - Existing edit/delete buttons: preserved in action column, position unchanged.
 - Loading: 5x skeleton rows (same pattern as SubmissionsPage D-10).
@@ -176,7 +175,7 @@ All components already installed in `src/components/ui/`. No new shadcn installs
 [Breadcrumb]
 [Page title]           [+ Thêm chương / + Thêm bài học button]
 [Table: Drag handle | # | Name | Actions (edit/delete)]
-  — drag handle col: 40px, GripVertical icon, cursor-grab
+  — drag handle col: 40px, GripVertical icon, aria-label="Kéo để sắp xếp", cursor-grab
   — loading: 5x skeleton rows
   — empty: empty state row
 ```
@@ -227,6 +226,7 @@ No third-party shadcn registries declared.
 ## Accessibility Checklist
 
 - [ ] `aria-busy="true" aria-label="Đang tải..."` on skeleton loading wrappers (D-10)
+- [ ] `aria-label="Kéo để sắp xếp"` on GripVertical drag handle elements (ChaptersPage, LessonsPage)
 - [ ] `cursor-grab` / `cursor-grabbing` on drag handle elements
 - [ ] `min-h-[48px]` on all row action buttons (D-13)
 - [ ] Focus states visible on all interactive elements (ring tokens)
