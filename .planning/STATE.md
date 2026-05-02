@@ -76,6 +76,7 @@ Plan: 1 of 6
 ### Roadmap Evolution
 
 - Phase 6 added: UX Polish — grading filters, student course discovery, nav fixes, progress bar color
+- Phase 12.1 inserted after Phase 12: UI fix - error states typography touch targets (URGENT)
 
 ### Decisions
 
