@@ -187,26 +187,24 @@ export default function CataloguePage() {
               >
                 <Card className="bm-clay-card-student border-0 shadow-none p-0 h-full overflow-hidden flex flex-col">
                   <CardHeader className="p-5 pb-3">
-                    <div className="flex items-start gap-2">
-                      <CardTitle className="text-base font-bold leading-snug text-[#92400E] flex-1">
-                        {course.title}
-                      </CardTitle>
-                      <div className="flex flex-col gap-1 items-end shrink-0">
-                        <Badge className={gradeBadge.className}>
-                          {gradeBadge.label}
-                        </Badge>
-                        {isAuthenticated && (
-                          isEnrolled ? (
-                            <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
-                              Đã đăng ký
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="text-muted-foreground">
-                              Chưa đăng ký
-                            </Badge>
-                          )
-                        )}
-                      </div>
+                    <CardTitle className="text-base font-bold leading-snug text-[#92400E] mb-2">
+                      {course.title}
+                    </CardTitle>
+                    <div className="flex flex-wrap gap-1">
+                      <Badge className={gradeBadge.className}>
+                        {gradeBadge.label}
+                      </Badge>
+                      {isAuthenticated && (
+                        isEnrolled ? (
+                          <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+                            Đã đăng ký
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-muted-foreground">
+                            Chưa đăng ký
+                          </Badge>
+                        )
+                      )}
                     </div>
                   </CardHeader>
                   <CardContent className="p-5 pt-0 flex-1">

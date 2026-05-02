@@ -120,14 +120,12 @@ export default function CoursesPage() {
                 >
                   <Card className="bm-clay-card-student border-0 shadow-none p-0 overflow-hidden h-full flex flex-col">
                     <CardHeader className="p-5 pb-3">
-                      <div className="flex items-start gap-2">
-                        <CardTitle className="text-base font-bold leading-snug text-[#92400E] flex-1">
-                          {course.title}
-                        </CardTitle>
-                        <Badge className={`${gradeBadge.className} shrink-0`}>
-                          {gradeBadge.label}
-                        </Badge>
-                      </div>
+                      <CardTitle className="text-base font-bold leading-snug text-[#92400E] mb-2">
+                        {course.title}
+                      </CardTitle>
+                      <Badge className={`${gradeBadge.className} shrink-0`}>
+                        {gradeBadge.label}
+                      </Badge>
                     </CardHeader>
                     <CardContent className="p-5 pt-0 flex flex-col flex-1 justify-between gap-3">
                       {course.description ? (
