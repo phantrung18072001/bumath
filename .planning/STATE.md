@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: UI Refactor
-status: Ready to execute
-stopped_at: Completed 13-03-PLAN.md (CourseDetailPage Sheet drawer + Claymorphism)
-last_updated: "2026-05-02T13:21:55.000Z"
+status: Phase complete — ready for verification
+stopped_at: Completed 13-02-PLAN.md (CataloguePage search, infinite scroll, Claymorphism)
+last_updated: "2026-05-02T13:22:57.534Z"
 progress:
   total_phases: 6
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 27
-  completed_plans: 25
+  completed_plans: 26
 ---
 
 # Project State
@@ -73,6 +73,7 @@ Plan: 4 of 4
 | Phase 13 P00 | 5 | 3 tasks | 3 files |
 | Phase 13-student-pages P01 | 5 | 2 tasks | 2 files |
 | Phase 13 P03 | 8min | 2 tasks | 2 files |
+| Phase 13-student-pages P02 | 251 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -139,6 +140,8 @@ Recent decisions affecting current work:
 - [Phase 13]: Student pages use teal claymorphism variant (.bm-clay-card-student) on mint background (#F0FDFA)
 - [Phase 13-student-pages]: CoursesPage: bm-clay-card-student CSS class with border-0 shadow-none overrides for Claymorphism teal card styling
 - [Phase 13]: Sheet drawer replaces Tabs for enrolled mobile — cleaner UX, lg: breakpoints, Claymorphism preview card
+- [Phase 13-student-pages]: useInfiniteQuery replaces useQuery for paginated course loading in CataloguePage
+- [Phase 13-student-pages]: Client-side search+grade filter operates on all loaded pages (no re-fetch on type)
 
 ### Pending Todos
 
@@ -153,6 +156,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-02T13:21:54.996Z
-Stopped at: Completed 13-03-PLAN.md (CourseDetailPage Sheet drawer + Claymorphism)
+Last session: 2026-05-02T13:22:57.531Z
+Stopped at: Completed 13-02-PLAN.md (CataloguePage search, infinite scroll, Claymorphism)
 Resume file: None

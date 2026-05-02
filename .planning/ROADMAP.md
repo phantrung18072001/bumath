@@ -29,7 +29,7 @@ Full details: [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-R
 - [x] **Phase 10: Auth Pages UI** — Refactor /dang-nhap, /dang-ky, /cho-duyet with modern design (completed 2026-05-01)
 - [x] **Phase 11: Admin List Pages** — Refactor users + courses list pages with pagination, filters, search (completed 2026-05-01)
 - [ ] **Phase 12: Admin Detail Pages** — Refactor course/chapter/lesson management + grading queue + grading page
-- [ ] **Phase 13: Student Pages** — Refactor courses list, course detail/lesson view, catalogue with filters + pagination
+- [x] **Phase 13: Student Pages** — Refactor courses list, course detail/lesson view, catalogue with filters + pagination (completed 2026-05-02)
 
 ## Phase Details
 
@@ -131,7 +131,7 @@ Plans:
 Plans:
 - [x] 13-00-PLAN.md — Wave 0: CSS foundation (.bm-clay-card-student, .bm-progress-teal, fonts) + test scaffold
 - [x] 13-01-PLAN.md — CoursesPage: Claymorphism cards, teal progress bars, empty state, URL bug fix
-- [ ] 13-02-PLAN.md — CataloguePage: search bar, infinite scroll, Claymorphism cards, empty states
+- [x] 13-02-PLAN.md — CataloguePage: search bar, infinite scroll, Claymorphism cards, empty states
 - [x] 13-03-PLAN.md — CourseDetailPage: Sheet drawer mobile layout, lg breakpoint, Claymorphism preview card
 
 **UI hint**: yes
