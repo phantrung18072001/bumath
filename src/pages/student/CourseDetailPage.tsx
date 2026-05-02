@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Lock, LogIn } from 'lucide-react'
+import { ArrowLeft, Lock, LogIn, Menu } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/contexts/AuthContext'
 import StudentLayout from '@/components/student/StudentLayout'
@@ -8,8 +8,8 @@ import Header from '@/components/landing/Header'
 import LessonSidebar from '@/components/student/LessonSidebar'
 import LessonContent from '@/components/student/LessonContent'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -27,6 +27,7 @@ export default function CourseDetailPage() {
   const { user, profile, loading: authLoading } = useAuth()
   const isAuthenticated = !authLoading && !!user
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null)
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const [searchParams] = useSearchParams()
   const lessonIdFromQuery = searchParams.get('lesson')
 
@@ -147,18 +148,16 @@ export default function CourseDetailPage() {
   const pageContent = (
     <>
       {hasError && (
-        <div className="px-4 md:px-8 py-4">
+        <div className="px-4 lg:px-8 py-4">
           <div className="mb-3">{backLink}</div>
-          <Alert variant="destructive">
-            <AlertDescription>
-              Không thể tải khóa học. Vui lòng làm mới trang.
-            </AlertDescription>
-          </Alert>
+          <p className="text-destructive text-center py-8">
+            Không thể tải dữ liệu. Vui lòng thử lại.
+          </p>
         </div>
       )}
 
       {!isLoading && !hasError && !course && (
-        <div className="px-4 md:px-8 pt-4 pb-16 text-center">
+        <div className="px-4 lg:px-8 pt-4 pb-16 text-center">
           <div className="text-left mb-8">{backLink}</div>
           <h2 className="text-xl font-semibold mb-2">Không tìm thấy khóa học</h2>
           <p className="text-base text-muted-foreground">
@@ -168,15 +167,17 @@ export default function CourseDetailPage() {
       )}
 
       {isLoading && (
-        <div className="px-4 md:px-8 pb-4 space-y-3">
-          <Skeleton className="h-6 w-48" />
-          <Skeleton className="h-4 w-32" />
-          <Skeleton className="h-64 w-full" />
+        <div className="px-4 lg:px-8 pb-4 space-y-3 pt-4">
+          <Skeleton className="h-6 w-40 rounded-xl" />
+          <Skeleton className="h-4 w-24 rounded-xl" />
+          <Skeleton className="h-[360px] w-full rounded-3xl" />
+          <Skeleton className="h-4 w-3/4 rounded-xl" />
+          <Skeleton className="h-4 w-1/2 rounded-xl" />
         </div>
       )}
 
       {!isLoading && !hasError && chapters && chapters.length === 0 && (
-        <div className="px-4 md:px-8 pt-4 pb-16 text-center">
+        <div className="px-4 lg:px-8 pt-4 pb-16 text-center">
           <div className="text-left mb-8">{backLink}</div>
           <h2 className="text-xl font-semibold mb-2">Khóa học chưa có bài giảng</h2>
           <p className="text-base text-muted-foreground">
@@ -188,9 +189,9 @@ export default function CourseDetailPage() {
       {!isLoading && !hasError && chapters && chapters.length > 0 && lessonsByChapter && (
         isEnrolled ? (
           <>
-            {/* Full mode — existing desktop layout */}
-            <div className="hidden md:flex h-[calc(100vh-48px)]">
-              <div className="w-[280px] shrink-0 bg-sidebar border-r border-sidebar-border">
+            {/* Desktop layout — visible at lg and above */}
+            <div className="hidden lg:flex h-[calc(100vh-48px)]">
+              <div className="w-[280px] shrink-0 bg-white border-r border-[#0D9488]/20">
                 <LessonSidebar
                   chapters={chapters}
                   lessonsByChapter={lessonsByChapter}
@@ -200,7 +201,7 @@ export default function CourseDetailPage() {
                   progress={progress}
                 />
               </div>
-              <div className="flex-1 overflow-y-auto">
+              <div className="flex-1 overflow-y-auto bg-[#F0FDFA]">
                 <LessonContent
                   lesson={activeLesson}
                   isCompleted={completedLessonIds.has(activeLessonId ?? '')}
@@ -211,52 +212,64 @@ export default function CourseDetailPage() {
               </div>
             </div>
 
-            {/* Full mode — existing mobile layout */}
-            <div className="block md:hidden">
-              <Tabs defaultValue="content">
-                <TabsList className="w-full h-12 rounded-none border-b bg-transparent p-0 gap-0">
-                  <TabsTrigger
-                    value="content"
-                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-semibold"
-                  >
-                    Nội dung
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="outline"
-                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-semibold"
-                  >
-                    Mục lục
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="content" className="mt-0">
-                  <LessonContent
-                    lesson={activeLesson}
-                    isCompleted={completedLessonIds.has(activeLessonId ?? '')}
-                    submission={activeSubmission}
-                    userId={profile!.id}
-                    courseId={courseId!}
-                  />
-                </TabsContent>
-                <TabsContent value="outline" className="mt-0">
-                  <LessonSidebar
-                    chapters={chapters}
-                    lessonsByChapter={lessonsByChapter}
-                    completedLessonIds={completedLessonIds}
-                    activeLessonId={activeLessonId}
-                    onSelectLesson={(lesson) => { setActiveLessonId(lesson.id) }}
-                    progress={progress}
-                    scrollable={false}
-                  />
-                </TabsContent>
-              </Tabs>
+            {/* Mobile layout — visible below lg */}
+            <div className="block lg:hidden">
+              {/* Drawer trigger button */}
+              <div className="px-4 pt-3 pb-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setDrawerOpen(true)}
+                  className="min-h-[48px] gap-2 border-[#0D9488] text-[#0D9488] hover:bg-[#F0FDFA]"
+                  aria-label="Mở danh sách bài học"
+                >
+                  <Menu className="h-4 w-4" />
+                  Danh sách bài học
+                </Button>
+              </div>
+
+              {/* Main content area */}
+              <div className="overflow-y-auto bg-[#F0FDFA]">
+                <LessonContent
+                  lesson={activeLesson}
+                  isCompleted={completedLessonIds.has(activeLessonId ?? '')}
+                  submission={activeSubmission}
+                  userId={profile!.id}
+                  courseId={courseId!}
+                />
+              </div>
+
+              {/* Sheet drawer */}
+              <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
+                <SheetContent side="left" className="w-[85vw] max-w-[320px] p-0">
+                  <SheetHeader className="px-4 pt-4 pb-2 border-b border-border">
+                    <SheetTitle className="text-base font-bold text-[#134E4A]">
+                      Danh sách bài học
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="overflow-y-auto h-[calc(100%-56px)]">
+                    <LessonSidebar
+                      chapters={chapters}
+                      lessonsByChapter={lessonsByChapter}
+                      completedLessonIds={completedLessonIds}
+                      activeLessonId={activeLessonId}
+                      onSelectLesson={(lesson) => {
+                        setActiveLessonId(lesson.id)
+                        setDrawerOpen(false)
+                      }}
+                      progress={progress}
+                      scrollable={false}
+                    />
+                  </div>
+                </SheetContent>
+              </Sheet>
             </div>
           </>
         ) : (
           /* Preview mode — same layout, locked main content */
           <>
-            {/* Desktop — same 2-column layout */}
-            <div className="hidden md:flex h-[calc(100vh-48px)]">
-              <div className="w-[280px] shrink-0 bg-sidebar border-r border-sidebar-border">
+            {/* Desktop preview — visible at lg and above */}
+            <div className="hidden lg:flex h-[calc(100vh-48px)]">
+              <div className="w-[280px] shrink-0 bg-white border-r border-[#0D9488]/20">
                 <LessonSidebar
                   chapters={chapters}
                   lessonsByChapter={lessonsByChapter}
@@ -266,15 +279,16 @@ export default function CourseDetailPage() {
                   progress={0}
                 />
               </div>
-              <div className="flex-1 overflow-y-auto flex flex-col">
+              <div className="flex-1 overflow-y-auto bg-[#F0FDFA] flex flex-col">
                 <div className="flex-1 flex items-start justify-center px-8 pt-12 pb-8">
-                  <Card className="w-full max-w-sm shadow-sm">
+                  <Card className="bm-clay-card-student border-0 shadow-none w-full max-w-sm p-0">
                     <CardContent className="pt-8 pb-8 flex flex-col items-center text-center gap-4">
-                      <div className="w-16 h-16 rounded-full bg-muted border border-border flex items-center justify-center">
-                        <Lock className="h-7 w-7 text-muted-foreground" aria-hidden="true" />
+                      {/* Lock icon in teal circle */}
+                      <div className="w-16 h-16 rounded-full bg-[#CCFBF1] border-2 border-[#0D9488] flex items-center justify-center">
+                        <Lock className="h-7 w-7 text-[#0D9488]" aria-hidden="true" />
                       </div>
                       <div className="space-y-2">
-                        <h2 className="text-xl font-semibold leading-snug">{course?.title}</h2>
+                        <h2 className="text-xl font-bold leading-snug text-[#134E4A]">{course?.title}</h2>
                         {course && (
                           <Badge className={GRADE_BADGE[course.target_grade].className}>
                             {GRADE_BADGE[course.target_grade].label}
@@ -292,7 +306,7 @@ export default function CourseDetailPage() {
                       )}
                       {!isAuthenticated && (
                         <Link to="/dang-nhap" className="w-full">
-                          <Button className="w-full gap-1.5">
+                          <Button className="bm-btn-cta w-full gap-1.5 min-h-[48px]">
                             <LogIn className="h-4 w-4" />
                             Đăng nhập để học
                           </Button>
@@ -304,39 +318,39 @@ export default function CourseDetailPage() {
               </div>
             </div>
 
-            {/* Mobile — same tabs layout */}
-            <div className="block md:hidden">
+            {/* Mobile preview — visible below lg */}
+            <div className="block lg:hidden">
               <Tabs defaultValue="outline">
                 <TabsList className="w-full h-12 rounded-none border-b bg-transparent p-0 gap-0">
                   <TabsTrigger
                     value="content"
-                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-semibold"
+                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-[#0D9488] data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-bold"
                   >
                     Nội dung
                   </TabsTrigger>
                   <TabsTrigger
                     value="outline"
-                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-semibold"
+                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-[#0D9488] data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-bold"
                   >
                     Mục lục
                   </TabsTrigger>
                 </TabsList>
-                <TabsContent value="content" className="mt-0">
+                <TabsContent value="content" className="mt-0 bg-[#F0FDFA]">
                   <div className="flex flex-col items-center text-center px-6 pt-12 pb-8 gap-4">
-                    <div className="w-14 h-14 rounded-full bg-muted border border-border flex items-center justify-center">
-                      <Lock className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
+                    <div className="w-14 h-14 rounded-full bg-[#CCFBF1] border-2 border-[#0D9488] flex items-center justify-center">
+                      <Lock className="h-6 w-6 text-[#0D9488]" aria-hidden="true" />
                     </div>
                     {isAuthenticated ? (
-                        <div className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-                          <p>Bạn chưa đăng ký khóa học này.</p>
-                          <p>Vui lòng liên hệ giảng viên để được đăng ký khóa học này.</p>
-                        </div>
-                      ) : (
-                        <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">Đăng nhập để học và theo dõi tiến độ của bạn.</p>
-                      )}
+                      <div className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+                        <p>Bạn chưa đăng ký khóa học này.</p>
+                        <p>Vui lòng liên hệ giảng viên để được đăng ký khóa học này.</p>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">Đăng nhập để học và theo dõi tiến độ của bạn.</p>
+                    )}
                     {!isAuthenticated && (
                       <Link to="/dang-nhap">
-                        <Button className="gap-1.5">
+                        <Button className="bm-btn-cta gap-1.5 min-h-[48px]">
                           <LogIn className="h-4 w-4" />
                           Đăng nhập để học
                         </Button>
@@ -368,7 +382,7 @@ export default function CourseDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#F0FDFA]">
       <Header />
       <main>{pageContent}</main>
     </div>
