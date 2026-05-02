@@ -1,7 +1,24 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Loader2, Plus, Pencil, Trash2, ChevronUp, ChevronDown, FileText } from 'lucide-react'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import { Loader2, Plus, Pencil, Trash2, FileText, GripVertical } from 'lucide-react'
 import { toast } from 'sonner'
 import { extractYouTubeID } from '@/lib/youtube'
 import {
@@ -13,6 +30,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,13 +54,105 @@ import { fetchChapters, Chapter } from '@/lib/api/chapters'
 import {
   fetchLessons,
   removeLesson,
-  reorderLessons,
+  batchReorderLessons,
   deleteAssignment,
   getAssignmentPublicUrl,
   parseAssignmentPaths,
   Lesson,
 } from '@/lib/api/lessons'
 import LessonFormDialog from '@/components/admin/LessonFormDialog'
+
+interface SortableLessonRowProps {
+  lesson: Lesson
+  index: number
+  onEdit: (lesson: Lesson) => void
+  onDelete: (lesson: Lesson) => void
+}
+
+function SortableLessonRow({ lesson, index, onEdit, onDelete }: SortableLessonRowProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: lesson.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  }
+
+  const videoId = lesson.video_url ? extractYouTubeID(lesson.video_url) : null
+
+  return (
+    <TableRow ref={setNodeRef} style={style}>
+      <TableCell className="w-10">
+        <button
+          className="cursor-grab active:cursor-grabbing touch-none p-1"
+          aria-label="Kéo để sắp xếp"
+          {...listeners}
+          {...attributes}
+        >
+          <GripVertical className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </TableCell>
+      <TableCell className="font-medium w-16">{index + 1}</TableCell>
+      <TableCell className="w-32">
+        {videoId ? (
+          <img
+            src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
+            alt={`Thumbnail ${lesson.title}`}
+            loading="lazy"
+            className="w-20 h-12 object-cover rounded border"
+          />
+        ) : (
+          <span className="text-xs text-muted-foreground">—</span>
+        )}
+      </TableCell>
+      <TableCell>{lesson.title}</TableCell>
+      <TableCell className="w-56">
+        {lesson.assignment_path ? (
+          <div className="flex flex-col gap-1">
+            {parseAssignmentPaths(lesson.assignment_path).map((p) => {
+              const name = p.split('/').pop() ?? p
+              return (
+                <a
+                  key={p}
+                  href={getAssignmentPublicUrl(p)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 max-w-[14rem] rounded-md border bg-muted/40 px-2 py-1 text-xs text-foreground hover:bg-muted transition-colors"
+                  title={name}
+                >
+                  <FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                  <span className="truncate min-w-0">{name}</span>
+                </a>
+              )
+            })}
+          </div>
+        ) : (
+          <span className="text-xs text-muted-foreground">—</span>
+        )}
+      </TableCell>
+      <TableCell className="text-right space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="min-h-[48px]"
+          aria-label="Chỉnh sửa"
+          onClick={() => onEdit(lesson)}
+        >
+          <Pencil className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="min-h-[48px] text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+          aria-label="Xóa"
+          onClick={() => onDelete(lesson)}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </TableCell>
+    </TableRow>
+  )
+}
 
 export default function LessonsPage() {
   const { courseSlug, chapterSlug } = useParams<{ courseSlug: string; chapterSlug: string }>()
@@ -76,7 +186,6 @@ export default function LessonsPage() {
 
   const deleteMutation = useMutation({
     mutationFn: async (lesson: Lesson) => {
-      // Delete attachment first, then delete lesson record
       await deleteAssignment(lesson.assignment_path)
       await removeLesson(lesson.id)
     },
@@ -91,35 +200,38 @@ export default function LessonsPage() {
   })
 
   const reorderMutation = useMutation({
-    mutationFn: ({
-      lessonA,
-      lessonB,
-    }: {
-      lessonA: Pick<Lesson, 'id' | 'order_index'>
-      lessonB: Pick<Lesson, 'id' | 'order_index'>
-    }) => reorderLessons(lessonA, lessonB),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'lessons', chapter?.id] })
-    },
+    mutationFn: (updates: { id: string; order_index: number }[]) =>
+      batchReorderLessons(updates),
     onError: () => {
-      toast.error('Sắp xếp không thành công. Vui lòng thử lại.')
+      queryClient.invalidateQueries({ queryKey: ['admin', 'lessons', chapter?.id] })
+      toast.error('Sắp xếp thất bại. Vui lòng thử lại.')
     },
   })
 
-  function handleMoveUp(index: number) {
-    if (index === 0) return
-    reorderMutation.mutate({
-      lessonA: lessons[index],
-      lessonB: lessons[index - 1],
-    })
-  }
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
 
-  function handleMoveDown(index: number) {
-    if (index === lessons.length - 1) return
-    reorderMutation.mutate({
-      lessonA: lessons[index],
-      lessonB: lessons[index + 1],
-    })
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+
+    const oldIndex = lessons.findIndex((l) => l.id === active.id)
+    const newIndex = lessons.findIndex((l) => l.id === over.id)
+    const reordered = arrayMove(lessons, oldIndex, newIndex)
+
+    // Optimistic update
+    queryClient.setQueryData(['admin', 'lessons', chapter?.id], reordered)
+
+    // Persist
+    const updates = reordered
+      .map((l, i) => ({ id: l.id, order_index: i }))
+      .filter((_, i) => lessons[i]?.id !== reordered[i]?.id)
+
+    if (updates.length > 0) {
+      reorderMutation.mutate(updates)
+    }
   }
 
   function handleOpenCreate() {
@@ -173,8 +285,12 @@ export default function LessonsPage() {
       </h1>
 
       {isLoading ? (
-        <div className="flex justify-center items-center py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" aria-label="Đang tải..." />
+        <div aria-busy="true" aria-label="Đang tải...">
+          <div className="space-y-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-full rounded-md" />
+            ))}
+          </div>
         </div>
       ) : lessons.length === 0 ? (
         <p className="text-center text-muted-foreground py-8">
@@ -182,111 +298,33 @@ export default function LessonsPage() {
         </p>
       ) : (
         <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-16">STT</TableHead>
-                <TableHead className="w-32">Video</TableHead>
-                <TableHead>Tên bài học</TableHead>
-                <TableHead className="w-56">Đính kèm</TableHead>
-                <TableHead>Sắp xếp</TableHead>
-                <TableHead>Hành động</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {lessons.map((lesson, index) => (
-                <TableRow key={lesson.id}>
-                  <TableCell className="text-muted-foreground">{index + 1}</TableCell>
-                  <TableCell>
-                    {(() => {
-                      const videoId = lesson.video_url ? extractYouTubeID(lesson.video_url) : null
-                      return videoId ? (
-                        <img
-                          src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
-                          alt={`Thumbnail ${lesson.title}`}
-                          loading="lazy"
-                          className="w-20 h-12 object-cover rounded border"
-                        />
-                      ) : (
-                        <span className="text-xs text-muted-foreground">—</span>
-                      )
-                    })()}
-                  </TableCell>
-                  <TableCell className="font-medium">{lesson.title}</TableCell>
-                  <TableCell>
-                    {lesson.assignment_path ? (
-                      <div className="flex flex-col gap-1">
-                        {parseAssignmentPaths(lesson.assignment_path).map((p) => {
-                          const name = p.split('/').pop() ?? p
-                          return (
-                            <a
-                              key={p}
-                              href={getAssignmentPublicUrl(p)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 max-w-[14rem] rounded-md border bg-muted/40 px-2 py-1 text-xs text-foreground hover:bg-muted transition-colors"
-                              title={name}
-                            >
-                              <FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
-                              <span className="truncate min-w-0">{name}</span>
-                            </a>
-                          )
-                        })}
-                      </div>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="min-h-[40px] px-2"
-                        aria-label="Di chuyển lên"
-                        disabled={index === 0 || reorderMutation.isPending}
-                        onClick={() => handleMoveUp(index)}
-                      >
-                        <ChevronUp className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="min-h-[40px] px-2"
-                        aria-label="Di chuyển xuống"
-                        disabled={index === lessons.length - 1 || reorderMutation.isPending}
-                        onClick={() => handleMoveDown(index)}
-                      >
-                        <ChevronDown className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2 flex-wrap">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="min-h-[48px]"
-                        aria-label="Chỉnh sửa"
-                        onClick={() => handleOpenEdit(lesson)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="min-h-[48px] text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
-                        aria-label="Xóa"
-                        onClick={() => setDeletingLesson(lesson)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={lessons.map((l) => l.id)} strategy={verticalListSortingStrategy}>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-10"></TableHead>
+                    <TableHead className="w-16">#</TableHead>
+                    <TableHead className="w-32">Video</TableHead>
+                    <TableHead>Tên bài học</TableHead>
+                    <TableHead className="w-56">Đính kèm</TableHead>
+                    <TableHead className="text-right">Thao tác</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {lessons.map((lesson, index) => (
+                    <SortableLessonRow
+                      key={lesson.id}
+                      lesson={lesson}
+                      index={index}
+                      onEdit={handleOpenEdit}
+                      onDelete={setDeletingLesson}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            </SortableContext>
+          </DndContext>
         </div>
       )}
 

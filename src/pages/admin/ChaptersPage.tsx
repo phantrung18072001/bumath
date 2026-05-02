@@ -1,7 +1,24 @@
 import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Loader2, Plus, Pencil, Trash2, ChevronUp, ChevronDown, BookOpen } from 'lucide-react'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import { Loader2, Plus, Pencil, Trash2, BookOpen, GripVertical } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Table,
@@ -12,6 +29,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,10 +52,74 @@ import { fetchCourses, Course } from '@/lib/api/courses'
 import {
   fetchChapters,
   removeChapter,
-  reorderChapters,
+  batchReorderChapters,
   Chapter,
 } from '@/lib/api/chapters'
 import ChapterFormDialog from '@/components/admin/ChapterFormDialog'
+
+interface SortableChapterRowProps {
+  chapter: Chapter
+  index: number
+  onEdit: (chapter: Chapter) => void
+  onDelete: (chapter: Chapter) => void
+  onViewLessons: (slug: string) => void
+}
+
+function SortableChapterRow({ chapter, index, onEdit, onDelete, onViewLessons }: SortableChapterRowProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: chapter.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  }
+
+  return (
+    <TableRow ref={setNodeRef} style={style}>
+      <TableCell className="w-10">
+        <button
+          className="cursor-grab active:cursor-grabbing touch-none p-1"
+          aria-label="Kéo để sắp xếp"
+          {...listeners}
+          {...attributes}
+        >
+          <GripVertical className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </TableCell>
+      <TableCell className="font-medium w-16">{index + 1}</TableCell>
+      <TableCell>{chapter.title}</TableCell>
+      <TableCell className="text-right space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="min-h-[48px]"
+          aria-label="Quản lý bài học"
+          onClick={() => onViewLessons(chapter.slug)}
+        >
+          <BookOpen className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="min-h-[48px]"
+          aria-label="Chỉnh sửa"
+          onClick={() => onEdit(chapter)}
+        >
+          <Pencil className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="min-h-[48px] text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+          aria-label="Xóa"
+          onClick={() => onDelete(chapter)}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </TableCell>
+    </TableRow>
+  )
+}
 
 export default function ChaptersPage() {
   const { courseSlug } = useParams<{ courseSlug: string }>()
@@ -75,35 +157,38 @@ export default function ChaptersPage() {
   })
 
   const reorderMutation = useMutation({
-    mutationFn: ({
-      chapterA,
-      chapterB,
-    }: {
-      chapterA: Pick<Chapter, 'id' | 'order_index'>
-      chapterB: Pick<Chapter, 'id' | 'order_index'>
-    }) => reorderChapters(chapterA, chapterB),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'chapters', course?.id] })
-    },
+    mutationFn: (updates: { id: string; order_index: number }[]) =>
+      batchReorderChapters(updates),
     onError: () => {
-      toast.error('Sắp xếp không thành công. Vui lòng thử lại.')
+      queryClient.invalidateQueries({ queryKey: ['admin', 'chapters', course?.id] })
+      toast.error('Sắp xếp thất bại. Vui lòng thử lại.')
     },
   })
 
-  function handleMoveUp(index: number) {
-    if (index === 0) return
-    reorderMutation.mutate({
-      chapterA: chapters[index],
-      chapterB: chapters[index - 1],
-    })
-  }
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
 
-  function handleMoveDown(index: number) {
-    if (index === chapters.length - 1) return
-    reorderMutation.mutate({
-      chapterA: chapters[index],
-      chapterB: chapters[index + 1],
-    })
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+
+    const oldIndex = chapters.findIndex((c) => c.id === active.id)
+    const newIndex = chapters.findIndex((c) => c.id === over.id)
+    const reordered = arrayMove(chapters, oldIndex, newIndex)
+
+    // Optimistic update
+    queryClient.setQueryData(['admin', 'chapters', course?.id], reordered)
+
+    // Persist: only update items whose position changed
+    const updates = reordered
+      .map((c, i) => ({ id: c.id, order_index: i }))
+      .filter((_, i) => chapters[i]?.id !== reordered[i]?.id)
+
+    if (updates.length > 0) {
+      reorderMutation.mutate(updates)
+    }
   }
 
   function handleOpenCreate() {
@@ -149,8 +234,12 @@ export default function ChaptersPage() {
       </h1>
 
       {isLoading ? (
-        <div className="flex justify-center items-center py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" aria-label="Đang tải..." />
+        <div aria-busy="true" aria-label="Đang tải...">
+          <div className="space-y-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-full rounded-md" />
+            ))}
+          </div>
         </div>
       ) : chapters.length === 0 ? (
         <p className="text-center text-muted-foreground py-8">
@@ -158,81 +247,32 @@ export default function ChaptersPage() {
         </p>
       ) : (
         <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-16">STT</TableHead>
-                <TableHead>Tên chuyên đề</TableHead>
-                <TableHead>Sắp xếp</TableHead>
-                <TableHead>Hành động</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {chapters.map((chapter, index) => (
-                <TableRow key={chapter.id}>
-                  <TableCell className="text-muted-foreground">{index + 1}</TableCell>
-                  <TableCell className="font-medium">{chapter.title}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="min-h-[40px] px-2"
-                        aria-label="Di chuyển lên"
-                        disabled={index === 0 || reorderMutation.isPending}
-                        onClick={() => handleMoveUp(index)}
-                      >
-                        <ChevronUp className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="min-h-[40px] px-2"
-                        aria-label="Di chuyển xuống"
-                        disabled={index === chapters.length - 1 || reorderMutation.isPending}
-                        onClick={() => handleMoveDown(index)}
-                      >
-                        <ChevronDown className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2 flex-wrap">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="min-h-[48px]"
-                        aria-label="Quản lý bài học"
-                        onClick={() =>
-                          navigate(`/quan-tri/khoa-hoc/${courseSlug}/chuong/${chapter.slug}`)
-                        }
-                      >
-                        <BookOpen className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="min-h-[48px]"
-                        aria-label="Chỉnh sửa"
-                        onClick={() => handleOpenEdit(chapter)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="min-h-[48px] text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
-                        aria-label="Xóa"
-                        onClick={() => setDeletingChapter(chapter)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={chapters.map((c) => c.id)} strategy={verticalListSortingStrategy}>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-10"></TableHead>
+                    <TableHead className="w-16">#</TableHead>
+                    <TableHead>Tên chuyên đề</TableHead>
+                    <TableHead className="text-right">Thao tác</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {chapters.map((chapter, index) => (
+                    <SortableChapterRow
+                      key={chapter.id}
+                      chapter={chapter}
+                      index={index}
+                      onEdit={(c) => { handleOpenEdit(c) }}
+                      onDelete={setDeletingChapter}
+                      onViewLessons={(slug) => navigate(`/quan-tri/khoa-hoc/${courseSlug}/chuong/${slug}`)}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            </SortableContext>
+          </DndContext>
         </div>
       )}
 

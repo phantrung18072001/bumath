@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 
@@ -41,6 +41,16 @@ let ChaptersPage: typeof import('@/pages/admin/ChaptersPage').default
 beforeEach(async () => {
   vi.clearAllMocks()
   queryClient.clear()
+  // Restore default mock implementations
+  const { fetchChapters } = await import('@/lib/api/chapters')
+  const { fetchCourses } = await import('@/lib/api/courses')
+  vi.mocked(fetchCourses).mockResolvedValue([
+    { id: 'course-1', slug: 'toan-7', title: 'Toán 7', target_grade: 'grade_7', is_published: true, created_at: '', updated_at: '', description: null }
+  ])
+  vi.mocked(fetchChapters).mockResolvedValue([
+    { id: 'ch-1', course_id: 'course-1', title: 'Chương 1', slug: 'chuong-1', order_index: 0, created_at: '', updated_at: '' },
+    { id: 'ch-2', course_id: 'course-1', title: 'Chương 2', slug: 'chuong-2', order_index: 1, created_at: '', updated_at: '' },
+  ])
   const mod = await import('@/pages/admin/ChaptersPage')
   ChaptersPage = mod.default
 })
@@ -53,7 +63,9 @@ describe('ChaptersPage', () => {
 
     renderWithProviders()
 
-    expect(screen.getByLabelText('Đang tải...')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByLabelText('Đang tải...')).toBeInTheDocument()
+    })
   })
 
   it('renders drag handle icons for each chapter row', async () => {
