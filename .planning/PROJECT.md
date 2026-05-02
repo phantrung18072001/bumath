@@ -103,7 +103,7 @@ Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ t
 
 This document evolves at phase transitions and milestone boundaries.
 
-Last updated: Phase 8 complete — all 8 milestone phases delivered. BuMath v1.0 MVP complete with teacher role fully functional.
+Last updated: Phase 12.1 complete — UI gap closure: touch targets, typography, error states, copywriting, prefers-reduced-motion fixed across admin pages (GradingPage, CoursesPage, UsersPage, SubmissionsPage, ChaptersPage, LessonsPage).
 
 **After each phase transition** (via `/gsd:transition`):
 1. Requirements invalidated? → Move to Out of Scope with reason
@@ -119,4 +119,4 @@ Last updated: Phase 8 complete — all 8 milestone phases delivered. BuMath v1.0
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-01 after v1.0 milestone — full async LMS shipped, 38/38 requirements delivered*
+*Last updated: 2026-05-02 after Phase 12.1 gap closure — UI violations fixed in 6 admin pages, v2.0 UI Refactor milestone in progress*
