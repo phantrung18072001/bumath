@@ -67,7 +67,7 @@ export default function CoursesPage() {
 
   return (
     <StudentLayout>
-      <div className="p-4 md:p-6">
+      <div className="p-6 md:p-8">
         <h1 className="text-2xl font-bold mb-4 text-[#92400E]">Khóa học của tôi</h1>
 
         {/* Error state */}
@@ -79,9 +79,9 @@ export default function CoursesPage() {
 
         {/* Loading state — skeleton cards */}
         {isLoading && (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-36 rounded-2xl" />
+              <Skeleton key={i} className="h-[200px] rounded-2xl" />
             ))}
           </div>
         )}
@@ -104,7 +104,7 @@ export default function CoursesPage() {
 
         {/* Course grid */}
         {!isLoading && !enrollmentsError && enrollments && enrollments.length > 0 && (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {enrollments.map((enrollment) => {
               const course = enrollment.course
               const courseId = enrollment.course_id
@@ -118,8 +118,8 @@ export default function CoursesPage() {
                   to={`/khoa-hoc/${course.slug}`}
                   className="block"
                 >
-                  <Card className="bm-clay-card-student border-0 shadow-none p-0 overflow-hidden h-full">
-                    <CardHeader className="p-4 pb-2">
+                  <Card className="bm-clay-card-student border-0 shadow-none p-0 overflow-hidden h-full min-h-[200px]">
+                    <CardHeader className="p-5 pb-2">
                       <div className="flex items-start justify-between gap-2">
                         <CardTitle className="text-base font-bold leading-snug text-[#92400E]">
                           {course.title}
@@ -129,9 +129,9 @@ export default function CoursesPage() {
                         </Badge>
                       </div>
                     </CardHeader>
-                    <CardContent className="p-4 pt-2">
+                    <CardContent className="p-5 pt-2">
                       {course.description && (
-                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                        <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
                           {course.description}
                         </p>
                       )}

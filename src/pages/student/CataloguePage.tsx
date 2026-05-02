@@ -85,7 +85,7 @@ export default function CataloguePage() {
   })
 
   const content = (
-    <div className="p-4 md:p-6">
+    <div className="p-6 md:p-8">
       <div className="flex items-start justify-between gap-4 mb-2 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-[#92400E]">Khám phá khóa học</h1>
@@ -143,9 +143,9 @@ export default function CataloguePage() {
 
       {/* Loading state — 4-col on lg */}
       {coursesLoading && (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="h-36 rounded-2xl" />
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-40 rounded-2xl" />
           ))}
         </div>
       )}
@@ -172,9 +172,9 @@ export default function CataloguePage() {
         </div>
       )}
 
-      {/* Course grid — 4 columns on lg */}
+      {/* Course grid — 3 columns on lg */}
       {!coursesLoading && !coursesError && filteredCourses.length > 0 && (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredCourses.map((course) => {
             const isEnrolled = isAuthenticated && enrolledCourseIds.has(course.id)
             const gradeBadge = GRADE_BADGE[course.target_grade]
@@ -185,8 +185,8 @@ export default function CataloguePage() {
                 to={`/khoa-hoc/${course.slug}`}
                 className="block"
               >
-                <Card className="bm-clay-card-student border-0 shadow-none p-0 h-full overflow-hidden">
-                  <CardHeader className="p-4 pb-2">
+                <Card className="bm-clay-card-student border-0 shadow-none p-0 h-full overflow-hidden min-h-[200px]">
+                  <CardHeader className="p-5 pb-2">
                     <div className="flex items-start justify-between gap-2">
                       <CardTitle className="text-base font-bold leading-snug text-[#92400E]">
                         {course.title}
@@ -209,9 +209,9 @@ export default function CataloguePage() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-4 pt-2">
+                  <CardContent className="p-5 pt-2">
                     {course.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-2">
+                      <p className="text-sm text-muted-foreground line-clamp-3">
                         {course.description}
                       </p>
                     )}
