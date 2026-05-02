@@ -123,7 +123,7 @@ export default function CoursesPage() {
                       <CardTitle className="text-base font-bold leading-snug text-[#92400E] mb-2">
                         {course.title}
                       </CardTitle>
-                      <Badge className={`${gradeBadge.className} shrink-0`}>
+                      <Badge className={`${gradeBadge.className} shrink-0 w-fit`}>
                         {gradeBadge.label}
                       </Badge>
                     </CardHeader>
