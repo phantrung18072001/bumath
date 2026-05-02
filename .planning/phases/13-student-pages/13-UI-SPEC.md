@@ -29,7 +29,7 @@ created: 2026-05-02
 
 > ⚠️ **Font note:** `src/index.css` currently imports `Be Vietnam Pro`, not `Baloo 2 + Comic Neue`.
 > Executor MUST replace the Google Fonts import in `src/index.css` with:
-> `@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=Comic+Neue:wght@300;400;700&display=swap');`
+> `@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&family=Comic+Neue:wght@400;700&display=swap');`
 > Then add `font-family: 'Baloo 2', sans-serif` to headings and `font-family: 'Comic Neue', cursive` to body in the `@layer base` block.
 
 ---
@@ -107,14 +107,15 @@ className="bg-white border-[3px] border-[#0D9488] rounded-3xl
 
 | Role | Font Family | Size | Weight | Line Height | Tailwind Classes |
 |------|-------------|------|--------|-------------|-----------------|
-| Page heading | Baloo 2 | 24px | 700 | 1.2 | `text-2xl font-bold` |
-| Card title | Baloo 2 | 20px | 600 | 1.3 | `text-xl font-semibold` |
+| Page heading / Card title | Baloo 2 | 24px / 20px | 700 | 1.2 / 1.3 | `text-2xl font-bold` / `text-xl font-bold` |
 | Body / description | Comic Neue | 16px | 400 | 1.5 | `text-base font-normal` |
 | Label / caption | Comic Neue | 14px | 400 | 1.4 | `text-sm font-normal` |
 
+**Weights used: `font-bold` (700) + `font-normal` (400) — no other weights.**
+
 **Usage rules:**
 - `text-2xl font-bold` — Page `<h1>` headings only ("Khóa học của tôi", "Khám phá khóa học")
-- `text-xl font-semibold` — Course card titles (`CardTitle`)
+- `text-xl font-bold` — Course card titles (`CardTitle`), empty state headings, sheet/drawer titles
 - `text-base font-normal` — Empty state body copy, description text, lesson names in sidebar
 - `text-sm font-normal` — Progress labels, badge labels, muted captions, filter pill labels
 - `text-[#134E4A]` (or `text-foreground`) — primary text color
@@ -162,8 +163,8 @@ className="bg-white border-[3px] border-[#0D9488] rounded-3xl
 | Inactive | transparent | `text-muted-foreground` | `border-border` | `bg-background text-muted-foreground border border-border hover:bg-muted hover:text-foreground` |
 
 All pills:
-- `rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-150`
-- `min-h-[44px]` (touch target — use `py-2.5` if needed to reach 44px)
+- `rounded-full px-4 py-2 text-sm font-bold transition-colors duration-150`
+- `min-h-[44px]` (touch target — `py-2` + `min-h-[44px]` is sufficient)
 - `cursor-pointer`
 
 ---
@@ -190,7 +191,7 @@ Page: bg-[#F0FDFA] min-h-screen
     {/* Remove default Card border — replaced by clay border */}
     <CardHeader className="p-4 pb-2">
       <div className="flex items-start justify-between gap-2">
-        <CardTitle className="text-xl font-semibold leading-snug text-[#134E4A]">
+        <CardTitle className="text-xl font-bold leading-snug text-[#134E4A]">
           {course.title}
         </CardTitle>
         <Badge className={gradeBadge.className}>{gradeBadge.label}</Badge>
@@ -203,7 +204,7 @@ Page: bg-[#F0FDFA] min-h-screen
         aria-label={`Tiến độ hoàn thành: ${progress}%`}
       />
       {/* Progress indicator fill override — see Progress spec below */}
-      <span className="text-sm text-muted-foreground mt-1.5 block">
+      <span className="text-sm text-muted-foreground mt-2 block">
         {progress}% hoàn thành
       </span>
     </CardContent>
@@ -233,7 +234,7 @@ Page: bg-[#F0FDFA] min-h-screen
 ```tsx
 <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
   <BookOpen className="h-16 w-16 text-[#0D9488]" aria-hidden="true" />
-  <h2 className="text-xl font-semibold text-[#134E4A]">Bạn chưa có khóa học nào</h2>
+  <h2 className="text-xl font-bold text-[#134E4A]">Bạn chưa có khóa học nào</h2>
   <p className="text-base text-muted-foreground max-w-sm">
     Liên hệ giảng viên để được thêm vào khóa học, hoặc khám phá danh mục.
   </p>
@@ -293,7 +294,7 @@ Page: bg-[#F0FDFA] min-h-screen
 - Labels: Tất cả | Lớp 7 | Lớp 8 | Lớp 9 | Ôn chuyên
 - Active state: `bg-[#0D9488] text-white border-[#0D9488]`
 - Inactive state: `bg-background text-muted-foreground border border-border hover:bg-muted`
-- All pills: `rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-150 cursor-pointer min-h-[44px]`
+- All pills: `rounded-full px-4 py-2 text-sm font-bold transition-colors duration-150 cursor-pointer min-h-[44px]`
 
 #### Catalogue Course Card (Claymorphism)
 Same `.bm-clay-card-student` shell as CoursesPage cards, with these differences:
@@ -306,7 +307,7 @@ Same `.bm-clay-card-student` shell as CoursesPage cards, with these differences:
   <Card className="bm-clay-card-student border-0 shadow-none p-0 h-full overflow-hidden">
     <CardHeader className="p-4 pb-2">
       <div className="flex items-start justify-between gap-2">
-        <CardTitle className="text-xl font-semibold leading-snug text-[#134E4A]">
+        <CardTitle className="text-xl font-bold leading-snug text-[#134E4A]">
           {course.title}
         </CardTitle>
         <div className="flex flex-col gap-1 items-end shrink-0">
@@ -351,7 +352,7 @@ Same `.bm-clay-card-student` shell as CoursesPage cards, with these differences:
   ```tsx
   {isFetchingNextPage && (
     <div className="flex justify-center py-6">
-      <div className="flex gap-1.5">
+      <div className="flex gap-2">
         {[0, 1, 2].map(i => (
           <Skeleton key={i} className="h-2 w-2 rounded-full" />
         ))}
@@ -366,7 +367,7 @@ Same `.bm-clay-card-student` shell as CoursesPage cards, with these differences:
 ```tsx
 <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
   <Search className="h-16 w-16 text-[#0D9488]" aria-hidden="true" />
-  <h2 className="text-xl font-semibold text-[#134E4A]">Không tìm thấy kết quả</h2>
+  <h2 className="text-xl font-bold text-[#134E4A]">Không tìm thấy kết quả</h2>
   <p className="text-base text-muted-foreground max-w-sm">
     Thử thay đổi từ khóa hoặc chọn lớp khác.
   </p>
@@ -378,7 +379,7 @@ Same `.bm-clay-card-student` shell as CoursesPage cards, with these differences:
 ```tsx
 <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
   <BookOpen className="h-16 w-16 text-[#0D9488]" aria-hidden="true" />
-  <h2 className="text-xl font-semibold text-[#134E4A]">Chưa có khóa học nào</h2>
+  <h2 className="text-xl font-bold text-[#134E4A]">Chưa có khóa học nào</h2>
   <p className="text-base text-muted-foreground max-w-sm">
     Hiện tại chưa có khóa học nào. Vui lòng quay lại sau.
   </p>
@@ -438,7 +439,7 @@ Page: bg-[#F0FDFA]
 <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
   <SheetContent side="left" className="w-[85vw] max-w-[320px] p-0">
     <SheetHeader className="px-4 pt-4 pb-2 border-b border-border">
-      <SheetTitle className="text-base font-semibold text-[#134E4A]">
+      <SheetTitle className="text-base font-bold text-[#134E4A]">
         Danh sách bài học
       </SheetTitle>
     </SheetHeader>
