@@ -209,7 +209,7 @@ export default function CataloguePage() {
                   </CardHeader>
                   <CardContent className="p-5 pt-0 flex-1">
                     {course.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                      <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed mt-2">
                         {course.description}
                       </p>
                     )}

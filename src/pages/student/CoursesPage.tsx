@@ -129,7 +129,7 @@ export default function CoursesPage() {
                     </CardHeader>
                     <CardContent className="p-5 pt-0 flex flex-col flex-1 justify-between gap-3">
                       {course.description ? (
-                        <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                        <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed mt-2">
                           {course.description}
                         </p>
                       ) : (
