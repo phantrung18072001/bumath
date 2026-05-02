@@ -1,7 +1,8 @@
+import { useState, useRef, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/contexts/AuthContext'
-import { fetchAllCourses, Course } from '@/lib/api/courses'
+import { fetchCoursesPaginated, Course } from '@/lib/api/courses'
 import { getUserEnrollments } from '@/lib/api/enrollments'
 import { GRADE_BADGE } from '@/lib/constants/grades'
 import StudentLayout from '@/components/student/StudentLayout'
@@ -9,9 +10,9 @@ import Header from '@/components/landing/Header'
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { LogIn } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { LogIn, Search, BookOpen } from 'lucide-react'
 
 const GRADE_FILTERS: { value: Course['target_grade'] | 'all'; label: string }[] = [
   { value: 'all', label: 'Tất cả' },
@@ -21,64 +22,80 @@ const GRADE_FILTERS: { value: Course['target_grade'] | 'all'; label: string }[] 
   { value: 'advanced', label: 'Ôn chuyên' },
 ]
 
-const LOI_MAP: Record<string, Course['target_grade']> = {
-  '7': 'grade_7', '8': 'grade_8', '9': 'grade_9', 'nang-cao': 'advanced',
-}
-const LOI_REVERSE: Record<Course['target_grade'], string> = {
-  grade_7: '7', grade_8: '8', grade_9: '9', advanced: 'nang-cao',
-}
-
 export default function CataloguePage() {
   const { user, profile, loading: authLoading } = useAuth()
   const isAuthenticated = !authLoading && !!user
-  const [searchParams, setSearchParams] = useSearchParams()
-  const activeGrade = LOI_MAP[searchParams.get('lop') ?? ''] ?? 'all' as Course['target_grade'] | 'all'
 
-  // Always fetch all courses — works for both anon and authenticated users
+  const [searchParams, setSearchParams] = useSearchParams()
+  const activeGrade = searchParams.get('lop') ?? 'all'
+  const setGrade = (g: string) => setSearchParams(g === 'all' ? {} : { lop: g })
+
+  const [searchQuery, setSearchQuery] = useState('')
+  const sentinelRef = useRef<HTMLDivElement>(null)
+
+  // Infinite scroll pagination for all published courses
   const {
-    data: allCourses = [],
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     isLoading: coursesLoading,
     isError: coursesError,
-  } = useQuery({
-    queryKey: ['courses', 'all'],
-    queryFn: fetchAllCourses,
+  } = useInfiniteQuery({
+    queryKey: ['catalogue-courses'],
+    queryFn: ({ pageParam = 1 }) =>
+      fetchCoursesPaginated({ page: pageParam as number, pageSize: 12, grade: 'all', search: '' }),
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.data.length === 12 ? allPages.length + 1 : undefined,
+    initialPageParam: 1,
     enabled: !authLoading,
   })
 
+  // Flatten all loaded pages
+  const allCourses = data?.pages.flatMap(p => p.data) ?? []
+
+  // IntersectionObserver triggers fetchNextPage at scroll bottom
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage()
+        }
+      },
+      { threshold: 0.1 }
+    )
+    if (sentinelRef.current) observer.observe(sentinelRef.current)
+    return () => observer.disconnect()
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
+
   // Fetch enrollments only when authenticated
-  const { data: enrollments = [], isLoading: enrollmentsLoading } = useQuery({
+  const { data: enrollments = [] } = useQuery({
     queryKey: ['enrollments', profile?.id],
     queryFn: () => getUserEnrollments(profile!.id),
     enabled: isAuthenticated && !!profile?.id,
   })
 
   const enrolledCourseIds = new Set(enrollments.map(e => e.course_id))
-  const isLoading = authLoading || coursesLoading || (isAuthenticated && enrollmentsLoading)
 
-  const filteredCourses = activeGrade === 'all'
-    ? allCourses
-    : allCourses.filter(c => c.target_grade === activeGrade)
-
-  function setGrade(grade: Course['target_grade'] | 'all') {
-    if (grade === 'all') {
-      setSearchParams({})
-    } else {
-      setSearchParams({ lop: LOI_REVERSE[grade] })
-    }
-  }
+  // Client-side filter: grade AND search query
+  const filteredCourses = allCourses.filter(c => {
+    const matchesGrade = activeGrade === 'all' || c.target_grade === activeGrade
+    const matchesSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase().trim())
+    return matchesGrade && matchesSearch
+  })
 
   const content = (
     <div className="p-6 md:p-8 max-w-5xl mx-auto">
       <div className="flex items-start justify-between gap-4 mb-2 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">Khám phá khóa học</h1>
+          <h1 className="text-2xl font-bold text-[#134E4A]">Khám phá khóa học</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Tất cả các khóa học đang có tại BuMath
           </p>
         </div>
         {!isAuthenticated && !authLoading && (
           <Link to="/dang-nhap">
-            <Button size="sm" className="gap-1.5 shrink-0">
+            <Button className="bm-btn-cta gap-1.5 shrink-0 min-h-[48px]">
               <LogIn className="h-4 w-4" />
               Đăng nhập để học
             </Button>
@@ -86,16 +103,29 @@ export default function CataloguePage() {
         )}
       </div>
 
-      {/* Grade filter tabs */}
-      <div className="flex flex-wrap gap-2 mt-5 mb-6">
+      {/* Search bar — D-07 */}
+      <div className="relative mt-4 mb-3">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          type="search"
+          placeholder="Tìm kiếm khóa học..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-9 min-h-[48px] rounded-xl border-[#0D9488] focus-visible:ring-[#0D9488]"
+          aria-label="Tìm kiếm khóa học"
+        />
+      </div>
+
+      {/* Grade filter pills */}
+      <div className="flex flex-wrap gap-2 mt-3 mb-6">
         {GRADE_FILTERS.map(f => (
           <button
             key={f.value}
             onClick={() => setGrade(f.value)}
             className={[
-              'rounded-full px-4 py-2 text-sm font-semibold transition-colors border',
+              'rounded-full px-4 py-2 text-sm font-bold transition-colors duration-150 cursor-pointer min-h-[44px] border',
               activeGrade === f.value
-                ? 'bg-primary text-primary-foreground border-primary'
+                ? 'bg-[#0D9488] text-white border-[#0D9488]'
                 : 'bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground',
             ].join(' ')}
           >
@@ -106,39 +136,45 @@ export default function CataloguePage() {
 
       {/* Error state */}
       {coursesError && (
-        <Alert variant="destructive">
-          <AlertDescription>
-            Không thể tải danh sách khóa học. Vui lòng làm mới trang.
-          </AlertDescription>
-        </Alert>
+        <p className="text-destructive text-center py-8">
+          Không thể tải dữ liệu. Vui lòng thử lại.
+        </p>
       )}
 
-      {/* Loading state — 4 skeleton cards */}
-      {isLoading && (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-40 rounded-xl" />
+      {/* Loading state — 6 skeleton cards, 3-col on lg */}
+      {coursesLoading && (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-36 rounded-3xl" />
           ))}
         </div>
       )}
 
-      {/* Empty state */}
-      {!isLoading && !coursesError && filteredCourses.length === 0 && (
-        <div className="flex justify-center">
-          <Card className="max-w-md w-full p-6 text-center">
-            <h2 className="text-xl font-semibold mb-2">Chưa có khóa học nào</h2>
-            <p className="text-muted-foreground text-sm">
-              {activeGrade === 'all'
-                ? 'Hiện tại chưa có khóa học nào. Vui lòng quay lại sau.'
-                : `Chưa có khóa học nào cho ${GRADE_FILTERS.find(f => f.value === activeGrade)?.label}.`}
-            </p>
-          </Card>
+      {/* Empty state — filtered zero results (D-18) */}
+      {!coursesLoading && !coursesError && allCourses.length > 0 && filteredCourses.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
+          <Search className="h-16 w-16 text-[#0D9488]" aria-hidden="true" />
+          <h2 className="text-xl font-bold text-[#134E4A]">Không tìm thấy kết quả</h2>
+          <p className="text-base text-muted-foreground max-w-sm">
+            Thử thay đổi từ khóa hoặc chọn lớp khác.
+          </p>
         </div>
       )}
 
-      {/* Course grid */}
-      {!isLoading && !coursesError && filteredCourses.length > 0 && (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      {/* Empty state — no courses at all */}
+      {!coursesLoading && !coursesError && allCourses.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
+          <BookOpen className="h-16 w-16 text-[#0D9488]" aria-hidden="true" />
+          <h2 className="text-xl font-bold text-[#134E4A]">Chưa có khóa học nào</h2>
+          <p className="text-base text-muted-foreground max-w-sm">
+            Hiện tại chưa có khóa học nào. Vui lòng quay lại sau.
+          </p>
+        </div>
+      )}
+
+      {/* Course grid — 3 columns on lg, Claymorphism cards */}
+      {!coursesLoading && !coursesError && filteredCourses.length > 0 && (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredCourses.map((course) => {
             const isEnrolled = isAuthenticated && enrolledCourseIds.has(course.id)
             const gradeBadge = GRADE_BADGE[course.target_grade]
@@ -149,10 +185,10 @@ export default function CataloguePage() {
                 to={`/khoa-hoc/${course.slug}`}
                 className="block"
               >
-                <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+                <Card className="bm-clay-card-student border-0 shadow-none p-0 h-full overflow-hidden">
                   <CardHeader className="p-4 pb-2">
                     <div className="flex items-start justify-between gap-2">
-                      <CardTitle className="text-xl font-semibold leading-snug">
+                      <CardTitle className="text-xl font-bold leading-snug text-[#134E4A]">
                         {course.title}
                       </CardTitle>
                       <div className="flex flex-col gap-1 items-end shrink-0">
@@ -186,6 +222,20 @@ export default function CataloguePage() {
           })}
         </div>
       )}
+
+      {/* Infinite scroll sentinel */}
+      <div ref={sentinelRef} className="h-px" />
+
+      {/* Loading more indicator */}
+      {isFetchingNextPage && (
+        <div className="flex justify-center py-6">
+          <div className="flex gap-2">
+            {[0, 1, 2].map(i => (
+              <Skeleton key={i} className="h-2 w-2 rounded-full animate-pulse" />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 
@@ -194,7 +244,7 @@ export default function CataloguePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#F0FDFA]">
       <Header />
       <main>{content}</main>
     </div>
