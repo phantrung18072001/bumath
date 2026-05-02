@@ -113,7 +113,7 @@ export default function UsersPage() {
   const [roleFilter, setRoleFilter] = useState<'all' | Profile['role']>('all')
   const [currentPage, setCurrentPage] = useState(1)
 
-  const PAGE_SIZE = 25
+  const PAGE_SIZE = 20
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin', 'profiles', { page: currentPage, pageSize: PAGE_SIZE, role: roleFilter, search: searchQuery }],

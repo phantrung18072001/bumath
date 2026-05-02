@@ -69,7 +69,7 @@ function SortableChapterRow({ chapter, index, onEdit, onDelete, onViewLessons }:
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: chapter.id })
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: transform ? `translate3d(0, ${transform.y}px, 0)` : undefined,
     transition,
     opacity: isDragging ? 0.5 : 1,
   }

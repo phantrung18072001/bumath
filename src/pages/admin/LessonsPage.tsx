@@ -73,7 +73,7 @@ function SortableLessonRow({ lesson, index, onEdit, onDelete }: SortableLessonRo
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: lesson.id })
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: transform ? `translate3d(0, ${transform.y}px, 0)` : undefined,
     transition,
     opacity: isDragging ? 0.5 : 1,
   }

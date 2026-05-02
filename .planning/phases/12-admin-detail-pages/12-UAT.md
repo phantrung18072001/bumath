@@ -67,21 +67,27 @@ skipped: 0
 ## Gaps
 
 - truth: "Dragging a chapter row reorders the list smoothly with no layout side effects"
-  status: failed
+  status: fixed
   reason: "User reported: lúc drag bị hiển thị scrollbar ngang và dọc"
   severity: minor
   test: 1
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "CSS.Transform.toString applies X+Y translation on <tr>, causing horizontal overflow in overflow-x-auto wrapper. Fixed by clamping X=0: translate3d(0, y, 0)"
+  artifacts:
+    - path: "src/pages/admin/ChaptersPage.tsx"
+      issue: "SortableChapterRow style used CSS.Transform.toString(transform)"
+    - path: "src/pages/admin/LessonsPage.tsx"
+      issue: "SortableLessonRow style used CSS.Transform.toString(transform)"
+  missing:
+    - "Use translate3d(0, transform.y, 0) instead of CSS.Transform.toString"
 
 - truth: "UsersPage and CoursesPage both use 20 items per page for consistency"
-  status: failed
+  status: fixed
   reason: "User reported: đồng nhất 20 đi ở cả trang user nữa"
   severity: minor
   test: 10
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "UsersPage.tsx had PAGE_SIZE = 25 while CoursesPage used 20. Changed to 20."
+  artifacts:
+    - path: "src/pages/admin/UsersPage.tsx"
+      issue: "PAGE_SIZE = 25"
+  missing:
+    - "Change PAGE_SIZE from 25 to 20"
