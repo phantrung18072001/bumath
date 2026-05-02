@@ -86,20 +86,23 @@ Plans:
 **UI hint**: yes
 
 ### Phase 12: Admin Detail Pages
-**Goal**: Course/chapter/lesson management, grading queue, and grading detail have clear, functional layouts
+**Goal**: Course/chapter/lesson management, grading queue, and grading detail have clear, functional layouts; UsersPage and CoursesPage complete migration to server-side filtering
 **Depends on**: Phase 11
 **Requirements**: ADMIN-UI-03, ADMIN-UI-04, ADMIN-UI-05, DS-01, DS-02
 **Success Criteria** (what must be TRUE):
   1. Grading queue: paginated (20/page), existing filters retained, added status filter (graded/ungraded)
   2. Grading detail: 2-column layout (submission photo left, grade form right), works on mobile
   3. Course detail: chapter/lesson list with drag-to-reorder or clear order management UX
-**Plans**: 4 plans
+  4. UsersPage + CoursesPage use server-side .range()/.ilike()/.eq() — no client-side .filter()/.slice()
+**Plans**: 6 plans
 
 Plans:
-- [ ] 12-00-PLAN.md — Wave 0: Install dnd-kit, add batch reorder APIs, create test scaffolds
+- [ ] 12-00a-PLAN.md — Wave 0: Install dnd-kit, add batch reorder APIs + getAllSubmissions
+- [ ] 12-00b-PLAN.md — Wave 0: Create test scaffolds for ChaptersPage, LessonsPage, SubmissionsPage
 - [ ] 12-01-PLAN.md — ChaptersPage + LessonsPage: dnd-kit drag-and-drop reordering
 - [ ] 12-02-PLAN.md — SubmissionsPage: server-side pagination + status filter
 - [ ] 12-03-PLAN.md — GradingPage: mobile sticky bottom bar
+- [ ] 12-04-PLAN.md — UsersPage + CoursesPage: server-side filter + pagination migration (D-01)
 
 **UI hint**: yes
 
