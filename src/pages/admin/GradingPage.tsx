@@ -118,7 +118,7 @@ export default function GradingPage() {
 
   if (submissionLoading || urlsLoading) {
     return (
-      <div className="container mx-auto py-8 max-w-5xl flex justify-center items-center min-h-64">
+      <div className="container mx-auto py-8 max-w-5xl flex justify-center items-center min-h-64" aria-label="Đang tải...">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
@@ -156,7 +156,7 @@ export default function GradingPage() {
       <div className="flex flex-col lg:flex-row gap-8 items-start">
 
         {/* Left: Image carousel */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 overflow-y-auto pb-24 lg:pb-0">
           {totalImages === 0 ? (
             <div className="rounded-lg border bg-muted flex items-center justify-center h-80">
               <p className="text-sm text-muted-foreground leading-relaxed">Không có ảnh bài làm.</p>
@@ -273,7 +273,7 @@ export default function GradingPage() {
               variant="outline"
               size="sm"
               onClick={() => teacherFileInputRef.current?.click()}
-              className="min-h-[40px]"
+              className="min-h-[48px]"
             >
               Thêm ảnh phản hồi
             </Button>

@@ -183,12 +183,12 @@ export default function UsersPage() {
         <div className="text-center py-16">
           {!searchQuery && roleFilter === 'all' ? (
             <>
-              <p className="text-base font-semibold text-foreground mb-1">Chưa có tài khoản nào</p>
+              <p className="text-sm font-semibold text-foreground mb-1">Chưa có tài khoản nào</p>
               <p className="text-sm text-muted-foreground">Hệ thống chưa có người dùng nào đăng ký.</p>
             </>
           ) : (
             <>
-              <p className="text-base font-semibold text-foreground mb-1">Không tìm thấy kết quả</p>
+              <p className="text-sm font-semibold text-foreground mb-1">Không tìm thấy kết quả</p>
               <p className="text-sm text-muted-foreground">Thử thay đổi từ khóa hoặc bộ lọc.</p>
             </>
           )}

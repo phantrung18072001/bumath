@@ -186,7 +186,7 @@ export default function CoursesPage() {
         <div className="text-center py-16">
           {!searchQuery && gradeFilter === 'all' ? (
             <>
-              <p className="text-base font-semibold text-foreground mb-1">Chưa có khóa học nào</p>
+              <p className="text-sm font-semibold text-foreground mb-1">Chưa có khóa học nào</p>
               <p className="text-sm text-muted-foreground mb-4">Nhấn "Tạo khóa học" để bắt đầu.</p>
               <Button onClick={handleOpenCreate}>
                 <Plus className="h-4 w-4 mr-1" />
@@ -195,7 +195,7 @@ export default function CoursesPage() {
             </>
           ) : (
             <>
-              <p className="text-base font-semibold text-foreground mb-1">Không tìm thấy kết quả</p>
+              <p className="text-sm font-semibold text-foreground mb-1">Không tìm thấy kết quả</p>
               <p className="text-sm text-muted-foreground">Thử thay đổi từ khóa hoặc bộ lọc.</p>
             </>
           )}
@@ -218,7 +218,7 @@ export default function CoursesPage() {
                 {courses.map((course, index) => (
                   <TableRow key={course.id}>
                     <TableCell className="w-12 text-muted-foreground">{(currentPage - 1) * PAGE_SIZE + index + 1}</TableCell>
-                    <TableCell className="font-medium">{course.title}</TableCell>
+                    <TableCell className="font-normal">{course.title}</TableCell>
                     <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
                       {course.description ?? '—'}
                     </TableCell>
