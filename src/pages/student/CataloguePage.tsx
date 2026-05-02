@@ -103,35 +103,35 @@ export default function CataloguePage() {
         )}
       </div>
 
-      {/* Search + Grade filter — inline row */}
-      <div className="flex items-center gap-3 mt-4 mb-6 flex-wrap sm:flex-nowrap">
-        <div className="relative flex-1 min-w-0">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Tìm kiếm khóa học..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 min-h-[48px] rounded-xl border-[#F97316] focus-visible:ring-[#F97316]"
-            aria-label="Tìm kiếm khóa học"
-          />
-        </div>
-        <div className="flex gap-2 overflow-x-auto pb-1 shrink-0">
-          {GRADE_FILTERS.map(f => (
-            <button
-              key={f.value}
-              onClick={() => setGrade(f.value)}
-              className={[
-                'rounded-full px-4 py-2 text-sm font-bold transition-colors duration-150 cursor-pointer min-h-[44px] border whitespace-nowrap',
-                activeGrade === f.value
-                  ? 'bg-[#F97316] text-white border-[#F97316]'
-                  : 'bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground',
-              ].join(' ')}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
+      {/* Search bar — half width */}
+      <div className="relative mt-4 mb-3 w-1/2">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          type="search"
+          placeholder="Tìm kiếm khóa học..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-9 min-h-[48px] rounded-xl border-[#F97316] focus-visible:ring-[#F97316]"
+          aria-label="Tìm kiếm khóa học"
+        />
+      </div>
+
+      {/* Grade filter pills */}
+      <div className="flex flex-wrap gap-2 mt-3 mb-6">
+        {GRADE_FILTERS.map(f => (
+          <button
+            key={f.value}
+            onClick={() => setGrade(f.value)}
+            className={[
+              'rounded-full px-4 py-2 text-sm font-bold transition-colors duration-150 cursor-pointer min-h-[44px] border',
+              activeGrade === f.value
+                ? 'bg-[#F97316] text-white border-[#F97316]'
+                : 'bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground',
+            ].join(' ')}
+          >
+            {f.label}
+          </button>
+        ))}
       </div>
 
       {/* Error state */}
