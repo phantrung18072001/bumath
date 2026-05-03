@@ -3,7 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 1-8, 38 plans (shipped 2026-05-01) — [Archive](.planning/milestones/v1.0-ROADMAP.md)
-- ✅ **v2.0 UI Refactor** — Phases 9-13, UAT complete (shipped 2026-05-03)
+- ✅ **v2.0 UI Refactor** — Phases 9-13, 26 plans (shipped 2026-05-03) — [Archive](.planning/milestones/v2.0-ROADMAP.md)
 
 ## Phases
 
@@ -23,116 +23,20 @@ Full details: [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-R
 
 </details>
 
-### ✅ v2.0 UI Refactor (Phases 9–13) — SHIPPED 2026-05-03
+<details>
+<summary>✅ v2.0 UI Refactor (Phases 9–13) — SHIPPED 2026-05-03</summary>
 
-- [x] **Phase 9: URL Standardization** — Rename all routes to Vietnamese, update all redirects and internal links (7/7 plans, UAT 6/6 ✅ 2026-05-01)
-- [x] **Phase 10: Auth Pages UI** — Refactor /dang-nhap, /dang-ky, /cho-duyet with modern design (completed 2026-05-01)
-- [x] **Phase 11: Admin List Pages** — Refactor users + courses list pages with pagination, filters, search (completed 2026-05-01)
-- [x] **Phase 12: Admin Detail Pages** — Refactor course/chapter/lesson management + grading queue + grading page (UAT ✅ 2026-05-03)
-- [x] **Phase 12.1: UI Fix** — Error states, typography, touch targets, badge color (UAT ✅ 2026-05-03)
-- [x] **Phase 13: Student Pages** — Refactor courses list, course detail/lesson view, catalogue with filters + pagination (UAT ✅ 2026-05-03)
+- [x] Phase 9: URL Standardization (7/7 plans) — completed 2026-05-01
+- [x] Phase 10: Auth Pages UI (2/2 plans) — completed 2026-05-01
+- [x] Phase 11: Admin List Pages (5/5 plans) — completed 2026-05-01
+- [x] Phase 12: Admin Detail Pages (6/6 plans) — completed 2026-05-02
+- [x] Phase 12.1: UI Fix — Error States, Typography, Touch Targets (2/2 plans) — completed 2026-05-02
+- [x] Phase 13: Student Pages (4/4 plans) — completed 2026-05-03
 
-## Phase Details
+Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-ROADMAP.md)
 
-### Phase 9: URL Standardization
-**Goal**: All routes use Vietnamese-only URLs; old English URLs redirect to new ones; all internal navigations updated
-**Depends on**: Phase 8 (v1.0 complete)
-**Requirements**: URL-01, URL-02, URL-03
-**Success Criteria** (what must be TRUE):
-  1. Navigating to `/login` redirects to `/dang-nhap`; all other English routes redirect similarly
-  2. All post-login redirects, ProtectedRoute redirects, and `navigate()` calls use Vietnamese URLs
-  3. No broken internal links anywhere in the app
-**Plans**: 7 plans
+</details>
 
-Plans:
-- [x] 09-01-PLAN.md — Rename route path definitions (App.tsx + ProtectedRoute.tsx)
-- [x] 09-02-PLAN.md — Auth/shared pages (Login, Register, NotFound)
-- [x] 09-03-PLAN.md — Admin components (AdminLayout, GradingPage, SubmissionsPage)
-- [x] 09-04-PLAN.md — Admin content pages (CoursesPage, ChaptersPage, LessonsPage)
-- [x] 09-05-PLAN.md — Student layout + pages (StudentLayout, CataloguePage + LOI_MAP logic, CoursesPage)
-- [x] 09-06-PLAN.md — Student CourseDetailPage + all 4 landing components
-- [x] 09-07-PLAN.md — Test file updates + yarn test green
+### 📋 v3.0 (planned)
 
-### Phase 10: Auth Pages UI
-**Goal**: Login and Register pages have polished Claymorphism design with BuMath branding (Pending page removed per D-05)
-**Depends on**: Phase 9
-**Requirements**: AUTH-UI-01, AUTH-UI-02, AUTH-UI-03 (descoped), DS-01
-**Success Criteria** (what must be TRUE):
-  1. Login page: centered Claymorphism card with BuMath logo, inline validation, floating math symbols
-  2. Register page: 2-column responsive grid (desktop), same Claymorphism design, orange CTA buttons
-  3. ~~Pending page~~: REMOVED per D-05 — users go directly to /khoa-hoc after registration
-**Plans**: 2 plans
-
-Plans:
-- [x] 10-01-PLAN.md — Foundation: CSS variables, Tailwind fontFamily, utility classes
-- [x] 10-02-PLAN.md — Page refactors: Login.tsx + Register.tsx Claymorphism design
-
-**UI hint**: yes
-
-### Phase 11: Admin List Pages
-**Goal**: Admin users-list and courses-list pages have pagination, search, and role/grade filters
-**Depends on**: Phase 10
-**Requirements**: ADMIN-UI-01, ADMIN-UI-02, DS-01, DS-02
-**Success Criteria** (what must be TRUE):
-  1. Users page: paginated table (25/page), filter by role (student/teacher/admin), search by name or phone
-  2. Courses page: paginated table (20/page), filter by grade (7/8/9/chuyên), search by course name
-  3. Both pages show skeleton loading, empty state with CTA, and total count
-**Plans**: 3 plans
-
-Plans:
-- [x] 11-00-PLAN.md — Wave 0: Test foundation (CoursesPage.test.tsx + UsersPage.test.tsx updates)
-- [x] 11-01-PLAN.md — UsersPage: filter toolbar, search, pagination, skeleton loading
-- [x] 11-02-PLAN.md — CoursesPage: filter toolbar, search, pagination, skeleton loading
-
-**UI hint**: yes
-
-### Phase 12: Admin Detail Pages
-**Goal**: Course/chapter/lesson management, grading queue, and grading detail have clear, functional layouts; UsersPage and CoursesPage complete migration to server-side filtering
-**Depends on**: Phase 11
-**Requirements**: ADMIN-UI-03, ADMIN-UI-04, ADMIN-UI-05, DS-01, DS-02
-**Success Criteria** (what must be TRUE):
-  1. Grading queue: paginated (20/page), existing filters retained, added status filter (graded/ungraded)
-  2. Grading detail: 2-column layout (submission photo left, grade form right), works on mobile
-  3. Course detail: chapter/lesson list with drag-to-reorder or clear order management UX
-  4. UsersPage + CoursesPage use server-side .range()/.ilike()/.eq() — no client-side .filter()/.slice()
-**Plans**: 6 plans
-
-Plans:
-- [x] 12-00a-PLAN.md — Wave 0: Install dnd-kit, add batch reorder APIs + getAllSubmissions
-- [x] 12-00b-PLAN.md — Wave 0: Create test scaffolds for ChaptersPage, LessonsPage, SubmissionsPage
-- [x] 12-01-PLAN.md — ChaptersPage + LessonsPage: dnd-kit drag-and-drop reordering
-- [x] 12-02-PLAN.md — SubmissionsPage: server-side pagination + status filter
-- [x] 12-03-PLAN.md — GradingPage: mobile sticky bottom bar
-- [x] 12-04-PLAN.md — UsersPage + CoursesPage: server-side filter + pagination migration (D-01)
-
-**UI hint**: yes
-
-### Phase 12.1: UI Fix — Error States, Typography, Touch Targets (INSERTED)
-
-**Goal:** Fix all UI violations flagged in Phase 12 UI Review (17/24 → target 22+/24): error states on 3 list pages, typography fixes (text-sm/font-normal), touch target upgrade, badge color, copywriting, and prefers-reduced-motion accessibility
-**Requirements**: DS-01, ADMIN-UI-03, ADMIN-UI-04, ADMIN-UI-05
-**Depends on:** Phase 12
-**Plans:** 2/2 plans complete
-
-Plans:
-- [x] 12.1-01-PLAN.md — Wave 1: GradingPage touch target + accessibility, CoursesPage + UsersPage typography fixes
-- [x] 12.1-02-PLAN.md — Wave 2: Error states (3 pages), badge color, copywriting, prefers-reduced-motion CSS
-
-### Phase 13: Student Pages
-**Goal**: Student-facing pages (courses, lesson view, catalogue) have polished Claymorphism layouts with search, infinite scroll, Sheet drawer, and intuitive navigation
-**Depends on**: Phase 12
-**Requirements**: STUDENT-UI-01, STUDENT-UI-02, STUDENT-UI-03, STUDENT-UI-04, DS-01, DS-02
-**Success Criteria** (what must be TRUE):
-  1. Courses page: Claymorphism card grid with teal progress bars, polished empty state with CTA to catalogue
-  2. Course detail: Sheet drawer on mobile (< lg), video embed is primary content area, teal styling
-  3. Catalogue: search bar + grade filter, infinite scroll, Claymorphism cards, 3-col grid on lg
-  4. All pages have empty states with Lucide icons, correct messaging and CTAs
-**Plans**: 4 plans
-
-Plans:
-- [x] 13-00-PLAN.md — Wave 0: CSS foundation (.bm-clay-card-student, .bm-progress-teal, fonts) + test scaffold
-- [x] 13-01-PLAN.md — CoursesPage: Claymorphism cards, teal progress bars, empty state, URL bug fix
-- [x] 13-02-PLAN.md — CataloguePage: search bar, infinite scroll, Claymorphism cards, empty states
-- [x] 13-03-PLAN.md — CourseDetailPage: Sheet drawer mobile layout, lg breakpoint, Claymorphism preview card
-
-**UI hint**: yes
+_Next milestone — run `/gsd:new-milestone` to define scope._
