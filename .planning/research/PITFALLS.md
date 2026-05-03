@@ -1,8 +1,8 @@
 # Pitfalls Research
 
-**Domain:** LMS with Supabase backend (Auth + DB + Storage) on React/Vite SPA
-**Researched:** 2026-03-23
-**Confidence:** HIGH (Supabase auth/RLS/storage pitfalls are well-documented with official sources and community post-mortems)
+**Domain:** LMS with Supabase backend (Auth + DB + Storage) on React/Vite SPA — v3.0 Feature Additions
+**Researched:** 2026-05-03 (updated from original v1.0 research)
+**Confidence:** HIGH — findings based on direct codebase inspection + Supabase documented behaviours
 
 ---
 
@@ -294,6 +294,545 @@ Database setup phase — establish a convention: RLS on + policies written = don
 
 ---
 
+## v3.0 Feature Addition Pitfalls
+
+> These pitfalls are specific to adding chat, mock exams, pricing tiers, study materials, and admin UX to the **existing** BuMath LMS. They arise from interactions with the existing schema, RLS policies, and client architecture. New-project pitfalls above still apply; these are the additional ones that emerge when *extending* a live system.
+
+---
+
+### CRITICAL: Lesson Access is Currently Client-Side Only — Pricing Tiers Will Expose This
+
+**What goes wrong:**
+Migration `20260427_13_catalogue_rls.sql` explicitly states: *"The 'lock' is enrollment (teacher assigns students), not RLS."* The current policies `approved_user_read_all_chapters` and `approved_user_read_all_lessons` allow ANY approved user to SELECT all lessons and chapters from the DB — regardless of enrollment. The frontend enforces the lock by hiding the UI for non-enrolled students.
+
+When pricing tiers are added, the instinct is to add a new pricing check to existing RLS policies. But if the new policy is written incorrectly (too restrictive), it will lock out **all existing enrolled students who have no package record** — causing immediate service disruption.
+
+**Why it happens:**
+The existing system uses a "preview with UI lock" pattern that works for manual enrollment (admin controls everything). Adding payment-gated tiers introduces a second access dimension that the DB layer doesn't currently model. Developers new to the codebase assume RLS enforces access; it doesn't — the frontend does.
+
+**How to avoid:**
+
+1. **Do not modify existing lesson/chapter SELECT policies until the package data model is complete and all existing enrollments are migrated.**
+
+2. **Add a new `purchased_packages` or `enrollments.package_tier` column** to represent tier access, then write a new RLS policy only after all existing enrollment rows have a backfill value:
+   ```sql
+   -- Step 1: add column with a safe default
+   ALTER TABLE enrollments ADD COLUMN package_tier TEXT NOT NULL DEFAULT 'legacy';
+   -- Step 2: backfill all existing enrolled students as 'legacy' (full access)
+   UPDATE enrollments SET package_tier = 'legacy';
+   -- Step 3: THEN add the tier check to lesson RLS, treating 'legacy' as full access
+   ```
+
+3. **Keep the existing permissive policies intact and add a new gating policy on a new `lesson_access_tier` column** on the lessons table (e.g., `free`, `basic`, `premium`), so lessons default to unlocked if no tier is set.
+
+4. Test with three user scenarios before deploying:
+   - Existing enrolled student (no package record): must still see all lessons
+   - New student with a package: must see only tier-appropriate lessons
+   - Unenrolled approved student: must still see preview metadata (titles, not content)
+
+**Warning signs:**
+- Any migration that `DROP POLICY`s `approved_user_read_all_lessons` or `approved_user_read_all_chapters` without a replacement policy that includes a `legacy` enrollment path
+- RLS policies that JOIN `purchased_packages` without handling the NULL case (student with no package record → NULL JOIN → policy returns false → locked out)
+
+**Phase to address:**
+Pricing + Access Control phase — write the migration against a test DB with seeded enrolled students first.
+
+---
+
+### CRITICAL: Supabase Realtime Channel Leak — React StrictMode Double-Mount
+
+**What goes wrong:**
+In-lesson chat uses `supabase.channel('lesson-chat:${lessonId}').on('postgres_changes', ...).subscribe()`. In React 18 StrictMode, components mount → unmount → remount during development. If the cleanup in `useEffect` doesn't call `supabase.removeChannel(channel)`, you get two active subscriptions for the same channel. In production, navigating between lessons without removing channels accumulates orphaned subscriptions — eventually hitting Supabase's connection limit (200 concurrent connections on free tier, 500 on Pro).
+
+Additionally, `onInsert` events may fire twice for a single message (Supabase Realtime can deliver duplicate events under reconnection). Without deduplication, chat messages appear doubled.
+
+**Why it happens:**
+The existing `supabase.ts` creates the client without `realtime` options. Channels are channel-level objects — they're not automatically cleaned up when the React component unmounts. The current codebase has no Realtime usage, so there is no established pattern for cleanup.
+
+**How to avoid:**
+
+```tsx
+// CORRECT pattern for in-lesson chat subscription
+useEffect(() => {
+  const channel = supabase
+    .channel(`lesson-chat:${lessonId}`)
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'lesson_messages',
+      filter: `lesson_id=eq.${lessonId}`,
+    }, (payload) => {
+      setMessages(prev => {
+        // Deduplicate by message ID
+        if (prev.some(m => m.id === payload.new.id)) return prev
+        return [...prev, payload.new as Message]
+      })
+    })
+    .subscribe()
+
+  // CRITICAL: cleanup on unmount
+  return () => {
+    supabase.removeChannel(channel)
+  }
+}, [lessonId])
+```
+
+Do NOT do: `supabase.channel(...).subscribe()` inside `useEffect` without a cleanup return. Do NOT reuse the channel across renders by storing it in state — store it in a ref instead.
+
+**Deduplication rule:** Every message in the chat table must have a stable UUID `id`. The React state must deduplicate incoming Realtime events against the existing local state by `id`.
+
+**Warning signs:**
+- Browser console shows multiple "SUBSCRIBED" log lines for the same channel name
+- Chat messages appear duplicated
+- Supabase Dashboard → Realtime → Connections shows rising connection count with no corresponding user growth
+- `supabase.getChannels()` returns channels with the same name
+
+**Phase to address:**
+In-Lesson Chat phase — establish the cleanup pattern before writing any other Realtime code.
+
+---
+
+### CRITICAL: Exam Answers Exposed in Network Responses — No Server-Side Answer Separation
+
+**What goes wrong:**
+If the mock exam API query fetches questions and answers together (e.g., `SELECT * FROM exam_questions`), the correct answers are visible in the browser Network tab. A student opens DevTools → Network → previews the JSON response → sees all answers before attempting any questions.
+
+**Why it happens:**
+In a client-rendered SPA with Supabase, every query goes directly from browser to Supabase DB. There is no server middleware to strip sensitive fields. RLS only controls which rows you can see, not which columns within those rows.
+
+**How to avoid:**
+
+**Schema design approach (recommended for this stack):**
+
+```sql
+-- Store answers in a SEPARATE table with restrictive RLS
+CREATE TABLE exam_question_answers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  question_id UUID NOT NULL REFERENCES exam_questions(id),
+  correct_option_index INTEGER NOT NULL, -- 0-3 for multiple choice
+  explanation TEXT
+);
+
+-- Students can NEVER read this table directly
+ALTER TABLE exam_question_answers ENABLE ROW LEVEL SECURITY;
+-- No SELECT policy for students — access denied by default
+CREATE POLICY "only_admin_reads_answers"
+  ON exam_question_answers FOR SELECT
+  USING (get_my_role() IN ('admin', 'teacher'));
+```
+
+**Grading via Edge Function or DB Function:**
+When a student submits answers, call a Supabase Edge Function or PostgreSQL function (SECURITY DEFINER) that:
+1. Receives `{ exam_id, answers: [{question_id, selected_option}] }`
+2. Compares against `exam_question_answers` server-side (table is not accessible to the student)
+3. Returns `{ score, correct_count, total }` — never the answers themselves
+
+**Warning signs:**
+- Exam schema has `correct_answer` column on the same `exam_questions` table that students can SELECT
+- No Edge Function or DB function for grading — grading logic lives entirely in React
+
+**Phase to address:**
+Mock Exam phase — design schema with answer separation before writing any exam UI.
+
+---
+
+### CRITICAL: Client-Side Exam Timer Is Trivially Manipulated
+
+**What goes wrong:**
+If exam time tracking uses `useState` + `setInterval` in the browser, a student can: (a) pause JavaScript execution in DevTools, (b) change system clock, (c) close and reopen the tab to reset the countdown, or (d) simply delay submission indefinitely. The timer shows "0:00" but the student keeps writing.
+
+**Why it happens:**
+Client-side timers are appropriate for UI display but cannot be trusted for access enforcement. The natural implementation copies the countdown-timer pattern from UI libraries.
+
+**How to avoid:**
+
+```sql
+-- Store exam START time server-side, not client-side
+CREATE TABLE exam_attempts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id),
+  exam_id UUID NOT NULL REFERENCES exams(id),
+  started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  submitted_at TIMESTAMPTZ, -- NULL until submitted
+  answers JSONB, -- submitted answers
+  score NUMERIC(5,2),
+  UNIQUE (user_id, exam_id) -- prevent re-attempts
+);
+```
+
+**Enforcement at submission:** The submission handler (Edge Function or DB function) must check:
+```sql
+-- Reject submission if time has expired
+IF (now() - attempt.started_at) > (exam.duration_minutes * INTERVAL '1 minute') THEN
+  RAISE EXCEPTION 'Exam time has expired';
+END IF;
+```
+
+**Client-side timer role:** The React countdown is ONLY for display. It reads `started_at` from the DB record and computes remaining time from `now()`. When it hits 0, auto-submit fires. The server enforces the hard cutoff.
+
+**Warning signs:**
+- No `started_at` column in the exam attempts table
+- Submission endpoint does not validate `started_at + duration < now()`
+- Timer state comes from `useState(examDurationSeconds)` with no connection to a server-stored start time
+
+**Phase to address:**
+Mock Exam phase — define the attempt model before building any exam UI.
+
+---
+
+### CRITICAL: Pricing Migration — Existing Enrolled Students Must Have Explicit Access
+
+**What goes wrong:**
+v3.0 adds pricing packages (1.5tr–4tr). When a new `package_tier` requirement is added to lesson access control, every student enrolled before the pricing system existed has no package record. They are effectively locked out of content they paid for (with time, not money — they were manually enrolled). This is a catastrophic regression for existing students.
+
+**Why it happens:**
+Adding an access control dimension to an existing system always creates orphans — records that predate the new dimension. The new policy defaults to "no access" (deny by default in RLS), so existing users without a matching package record get nothing.
+
+**How to avoid:**
+
+**The "grandfather" migration pattern:**
+
+```sql
+-- When adding pricing, create a 'legacy_full_access' package
+INSERT INTO packages (id, name, tier, grants_access_to)
+VALUES ('00000000-0000-0000-0000-000000000001', 'Legacy Enrollment', 'legacy', ARRAY['all']);
+
+-- Back-fill all existing enrollments
+ALTER TABLE enrollments ADD COLUMN package_id UUID REFERENCES packages(id);
+UPDATE enrollments SET package_id = '00000000-0000-0000-0000-000000000001';
+ALTER TABLE enrollments ALTER COLUMN package_id SET NOT NULL;
+```
+
+**RLS policy must explicitly handle legacy:**
+```sql
+-- Legacy package = full access to all lessons
+USING (
+  is_approved_user() AND (
+    -- Legacy enrollment (existing students): full access
+    EXISTS (
+      SELECT 1 FROM enrollments e
+      JOIN packages p ON p.id = e.package_id
+      WHERE e.user_id = auth.uid()
+        AND e.course_id = lessons.course_id
+        AND p.tier = 'legacy'
+    )
+    OR
+    -- New package enrollment: check tier against lesson tier
+    EXISTS (
+      SELECT 1 FROM enrollments e
+      JOIN packages p ON p.id = e.package_id
+      WHERE e.user_id = auth.uid()
+        AND e.course_id = lessons.course_id
+        AND lesson_is_accessible_for_package_tier(lessons.id, p.tier)
+    )
+  )
+)
+```
+
+**Deployment order:**
+1. Add `packages` table and `legacy` package row
+2. Add `package_id` column to `enrollments` with NULL allowed
+3. Back-fill all existing `enrollments.package_id` to legacy package
+4. Add NOT NULL constraint
+5. NOW add the new RLS policies
+6. Never do 1 and 5 in the same migration
+
+**Warning signs:**
+- A single migration that simultaneously adds pricing tables AND drops existing permissive policies
+- No `legacy` or `grandfather` package record before going live
+- Backfill is skipped because "existing students will get new packages anyway"
+
+**Phase to address:**
+Pricing + Access Control phase — the backfill migration must be step 1, before any RLS changes.
+
+---
+
+### RLS N+1 Performance — Package Tier JOINs on Every Row
+
+**What goes wrong:**
+Adding a pricing tier check to lesson RLS like:
+```sql
+EXISTS (
+  SELECT 1 FROM enrollments e JOIN packages p ON p.id = e.package_id
+  WHERE e.user_id = auth.uid() AND e.course_id = chapters.course_id AND ...
+)
+```
+This correlated subquery runs **once per row** returned by any `SELECT * FROM lessons`. If a course has 50 lessons, Postgres evaluates this 50 times. As courses grow, this causes significant latency.
+
+**Why it happens:**
+RLS policies with correlated subqueries are evaluated per-row. Developers don't think of RLS as "code that runs for every row" — they think of it as a one-time gate. But Postgres runs the policy WHERE clause for each candidate row.
+
+**How to avoid:**
+
+**Indexing:** Every column used in RLS subqueries must be indexed:
+```sql
+CREATE INDEX idx_enrollments_user_course ON enrollments (user_id, course_id);
+CREATE INDEX idx_enrollments_package_id ON enrollments (package_id);
+CREATE INDEX idx_lesson_access_tier ON lessons (access_tier);
+```
+
+**Function-based caching:** Wrap the package tier lookup in a `SECURITY DEFINER` + `STABLE` function so Postgres can cache the result within a single query:
+```sql
+CREATE OR REPLACE FUNCTION get_my_package_tier_for_course(p_course_id UUID)
+RETURNS TEXT LANGUAGE sql SECURITY DEFINER STABLE AS $$
+  SELECT p.tier FROM enrollments e
+  JOIN packages p ON p.id = e.package_id
+  WHERE e.user_id = auth.uid() AND e.course_id = p_course_id
+  LIMIT 1
+$$;
+```
+
+**Warning signs:**
+- Slow lesson list load (> 500ms) after adding package tier RLS
+- `EXPLAIN (ANALYZE)` shows sequential scans on `enrollments` inside the policy
+- No indexes on `enrollments (user_id, course_id)`
+
+**Phase to address:**
+Pricing + Access Control phase — add indexes in the same migration as the RLS policy.
+
+---
+
+### Admin Route Conflicts — Param Overlap with New Form Pages
+
+**What goes wrong:**
+The existing route `/admin/courses/:courseSlug` matches any slug, including intended new paths like `/admin/courses/new` and `/admin/courses/:courseSlug/chapters/new`. React Router v6 evaluates routes from top to bottom; if the param route appears first, `new` is captured as the `courseSlug` param and the "New Course" component never renders.
+
+Additionally, adding `/admin/courses/:courseSlug/chapters/:chapterSlug/lessons/new` — a deep nested route — requires restructuring the existing route hierarchy without breaking the existing `ChaptersPage` and `LessonsPage` which currently live at the same URL depth.
+
+**Why it happens:**
+Param routes (`:courseSlug`) are catch-all for that path segment. Literal routes (`new`) at the same depth must appear BEFORE the param route in the router definition. When developers add new routes to a long route list, they often append to the bottom — below the existing param routes.
+
+**How to avoid:**
+
+In React Router v6, order literal routes BEFORE param routes at the same depth:
+
+```tsx
+// CORRECT ordering
+<Route path="/admin/courses" element={<CoursesPage />} />
+<Route path="/admin/courses/new" element={<NewCoursePage />} />  {/* before :courseSlug */}
+<Route path="/admin/courses/:courseSlug" element={<ChaptersPage />} />
+<Route path="/admin/courses/:courseSlug/chapters/new" element={<NewChapterPage />} />  {/* before :chapterSlug */}
+<Route path="/admin/courses/:courseSlug/chapters/:chapterSlug" element={<LessonsPage />} />
+```
+
+Alternatively, use a naming convention that avoids collision: prefix param routes with a unique identifier (e.g., `_` for UUIDs) or use action paths with query strings instead of path segments (`/admin/courses?action=new`).
+
+**Warning signs:**
+- Navigating to `/admin/courses/new` shows the ChaptersPage for a course named "new"
+- 404 or blank page when navigating to the new form
+- Existing course detail page stops working after adding new routes
+
+**Phase to address:**
+Admin UX phase — audit the full route tree before adding any new admin paths.
+
+---
+
+### Supabase Realtime Connection Limit — Lesson Chat on Free Tier
+
+**What goes wrong:**
+Supabase free tier supports **200 concurrent Realtime connections**. If each student with an open lesson tab holds one Realtime channel (for in-lesson chat), 200 concurrent students saturate the connection pool. New connections are rejected silently — the chat simply stops working for new joiners with no error visible to the student.
+
+**Why it happens:**
+Each `supabase.channel(...).subscribe()` call opens a WebSocket connection. Browser tabs in the background maintain the connection. Students watching a long video lecture keep the channel open for 30–60 minutes.
+
+**How to avoid:**
+
+**Lazy channel opening:** Only open the Realtime channel when the user clicks the "Chat" tab, not when the lesson page loads:
+```tsx
+// Only subscribe when chat tab is active
+const [chatTabActive, setChatTabActive] = useState(false)
+
+useEffect(() => {
+  if (!chatTabActive) return
+  const channel = supabase.channel(...)
+  // ...cleanup
+  return () => supabase.removeChannel(channel)
+}, [chatTabActive, lessonId])
+```
+
+**Visibility-based pause:** When the browser tab is hidden (`document.visibilityState === 'hidden'`), close the channel. Reopen when visible. This prevents idle background tabs from holding connections.
+
+**On Supabase free tier:** Monitor the Realtime → Connections panel. If approaching the limit, upgrade to Pro (500 connections) or implement channel sharing (one channel per lesson, not per user — use `broadcast` mode for high-traffic lessons).
+
+**Warning signs:**
+- Students report "chat not loading" during peak class hours
+- Supabase Dashboard → Realtime shows connection count near the limit
+- No visibility change handler in the chat component
+
+**Phase to address:**
+In-Lesson Chat phase — implement lazy channel opening as the default pattern.
+
+---
+
+### Study Materials — Signed URL Expiry vs. UX Tradeoff
+
+**What goes wrong:**
+Study material PDFs stored in Supabase Storage (private bucket) require signed URLs for access. If the expiry is too short (e.g., 60 seconds), a student who opens the PDF in a new tab and then tries to reload it gets a 403. If the expiry is too long (e.g., 24 hours), a student can share the signed URL with non-enrolled friends before it expires.
+
+Additionally, if PDFs are stored in the existing **public** `assignments` bucket (used for lesson assignment PDFs), they are accessible to anyone with the URL — no enrollment check. Study materials have higher value and should not share a bucket with assignment attachments.
+
+**Why it happens:**
+Signed URL duration is set once at generation time. Short expiry is secure but breaks UX. Developers reach for the existing bucket rather than creating a new private one.
+
+**How to avoid:**
+
+1. **Use a separate private `study-materials` bucket** — do not mix with the existing `assignments` bucket.
+2. **Set signed URL expiry to 1 hour** for download links. Regenerate on each page load rather than caching the URL in state.
+3. **RLS on storage.objects** must check enrollment + package tier before allowing the signed URL generation:
+   ```sql
+   CREATE POLICY "enrolled_students_can_read_study_materials"
+   ON storage.objects FOR SELECT
+   USING (
+     bucket_id = 'study-materials'
+     AND is_approved_user()
+     AND EXISTS (
+       SELECT 1 FROM study_material_access sma
+       WHERE sma.file_path = name
+         AND sma.user_id = auth.uid()
+     )
+   );
+   ```
+4. For PDF inline viewing (not just download), use the Supabase JS `createSignedUrl()` method with a 3600s expiry, then render in an `<iframe>` or `<embed>`.
+
+**Warning signs:**
+- Study material PDFs stored in a public bucket or the same bucket as assignment attachments
+- Signed URL generated once on component mount and cached in state for the lifetime of the component
+- No access control on the storage bucket beyond "authenticated user"
+
+**Phase to address:**
+Study Materials phase — create the new bucket and RLS before uploading any PDF files.
+
+---
+
+### YouTube Unlisted Videos — What It Does and Does Not Protect
+
+**What goes wrong:**
+Marking a YouTube video as "unlisted" prevents it from appearing in search results and the creator's channel, but the video is **publicly playable** by anyone who has the URL. If a student copies the YouTube video ID from the embed URL (`youtube.com/embed/VIDEO_ID`) and shares it, anyone can watch the full video. Domain-based embed restrictions also don't prevent direct `youtube.com/watch?v=VIDEO_ID` playback.
+
+**Why it happens:**
+Developers conflate "unlisted" with "private." YouTube's privacy model has three levels: Public, Unlisted, and Private. Unlisted is not the same as private — it just hides the video from indexing. The URL is the only protection.
+
+**What YouTube domain restriction DOES protect:**
+Setting allowed domains in YouTube's embed settings prevents `<iframe>` embedding on OTHER websites. It does NOT prevent:
+- Direct playback on youtube.com/watch
+- Playback via the YouTube mobile app
+- Third-party players that bypass embed restrictions
+- Screen recording
+
+**The real threat model for BuMath:**
+The primary risk is not sophisticated bypass — it's students casually sharing the YouTube URL with friends. The business model (manual enrollment, Vietnamese THCS market) means protecting against casual sharing, not determined pirates.
+
+**Recommended approach:**
+1. Keep videos unlisted (not public)
+2. Enable domain embed restriction (`bumath.vercel.app` only)
+3. Use `youtube-nocookie.com` embed URLs for privacy
+4. Accept that determined students can share URLs — the content is homework help, not high-value IP
+5. Do NOT store the YouTube URL in a way that requires additional DB access per load; the current approach of storing `video_url` in the `lessons` table is fine
+
+**What to NOT do:**
+- Do not build a proxy server to hide YouTube video IDs — this violates YouTube ToS and is overkill for this use case
+- Do not store video IDs separately from URLs thinking that prevents exposure — the embed URL contains the ID
+
+**Warning signs:**
+- Team spending significant engineering time on "video protection" beyond unlisted + domain restriction
+- Considering self-hosted video player to "hide" YouTube IDs
+
+**Phase to address:**
+YouTube Privacy phase — document the threat model and accepted risk before starting implementation.
+
+---
+
+### Supabase Realtime — Missing `lesson_messages` Table RLS
+
+**What goes wrong:**
+When creating the `lesson_messages` table for in-lesson chat, a developer enables Realtime on the table and sets up the `postgres_changes` subscription. If RLS is enabled but there is no INSERT policy for students (or the policy is too permissive), two failure modes occur:
+- **Too restrictive:** Students can receive messages via Realtime (SELECT succeeds) but cannot send messages (INSERT silently fails — no error is thrown to the client, the message just disappears)
+- **Too permissive:** Students can INSERT messages into any lesson's chat, not just their enrolled lesson — allowing spam across all lessons
+
+**How to avoid:**
+
+```sql
+-- lesson_messages RLS
+ALTER TABLE lesson_messages ENABLE ROW LEVEL SECURITY;
+
+-- Students can read messages for lessons in their enrolled courses
+CREATE POLICY "enrolled_students_read_chat"
+  ON lesson_messages FOR SELECT
+  USING (
+    is_approved_user() AND
+    EXISTS (
+      SELECT 1 FROM lessons l
+      JOIN chapters ch ON ch.id = l.chapter_id
+      JOIN enrollments e ON e.course_id = ch.course_id
+      WHERE l.id = lesson_messages.lesson_id
+        AND e.user_id = auth.uid()
+    )
+  );
+
+-- Students can INSERT messages only for enrolled lessons
+CREATE POLICY "enrolled_students_send_chat"
+  ON lesson_messages FOR INSERT
+  WITH CHECK (
+    user_id = auth.uid() AND
+    is_approved_user() AND
+    EXISTS (
+      SELECT 1 FROM lessons l
+      JOIN chapters ch ON ch.id = l.chapter_id
+      JOIN enrollments e ON e.course_id = ch.course_id
+      WHERE l.id = lesson_id AND e.user_id = auth.uid()
+    )
+  );
+
+-- Teachers/admin can read all messages
+CREATE POLICY "teacher_admin_read_all_chat"
+  ON lesson_messages FOR SELECT
+  USING (get_my_role() IN ('admin', 'teacher'));
+```
+
+**Also required:** Enable the `lesson_messages` table in Supabase Realtime configuration (Dashboard → Database → Replication → Tables). Tables must be explicitly added to the publication for `postgres_changes` to fire.
+
+**Warning signs:**
+- Messages sent from chat UI don't appear — no error, just no delivery
+- Realtime subscription `onInsert` never fires
+- Table not in the `supabase_realtime` publication
+
+**Phase to address:**
+In-Lesson Chat phase — write RLS before building chat UI. Test INSERT policy explicitly.
+
+---
+
+## v3.0 Phase-Specific Warnings
+
+| Phase Topic | Likely Pitfall | Mitigation |
+|-------------|---------------|------------|
+| Pricing + Access Control | Existing enrolled students locked out when new tier policies drop permissive existing policies | Run backfill migration BEFORE changing any RLS policy; keep `legacy` tier |
+| Pricing + Access Control | N+1 query on every lesson row due to package tier JOIN in RLS | Index `enrollments(user_id, course_id)` and `enrollments(package_id)` before deploying new policies |
+| In-Lesson Chat | Realtime channel leak from missing cleanup in `useEffect` | Always return `() => supabase.removeChannel(channel)` from effect |
+| In-Lesson Chat | Duplicate messages from Realtime reconnect | Deduplicate incoming events against local state by message `id` |
+| In-Lesson Chat | Connection limit exhaustion on free tier (200 max) | Lazy-open channel only when Chat tab is active; close on tab hide |
+| In-Lesson Chat | Missing Realtime publication for `lesson_messages` table | Manually add table to replication in Dashboard; test before deploying UI |
+| Mock Exams | Answer exposure via Network tab | Separate answers into `exam_question_answers` table with admin-only SELECT policy |
+| Mock Exams | Client-side timer bypassed | Store `started_at` server-side in `exam_attempts`; enforce cutoff at submission in DB function |
+| Mock Exams | Double-submission via rapid clicks | `UNIQUE (user_id, exam_id)` constraint on `exam_attempts` table |
+| Study Materials | PDFs in existing public assignments bucket — no enrollment check | Create separate private `study-materials` bucket with enrollment-gated RLS |
+| Study Materials | Signed URLs expire mid-session | Generate signed URLs at page load with 1h expiry; regenerate on revisit |
+| Admin UX (new form routes) | `/admin/courses/new` captured by `:courseSlug` param route | Order literal routes before param routes in React Router v6 definition |
+| YouTube Privacy | Unlisted treated as "private" — video URLs shareable | Document threat model; unlisted + domain restriction is the accepted level of protection |
+| YouTube Privacy | Expensive engineering to "hide" video IDs from browser | Accept that SPA clients always have access to embed URLs; focus on enrollment UX instead |
+
+---
+
+## v3.0 Migration Strategy for Existing Data
+
+| Change | Risk | Migration Steps |
+|--------|------|-----------------|
+| Adding `package_tier` to `enrollments` | Existing students locked out | 1. Add column `DEFAULT 'legacy'`. 2. `UPDATE enrollments SET package_tier = 'legacy'`. 3. Add NOT NULL constraint. 4. Only THEN update RLS. |
+| Adding `lesson_access_tier` to `lessons` | All lessons become locked if policy checks this column | Default new column to `'free'` (accessible to all enrolled students); only explicitly tag premium lessons after the system is live |
+| Adding `exam_attempts` unique constraint | Students who started an exam during rollout may get duplicate rows | Run `DELETE FROM exam_attempts WHERE id NOT IN (SELECT MIN(id) FROM exam_attempts GROUP BY user_id, exam_id)` before adding the constraint |
+| Enabling Realtime on `lesson_messages` | First time Realtime is used — no existing subscription patterns | Ship chat with Realtime publish-only mode first; add subscription second — validates the connection/cleanup pattern before broader rollout |
+
+---
+
 ## Sources
 
 - [Supabase RLS Performance and Best Practices](https://supabase.com/docs/guides/troubleshooting/rls-performance-and-best-practices-Z5Jjwv)
@@ -318,8 +857,16 @@ Database setup phase — establish a convention: RLS on + policies written = don
 - [onAuthStateChange unsubscribe pattern — Discussion #5282](https://github.com/orgs/supabase/discussions/5282)
 - [CSP for YouTube iframe embeds — csplite.com](https://csplite.com/csp/test40/)
 - [react-image-file-resizer — GitHub](https://github.com/onurzorluer/react-image-file-resizer)
+- [Supabase Realtime — Postgres Changes](https://supabase.com/docs/guides/realtime/postgres-changes)
+- [Supabase Realtime — Quotas and Limits](https://supabase.com/docs/guides/realtime/quotas)
+- [Supabase Realtime channel cleanup — supabase-js removeChannel](https://supabase.com/docs/reference/javascript/removeChannel)
+- [Supabase Storage — createSignedUrl](https://supabase.com/docs/reference/javascript/storagefilefromfilepath-createsignedurl)
+- [YouTube embed privacy — youtube-nocookie.com](https://support.google.com/youtube/answer/171780)
+- [YouTube video privacy settings — YouTube Help](https://support.google.com/youtube/answer/157177)
+- [React Router v6 — Route matching order](https://reactrouter.com/en/main/route/route#index)
+- [Supabase Realtime — Enable for specific tables (replication setup)](https://supabase.com/docs/guides/realtime/postgres-changes#replication-setup)
 
 ---
 
 *Pitfalls research for: LMS (Supabase Auth + DB + Storage) on React/Vite SPA*
-*Researched: 2026-03-23*
+*v1.0 research: 2026-03-23 | v3.0 additions: 2026-05-03*

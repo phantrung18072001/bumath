@@ -1,8 +1,28 @@
-# Architecture Research
+# Architecture Research — BuMath v3.0 Platform Expansion
 
 **Domain:** Supabase-backed LMS — React SPA with 3-role auth (student/teacher/admin)
-**Researched:** 2026-03-23
-**Confidence:** HIGH (Supabase official docs), MEDIUM (integration patterns from verified community sources)
+**Researched:** 2026-05-03 (updated for v3.0 milestone)
+**Confidence:** HIGH (codebase inspection + Supabase official docs), MEDIUM (Realtime + RLS interaction patterns)
+
+---
+
+## v3.0 Feature Integration Map
+
+Seven features land in this milestone. Their architectural impact ranges from "add a table + component" to "modify existing RLS policies." This document covers each one: what changes, what stays, where the risk is.
+
+| Feature | New Tables | Modified Tables | New Components | Modifies Existing |
+|---------|-----------|----------------|---------------|-------------------|
+| In-Lesson Chat | `lesson_messages` | — | `LessonChat` | `LessonContent` (tab layout) |
+| Mock Exam System | `exam_sessions`, `exam_questions`, `exam_submissions` | — | `ExamListPage`, `ExamTakingPage` | `App.tsx` (routes) |
+| Study Materials | `study_materials` | — | `StudyMaterialsPage`, `MaterialsTab` | `LessonContent` (tab), `App.tsx` |
+| Pricing + Access Control | `packages`, `package_courses` | `enrollments` (add `package_id`) | `PricingPage`, admin package UI | `lessons` RLS, `enrollments` api |
+| School Navigator | — | — | `SchoolNavigator` | `Index.tsx` (landing) |
+| Admin Full-Page Forms | — | — | `AddChapterPage`, `AddLessonPage` | `App.tsx` (routes) |
+| YouTube Privacy | — | — | — | `LessonContent`, `vercel.json` |
+
+**Critical dependency:** Pricing + Access Control must ship before any lesson is access-gated. Build it in Phase 1 of the milestone, even if the pricing UI is placeholder. The `lessons` RLS policy update is the anchor point everything else depends on.
+
+---
 
 ## Standard Architecture
 
@@ -891,3 +911,810 @@ update session + role + status      clear session, invalidate all queries
 
 *Architecture research for: Supabase-backed LMS with 3-role auth*
 *Researched: 2026-03-23*
+
+---
+
+# v3.0 Architecture: Integration Analysis
+
+**Milestone:** Platform Expansion — 7 new features added to existing BuMath LMS
+**Researched:** 2026-05-03
+**Confidence:** HIGH (codebase inspection + Supabase official docs)
+
+---
+
+## Existing Architecture (Verified from Codebase)
+
+### Actual DB Tables (as-built)
+```
+profiles (id, full_name, phone, year_of_birth, address, role, approval_status, created_at)
+courses (id, title, description, target_grade, thumbnail_url, slug, is_published, created_at, updated_at)
+chapters (id, course_id, title, description, order_index, slug, created_at, updated_at)
+lessons (id, chapter_id, title, description, video_url, assignment_path, order_index, slug, created_at, updated_at)
+enrollments (id, user_id, course_id, enrolled_at)
+lesson_progress (id, user_id, lesson_id, completed_at)
+submissions (id, user_id, lesson_id, file_path, submitted_at, status, score, comment)
+```
+
+### Actual RLS Helper Functions
+```sql
+get_my_role()       -- SECURITY DEFINER — reads role from profiles, avoids recursion
+is_admin()          -- SECURITY DEFINER — wraps get_my_role() = 'admin'
+is_approved_user()  -- SECURITY DEFINER — checks approval_status = 'approved'
+```
+
+### Actual API Layer Pattern
+Each feature has `src/lib/api/{feature}.ts` exporting typed functions. No separate hooks directory.
+TanStack Query `useQuery`/`useMutation` calls are inlined in page/component files with `queryKey` arrays.
+
+### Actual Route Pattern (Vietnamese URLs)
+```
+/dang-nhap, /dang-ky
+/quan-tri/nguoi-dung, /quan-tri/khoa-hoc, /quan-tri/bai-nop
+/khoa-hoc, /khoa-hoc/:courseSlug
+/danh-muc
+```
+Routes use `<ProtectedRoute requiredRole="admin">` or `<ProtectedRoute allowedRoles={['admin', 'teacher']}>`.
+
+### Actual Component Structure
+```
+src/components/student/LessonContent.tsx   — video + description + assignment + submission + progress button
+src/components/student/LessonSidebar.tsx   — chapter/lesson tree
+src/components/student/SubmissionArea.tsx  — file upload + status display
+src/components/student/BellNotification.tsx
+src/pages/student/CourseDetailPage.tsx     — desktop split-pane + mobile sheet drawer
+```
+
+---
+
+## Feature 1: In-Lesson Chat
+
+### New Table
+```sql
+CREATE TABLE lesson_messages (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  lesson_id   uuid NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+  user_id     uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  content     text NOT NULL,
+  parent_id   uuid REFERENCES lesson_messages(id) ON DELETE CASCADE, -- for threaded replies
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX lesson_messages_lesson_id_idx ON lesson_messages(lesson_id);
+CREATE INDEX lesson_messages_user_id_idx ON lesson_messages(user_id);
+
+-- Enable Realtime (required for Supabase Realtime subscriptions)
+ALTER TABLE lesson_messages REPLICA IDENTITY FULL;
+```
+
+### RLS Policies
+```sql
+ALTER TABLE lesson_messages ENABLE ROW LEVEL SECURITY;
+
+-- Students see all messages in lessons for their enrolled courses
+-- (own messages + teacher replies — enrollment scopes visibility naturally)
+CREATE POLICY "student_read_lesson_messages"
+  ON lesson_messages FOR SELECT
+  USING (
+    get_my_role() = 'student' AND
+    EXISTS (
+      SELECT 1 FROM enrollments e
+      JOIN chapters ch ON ch.id = (SELECT chapter_id FROM lessons WHERE id = lesson_messages.lesson_id)
+      WHERE e.course_id = ch.course_id AND e.user_id = auth.uid()
+    )
+  );
+
+-- Students can insert own messages (enrolled lessons only)
+CREATE POLICY "student_insert_lesson_messages"
+  ON lesson_messages FOR INSERT
+  WITH CHECK (
+    user_id = auth.uid() AND
+    get_my_role() = 'student' AND
+    EXISTS (
+      SELECT 1 FROM enrollments e
+      JOIN chapters ch ON ch.id = (SELECT chapter_id FROM lessons WHERE id = lesson_messages.lesson_id)
+      WHERE e.course_id = ch.course_id AND e.user_id = auth.uid()
+    )
+  );
+
+-- Teachers/admins see and write all messages
+CREATE POLICY "teacher_admin_all_lesson_messages"
+  ON lesson_messages FOR ALL
+  USING (get_my_role() IN ('teacher', 'admin'))
+  WITH CHECK (get_my_role() IN ('teacher', 'admin') AND user_id = auth.uid());
+```
+
+**RLS Note:** The `(SELECT chapter_id FROM lessons WHERE id = lesson_messages.lesson_id)` subquery is a correlated subquery — Postgres evaluates it per row. For acceptable performance at LMS scale (< 50k rows), this is fine. If it becomes a bottleneck, add `lesson_id → course_id` denormalized column to `lesson_messages`.
+
+### Supabase Realtime Integration
+```typescript
+// src/lib/api/lesson-messages.ts
+import { supabase } from '@/lib/supabase'
+import type { RealtimeChannel } from '@supabase/supabase-js'
+
+export interface LessonMessage {
+  id: string
+  lesson_id: string
+  user_id: string
+  content: string
+  parent_id: string | null
+  created_at: string
+  profile?: { full_name: string; role: string }
+}
+
+export function subscribeToLessonMessages(
+  lessonId: string,
+  onMessage: (msg: LessonMessage) => void
+): RealtimeChannel {
+  return supabase
+    .channel(`lesson_messages:${lessonId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'lesson_messages',
+        filter: `lesson_id=eq.${lessonId}`,
+      },
+      (payload) => onMessage(payload.new as LessonMessage)
+    )
+    .subscribe()
+}
+```
+
+**Realtime Consideration:** Supabase Realtime `postgres_changes` with row-level filter (`lesson_id=eq.X`) works but the filter is applied server-side on the Realtime server, not as a DB-level RLS filter. RLS still applies — a student not enrolled will not receive the event. Use `channel.unsubscribe()` in `useEffect` cleanup to avoid memory leaks.
+
+**Important:** Supabase Realtime must be enabled for the `lesson_messages` table in Dashboard → Database → Replication. Add `lesson_messages` to the publication.
+
+### New Component
+```
+src/components/student/LessonChat.tsx   — message list + input box, uses subscribeToLessonMessages
+```
+
+### Modified Component
+`src/components/student/LessonContent.tsx` → refactor to 3-tab layout:
+```
+Tab 1: Video + Description (current content)
+Tab 2: Chấm bài (existing SubmissionArea, moved here)
+Tab 3: Chat (new LessonChat component)
+```
+
+### Data Flow
+```
+LessonContent renders tab "Chat"
+    ↓
+LessonChat mounts → fetchLessonMessages(lessonId) [initial load via TanStack Query]
+    ↓
+subscribeToLessonMessages(lessonId) → RealtimeChannel.subscribe()
+    ↓
+New message arrives via INSERT → onMessage callback → append to local state
+    ↓
+User sends message → insertLessonMessage({lesson_id, user_id, content})
+    ↓ (own message appears optimistically or via Realtime)
+On unmount: channel.unsubscribe()
+```
+
+---
+
+## Feature 2: Mock Exam System
+
+### New Tables
+```sql
+CREATE TABLE exam_sessions (
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  title      text NOT NULL,
+  type       text NOT NULL CHECK (type IN ('monthly', 'quarterly')),
+  start_at   timestamptz NOT NULL,
+  end_at     timestamptz NOT NULL,
+  is_active  boolean NOT NULL DEFAULT false,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE exam_questions (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  session_id  uuid NOT NULL REFERENCES exam_sessions(id) ON DELETE CASCADE,
+  content     text NOT NULL,           -- question text (markdown OK)
+  answer_key  text NOT NULL,           -- correct answer (stored encrypted or hashed for production; plain text for v3 MVP)
+  points      numeric(5,2) NOT NULL DEFAULT 1,
+  order_index integer NOT NULL DEFAULT 0,
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX exam_questions_session_id_idx ON exam_questions(session_id);
+
+CREATE TABLE exam_submissions (
+  id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  session_id   uuid NOT NULL REFERENCES exam_sessions(id) ON DELETE CASCADE,
+  user_id      uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  answers      jsonb NOT NULL DEFAULT '{}', -- {question_id: answer_text}
+  score        numeric(5,2),
+  submitted_at timestamptz,
+  created_at   timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (session_id, user_id)             -- one submission per student per exam
+);
+CREATE INDEX exam_submissions_session_id_idx ON exam_submissions(session_id);
+CREATE INDEX exam_submissions_user_id_idx ON exam_submissions(user_id);
+```
+
+### RLS Policies
+```sql
+ALTER TABLE exam_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE exam_questions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE exam_submissions ENABLE ROW LEVEL SECURITY;
+
+-- exam_sessions: public read when active (students browse available exams)
+CREATE POLICY "anyone_read_active_exam_sessions"
+  ON exam_sessions FOR SELECT
+  USING (is_active = true AND is_approved_user());
+
+CREATE POLICY "admin_all_exam_sessions"
+  ON exam_sessions FOR ALL
+  USING (get_my_role() = 'admin')
+  WITH CHECK (get_my_role() = 'admin');
+
+-- exam_questions: students see questions only when exam is active and in window
+-- CRITICAL: answer_key must NOT be exposed to students via this policy
+-- Solution: create a view that excludes answer_key for student reads
+CREATE POLICY "student_read_exam_questions"
+  ON exam_questions FOR SELECT
+  USING (
+    is_approved_user() AND
+    EXISTS (
+      SELECT 1 FROM exam_sessions s
+      WHERE s.id = exam_questions.session_id
+        AND s.is_active = true
+        AND now() BETWEEN s.start_at AND s.end_at
+    )
+  );
+
+CREATE POLICY "admin_all_exam_questions"
+  ON exam_questions FOR ALL
+  USING (get_my_role() = 'admin')
+  WITH CHECK (get_my_role() = 'admin');
+
+-- exam_submissions: students manage own, admin sees all
+CREATE POLICY "student_own_exam_submissions"
+  ON exam_submissions FOR ALL
+  USING (user_id = auth.uid())
+  WITH CHECK (
+    user_id = auth.uid() AND
+    is_approved_user() AND
+    -- Enforce time window on INSERT
+    EXISTS (
+      SELECT 1 FROM exam_sessions s
+      WHERE s.id = exam_submissions.session_id
+        AND s.is_active = true
+        AND now() BETWEEN s.start_at AND s.end_at
+    )
+  );
+
+CREATE POLICY "admin_all_exam_submissions"
+  ON exam_submissions FOR ALL
+  USING (get_my_role() = 'admin')
+  WITH CHECK (get_my_role() = 'admin');
+```
+
+**Answer Key Security:** The `answer_key` column MUST NOT reach the browser before submission. Two safe approaches:
+1. **Server-side grading via RPC:** Student submits answers → `CALL grade_exam_submission(submission_id)` → DB function compares answers to answer_key and sets score. Student never sees answer_key column.
+2. **Hashed answers:** Store `md5(lower(trim(answer_key)))` and hash student answers client-side before comparing. Simple for multiple choice; not suitable for free text.
+
+**Recommended for v3:** Server-side RPC grading. The RLS policy on `exam_questions` can be a view that excludes `answer_key`:
+```sql
+CREATE VIEW exam_questions_public AS
+  SELECT id, session_id, content, points, order_index, created_at
+  FROM exam_questions;
+-- Grant SELECT on the view to authenticated; revoke direct SELECT on exam_questions
+```
+
+### Auto-Grading RPC
+```sql
+CREATE OR REPLACE FUNCTION grade_exam_submission(p_submission_id uuid)
+RETURNS numeric LANGUAGE plpgsql SECURITY DEFINER AS $$
+DECLARE
+  v_session_id uuid;
+  v_answers jsonb;
+  v_total numeric := 0;
+  v_earned numeric := 0;
+  rec RECORD;
+BEGIN
+  SELECT session_id, answers INTO v_session_id, v_answers
+  FROM exam_submissions WHERE id = p_submission_id AND user_id = auth.uid();
+
+  FOR rec IN SELECT id, answer_key, points FROM exam_questions WHERE session_id = v_session_id LOOP
+    v_total := v_total + rec.points;
+    IF lower(trim(v_answers ->> rec.id::text)) = lower(trim(rec.answer_key)) THEN
+      v_earned := v_earned + rec.points;
+    END IF;
+  END LOOP;
+
+  UPDATE exam_submissions
+  SET score = v_earned, submitted_at = now()
+  WHERE id = p_submission_id;
+
+  RETURN v_earned;
+END;
+$$;
+```
+
+### New Routes
+```
+/thi-thu                     — StudentExamListPage (list active/upcoming exams)
+/thi-thu/:sessionId          — StudentExamTakingPage (time-bounded exam form)
+/thi-thu/:sessionId/ket-qua  — StudentExamResultPage (show score after submit)
+/quan-tri/thi-thu            — AdminExamListPage
+/quan-tri/thi-thu/tao        — AdminExamCreatePage
+/quan-tri/thi-thu/:sessionId — AdminExamDetailPage (manage questions, results)
+```
+
+### New API Files
+```
+src/lib/api/exam-sessions.ts
+src/lib/api/exam-questions.ts   — fetchExamQuestions (uses _public view)
+src/lib/api/exam-submissions.ts — createExamSubmission, gradeExamSubmission (calls RPC)
+```
+
+---
+
+## Feature 3: Study Materials
+
+### New Table
+```sql
+CREATE TABLE study_materials (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  title       text NOT NULL,
+  category    text NOT NULL CHECK (category IN ('midterm', 'final', 'entrance', 'hsg', 'specialized', 'top4')),
+  grade       smallint CHECK (grade IN (7, 8, 9)),  -- null = all grades
+  file_path   text NOT NULL,   -- path in 'materials' storage bucket
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX study_materials_category_idx ON study_materials(category);
+CREATE INDEX study_materials_grade_idx ON study_materials(grade);
+```
+
+### Storage Bucket
+```sql
+-- Public read bucket (materials are freely accessible to authenticated users)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('materials', 'materials', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Admin can upload
+CREATE POLICY "admin_upload_materials"
+  ON storage.objects FOR INSERT
+  WITH CHECK (
+    bucket_id = 'materials' AND
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+-- Anyone authenticated can read (or make bucket fully public for anon access)
+CREATE POLICY "authenticated_read_materials"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'materials');
+```
+
+### RLS Policies
+```sql
+ALTER TABLE study_materials ENABLE ROW LEVEL SECURITY;
+
+-- Any approved user can read study materials
+CREATE POLICY "approved_users_read_materials"
+  ON study_materials FOR SELECT
+  USING (is_approved_user());
+
+-- Unauthenticated users can browse material metadata (optional: for landing page teaser)
+-- Only if you want public visibility — otherwise restrict to authenticated
+CREATE POLICY "admin_all_materials"
+  ON study_materials FOR ALL
+  USING (get_my_role() = 'admin')
+  WITH CHECK (get_my_role() = 'admin');
+```
+
+### New Routes
+```
+/tai-lieu                    — StudentMaterialsPage (filterable by grade + category)
+/quan-tri/tai-lieu           — AdminMaterialsPage
+```
+
+### LessonContent Tab Integration
+The "Tài liệu+Kiểm tra" tab in `LessonContent` should show:
+- Study materials filtered by the current course's `target_grade`
+- Any `exam_sessions` that are currently active
+
+```typescript
+// In LessonContent tab 3:
+// - fetchStudyMaterials({ grade: course.target_grade }) — already have courseId from props
+// - fetchActiveExamSessions() — sessions where is_active=true and now() in window
+```
+
+---
+
+## Feature 4: Pricing + Access Control
+
+### Critical Build Order Note
+**This feature MUST be built first** among the data-model features. The `lessons` RLS policy may need updating, and all other features assume the access model is settled.
+
+**Decision: Keep enrollment-based access, add `package_id` as metadata only.**
+- Admin creates a package → assigns courses to it
+- When enrolling a student, admin selects a package → the UI auto-creates individual course enrollments for all courses in that package
+- `enrollments.package_id` records which package triggered the enrollment (for audit/cancel/display)
+- **Lesson RLS stays unchanged** — access is still determined by `enrollments` table
+- This avoids a complex RLS change and keeps the existing lesson access check working
+
+### New Tables
+```sql
+CREATE TABLE packages (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name        text NOT NULL,
+  price_vnd   integer NOT NULL,
+  description text,
+  is_active   boolean NOT NULL DEFAULT true,
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE package_courses (
+  package_id  uuid NOT NULL REFERENCES packages(id) ON DELETE CASCADE,
+  course_id   uuid NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  PRIMARY KEY (package_id, course_id)
+);
+```
+
+### Modify Enrollments Table
+```sql
+ALTER TABLE enrollments ADD COLUMN package_id uuid REFERENCES packages(id) ON DELETE SET NULL;
+```
+
+### RLS Policies
+```sql
+ALTER TABLE packages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE package_courses ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can read active packages (pricing page is public/semi-public)
+CREATE POLICY "public_read_active_packages"
+  ON packages FOR SELECT
+  USING (is_active = true);
+
+CREATE POLICY "admin_all_packages"
+  ON packages FOR ALL
+  USING (get_my_role() = 'admin')
+  WITH CHECK (get_my_role() = 'admin');
+
+-- package_courses: same visibility as packages
+CREATE POLICY "public_read_package_courses"
+  ON package_courses FOR SELECT
+  USING (
+    EXISTS (SELECT 1 FROM packages WHERE id = package_courses.package_id AND is_active = true)
+  );
+
+CREATE POLICY "admin_all_package_courses"
+  ON package_courses FOR ALL
+  USING (get_my_role() = 'admin')
+  WITH CHECK (get_my_role() = 'admin');
+```
+
+### Enrollment API Update
+```typescript
+// src/lib/api/enrollments.ts — new function
+export async function addEnrollmentWithPackage(
+  userId: string,
+  packageId: string
+): Promise<Enrollment[]> {
+  // 1. Fetch all courses in the package
+  const { data: pkgCourses } = await supabase
+    .from('package_courses')
+    .select('course_id')
+    .eq('package_id', packageId)
+
+  // 2. Insert one enrollment per course
+  const enrollments = pkgCourses!.map(pc => ({
+    user_id: userId,
+    course_id: pc.course_id,
+    package_id: packageId,
+  }))
+
+  const { data, error } = await supabase
+    .from('enrollments')
+    .insert(enrollments)
+    .select()
+  if (error) throw error
+  return data as Enrollment[]
+}
+```
+
+### New Routes
+```
+/bang-gia                    — PricingPage (public, landing-style page)
+/quan-tri/goi-hoc            — AdminPackagesPage (CRUD packages + assign courses)
+```
+
+### Modified Component
+`UsersPage.tsx` or `UserEnrollmentDialog.tsx` → add package selector when enrolling a student
+
+---
+
+## Feature 5: School Navigator
+
+### Architecture
+Pure frontend component. No DB. No new routes.
+
+### New Component
+```
+src/components/landing/SchoolNavigator.tsx
+```
+
+### Static Data Structure
+```typescript
+// src/lib/constants/schools.ts
+export interface School {
+  name: string        // "PTNK", "Chuyên Lê Hồng Phong", etc.
+  slug: string        // course slug to navigate to
+  grade?: number      // optional: highlight grade 9 prep courses
+}
+
+export const SCHOOL_NAVIGATOR_DATA: School[] = [
+  { name: 'PTNK', slug: 'on-chuyen-toan-ptnk' },
+  { name: 'Chuyên Nguyễn Thượng Hiền', slug: 'on-chuyen-toan-nguyen-thuong-hien' },
+  // ...
+]
+```
+
+### Integration with Index.tsx
+Add `<SchoolNavigator />` section in the landing page after the courses overview section. The component renders a grid/list of school buttons; clicking navigates to `/danh-muc` or `/khoa-hoc/:courseSlug`.
+
+---
+
+## Feature 6: Admin Full-Page Forms
+
+### New Routes
+```typescript
+// In App.tsx — add inside admin ProtectedRoute block:
+<Route
+  path="/quan-tri/khoa-hoc/:courseSlug/them-chuyen-de"
+  element={<ProtectedRoute requiredRole="admin">...<AddChapterPage />...</ProtectedRoute>}
+/>
+<Route
+  path="/quan-tri/khoa-hoc/:courseSlug/chuyen-de/:chapterSlug/them-bai-giang"
+  element={<ProtectedRoute requiredRole="admin">...<AddLessonPage />...</ProtectedRoute>}
+/>
+```
+
+### New Pages
+```
+src/pages/admin/AddChapterPage.tsx   — form extracted from ChaptersPage modal
+src/pages/admin/AddLessonPage.tsx    — form extracted from LessonsPage modal
+```
+
+### Implementation Pattern
+Both pages should:
+1. Read `:courseSlug` / `:chapterSlug` from `useParams()`
+2. Re-use the existing form validation logic (currently inside dialog components in ChaptersPage / LessonsPage)
+3. On submit → `insertChapter()` / `insertLesson()` → navigate back to parent page with `useNavigate()`
+4. Re-use the existing shadcn/ui form + Zod validation
+
+**Modification needed:** Extract form logic from `ChaptersPage.tsx` dialog into a standalone `ChapterForm.tsx` component, usable both in the dialog (for backwards compat) and the new page.
+
+---
+
+## Feature 7: YouTube Privacy
+
+### No new tables or routes.
+
+### Changes Required
+
+**`src/components/student/LessonContent.tsx` iframe:**
+```typescript
+// Change embed domain from youtube.com to youtube-nocookie.com
+// Add privacy-enhancing params
+const embedUrl = lesson.video_url?.replace(
+  'youtube.com/embed/',
+  'youtube-nocookie.com/embed/'
+) + '?rel=0&modestbranding=1&iv_load_policy=3'
+```
+
+**`vercel.json` — add Referer-Policy header:**
+```json
+{
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Referrer-Policy", "value": "strict-origin" }
+      ]
+    }
+  ]
+}
+```
+
+**Note on `strict-origin`:** With `Referrer-Policy: strict-origin`, the browser sends only the origin (e.g., `https://bumath.vn`) as the referrer, not the full path. YouTube can check this to restrict embedding to known domains if you configure it in YouTube Studio → Advanced Settings → Embedding. This is the practical approach short of self-hosting.
+
+**`src/lib/youtube.ts` — update URL transformer:**
+Verify existing `src/lib/youtube.ts` transforms embed URLs to use `youtube-nocookie.com`. If not, add the transform there.
+
+---
+
+## Updated System Architecture Diagram (v3.0)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                     React SPA (Vite + TypeScript)                        │
+│                                                                           │
+│  Public Routes         Student Routes        Admin/Teacher Routes        │
+│  /                     /khoa-hoc             /quan-tri/nguoi-dung        │
+│  /bang-gia             /khoa-hoc/:slug        /quan-tri/khoa-hoc         │
+│  /tai-lieu (semi-pub)  /danh-muc             /quan-tri/bai-nop           │
+│  /thi-thu (listing)    /thi-thu/:id          /quan-tri/thi-thu           │
+│                                              /quan-tri/tai-lieu          │
+│                                              /quan-tri/goi-hoc           │
+│                                                                           │
+│  ┌────────────────────────────────────────────────────────────────────┐  │
+│  │            AuthContext (useAuth) + ProtectedRoute                  │  │
+│  └──────────────────────────────┬─────────────────────────────────────┘  │
+│                                 │                                         │
+│  ┌──────────────────────────────▼─────────────────────────────────────┐  │
+│  │                   TanStack Query (server state)                     │  │
+│  │   queryKey patterns: ['lessons', lessonId], ['exam', sessionId]    │  │
+│  └──────────────────────────────┬─────────────────────────────────────┘  │
+│                                 │                                         │
+│  ┌────────────────────┐  ┌──────▼──────────┐  ┌────────────────────────┐ │
+│  │  src/lib/api/*.ts  │  │ supabase.ts     │  │  Realtime Channel      │ │
+│  │  (one file/domain) │  │ (singleton)     │  │  lesson_messages       │ │
+│  └────────────────────┘  └──────┬──────────┘  └────────────────────────┘ │
+└─────────────────────────────────┼───────────────────────────────────────-┘
+                                  │ HTTPS + WSS (Realtime)
+┌─────────────────────────────────▼────────────────────────────────────────┐
+│                         Supabase Platform                                 │
+│                                                                           │
+│  Auth         PostgreSQL + RLS         Storage            Realtime       │
+│               profiles                 submissions (private)  lesson_    │
+│               courses/chapters/lessons materials (public)   messages    │
+│               enrollments              assignments (public)              │
+│               lesson_progress                                            │
+│               submissions                                                │
+│               lesson_messages          ← NEW                            │
+│               exam_sessions            ← NEW                            │
+│               exam_questions           ← NEW                            │
+│               exam_submissions         ← NEW                            │
+│               study_materials          ← NEW                            │
+│               packages                 ← NEW                            │
+│               package_courses          ← NEW                            │
+└──────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Component Boundaries: New vs Modified
+
+### New Components
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `LessonChat` | `src/components/student/LessonChat.tsx` | Realtime message list + send input |
+| `SchoolNavigator` | `src/components/landing/SchoolNavigator.tsx` | School → course slug mapper |
+| `ExamTimer` | `src/components/student/ExamTimer.tsx` | Countdown for exam time window |
+| `MaterialCard` | `src/components/student/MaterialCard.tsx` | File download card with category badge |
+
+### New Pages
+| Page | Route | Purpose |
+|------|-------|---------|
+| `StudentExamListPage` | `/thi-thu` | List available exams |
+| `StudentExamTakingPage` | `/thi-thu/:sessionId` | Timed exam form |
+| `StudentExamResultPage` | `/thi-thu/:sessionId/ket-qua` | Score + answer review |
+| `StudentMaterialsPage` | `/tai-lieu` | Filterable materials browser |
+| `PricingPage` | `/bang-gia` | Package pricing display |
+| `AddChapterPage` | `/quan-tri/khoa-hoc/:slug/them-chuyen-de` | Full-page chapter form |
+| `AddLessonPage` | `/quan-tri/khoa-hoc/:slug/chuyen-de/:chSlug/them-bai-giang` | Full-page lesson form |
+| `AdminExamListPage` | `/quan-tri/thi-thu` | Admin exam management |
+| `AdminMaterialsPage` | `/quan-tri/tai-lieu` | Admin material upload/manage |
+| `AdminPackagesPage` | `/quan-tri/goi-hoc` | Package CRUD |
+
+### Modified Components
+| Component | Change |
+|-----------|--------|
+| `LessonContent.tsx` | Refactor to 3-tab layout (Video+Desc / Chấm bài / Chat) |
+| `App.tsx` | Add 8 new routes |
+| `vercel.json` | Add Referrer-Policy header |
+| `UsersPage.tsx` / `UserEnrollmentDialog.tsx` | Add package selector |
+| `AdminLayout.tsx` | Add sidebar links for new admin pages |
+| `src/lib/youtube.ts` | Enforce `youtube-nocookie.com` domain |
+| `enrollments.ts` | Add `addEnrollmentWithPackage()` function |
+
+### New API Files
+| File | Functions |
+|------|-----------|
+| `src/lib/api/lesson-messages.ts` | `fetchLessonMessages`, `insertLessonMessage`, `subscribeToLessonMessages` |
+| `src/lib/api/exam-sessions.ts` | `fetchActiveExamSessions`, `fetchExamSessionById`, admin CRUD |
+| `src/lib/api/exam-questions.ts` | `fetchExamQuestions` (uses `_public` view) |
+| `src/lib/api/exam-submissions.ts` | `createExamSubmission`, `gradeExamSubmission` (calls RPC) |
+| `src/lib/api/study-materials.ts` | `fetchStudyMaterials`, `insertStudyMaterial`, `deleteStudyMaterial` |
+| `src/lib/api/packages.ts` | `fetchPackages`, `fetchPackageWithCourses`, admin CRUD |
+
+---
+
+## Suggested Build Order
+
+Dependencies determine order. Access control before content features.
+
+```
+Phase 1: Pricing + Access Control (packages, package_courses, enrollments.package_id)
+  └─ Reason: No lesson content changes, but establishes data model used by enrollment UI.
+             Build now, even if PricingPage is placeholder. Admin can start assigning packages.
+
+Phase 2: Study Materials (study_materials table + storage bucket + pages)
+  └─ Reason: Independent feature, no deps on phases 3-6. Quick win with real value.
+             The "Tài liệu+Kiểm tra" tab in LessonContent can reference this.
+
+Phase 3: LessonContent Tab Refactor (modify LessonContent.tsx to 3-tab layout)
+  └─ Reason: Must happen before Chat and Materials-in-tab features. Both depend on this
+             structural change. Do the tab layout first with existing content moved.
+
+Phase 4: In-Lesson Chat (lesson_messages + Realtime + LessonChat component)
+  └─ Reason: Depends on Phase 3 tab layout. Realtime requires careful testing.
+             Enable Realtime on lesson_messages in Supabase Dashboard.
+
+Phase 5: Mock Exam System (exam tables + pages + grading RPC)
+  └─ Reason: Independent of other features. Large feature — own phase.
+             Answer key security (view-based access) is critical before launch.
+
+Phase 6: Admin Full-Page Forms (AddChapterPage, AddLessonPage)
+  └─ Reason: Pure frontend refactor. Low risk. Can go anytime but benefits from
+             stable routing structure (all new routes established by phases 1-5).
+
+Phase 7: School Navigator + YouTube Privacy + Landing Page + Audit
+  └─ Reason: All are frontend-only changes with zero DB impact.
+             Group together as the "polish" phase.
+```
+
+---
+
+## RLS Safety Checklist
+
+All new policies follow the established safe pattern:
+
+| Rule | Applied Where |
+|------|--------------|
+| Use `get_my_role()` (SECURITY DEFINER) instead of querying `profiles` directly in policy | All new policies |
+| Use `is_approved_user()` for student-facing content | `lesson_messages`, `exam_sessions`, `study_materials`, `exam_submissions` |
+| `WITH CHECK` on INSERT policies to prevent spoofing `user_id` | `lesson_messages`, `exam_submissions` |
+| Time-window enforcement in WITH CHECK for exam submissions | `exam_submissions` insert policy |
+| `answer_key` never exposed to student role | `exam_questions` view + policy |
+| Admin policies use both `USING` and `WITH CHECK` | All admin-all policies |
+
+### ⚠️ RLS Pitfall: Infinite Recursion
+**Never** write a policy on any table that `SELECT`s from `profiles` directly (without SECURITY DEFINER wrapper). The existing `get_my_role()` and `is_admin()` functions are already SECURITY DEFINER. All v3.0 policies use these helpers — do not inline `SELECT role FROM profiles WHERE id = auth.uid()` directly in a policy body.
+
+---
+
+## Supabase Realtime: Feasibility Assessment
+
+**Verdict: FEASIBLE with caveats.**
+
+**What works:**
+- `postgres_changes` subscriptions on `lesson_messages` table with `lesson_id` filter
+- RLS applies — student sees only their enrolled lessons' messages
+- Channel cleanup via `channel.unsubscribe()` in `useEffect` return
+
+**What to watch:**
+- **Realtime must be enabled** for the `lesson_messages` table in Supabase Dashboard → Database → Replication → supabase_realtime publication. `ALTER TABLE lesson_messages REPLICA IDENTITY FULL;` is required.
+- **Connection limits:** Supabase free tier = 200 concurrent Realtime connections. For a small-scale LMS this is fine. Pro tier = 500+.
+- **Filter granularity:** The `filter: 'lesson_id=eq.X'` param reduces client-side noise but is broadcast from the server to matching subscribers. It is NOT a DB-level security gate — RLS remains the security gate.
+- **Stale subscriptions:** If a student has two browser tabs open on the same lesson, they get two subscriptions. Handle with `channel.unsubscribe()` in cleanup and avoid duplicate state appends (check by `id` before appending).
+
+**Channel pattern (production-safe):**
+```typescript
+useEffect(() => {
+  if (!lessonId) return
+  const channel = subscribeToLessonMessages(lessonId, (msg) => {
+    setMessages(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg])
+  })
+  return () => { supabase.removeChannel(channel) }
+}, [lessonId])
+```
+
+---
+
+## Sources
+
+- Supabase RLS docs: https://supabase.com/docs/guides/database/postgres/row-level-security — HIGH confidence
+- Supabase Realtime docs: https://supabase.com/docs/guides/realtime/postgres-changes — HIGH confidence
+- Supabase Storage: https://supabase.com/docs/guides/storage/security/access-control — HIGH confidence
+- Codebase inspection of all migration files + src/lib/api/*.ts — HIGH confidence
+- Supabase RLS performance: https://supabase.com/docs/guides/troubleshooting/rls-performance-and-best-practices-Z5Jjwv — HIGH confidence
+
+---
+
+*v3.0 architecture updated: 2026-05-03*

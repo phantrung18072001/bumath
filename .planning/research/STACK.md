@@ -1,8 +1,342 @@
-# Stack Research
+# Stack Research — v3.0 Platform Expansion (Addendum)
 
-**Domain:** LMS (Learning Management System) — Supabase backend added to existing React/Vite SPA
-**Researched:** 2026-03-23
-**Confidence:** HIGH (core Supabase stack) / MEDIUM (integration patterns)
+**Domain:** LMS Platform Expansion — New features atop validated React + Vite + TypeScript + Supabase + shadcn/ui
+**Researched:** 2026-05-03
+**Confidence:** HIGH (Supabase Realtime, KaTeX) / MEDIUM (PDF strategy)
+
+> **Scope:** This document covers ONLY new stack additions required for v3.0 features.
+> The base stack (React 18.3, Vite 5.4, TypeScript 5.8, Supabase 2.78.0, shadcn/ui,
+> TanStack Query 5.83, React Hook Form 7.61, Zod 3.25, React Router 6.30) is validated
+> and unchanged from v1.0. See original STACK.md content below the divider for historical context.
+
+---
+
+## v3.0 New Capabilities Analysis
+
+### Feature → Library Mapping
+
+| v3.0 Feature | New Library Needed? | Verdict |
+|---|---|---|
+| In-lesson chat (student ↔ teacher) | Supabase Realtime channels | **No new package** — already bundled in `@supabase/realtime-js@2.78.0` inside existing `@supabase/supabase-js@2.78.0` |
+| Mock exam timer (countdown) | Timer library? | **No new package** — `useState` + `useEffect` is sufficient; no library needed for a simple countdown |
+| Mock exam math rendering | KaTeX | **ADD** — math platform must render LaTeX; KaTeX is the lightweight standard |
+| Study materials (PDFs) | PDF viewer library? | **No new package** — use Supabase Storage URL + `target="_blank"` anchor; native browser handles PDF, mobile-friendly |
+| Pricing tiers + access control | Payments? | **No new package** — payment is out of scope (manual enrollment); access control is Supabase RLS |
+| School navigator UI | Filter/select library? | **No new package** — existing shadcn/ui Select + Combobox covers the UI |
+| Admin full-page forms | Form library? | **No new package** — existing React Hook Form + Zod already handles this |
+| YouTube private/unlisted strategy | YouTube API library? | **No new package** — embed URL parameter changes only; no client library needed |
+
+**Net result: Only ONE new library group needs to be added for v3.0.**
+
+---
+
+## New Additions for v3.0
+
+### Core Technologies — No Changes
+
+Existing stack is sufficient. No framework or infrastructure changes needed.
+
+### Supporting Libraries — New Additions
+
+| Library | Version | Purpose | Why |
+|---------|---------|---------|-----|
+| `katex` | `0.16.45` | LaTeX math rendering (CSS + fonts) | Industry standard for fast math typesetting in browser; ~200KB gzip (vs MathJax 3MB+). Required peer dep of react-katex. |
+| `react-katex` | `3.1.0` | React wrapper for KaTeX | Provides `<InlineMath>` and `<BlockMath>` components; wraps `katex.renderToString` safely; handles SSR-safe string output. |
+
+### Why KaTeX Over MathJax
+
+| Criteria | KaTeX 0.16.x | MathJax 3.x | better-react-mathjax |
+|---|---|---|---|
+| Bundle size | ~200KB gzip | ~900KB+ | wraps MathJax 3 (same size) |
+| Render speed | Synchronous, fast | Async queue | Async |
+| React integration | `react-katex` (clean) | Manual setup | Direct wrapper |
+| LaTeX coverage | ~95% (enough for grade 7–9) | 99% | 99% |
+| Recommendation | ✅ Use this | ❌ Too heavy | ❌ Too heavy |
+
+KaTeX's synchronous render model means exam questions render instantly without layout shifts — critical for timed tests where question rendering lag causes frustration.
+
+---
+
+## Implementation Notes by Feature
+
+### 1. In-lesson Chat — No New Package
+
+Supabase Realtime is already bundled. Use `supabase.channel()` with `postgres_changes` listener on a `messages` table.
+
+```typescript
+// Pattern: subscribe to per-lesson messages
+const channel = supabase
+  .channel(`lesson-chat-${lessonId}`)
+  .on(
+    'postgres_changes',
+    {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'messages',
+      filter: `lesson_id=eq.${lessonId}`,
+    },
+    (payload) => {
+      setMessages((prev) => [...prev, payload.new as Message])
+    }
+  )
+  .subscribe()
+
+// Cleanup
+return () => { supabase.removeChannel(channel) }
+```
+
+**DB schema needed:**
+```sql
+create table public.messages (
+  id          uuid primary key default gen_random_uuid(),
+  lesson_id   uuid not null references public.lessons(id) on delete cascade,
+  user_id     uuid not null references auth.users(id) on delete cascade,
+  content     text not null,
+  created_at  timestamptz default now()
+);
+-- RLS: student sees messages for lessons in their enrolled courses
+-- RLS: teacher sees messages for all lessons
+```
+
+**No polling fallback needed** — Supabase Realtime on Postgres changes is reliable and already used in production by the existing bell notifications pattern.
+
+### 2. Mock Exam Timer — No New Package
+
+```typescript
+// Countdown hook — no library needed
+function useCountdown(durationSeconds: number) {
+  const [remaining, setRemaining] = useState(durationSeconds)
+  const [active, setActive] = useState(false)
+
+  useEffect(() => {
+    if (!active || remaining <= 0) return
+    const id = setInterval(() => setRemaining((s) => s - 1), 1000)
+    return () => clearInterval(id)
+  }, [active, remaining])
+
+  return { remaining, start: () => setActive(true), isExpired: remaining <= 0 }
+}
+```
+
+**DB schema needed:**
+```sql
+create table public.exams (
+  id             uuid primary key default gen_random_uuid(),
+  title          text not null,           -- "Thi thử tháng 5/2026"
+  exam_type      text not null,           -- 'monthly' | 'quarterly'
+  duration_mins  int not null default 90,
+  available_from timestamptz,
+  available_to   timestamptz,
+  course_id      uuid references public.courses(id)
+);
+
+create table public.exam_questions (
+  id          uuid primary key default gen_random_uuid(),
+  exam_id     uuid not null references public.exams(id) on delete cascade,
+  order_index int not null,
+  content     text not null,              -- LaTeX string, rendered by KaTeX
+  question_type text not null default 'mcq',
+  options     jsonb,                      -- [{label: 'A', text: '...'}] for MCQ
+  correct_answer text not null            -- 'A' | 'B' | 'C' | 'D'
+);
+
+create table public.exam_attempts (
+  id          uuid primary key default gen_random_uuid(),
+  exam_id     uuid not null references public.exams(id),
+  student_id  uuid not null references auth.users(id),
+  answers     jsonb not null default '{}', -- {question_id: 'A'}
+  score       int,
+  started_at  timestamptz default now(),
+  submitted_at timestamptz,
+  unique(exam_id, student_id)             -- one attempt per student per exam
+);
+```
+
+### 3. Study Materials Library — No New Package
+
+PDFs stored in Supabase Storage bucket `study-materials`. Link directly — the browser handles PDF rendering natively.
+
+```typescript
+// Pattern: signed URL for protected PDFs
+const { data } = await supabase.storage
+  .from('study-materials')
+  .createSignedUrl(filePath, 3600) // 1 hour expiry
+
+// Render as downloadable link — no react-pdf needed
+<a href={data.signedUrl} target="_blank" rel="noopener noreferrer">
+  Xem tài liệu
+</a>
+```
+
+**Why NOT react-pdf:**
+- `react-pdf@10.4.1` requires `pdfjs-dist@5.4.296` — adds ~4MB to bundle
+- Mobile browsers (Chrome Android, Safari iOS) render PDFs natively when opened in new tab
+- Target users (THCS students) are on mobile; native handling is superior UX
+- Can always add react-pdf later for inline preview if needed — start simple
+
+**DB schema needed:**
+```sql
+create table public.study_materials (
+  id           uuid primary key default gen_random_uuid(),
+  title        text not null,
+  description  text,
+  category     text not null,  -- 'mid_term' | 'final' | 'entrance' | 'specialized' | 'hsg'
+  grade        int,            -- 7 | 8 | 9 | null (for cross-grade)
+  file_path    text not null,  -- storage path in 'study-materials' bucket
+  file_size    int,
+  created_at   timestamptz default now()
+);
+-- RLS: accessible to users with active package that includes this material
+-- OR: public access if material is free
+```
+
+### 4. Pricing + Access Control — No New Package
+
+Manual enrollment flow (payment via Zalo/bank transfer → admin grants package). Pure Supabase RLS.
+
+```sql
+create table public.packages (
+  id          uuid primary key default gen_random_uuid(),
+  name        text not null,               -- 'Toán 7 cơ bản', 'All-access'
+  slug        text unique not null,
+  price_vnd   int not null,                -- 1500000, 4000000, etc.
+  description text,
+  grade       int,                          -- 7 | 8 | null (for multi-grade)
+  features    jsonb                         -- ['video', 'chat', 'materials', 'exams']
+);
+
+create table public.user_packages (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references auth.users(id) on delete cascade,
+  package_id  uuid not null references public.packages(id),
+  granted_by  uuid references auth.users(id),  -- admin who granted
+  granted_at  timestamptz default now(),
+  expires_at  timestamptz,                      -- null = lifetime
+  unique(user_id, package_id)
+);
+```
+
+**Access control pattern:** RLS policies on `lessons`, `study_materials`, `exams` check `user_packages` JOIN to ensure student has a valid package covering that content. Admin retains full access via role check.
+
+### 5. KaTeX — Installation and Usage
+
+```bash
+yarn add katex react-katex
+```
+
+```typescript
+// Import KaTeX CSS (required — renders math fonts)
+// Add to src/main.tsx or src/index.css
+import 'katex/dist/katex.min.css'
+```
+
+```typescript
+// Usage in exam question component
+import { InlineMath, BlockMath } from 'react-katex'
+
+// Inline: "Tính x nếu $x^2 + 3x - 4 = 0$"
+<p>
+  Tính x nếu <InlineMath math="x^2 + 3x - 4 = 0" />
+</p>
+
+// Block (display mode for complex equations):
+<BlockMath math="\int_0^{\infty} e^{-x^2} dx = \frac{\sqrt{\pi}}{2}" />
+```
+
+**Content storage:** Store LaTeX strings in the DB. Admin enters raw LaTeX in a textarea; preview renders via KaTeX before saving. No WYSIWYG editor needed for v3.0.
+
+### 6. School Navigator — No New Package
+
+Pure UI logic using existing shadcn/ui components. Map of schools → course slugs hardcoded or stored in DB.
+
+```typescript
+// schools table OR static config is fine for v3.0 (handful of schools)
+const SCHOOL_COURSE_MAP: Record<string, string> = {
+  'ptnk':  'on-chuyen-toan-9-10-ptnk',
+  'cnn':   'on-chuyen-toan-9-10-cnn',
+  'csp':   'on-chuyen-toan-9-10-csp',
+  'khtn':  'on-chuyen-toan-9-10-khtn',
+}
+```
+
+Scroll-to section → Select school → navigate to `/catalogue?school=ptnk`. Existing `Combobox` from shadcn handles the select UI.
+
+### 7. YouTube Privacy Strategy — No New Package
+
+No library change. Strategy: use `youtube-nocookie.com` embed domain + `?rel=0&modestbranding=1` params. Unlisted videos are sufficient for MVP — not publicly discoverable, but accessible via embed. Private videos require OAuth (too complex for v3). Existing `youtube.ts` utility needs parameter update only.
+
+---
+
+## Supabase Client Upgrade Consideration
+
+Current: `@supabase/supabase-js@2.78.0` → Latest: `2.105.1`
+
+**Decision: Hold at 2.78.0 for v3.0.** Reasons:
+1. Node.js 18 constraint documented in original STACK.md — v2.79+ drops Node 18 support
+2. Realtime channels API (`supabase.channel()`) is fully available in 2.78.0
+3. No v3.0 feature requires 2.79+ APIs
+4. Upgrade to 2.105.x is safe after Node → 20 LTS upgrade (separate tech debt task)
+
+---
+
+## Installation Summary for v3.0
+
+```bash
+# Only new dependencies for v3.0
+yarn add katex react-katex
+```
+
+That's it. One `yarn add` for the entire v3.0 feature set.
+
+All other new functionality — chat, timers, PDF links, access control, school navigator — uses existing packages or Supabase capabilities already bundled.
+
+---
+
+## What NOT to Add
+
+| Avoid | Why | Use Instead |
+|-------|-----|-------------|
+| `react-pdf` + `pdfjs-dist` | ~4MB bundle; mobile students don't need inline PDF — native browser handles it better | Supabase Storage signed URL + `<a target="_blank">` |
+| `better-react-mathjax` / MathJax | 900KB+ async; layout shifts during load; overkill for grade 7–9 math | `react-katex` (synchronous, 200KB) |
+| `socket.io` / Firebase Realtime | Separate service; unnecessary when Supabase Realtime is already bundled | `supabase.channel()` with `postgres_changes` |
+| `use-timer` / `react-countdown` | Unnecessary dependency for simple countdown | `useState + useEffect` (10 lines) |
+| Payment gateway (Stripe, VNPay) | Out of scope — manual enrollment via admin | Pricing display UI only; admin grants packages manually |
+| `@supabase/auth-ui-react` | Not needed for new features; already excluded from v1.0 | Custom shadcn/ui forms (already built) |
+
+---
+
+## Version Compatibility
+
+| Package | Version | Compatible With | Notes |
+|---------|---------|-----------------|-------|
+| `katex` | `0.16.45` | React 18 ✓, TypeScript 5.8 ✓ | CSS must be imported in main entry; no peer dep conflicts |
+| `react-katex` | `3.1.0` | React 16.8+, 17, 18, 19 ✓ | Thin wrapper; `katex` is peer dep |
+| `@supabase/supabase-js` | `2.78.0` | Node 18 ✓, Vite 5 ✓ | Do not upgrade until Node → 20 LTS |
+
+---
+
+## Sources
+
+- `npm info react-pdf dist-tags` + `npm info react-pdf peerDependencies` — confirmed react-pdf 10.4.1 / pdfjs-dist 5.4.296 size concerns (verified locally)
+- `npm info katex version` → `0.16.45` (latest); `npm info react-katex version` → `3.1.0` (latest)
+- `cat node_modules/@supabase/supabase-js/package.json` — confirmed `@supabase/realtime-js@2.78.0` is already bundled
+- `npm info @supabase/supabase-js version` → `2.105.1` is latest; Node 18 constraint from original STACK.md research
+- KaTeX vs MathJax: KaTeX official docs (katex.org) — synchronous render model, 95% LaTeX coverage, ~200KB gzip (HIGH confidence from official source)
+
+---
+
+*Stack research for: BuMath LMS v3.0 Platform Expansion*
+*Researched: 2026-05-03*
+
+---
+---
+
+# Original v1.0 Stack Research (Historical Reference)
+
+*The content below is preserved from the original v1.0 research (2026-03-23) for historical context.*
+*All decisions below remain valid and in-production.*
+
+---
 
 ---
 

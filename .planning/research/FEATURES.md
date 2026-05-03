@@ -258,3 +258,855 @@ Young students need unambiguous feedback. Use color + icon + text (not color alo
 
 *Feature research for: BuMath LMS — async K-12 math tutoring, Vietnam THCS*
 *Researched: 2026-03-23*
+
+---
+
+---
+
+# v3.0 Platform Expansion — New Features Research
+
+**Milestone:** v3.0 Platform Expansion
+**Researched:** 2026-07-18
+**Scope:** 7 new feature areas added to existing BuMath LMS (v1/v2 already shipped)
+**Confidence:** HIGH (core patterns), MEDIUM (YouTube privacy), HIGH (pricing/access patterns)
+
+---
+
+## Context: What's Already Built
+
+This research builds on a shipped system with:
+- Auth (student/teacher/admin roles), admin approval gate
+- Course/chapter/lesson CRUD, YouTube embed video
+- Student: progress tracking (%), handwritten submission upload (photo → compressed < 500KB)
+- Teacher: grading queue (score + comment + teacher image annotation)
+- Bell notifications (Supabase Realtime), course catalogue + enrollment
+- Design system: React + TypeScript + Vite + shadcn/ui + Radix UI + Tailwind
+- Backend: Supabase (Auth, PostgreSQL, Storage, RLS)
+- Schema tables: `profiles`, `courses`, `chapters`, `lessons`, `enrollments`, `lesson_progress`, `submissions`
+- Radix `Tabs` already installed and used in lesson page (TabsList, TabsTrigger, TabsContent)
+
+---
+
+## Feature 1: In-Lesson Chat (Chat với giảng viên)
+
+### What This Feature Does in EdTech Platforms
+
+In LMS platforms (Canvas, Moodle, Google Classroom), per-lesson messaging is typically called "lesson comments," "post a question," or "ask teacher." The pattern is:
+
+- Student sends a text message in the context of a specific lesson
+- Teacher sees all messages queued by lesson
+- Teacher replies → student receives notification
+- Messages are scoped per lesson (not a global inbox)
+- No real-time requirement — async is fine (like Canvas's "message teacher" per assignment)
+
+Vietnamese EdTech context: students prefer WhatsApp-style message UX. Expect auto-scroll to bottom. Short messages with emoji support. Not threaded/nested (flat list).
+
+### Table Stakes for This Feature
+
+| Aspect | What Students Expect | Implementation |
+|--------|---------------------|----------------|
+| Send text message | Simple text box + send button | Supabase `lesson_messages` table |
+| See own messages | My messages appear right-aligned | `user_id = auth.uid()` filter |
+| See teacher replies | Teacher messages appear left-aligned | `user_id != student_id AND role = teacher` |
+| Message timestamp | "Hôm nay lúc 14:30" format | `created_at` column, `date-fns` format |
+| Auto-scroll to bottom | Latest message always visible | `useEffect` + `scrollIntoView` |
+| Lesson-scoped | Messages only for this lesson | `lesson_id` FK on messages |
+| Empty state | "Chưa có tin nhắn nào" | Simple empty state component |
+
+### Differentiators
+
+| Aspect | Value | Notes |
+|--------|-------|-------|
+| Unread indicator on tab | "Chat (2)" badge when teacher replied | Query unread count |
+| Bell notification when teacher replies | Student notified immediately | Reuse existing bell notification system |
+| Teacher sees all lessons with unread messages | Priority queue view | Admin sidebar badge |
+
+### Anti-Features (Don't Build These)
+
+| Anti-Feature | Why Not |
+|--------------|---------|
+| Real-time WebSocket chat | Polling every 30s is sufficient for async teacher-student context. Supabase Realtime adds complexity with reconnect handling on mobile. Defer until teachers complain about latency. |
+| File attachment in chat | Students have SubmissionArea for photo uploads. Chat = text only. File upload in chat duplicates submission flow and confuses the mental model. |
+| Group chat / class discussion board | Moderation burden. Vietnamese middle schoolers + unmoderated chat = distraction. One teacher replying to many students is the right model. |
+| Read receipts per message | Adds complexity with no clear value at this scale. |
+| Message editing/deletion | Unnecessary — simple append-only log is sufficient |
+
+### Schema Design
+
+```sql
+CREATE TABLE lesson_messages (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  lesson_id   uuid NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+  user_id     uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  content     text NOT NULL CHECK (char_length(content) <= 2000),
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+-- Index for lesson chat queries
+CREATE INDEX lesson_messages_lesson_id_created_at ON lesson_messages(lesson_id, created_at);
+```
+
+RLS: Students read messages where `lesson_id` matches a lesson in their enrolled courses. Teachers/admin read all. Students insert own. No update/delete for students.
+
+### UI Pattern: Tabbed Layout in LessonContent
+
+The current `LessonContent` component renders everything flat (video → title → assignment file → submission area → progress button). v3.0 tabs restructure this:
+
+```
+Tab 1: "Bài giảng"  → video + description + progress button  (current content)
+Tab 2: "Chấm bài"   → assignment files + SubmissionArea      (extracted from current)
+Tab 3: "Chat"       → lesson_messages list + input box
+Tab 4: "Tài liệu"   → study materials for this lesson/grade  (new feature)
+```
+
+Mobile UX: On 375px, tabs must use short labels ("Bài giảng", "Chấm bài", "Chat", "Tài liệu"). Chat input must be `position: sticky; bottom: 0` so keyboard doesn't push it off-screen. Keyboard avoidance is critical on iOS Safari.
+
+### Complexity Assessment
+
+**MEDIUM.** New DB table, RLS policies, API functions, one new component (`LessonChat`), notification integration. The Radix Tabs component already exists. Main risk: keyboard avoidance on mobile Safari when chat input is focused.
+
+### Existing System Dependencies
+
+- Requires: `lessons` table (lesson_id FK)
+- Requires: auth context (user role determines message alignment)
+- Reuses: Bell notification system (trigger when teacher replies)
+- Reuses: `@radix-ui/react-tabs` (already installed)
+- Modifies: `LessonContent.tsx` → refactored into tabbed layout
+
+---
+
+## Feature 2: Mock Exam System (Thi thử)
+
+### What This Feature Does in EdTech Platforms
+
+Mock exam systems in LMS platforms have several archetypes:
+
+1. **Timed quiz with auto-grading** (Google Forms, Moodle Quiz) — MCQ/fill-in-the-blank, auto-scored
+2. **Timed submission window** (Canvas Assignments with due date) — upload answers, manual grading
+3. **Practice test mode** (Khan Academy) — attempt as many times as desired, no time limit
+
+For BuMath's context:
+- Math = proof-based, written solutions → auto-grading is NOT possible for v3
+- "Trắc nghiệm tự chấm" is explicitly deferred in PROJECT.md
+- Therefore: **mock exam = timed submission window** — student uploads handwritten answers within an exam window, teacher manually grades
+- Admin creates exam sessions (period + grade + problems PDF)
+- Student accesses exam during window, sees countdown timer, uploads photo answers
+- Teacher grades exam submissions (same flow as lesson submissions)
+
+### Table Stakes for Mock Exam System
+
+| Aspect | What Users Expect | Implementation |
+|--------|-------------------|----------------|
+| Admin creates exam session | Title, start/end date, target grade, problem PDF | `exam_sessions` table |
+| Student sees active exams | List of current/upcoming exams | Filter by date range + grade |
+| Countdown timer | Hours:minutes:seconds remaining | `date-fns` + `useEffect` interval |
+| Upload answer photo | Camera → compress → upload | Reuse `compressImage` + Supabase Storage |
+| "Submitted" confirmation | Clear success state | Same pattern as submission success |
+| Student sees own exam score | After teacher grades | Query `exam_submissions` by `user_id` |
+| Cannot submit after deadline | Lock UI when `end_time` passes | Client-side check + server-side RLS |
+| Admin/teacher grading queue | List of ungraded exam submissions | Similar to existing SubmissionsPage |
+
+### Differentiators
+
+| Aspect | Value | Notes |
+|--------|-------|-------|
+| Leaderboard after exam closes | Top scores visible to all students in cohort | Motivates competitive students; deferred to v3.1 |
+| Past exam archive | Students can review their performance over time | Exam history page |
+| Per-exam statistics (admin) | Average score, completion rate | Deferred to v4 analytics |
+
+### Schema Design
+
+```sql
+CREATE TABLE exam_sessions (
+  id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  title         text NOT NULL,
+  description   text,
+  target_grade  text NOT NULL CHECK (target_grade IN ('grade_7', 'grade_8', 'grade_9', 'advanced')),
+  starts_at     timestamptz NOT NULL,
+  ends_at       timestamptz NOT NULL,
+  problem_path  text,    -- Supabase Storage path for problem PDF
+  created_by    uuid REFERENCES auth.users(id),
+  created_at    timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE exam_submissions (
+  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  exam_session_id uuid NOT NULL REFERENCES exam_sessions(id) ON DELETE CASCADE,
+  user_id         uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  file_path       text NOT NULL,
+  submitted_at    timestamptz NOT NULL DEFAULT now(),
+  status          text NOT NULL DEFAULT 'submitted' CHECK (status IN ('submitted', 'graded')),
+  score           numeric(5,2),
+  comment         text,
+  UNIQUE (exam_session_id, user_id)  -- one submission per student per exam
+);
+```
+
+### Anti-Features
+
+| Anti-Feature | Why Not |
+|--------------|---------|
+| Auto-grading math problems | Not feasible for handwritten proof-based math. ML/OCR not in scope. |
+| Multiple attempts allowed | Defeats the purpose of an exam simulation. Lock to one submission per session. |
+| Full online lockdown browser | Overly complex, breaks mobile UX entirely. Vietnamese students at home — honor system. |
+| Video proctoring | Privacy concerns, bandwidth requirements, complex infrastructure. Out of scope. |
+| IP-based access restriction | Students use mobile networks with dynamic IPs. Wrong tool. |
+
+### UI Flows
+
+**Student flow:**
+1. `/thi-thu` — List of available exam sessions (upcoming + active + past)
+2. Active exam card shows countdown: "Còn 2 giờ 14 phút"
+3. Click "Làm bài" → exam page with: problem PDF download + upload area + countdown
+4. Upload photo → "Đã nộp bài thi" confirmation
+5. Past exam card shows "Điểm: 8.5/10" after grading
+
+**Admin flow:**
+1. `/admin/thi-thu` — List of exam sessions
+2. "Tạo kỳ thi" → form (title, grade, start/end date, upload problem PDF)
+3. `/admin/thi-thu/:id/bai-nop` — List of submissions for this exam → same grading UI as existing GradingPage
+
+**Mobile UX concern:** Countdown timer must be visible at all times. Use sticky header with countdown on exam page. Camera upload flow same as existing SubmissionArea — already optimized for mobile.
+
+### Complexity Assessment
+
+**MEDIUM-HIGH.** Two new tables, new page routes, countdown timer UI, storage bucket for exam problems, grading queue extension. The grading flow is reusable from existing teacher UI. Main risk: timer synchronization (client clock vs server — use `ends_at` from DB, not local countdown).
+
+### Existing System Dependencies
+
+- Reuses: `compressImage`, `uploadSubmission` patterns from `submissions.ts`
+- Reuses: GradingPage component pattern for exam submission grading
+- Reuses: Bell notification system
+- Reuses: existing admin layout + table patterns
+- New: `exam_sessions` + `exam_submissions` tables
+
+---
+
+## Feature 3: Study Materials Library (Thư viện tài liệu)
+
+### What This Feature Does in EdTech Platforms
+
+Study material libraries in EdTech are essentially categorized file repositories. Pattern used by every major Vietnamese EdTech platform (Hocmai, Olm.vn, VioEdu):
+
+- Files stored by type × grade × topic
+- Students download; no interactivity required
+- Admin uploads; no student uploads
+- Access controlled by enrollment/package
+
+For BuMath's specific taxonomy:
+```
+Category dimension:
+  - Đề thi giữa kỳ (midterm exam)
+  - Đề thi cuối kỳ (final exam)
+  - Đề thi vào 10 (high school entrance)
+  - HSG cấp trường / cấp huyện / cấp tỉnh (academic competitions)
+  - Đội tuyển (national competition prep)
+  - Ôn thi trường chuyên (specialized school prep)
+  - Ôn thi Tứ trụ: PTNK / CNN / CSP / KHTN
+
+Grade dimension: Lớp 7 / Lớp 8 / Lớp 9
+
+Year dimension: 2020–2025 exam papers (optional metadata)
+```
+
+### Table Stakes for Study Materials
+
+| Aspect | What Users Expect | Implementation |
+|--------|-------------------|----------------|
+| Browse by category + grade | Filter/tab UI | Client-side filter on fetched list |
+| PDF download | Opens in browser or downloads | Supabase Storage signed URL |
+| Admin upload | Upload PDF → add metadata | Admin form + Storage |
+| Material title + description | Know what you're downloading | Text fields in DB |
+| File size display | "2.4 MB" visible before download | Store `file_size_bytes` in DB |
+| Empty state per filter | "Chưa có tài liệu" | Simple empty state |
+
+### Differentiators
+
+| Aspect | Value | Notes |
+|--------|-------|-------|
+| Preview before download | PDF.js inline preview | MEDIUM complexity — defer |
+| "Mới nhất" badge | Show recently added materials | Simple `created_at` sort + badge |
+| Materials linked to specific lessons | "Tài liệu liên quan" in lesson tab | Lesson-material junction table |
+
+### Schema Design
+
+```sql
+CREATE TABLE study_materials (
+  id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  title         text NOT NULL,
+  description   text,
+  category      text NOT NULL CHECK (category IN (
+                  'midterm', 'final', 'entrance_grade10',
+                  'hsg_school', 'hsg_district', 'hsg_province',
+                  'doi_tuyen', 'chuyen_ptnk', 'chuyen_cnn',
+                  'chuyen_csp', 'chuyen_khtn', 'chuyen_other'
+                )),
+  target_grade  text CHECK (target_grade IN ('grade_7', 'grade_8', 'grade_9', 'all')),
+  file_path     text NOT NULL,    -- Supabase Storage path
+  file_size_bytes bigint,
+  school_year   text,             -- e.g. "2023-2024" (optional)
+  created_at    timestamptz NOT NULL DEFAULT now(),
+  created_by    uuid REFERENCES auth.users(id)
+);
+```
+
+Storage: `materials` bucket (public reads for enrolled students, admin writes only).
+
+### Access Control Decision
+
+**Option A:** All enrolled students can access all materials (simple).
+**Option B:** Materials gated by pricing package (complex — depends on Feature 4).
+
+**Recommendation:** Ship Option A first (all enrolled = can access). Add package gating in same phase as pricing tiers (Feature 4). The schema is the same; access control is the only change.
+
+### UI Pattern
+
+Student side: `/tai-lieu` page with:
+- Tab strip: All | Giữa kỳ | Cuối kỳ | Vào 10 | HSG | Chuyên PTNK | Chuyên CNN | ...
+- Grade filter: dropdown (Tất cả / Lớp 7 / Lớp 8 / Lớp 9)
+- Card grid: title, category badge, grade badge, file size, download button
+- Mobile: single column card list with 48px download button
+
+Admin side: `/admin/tai-lieu` with upload form + table list + delete.
+
+### Anti-Features
+
+| Anti-Feature | Why Not |
+|--------------|---------|
+| Student uploads to materials library | Materials library is curated teacher content. Student uploads belong in SubmissionArea. Don't mix these two flows. |
+| Comments/ratings on materials | Moderation burden. Not needed at this scale. |
+| Material versioning | Overkill. Admin deletes old and uploads new. |
+| In-browser PDF annotation | Complex. Students can download and annotate locally. |
+
+### Complexity Assessment
+
+**LOW-MEDIUM.** New table, new storage bucket, two new page routes (admin upload + student browse). Filter UI is simple. Main consideration: category taxonomy must be decided upfront — changing it later requires a migration.
+
+### Existing System Dependencies
+
+- New: `study_materials` table + `materials` Storage bucket
+- Optional integration: lesson tab "Tài liệu" shows materials by grade (filter from lesson's course grade)
+- Access controlled by: enrollment (v3.0) → package (v3.0 if built together with Feature 4)
+
+---
+
+## Feature 4: Pricing Tiers + Access Control (Gói học phí)
+
+### How Pricing Tiers Work in EdTech Platforms
+
+Pricing tiers in EdTech platforms (Udemy, Coursera, Vietnamese platforms like Hocmai Pro) have two architecture patterns:
+
+**Pattern A: Course-level purchase** — buy individual courses, access that course.
+**Pattern B: Subscription/package** — buy a package, access a set of courses.
+
+BuMath uses Pattern B with manual enrollment (no payment gateway). Admin assigns student to a package; package grants access to a defined set of courses.
+
+### Defined Packages (from milestone context)
+
+| Package | Price (VND) | What's Included |
+|---------|-------------|-----------------|
+| Lớp 7 | 1,500,000 | Grade 7 courses |
+| Lớp 8 | 1,500,000 | Grade 8 courses |
+| Lớp 9 cấp tốc 9→10 | 2,000,000 | Grade 9 accelerated courses |
+| Ôn thi chuyên Toán | 3,000,000 | Specialized exam prep courses |
+| Tứ trụ (PTNK/CNN/CSP/KHTN) | 2,500,000 | Top-4 school prep courses |
+| All-access | 4,000,000 | All courses |
+
+### Table Stakes for Pricing + Access Control
+
+| Aspect | What Admins/Students Expect | Implementation |
+|--------|----------------------------|----------------|
+| Admin assigns student to package | Replace or augment existing enrollment UI | Admin form: select user → select package |
+| Student can only view lessons in their package | Access gate on lesson page | Check `user_packages` + `package_courses` before showing video |
+| "Khóa" (locked) state for inaccessible lessons | Lock icon + "Nâng cấp gói học" CTA | Existing Lock icon already in codebase (imported in CourseDetailPage) |
+| Pricing page visible to all | Show packages + prices | New `/bang-gia` route or landing page section |
+| Admin can view student's current package | User management table shows package column | JOIN on `user_packages` |
+| Package displayed on student profile | Student knows what they have | Profile query includes package |
+
+### Schema Design
+
+```sql
+-- Define packages (seeded by admin, rarely changes)
+CREATE TABLE packages (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name        text NOT NULL,           -- "Lớp 7", "All-access", etc.
+  slug        text NOT NULL UNIQUE,    -- "grade_7", "all_access"
+  price_vnd   integer NOT NULL,        -- 1500000, 4000000
+  description text,
+  is_active   boolean NOT NULL DEFAULT true,
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+
+-- Link packages to courses (many-to-many)
+CREATE TABLE package_courses (
+  package_id  uuid NOT NULL REFERENCES packages(id) ON DELETE CASCADE,
+  course_id   uuid NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  PRIMARY KEY (package_id, course_id)
+);
+
+-- Assign students to packages (replaces or supplements enrollments)
+CREATE TABLE user_packages (
+  id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id       uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  package_id    uuid NOT NULL REFERENCES packages(id),
+  assigned_at   timestamptz NOT NULL DEFAULT now(),
+  assigned_by   uuid REFERENCES auth.users(id),  -- admin who assigned
+  expires_at    timestamptz,                      -- NULL = indefinite
+  UNIQUE (user_id, package_id)
+);
+```
+
+### Access Gate Architecture Decision
+
+**Critical decision:** Do we replace the existing `enrollments` table, augment it, or keep them parallel?
+
+**Recommendation: Keep `enrollments` as the access truth, populate it automatically from packages.**
+
+Rationale:
+- `enrollments` is already used by CourseDetailPage, lesson queries, submission checks, progress tracking — all those RLS policies reference `enrollments`
+- Changing the access gate from enrollments → packages would require rewriting all RLS
+- Instead: when admin assigns a package to a student, auto-insert enrollment rows for all courses in that package
+- This is a trigger or Edge Function: `ON INSERT TO user_packages → INSERT INTO enrollments FOR each course in package_courses`
+- Benefits: zero RLS changes; existing lesson/progress/submission access stays intact; packages layer sits above
+
+```sql
+-- Trigger: when package assigned, auto-enroll in all package courses
+CREATE OR REPLACE FUNCTION auto_enroll_from_package()
+RETURNS TRIGGER LANGUAGE plpgsql AS $$
+BEGIN
+  INSERT INTO enrollments (user_id, course_id)
+  SELECT NEW.user_id, pc.course_id
+  FROM package_courses pc
+  WHERE pc.package_id = NEW.package_id
+  ON CONFLICT (user_id, course_id) DO NOTHING;
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER on_package_assigned
+  AFTER INSERT ON user_packages
+  FOR EACH ROW EXECUTE FUNCTION auto_enroll_from_package();
+```
+
+### Anti-Features
+
+| Anti-Feature | Why Not |
+|--------------|---------|
+| Payment gateway (VNPay/Stripe/MoMo) | Explicitly out of scope per PROJECT.md. Legal complexity, integration time. Admin manually confirms bank transfer, then assigns package. |
+| Time-limited package expiry enforced in RLS | Complexity without value at this scale. If expiry needed, admin manually removes package. |
+| Student self-upgrade UI | Students contact teacher/admin via Zalo. No self-service payment flow. |
+| Per-lesson pricing | Too granular. Packages are the right abstraction. |
+| Trial/free tier with lesson count limit | Adds state tracking complexity. Free = catalogue preview mode (already exists). |
+
+### Pricing Display (Vietnamese Context)
+
+- Format: "1.500.000 đ" (not 1,500,000 VND — Vietnamese convention uses dot as thousands separator)
+- Display prominently on landing page and `/danh-muc` catalogue
+- Locked lessons: show lock icon + package name ("Cần gói Ôn thi chuyên Toán")
+- Contact CTA: "Liên hệ đăng ký" → phone/Zalo link (existing pattern from landing page)
+
+### Complexity Assessment
+
+**MEDIUM.** New tables (packages, package_courses, user_packages), trigger function, admin UI for package assignment, pricing display on landing/catalogue. The key implementation insight: auto-enrollment trigger means zero changes to existing lesson access flow. Main risk: ensuring the trigger fires correctly and handles re-assignment.
+
+### Existing System Dependencies
+
+- Modifies: Admin `UsersPage` (add package assignment UI)
+- Modifies: `CourseDetailPage` (show lock state for non-enrolled lessons)
+- Modifies: `CataloguePage` (show price + package name)
+- Reuses: Existing `enrollments` table as access truth
+- New: `packages`, `package_courses`, `user_packages` tables
+
+---
+
+## Feature 5: School Navigator (Điều hướng trường chuyên)
+
+### What This Feature Does in EdTech Platforms
+
+School navigator is a landing page discovery widget — a guided "find your course" funnel. Similar patterns:
+
+- Coursera: "Browse by topic" → filter by career goal → recommended courses
+- Khan Academy: "Choose your grade" → jump to content
+- Hocmai: School-based course recommendations
+
+For BuMath: specialized high schools in HCMC are the target. Student selects their target school → system routes to the matching course. The widget is landing-page level (no auth required).
+
+### HCMC Specialized Schools Taxonomy
+
+The "Tứ trụ" (Top 4) and broader specialized school list:
+```
+Tứ trụ (Top 4):
+  - PTNK — Phổ Thông Năng Khiếu (ĐHQG)
+  - CNN  — THPT Chuyên Nguyễn Thượng Hiền
+  - CSP  — THPT Chuyên Lê Hồng Phong
+  - KHTN — Năng Khiếu Khoa học Tự nhiên (ĐHKHTN)
+
+Other specialized schools in HCMC:
+  - THPT Chuyên Trần Đại Nghĩa
+  - THPT Chuyên Nguyễn Hữu Huân (Thủ Đức)
+  - THPT Chuyên Nguyễn Thị Minh Khai
+  - THPT Chuyên Lương Thế Vinh (Biên Hòa, Đồng Nai — adjacent)
+  - Phổ thông năng khiếu Bình Dương (adjacent)
+```
+
+### Table Stakes
+
+| Aspect | What Users Expect | Implementation |
+|--------|-------------------|----------------|
+| Select school from list | Dropdown or card grid | Static array of schools |
+| Click "Tìm" | Navigate/scroll to matching course | `navigate('/danh-muc?school=ptnk')` or scroll to course section |
+| Visual school logos/icons | Makes it feel polished | CSS icons or emoji flags; actual logos = copyright risk |
+| Clear "not found" state | If no course matched | "Khóa học đang được chuẩn bị. Đăng ký để nhận thông báo." |
+| Works on mobile | Touch-friendly select | Native `<select>` or Radix Select (already installed) |
+
+### Implementation Approach: Static Data Map
+
+The school → course mapping should be **static** (hard-coded in a constants file), not DB-driven:
+
+```typescript
+// src/lib/constants/schools.ts
+export const SCHOOL_COURSE_MAP: Record<string, { name: string; courseSlug: string | null }> = {
+  ptnk:  { name: 'Phổ Thông Năng Khiếu',           courseSlug: 'on-thi-ptnk' },
+  cnn:   { name: 'Chuyên Nguyễn Thượng Hiền',       courseSlug: 'on-thi-cnn' },
+  csp:   { name: 'Chuyên Lê Hồng Phong',            courseSlug: 'on-thi-csp' },
+  khtn:  { name: 'Năng Khiếu Khoa Học Tự Nhiên',    courseSlug: 'on-thi-khtn' },
+  tdn:   { name: 'Chuyên Trần Đại Nghĩa',           courseSlug: null },         // no course yet
+  nhh:   { name: 'Chuyên Nguyễn Hữu Huân',          courseSlug: null },
+}
+```
+
+Rationale: The list of specialized schools is fixed (maybe 10-15 total). DB overhead is unnecessary. A simple `constants/schools.ts` is maintainable and faster.
+
+### Anti-Features
+
+| Anti-Feature | Why Not |
+|--------------|---------|
+| AI-powered school recommendation | Overkill. The student knows which school they're targeting. |
+| Full-page school detail pages | Out of scope. This is a navigation widget on the landing page, not a school database. |
+| User-submitted school reviews | Moderation burden. Wrong product direction. |
+| DB-driven school list | 10-15 schools never change. Static constants are better. No migration needed to update. |
+
+### UX Pattern
+
+Landing page section: "Bạn đang ôn thi trường nào?"
+
+```
+[Card grid of schools with logo/icon + name]
+[PTNK] [CNN] [CSP] [KHTN]
+[Trần Đại Nghĩa] [Nguyễn Hữu Huân] [Khác...]
+
+→ Click card → navigate to /danh-muc?grade=advanced&school=ptnk
+  OR scroll to the matching course section if already on landing page
+```
+
+Mobile UX: School cards in 2-column grid. Minimum 80px card height. Highlight selected card with border color. Single "Tìm khóa học" CTA button.
+
+### Complexity Assessment
+
+**LOW.** This is a UI widget with static data and a navigate call. No DB changes. No auth required. One new component (`SchoolNavigator.tsx`), one constants file, possible `CataloguePage` filter extension.
+
+### Existing System Dependencies
+
+- Reuses: `react-router-dom` navigate
+- Reuses: `CataloguePage` (may need `?school=` query param support)
+- No DB changes required
+- Modifies: Landing page `Index.tsx` (add new section)
+
+---
+
+## Feature 6: Admin Full-Page Forms (Thêm chuyên đề / Thêm bài giảng)
+
+### What This Feature Does
+
+Currently, admin adds chapters and lessons via **modal dialogs** (`ChapterFormDialog`, `LessonFormDialog` components). The v3.0 request is to move these to **dedicated full-page routes** that reuse student-side UI patterns (card layouts, visual design system).
+
+This is the industry-standard pattern for admin content management: modal → page migration happens when forms grow in complexity (e.g., when adding more fields like materials, settings, visibility flags).
+
+### Why This Matters (UX Case)
+
+| Modal Dialogs (current) | Full-Page Forms (v3.0) |
+|------------------------|----------------------|
+| Constrained viewport space | Full page for complex fields |
+| Can't navigate to directly | Direct URL → bookmarkable, shareable |
+| Lost on page refresh | Page refresh = reload form state |
+| Feels cramped with many fields | All fields visible without scroll confusion |
+| No breadcrumb context | Full breadcrumb: Courses → Chapter → Add Lesson |
+
+### Table Stakes
+
+| Aspect | Expectation | Implementation |
+|--------|-------------|----------------|
+| Dedicated URL for Add Chapter | `/admin/khoa-hoc/:slug/them-chuyen-de` | New route + page component |
+| Dedicated URL for Add Lesson | `/admin/khoa-hoc/:slug/chuyen-de/:chapterSlug/them-bai-giang` | New route + page component |
+| Dedicated URL for Edit Chapter | `/admin/khoa-hoc/:slug/chuyen-de/:chapterSlug/chinh-sua` | Edit variant |
+| Dedicated URL for Edit Lesson | `/admin/khoa-hoc/:slug/chuyen-de/:chapterSlug/bai/:lessonSlug/chinh-sua` | Edit variant |
+| Breadcrumb navigation | Shows context hierarchy | Reuse existing Breadcrumb component |
+| Form validation same as modal | Zod schema unchanged | Lift schema from existing dialog |
+| Cancel → back to parent | "Hủy" button navigates back | `navigate(-1)` |
+| Success → back to parent | After save, redirect to parent page | Same as "Hủy" |
+
+### Reuse Student-Side UI Patterns
+
+"Reuse student-side UI patterns" means: match the visual weight, card style, and spacing used in student-facing pages (CourseDetailPage, CataloguePage) rather than the utilitarian admin table style. This creates visual consistency between what admin creates and what students see.
+
+Specific patterns to reuse:
+- `Card` + `CardContent` wrapper for form sections
+- `Separator` between form sections
+- `48px` min height for all inputs and buttons
+- Section headers in the same weight as student page headings
+- "Be Vietnam Pro" typography consistent with student pages
+
+### Anti-Features
+
+| Anti-Feature | Why Not |
+|--------------|---------|
+| Keep modals for simple forms, page for complex | Creates inconsistency. Pick one pattern and use it everywhere. Full-page is the winner. |
+| Auto-save drafts | Adds DB complexity. Form is short enough that accidental loss is low risk. |
+| Multi-step wizard for lesson creation | Overengineering for a 5-field form. Single page with sections. |
+
+### Complexity Assessment
+
+**LOW.** This is a routing + component refactor. The form fields, validation schemas, and API calls already exist in the modal dialogs — they're being relocated, not rewritten. Primary work: new page components, new routes in `App.tsx`, breadcrumb updates.
+
+### Existing System Dependencies
+
+- Reuses: `ChapterFormDialog`'s Zod schema + `useMutation` logic → extract to shared hook
+- Reuses: `LessonFormDialog`'s Zod schema + `useMutation` logic
+- Modifies: `App.tsx` — add 4 new admin routes
+- Modifies: `ChaptersPage`, `LessonsPage` — change "Add" buttons from dialog-open to `navigate()`
+
+---
+
+## Feature 7: YouTube Privacy Strategy (Video private/unlisted)
+
+### The Core Problem
+
+BuMath embeds YouTube videos in lessons. If students share video links, non-subscribers can watch for free. The question: how to keep videos accessible only within the BuMath platform?
+
+### YouTube's Privacy Options
+
+| Mode | Embeddable | Link sharable | Domain restriction | Notes |
+|------|------------|---------------|-------------------|-------|
+| Public | ✓ | ✓ | ✗ | Anyone can find in search |
+| Unlisted | ✓ | ✓ | ✗ | Not in search; anyone with link can watch |
+| Private | ✗ | ✗ | N/A | Cannot be embedded |
+| Members-only | ✓ | ✓ | ✗ | Requires YouTube channel membership |
+
+**The fundamental constraint: YouTube provides no per-domain embedding restriction for standard accounts.** The `allow="..."` attribute on iframe controls what the iframe is *allowed to do* — not who is allowed to view it.
+
+### What Platforms Do in Practice
+
+**EdTech platforms with similar constraints typically use one of:**
+
+1. **Accept unlisted (most common for small platforms):** Videos are unlisted; the risk of link sharing is accepted. Mitigation: obscure video IDs (YouTube auto-generates these), no discoverable patterns. Student must be logged in to BuMath to even see the video URL.
+
+2. **Vimeo Pro / Wistia / Bunny.net with domain restriction:** Paid video hosts that support per-domain embedding restriction. Vimeo Pro ($75/mo) supports "only embed on domain: bumath.vn". This is the proper solution but requires migrating off YouTube.
+
+3. **YouTube API + signed token proxy:** A server-side proxy that validates the user is authenticated to BuMath before serving a redirect to the YouTube embed URL. **Does not work** — YouTube URLs are not signed/expiring; once a user sees the URL, they can share it.
+
+4. **Obfuscated YouTube embed URL with Referrer-Policy:** Set `Referrer-Policy: no-referrer` on the site. This prevents YouTube from knowing the embed origin, but also means YouTube's own domain restriction (for Enterprise accounts) won't work. Counter-productive.
+
+5. **YouTube Privacy-Enhanced Mode (youtube-nocookie.com):** Reduces YouTube tracking but provides no access control. The video is still publicly accessible.
+
+### Recommended Strategy for v3.0
+
+**Keep unlisted + implement multiple deterrent layers:**
+
+**Layer 1: Unlisted videos (current/required)**
+- All lesson videos → unlisted on YouTube
+- Video IDs are random and non-guessable (YouTube generates them)
+- Students cannot find videos in YouTube search
+
+**Layer 2: Remove video URL from DOM when unenrolled**
+- Current code already does this: `isEnrolled ? <iframe src={...} /> : <Lock icon />`
+- Unenrolled visitors see no video URL in the DOM → cannot extract it
+- Add: do not include `video_url` in API response for unenrolled users (RLS or application layer)
+
+**Layer 3: Content-Security-Policy (informational)**
+- `frame-ancestors 'self'` prevents *your* pages from being embedded in other sites
+- Does not prevent YouTube from being embedded in other sites
+- Useful for preventing clickjacking of BuMath itself, but unrelated to YouTube privacy
+
+**Layer 4: YouTube's Embeds restriction (Enterprise only)**
+- YouTube Studio → Content → Restrict embed domains
+- Only available for YouTube for Education / Google Workspace accounts
+- **Not available for standard personal/brand YouTube channels**
+- If BuMath creates a Google Workspace for Education account: free; embed domain restriction becomes available
+
+**Layer 5: Application-level referrer check (MEDIUM complexity)**
+- The BuMath API could serve video URLs as signed short-lived tokens
+- But: once the user has the YouTube URL (visible in browser DevTools), the token system is bypassed
+- Security through obscurity at best; not worth the complexity
+
+**Honest Assessment:**
+
+True domain-based embedding restriction for YouTube videos requires either:
+- A **Google Workspace for Education account** (free for schools, but BuMath is a private tutoring company — may not qualify)
+- **Migrating to Vimeo Pro/Wistia/Bunny.net** ($30-75/mo) which natively support domain restriction
+- Accepting that unlisted + auth gate + RLS is "good enough" for the threat model (students sharing links with friends)
+
+**For v3.0 recommendation:** Implement Layer 1 + Layer 2 (already partly done). Document Layer 4 as a future path if the business grows and video sharing becomes a significant revenue leak. Do NOT over-engineer a proxy/token system — it provides false security.
+
+### What to Build in v3.0
+
+| Action | Work Required |
+|--------|--------------|
+| Audit: verify all lesson `video_url` entries are unlisted | Admin checklist; no code |
+| Ensure `video_url` not exposed to unenrolled users via API | Check Supabase RLS on `lessons` table — policy should gate by enrollment |
+| Add `frame-ancestors 'self'` to Vercel security headers | 2-line `vercel.json` change |
+| Document: future path → Vimeo Pro if video leak becomes issue | Architecture decision in PROJECT.md |
+
+### Complexity Assessment
+
+**LOW (for the recommended approach).** No new features needed. The main work is: RLS audit, Vercel headers, and documentation. The temptation to over-engineer this (signed URLs, proxy layers) is a trap — resist it.
+
+### Existing System Dependencies
+
+- Modifies: `vercel.json` (add security headers)
+- Audit: Supabase `lessons` RLS — verify `video_url` column not returned for unenrolled queries
+- No React component changes required
+
+---
+
+## v3.0 Feature Dependencies
+
+```
+[Pricing + Access Control (Feature 4)]
+    └──builds on──> [Enrollments (existing)]
+    └──auto-generates──> [Enrollments via trigger]
+    └──enables gating for──> [Study Materials (Feature 3)]
+    └──enables gating for──> [Mock Exams (Feature 2)]
+
+[In-Lesson Chat (Feature 1)]
+    └──requires──> [Lessons (existing)]
+    └──requires──> [Auth + Roles (existing)]
+    └──reuses──> [Bell Notification system (existing)]
+    └──requires──> [Lesson Tabs restructure]
+
+[Lesson Tabs restructure]
+    └──enables──> [In-Lesson Chat tab]
+    └──enables──> [Study Materials tab in lesson context]
+    └──restructures──> [LessonContent (existing)]
+
+[Mock Exam System (Feature 2)]
+    └──reuses──> [compressImage + photo upload (existing)]
+    └──reuses──> [GradingPage patterns (existing)]
+    └──requires──> [exam_sessions + exam_submissions tables (new)]
+
+[Study Materials (Feature 3)]
+    └──requires──> [study_materials table + materials Storage bucket (new)]
+    └──optionally gated by──> [Pricing Packages (Feature 4)]
+
+[School Navigator (Feature 5)]
+    └──requires──> [CataloguePage filter extension]
+    └──purely frontend──> [static constants file]
+
+[Admin Full-Page Forms (Feature 6)]
+    └──refactors──> [ChapterFormDialog + LessonFormDialog (existing)]
+    └──requires──> [new routes in App.tsx]
+
+[YouTube Privacy (Feature 7)]
+    └──audits──> [lessons RLS (existing)]
+    └──modifies──> [vercel.json (existing)]
+```
+
+### Dependency-Derived Build Order
+
+1. **Feature 7** (YouTube Privacy) — audit-only, 0 dependencies, clears tech debt
+2. **Feature 6** (Admin Full-Page Forms) — isolated refactor, enables richer lesson creation for Features 2/3
+3. **Feature 4** (Pricing + Access Control) — schema foundation; other features (2, 3) can be gated by packages
+4. **Feature 3** (Study Materials) — self-contained, benefits from pricing being in place
+5. **Feature 5** (School Navigator) — no dependencies, can be built any time; purely frontend
+6. **Feature 1** (In-Lesson Chat) — requires lesson tab restructure; significant UX change to core lesson page
+7. **Feature 2** (Mock Exams) — most complex; new entity type, new flows, requires grading queue extension
+
+---
+
+## v3.0 Table Stakes vs Differentiators
+
+### Table Stakes (must ship in v3.0 for the milestone to feel complete)
+
+| Feature | Why Expected |
+|---------|--------------|
+| Pricing display on landing + catalogue | Users expect to see what they're paying for before signing up |
+| Package-based access gate (lock icon for unowned courses) | Industry standard; Hocmai, Udemy all do this |
+| Study materials downloadable by enrolled students | Vietnamese students expect "đề thi thử" to be available digitally |
+| Mock exam with countdown + upload | Simulated exam conditions are expected for "ôn thi" prep |
+| Admin can assign packages to students | Admin must be able to operate the business manually |
+| Chat in lesson context | Students expect to ask questions about the lesson they're watching, not via separate Zalo |
+
+### Differentiators (set BuMath apart)
+
+| Feature | Why It's a Differentiator |
+|---------|--------------------------|
+| School navigator on landing page | No Vietnamese math tutoring platform has school-targeted course routing |
+| Per-lesson teacher chat (not class-wide discussion) | 1-on-1 feel within an online course; maintains the personal tutoring promise |
+| Tứ trụ (Top 4) focused exam prep materials | Very specific to HCMC competitive math scene; no generic platform can match this |
+| Mock exams as part of the learning flow (not a separate test portal) | Integrated UX vs Zalo groups sending PDFs manually |
+
+### Anti-Features for v3.0
+
+| Anti-Feature | Why Not | What To Do Instead |
+|--------------|---------|-------------------|
+| Payment gateway (VNPay/Stripe/MoMo) | Legal complexity, integration effort, scope explosion | Admin confirms bank transfer → assigns package manually |
+| Real-time chat (WebSocket/Supabase Realtime) | Mobile battery drain, reconnect complexity | Poll messages on chat tab open (30s interval or on focus) |
+| Auto-graded mock exams | Not feasible for handwritten math proofs | Manual grading using existing teacher workflow |
+| True YouTube domain restriction (complex proxy) | No actual security gain; students can always screen-record | Unlisted + auth gate is sufficient deterrent |
+| PDF annotation in browser | High complexity (canvas overlay), low priority | Download PDF, annotate locally, re-upload |
+| Student self-service package upgrade flow | Requires payment infrastructure | Students contact teacher via Zalo/phone |
+| Separate "exam portal" as standalone app | Scope explosion | Integrate into existing student experience at `/thi-thu` |
+| Grade 10/11/12 expansion | Out of scope for v3.0; dilutes brand | BuMath = THCS specialist; keep focused |
+
+---
+
+## Mobile-First UX Considerations per v3.0 Feature
+
+### Feature 1: In-Lesson Chat
+- **Keyboard avoidance is critical**: iOS Safari pushes content when keyboard appears. Use `position: sticky; bottom: 0` for the chat input bar, and test that messages stay scrollable above it.
+- **Short labels on tabs**: "Chat" not "Chat với giảng viên" (too long for 375px tab strip)
+- **Message send on Enter key (desktop) + send button (mobile)**: Vietnamese students type on phone, not keyboard — button must be the primary action
+
+### Feature 2: Mock Exam
+- **Countdown timer visibility**: Must be visible without scrolling on 375px screen. Use sticky header or floating badge.
+- **One-tap camera launch**: `accept="image/*" capture="environment"` on file input — same as existing SubmissionArea
+- **No "Go Back" during exam**: Prevent accidental navigation away; use `window.onbeforeunload` warning
+
+### Feature 3: Study Materials
+- **Download vs open in browser**: On iOS, PDFs can be opened in Safari. On Android, they download. Use `download` attribute but also offer "Mở" (open in new tab). Don't assume one behavior.
+- **File size warning**: Show "2.4 MB" before download. On 3G, a 5MB PDF is a 30-second download.
+- **Category filter as horizontal scroll tabs** not dropdown (dropdown on mobile requires extra tap)
+
+### Feature 4: Pricing Tiers
+- **VND formatting**: `1.500.000 đ` — use `Intl.NumberFormat('vi-VN')` for consistent formatting
+- **Package comparison card**: Mobile = vertical stack of cards; not a comparison table (tables break on 375px)
+- **Lock state**: Lock icon + "Cần gói X" text must fit in the lesson sidebar item without truncation
+
+### Feature 5: School Navigator
+- **Card grid not dropdown**: On mobile, tapping a card is easier than a select dropdown. 2-column grid of 80px school cards.
+- **"Tìm ngay" CTA**: Large primary button (full-width on mobile) immediately after school selection
+
+### Feature 6: Admin Full-Page Forms
+- **Admin uses desktop**: Forms are built for admin (desktop/laptop). Mobile is secondary. 48px tap targets still required but layout can be wider than 375px.
+- **File upload for lesson**: Admin uploading PDFs from desktop — drag-and-drop is acceptable here.
+
+### Feature 7: YouTube Privacy
+- No mobile-specific considerations. The `youtube-nocookie.com` embed URL is worth using for GDPR and slightly better behavior on restricted networks.
+- Embed `allowfullscreen` attribute should remain — fullscreen is expected by students watching on phone.
+
+---
+
+## Sources
+
+- Supabase Realtime docs — supabase.com/docs/guides/realtime
+- YouTube Help — Embed YouTube videos (unlisted vs private) — support.google.com/youtube/answer/171780
+- YouTube Studio Help — Restrict videos to specific domains — support.google.com/youtube/answer/6181865 (Enterprise only)
+- Vimeo Privacy Controls — vimeo.com/features/video-privacy (domain embedding restriction)
+- Bunny.net Stream — bunny.net/stream (domain restriction, $10/mo base)
+- Canvas LMS — Per-assignment messaging pattern — community.canvaslms.com
+- Content-Security-Policy: frame-ancestors — MDN Web Docs (HIGH confidence — verified, not YouTube-related)
+- Vietnamese number formatting — `Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })`
+- iOS Safari keyboard avoidance patterns — webkit.org/blog/5610/more-responsive-tapping-on-ios
+
+---
+
+*Feature research for: BuMath LMS v3.0 — Platform Expansion*
+*Researched: 2026-07-18*
