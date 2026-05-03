@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: UI Refactor
-status: Milestone complete
-stopped_at: Completed 13-02-PLAN.md (CataloguePage search, infinite scroll, Claymorphism)
-last_updated: "2026-05-02T13:29:11.829Z"
+status: UAT complete — ready to archive
+stopped_at: All UAT passed (Phase 12, 12.1, 13 confirmed 2026-05-03)
+last_updated: "2026-05-03T00:00:00.000Z"
 progress:
   total_phases: 6
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 27
-  completed_plans: 26
+  completed_plans: 27
 ---
 
 # Project State

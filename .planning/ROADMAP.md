@@ -3,7 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 1-8, 38 plans (shipped 2026-05-01) — [Archive](.planning/milestones/v1.0-ROADMAP.md)
-- 🚧 **v2.0 UI Refactor** — Phases 9-13 (in progress)
+- ✅ **v2.0 UI Refactor** — Phases 9-13, UAT complete (shipped 2026-05-03)
 
 ## Phases
 
@@ -23,13 +23,14 @@ Full details: [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-R
 
 </details>
 
-### 🚧 v2.0 UI Refactor (Phases 9–13)
+### ✅ v2.0 UI Refactor (Phases 9–13) — SHIPPED 2026-05-03
 
 - [x] **Phase 9: URL Standardization** — Rename all routes to Vietnamese, update all redirects and internal links (7/7 plans, UAT 6/6 ✅ 2026-05-01)
 - [x] **Phase 10: Auth Pages UI** — Refactor /dang-nhap, /dang-ky, /cho-duyet with modern design (completed 2026-05-01)
 - [x] **Phase 11: Admin List Pages** — Refactor users + courses list pages with pagination, filters, search (completed 2026-05-01)
-- [ ] **Phase 12: Admin Detail Pages** — Refactor course/chapter/lesson management + grading queue + grading page
-- [x] **Phase 13: Student Pages** — Refactor courses list, course detail/lesson view, catalogue with filters + pagination (completed 2026-05-02)
+- [x] **Phase 12: Admin Detail Pages** — Refactor course/chapter/lesson management + grading queue + grading page (UAT ✅ 2026-05-03)
+- [x] **Phase 12.1: UI Fix** — Error states, typography, touch targets, badge color (UAT ✅ 2026-05-03)
+- [x] **Phase 13: Student Pages** — Refactor courses list, course detail/lesson view, catalogue with filters + pagination (UAT ✅ 2026-05-03)
 
 ## Phase Details
 
@@ -44,13 +45,13 @@ Full details: [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-R
 **Plans**: 7 plans
 
 Plans:
-- [ ] 09-01-PLAN.md — Rename route path definitions (App.tsx + ProtectedRoute.tsx)
-- [ ] 09-02-PLAN.md — Auth/shared pages (Login, Register, NotFound)
-- [ ] 09-03-PLAN.md — Admin components (AdminLayout, GradingPage, SubmissionsPage)
-- [ ] 09-04-PLAN.md — Admin content pages (CoursesPage, ChaptersPage, LessonsPage)
-- [ ] 09-05-PLAN.md — Student layout + pages (StudentLayout, CataloguePage + LOI_MAP logic, CoursesPage)
-- [ ] 09-06-PLAN.md — Student CourseDetailPage + all 4 landing components
-- [ ] 09-07-PLAN.md — Test file updates + yarn test green
+- [x] 09-01-PLAN.md — Rename route path definitions (App.tsx + ProtectedRoute.tsx)
+- [x] 09-02-PLAN.md — Auth/shared pages (Login, Register, NotFound)
+- [x] 09-03-PLAN.md — Admin components (AdminLayout, GradingPage, SubmissionsPage)
+- [x] 09-04-PLAN.md — Admin content pages (CoursesPage, ChaptersPage, LessonsPage)
+- [x] 09-05-PLAN.md — Student layout + pages (StudentLayout, CataloguePage + LOI_MAP logic, CoursesPage)
+- [x] 09-06-PLAN.md — Student CourseDetailPage + all 4 landing components
+- [x] 09-07-PLAN.md — Test file updates + yarn test green
 
 ### Phase 10: Auth Pages UI
 **Goal**: Login and Register pages have polished Claymorphism design with BuMath branding (Pending page removed per D-05)
@@ -99,10 +100,10 @@ Plans:
 Plans:
 - [x] 12-00a-PLAN.md — Wave 0: Install dnd-kit, add batch reorder APIs + getAllSubmissions
 - [x] 12-00b-PLAN.md — Wave 0: Create test scaffolds for ChaptersPage, LessonsPage, SubmissionsPage
-- [ ] 12-01-PLAN.md — ChaptersPage + LessonsPage: dnd-kit drag-and-drop reordering
-- [ ] 12-02-PLAN.md — SubmissionsPage: server-side pagination + status filter
-- [ ] 12-03-PLAN.md — GradingPage: mobile sticky bottom bar
-- [ ] 12-04-PLAN.md — UsersPage + CoursesPage: server-side filter + pagination migration (D-01)
+- [x] 12-01-PLAN.md — ChaptersPage + LessonsPage: dnd-kit drag-and-drop reordering
+- [x] 12-02-PLAN.md — SubmissionsPage: server-side pagination + status filter
+- [x] 12-03-PLAN.md — GradingPage: mobile sticky bottom bar
+- [x] 12-04-PLAN.md — UsersPage + CoursesPage: server-side filter + pagination migration (D-01)
 
 **UI hint**: yes
 
@@ -114,8 +115,8 @@ Plans:
 **Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 12.1-01-PLAN.md — Wave 1: GradingPage touch target + accessibility, CoursesPage + UsersPage typography fixes
-- [ ] 12.1-02-PLAN.md — Wave 2: Error states (3 pages), badge color, copywriting, prefers-reduced-motion CSS
+- [x] 12.1-01-PLAN.md — Wave 1: GradingPage touch target + accessibility, CoursesPage + UsersPage typography fixes
+- [x] 12.1-02-PLAN.md — Wave 2: Error states (3 pages), badge color, copywriting, prefers-reduced-motion CSS
 
 ### Phase 13: Student Pages
 **Goal**: Student-facing pages (courses, lesson view, catalogue) have polished Claymorphism layouts with search, infinite scroll, Sheet drawer, and intuitive navigation
