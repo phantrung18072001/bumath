@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Platform Expansion
-status: Defining requirements
-stopped_at: Milestone v3.0 started — defining requirements
-last_updated: "2026-05-03T16:22:00.000Z"
+status: Roadmap ready — Phase 14 next
+stopped_at: Roadmap created — 6 phases (14–19), 31 requirements mapped, awaiting /gsd-plan-phase 14
+last_updated: "2026-05-03T17:00:00.000Z"
 progress:
-  total_phases: 0
+  total_phases: 6
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -19,14 +19,18 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-03 — v3.0 milestone started)
 
 **Core value:** Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ thể từ giảng viên trên từng bài làm
-**Current focus:** Defining requirements for v3.0 Platform Expansion
+**Current focus:** v3.0 Platform Expansion — Phase 14: Pricing + Access Control
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 14 — Pricing + Access Control (not started)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-03 — Milestone v3.0 started
+Status: Roadmap ready, awaiting plan-phase
+Last activity: 2026-05-03 — v3.0 roadmap created (Phases 14–19, 31 requirements)
+
+```
+v3.0 Progress: ░░░░░░░░░░░░░░░░░░░░ 0/6 phases
+```
 
 ## Performance Metrics
 
@@ -83,6 +87,18 @@ Last activity: 2026-05-03 — Milestone v3.0 started
 
 - Phase 6 added: UX Polish — grading filters, student course discovery, nav fixes, progress bar color
 - Phase 12.1 inserted after Phase 12: UI fix - error states typography touch targets (URGENT)
+- v3.0 Phases 14–19 created 2026-05-03: 31 requirements mapped across 6 phases
+
+### v3.0 Phase Map
+
+| Phase | Name | Requirements | Key Risk |
+|-------|------|--------------|----------|
+| 14 | Pricing + Access Control | PRICE-01–03, PRICE-05, VIDEO-01 | Backfill migration order — never combine backfill + RLS change |
+| 15 | Admin UX + Audit | AUDIT-01, ADMIN-01–03 | Route ordering: literal before param in App.tsx |
+| 16 | Lesson Tabs + Study Materials | LESSON-01–03, MAT-01–03 | Separate `study-materials` bucket; signed URL expiry |
+| 17 | In-Lesson Chat | CHAT-01–03 | Realtime channel cleanup — removeChannel on every unmount |
+| 18 | Mock Exam System | EXAM-01–06 | Answer separation; server-side timing; UNIQUE constraint |
+| 19 | Landing + Navigator + Video | NAV-01–02, LAND-01–03, VIDEO-02, PRICE-04 | Static constants for navigator; VideoPlayer wraps, not replaces |
 
 ### Decisions
 

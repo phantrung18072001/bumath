@@ -37,6 +37,125 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
 
 </details>
 
-### 📋 v3.0 (planned)
+### 📋 v3.0 Platform Expansion (Phases 14–19)
 
-_Next milestone — run `/gsd:new-milestone` to define scope._
+- [ ] **Phase 14: Pricing + Access Control** — Package model, DB-enforced lesson access, admin assignment UI, student package view
+- [ ] **Phase 15: Admin UX + Audit** — Full-page add/edit forms, broken link sweep, design consistency
+- [ ] **Phase 16: Lesson Tabs + Study Materials Library** — 3-tab lesson layout, PDF library with category × grade filter
+- [ ] **Phase 17: In-Lesson Chat** — Realtime student↔teacher messaging scoped per lesson, unread badge
+- [ ] **Phase 18: Mock Exam System** — Timed exam sessions, KaTeX questions, server-side enforcement, one-attempt rule
+- [ ] **Phase 19: Landing Page + Navigator + Video Abstraction** — School navigator, course content sections, VideoPlayer abstraction, pricing display
+
+## Phase Details
+
+### Phase 14: Pricing + Access Control
+**Goal**: Bài học chỉ hiển thị cho học sinh có package phù hợp — quyền truy cập được kiểm soát bởi DB, không phải client-side
+**Depends on**: Phase 13 (enrolled student flow already live)
+**Requirements**: PRICE-01, PRICE-02, PRICE-03, PRICE-05, VIDEO-01
+**Success Criteria** (what must be TRUE):
+  1. Admin có thể tạo package mới (tên, giá, grade coverage) và sửa package đã có trong trang quản trị
+  2. Admin có thể gán package cho học sinh — khi gán xong, bảng `enrollments` tự động được populate (trigger)
+  3. Học sinh không có package phù hợp bị chặn ở bài học với thông báo rõ ràng (không crash, không silent blank)
+  4. Học sinh đã có package thấy đúng package đang sở hữu trong trang profile của mình
+  5. `video_url` chỉ trả về qua RLS cho học sinh có quyền truy cập; unlisted + `youtube-nocookie.com` embed domain
+**Plans**: TBD
+**UI hint**: yes
+
+**⚠️ Migration constraint:** Backfill existing enrollments trước khi thay đổi RLS — không gộp backfill + RLS trong một migration. Mọi RLS policy mới phải dùng `get_my_role()` và `is_approved_user()`.
+
+---
+
+### Phase 15: Admin UX + Audit
+**Goal**: Admin có thể thêm/sửa chuyên đề và bài giảng qua trang riêng biệt; toàn bộ button/link trong app dẫn đến URL hợp lệ
+**Depends on**: Phase 14
+**Requirements**: AUDIT-01, ADMIN-01, ADMIN-02, ADMIN-03
+**Success Criteria** (what must be TRUE):
+  1. Không còn button hoặc link nào trong app dẫn đến 404 hoặc không có `href`/`onClick` handler
+  2. Click "Thêm chuyên đề" điều hướng đến trang riêng với URL riêng (không mở dialog)
+  3. Click "Thêm bài giảng" điều hướng đến trang riêng với URL riêng (không mở dialog)
+  4. Trang thêm chuyên đề/bài giảng có giao diện nhất quán với student-side UI (card style, typography, spacing)
+**Plans**: TBD
+**UI hint**: yes
+
+**⚠️ Route ordering:** Literal routes `/admin/khoa-hoc/them-chuyen-de` phải đứng trước param routes `/admin/khoa-hoc/:courseSlug` trong `App.tsx`.
+
+---
+
+### Phase 16: Lesson Tabs + Study Materials Library
+**Goal**: Trang bài học có 3 tab rõ ràng; học sinh và admin có thể upload/browse/download tài liệu PDF theo category và grade
+**Depends on**: Phase 14 (access control RLS must be live before materials inherit it)
+**Requirements**: LESSON-01, LESSON-02, LESSON-03, MAT-01, MAT-02, MAT-03
+**Success Criteria** (what must be TRUE):
+  1. Trang xem bài học hiển thị 3 tab: "Bài giảng", "Chấm bài", "Tài liệu & Kiểm tra" — chuyển tab không reload trang
+  2. Tab "Chấm bài" chứa đúng submission area và grading status hiện tại (không mất tính năng cũ)
+  3. Admin có thể upload tài liệu PDF với category (giữa kỳ, cuối kỳ, vào 10, HSG, chuyên toán) và grade (7/8/9)
+  4. Học sinh đã approved có thể filter tài liệu theo category và grade, click để download
+  5. Tab "Tài liệu & Kiểm tra" trong bài học hiển thị materials liên quan đến grade của khóa học đó
+**Plans**: TBD
+**UI hint**: yes
+
+**⚠️ Storage:** Tạo bucket `study-materials` riêng biệt (không dùng bucket `assignments`). Signed URL 1 giờ, regenerate mỗi lần load trang.
+
+---
+
+### Phase 17: In-Lesson Chat
+**Goal**: Học sinh có thể hỏi giảng viên trực tiếp trong ngữ cảnh từng bài học; giảng viên thấy và trả lời câu hỏi mới ngay lập tức
+**Depends on**: Phase 16 (tab structure must exist — Chat slots into Tab 3)
+**Requirements**: CHAT-01, CHAT-02, CHAT-03
+**Success Criteria** (what must be TRUE):
+  1. Học sinh gửi câu hỏi trong bài học và thấy tin nhắn xuất hiện ngay trong Chat tab
+  2. Giảng viên/admin vào cùng bài học, thấy câu hỏi và có thể reply — học sinh thấy reply trong real-time
+  3. Chat tab hiển thị badge số tin nhắn chưa đọc (vd: "Chat (2)") khi có câu hỏi mới
+  4. Chuyển sang bài học khác và quay lại không tạo ra duplicate messages hoặc orphaned subscriptions
+**Plans**: TBD
+**UI hint**: yes
+
+**⚠️ Realtime:** Mọi `supabase.channel().subscribe()` PHẢI có cleanup `return () => supabase.removeChannel(channel)`. Chỉ mở channel khi Chat tab active (lazy-open). Deduplicate messages bằng UUID. Test với React StrictMode bật.
+
+---
+
+### Phase 18: Mock Exam System
+**Goal**: Học sinh có thể tham gia thi thử trong cửa sổ thời gian quy định và xem điểm ngay sau khi nộp; admin quản lý đợt thi và đề bài
+**Depends on**: Phase 17 (Realtime pattern established; exam photo upload reuses submission pattern)
+**Requirements**: EXAM-01, EXAM-02, EXAM-03, EXAM-04, EXAM-05, EXAM-06
+**Success Criteria** (what must be TRUE):
+  1. Admin có thể tạo đợt thi (tên, loại, thời gian bắt đầu/kết thúc, đề bài PDF) và thêm câu hỏi có LaTeX/ảnh kèm đáp án
+  2. Học sinh thấy danh sách đợt thi đang mở, vào làm bài với countdown đếm ngược theo thời gian thực từ `started_at` trong DB
+  3. Học sinh chỉ được nộp bài đúng 1 lần — cố submit lần 2 bị chặn với thông báo rõ ràng
+  4. Nộp bài sau khi `ends_at` bị server-side từ chối (không phụ thuộc client clock)
+  5. Học sinh thấy điểm ngay sau khi nộp bài thành công
+**Plans**: TBD
+**UI hint**: yes
+
+**⚠️ Security:** Đáp án phải trong bảng riêng `exam_question_answers` với student-blocking RLS. Chấm điểm qua `SECURITY DEFINER` DB function — không trả raw answers về browser. `UNIQUE(exam_session_id, user_id)` trên bảng submissions.
+**⚠️ Dependency:** `yarn add katex react-katex` chỉ thêm ở phase này.
+
+---
+
+### Phase 19: Landing Page + School Navigator + Video Abstraction
+**Goal**: Landing page có đủ nội dung giới thiệu khóa học, bảng giá, school navigator và video player có thể swap provider; học sinh tìm đúng khóa học từ landing page
+**Depends on**: Phase 14 (pricing data ready to display), Phase 16 (study materials available for navigator target courses)
+**Requirements**: NAV-01, NAV-02, LAND-01, LAND-02, LAND-03, VIDEO-02, PRICE-04
+**Success Criteria** (what must be TRUE):
+  1. Landing page có section giới thiệu đầy đủ Toán 7 (Cơ bản + Nâng cao) và Toán 8 (Cơ bản + Nâng cao) với nội dung khóa học
+  2. Landing page có section ôn chuyên 9→10 với các chương trình A→Z, cấp tốc, Tứ trụ (PTNK/CNN/CSP/KHTN)
+  3. Học sinh chọn trường chuyên mục tiêu → click "Tìm kiếm" → được điều hướng đến khóa học phù hợp
+  4. Landing page hiển thị bảng giá 6 gói (Lớp 7: 1.5M, Lớp 8: 1.5M, Cấp tốc: 2M, Ôn chuyên: 3M, Tứ trụ: 2.5M, Toàn bộ: 4M) với định dạng VND đúng
+  5. `VideoPlayer` component nhận `provider` prop — YouTube và self-hosted URL đều render đúng mà không cần thay đổi parent components
+**Plans**: TBD
+**UI hint**: yes
+
+**Note:** VideoPlayer abstraction KHÔNG xóa YouTube — chỉ wrap nó. School Navigator dùng static constants map, không cần DB.
+
+---
+
+## Progress
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 14. Pricing + Access Control | 0/? | Not started | - |
+| 15. Admin UX + Audit | 0/? | Not started | - |
+| 16. Lesson Tabs + Study Materials | 0/? | Not started | - |
+| 17. In-Lesson Chat | 0/? | Not started | - |
+| 18. Mock Exam System | 0/? | Not started | - |
+| 19. Landing Page + Navigator + Video | 0/? | Not started | - |

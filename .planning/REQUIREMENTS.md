@@ -93,46 +93,46 @@
 
 ## Traceability
 
-*(Populated during roadmap creation)*
+*(Populated during roadmap creation — v3.0 Phases 14–19)*
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUDIT-01 | — | Pending |
-| PRICE-01 | — | Pending |
-| PRICE-02 | — | Pending |
-| PRICE-03 | — | Pending |
-| PRICE-04 | — | Pending |
-| PRICE-05 | — | Pending |
-| ADMIN-01 | — | Pending |
-| ADMIN-02 | — | Pending |
-| ADMIN-03 | — | Pending |
-| LESSON-01 | — | Pending |
-| LESSON-02 | — | Pending |
-| LESSON-03 | — | Pending |
-| CHAT-01 | — | Pending |
-| CHAT-02 | — | Pending |
-| CHAT-03 | — | Pending |
-| MAT-01 | — | Pending |
-| MAT-02 | — | Pending |
-| MAT-03 | — | Pending |
-| EXAM-01 | — | Pending |
-| EXAM-02 | — | Pending |
-| EXAM-03 | — | Pending |
-| EXAM-04 | — | Pending |
-| EXAM-05 | — | Pending |
-| EXAM-06 | — | Pending |
-| NAV-01 | — | Pending |
-| NAV-02 | — | Pending |
-| LAND-01 | — | Pending |
-| LAND-02 | — | Pending |
-| LAND-03 | — | Pending |
-| VIDEO-01 | — | Pending |
-| VIDEO-02 | — | Pending |
+| AUDIT-01 | Phase 15 | Pending |
+| PRICE-01 | Phase 14 | Pending |
+| PRICE-02 | Phase 14 | Pending |
+| PRICE-03 | Phase 14 | Pending |
+| PRICE-04 | Phase 19 | Pending |
+| PRICE-05 | Phase 14 | Pending |
+| ADMIN-01 | Phase 15 | Pending |
+| ADMIN-02 | Phase 15 | Pending |
+| ADMIN-03 | Phase 15 | Pending |
+| LESSON-01 | Phase 16 | Pending |
+| LESSON-02 | Phase 16 | Pending |
+| LESSON-03 | Phase 16 | Pending |
+| CHAT-01 | Phase 17 | Pending |
+| CHAT-02 | Phase 17 | Pending |
+| CHAT-03 | Phase 17 | Pending |
+| MAT-01 | Phase 16 | Pending |
+| MAT-02 | Phase 16 | Pending |
+| MAT-03 | Phase 16 | Pending |
+| EXAM-01 | Phase 18 | Pending |
+| EXAM-02 | Phase 18 | Pending |
+| EXAM-03 | Phase 18 | Pending |
+| EXAM-04 | Phase 18 | Pending |
+| EXAM-05 | Phase 18 | Pending |
+| EXAM-06 | Phase 18 | Pending |
+| NAV-01 | Phase 19 | Pending |
+| NAV-02 | Phase 19 | Pending |
+| LAND-01 | Phase 19 | Pending |
+| LAND-02 | Phase 19 | Pending |
+| LAND-03 | Phase 19 | Pending |
+| VIDEO-01 | Phase 14 | Pending |
+| VIDEO-02 | Phase 19 | Pending |
 
 **Coverage:**
 - v3.0 requirements: 31 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 31 ⚠️
+- Mapped to phases: 31 ✓
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-05-03*
