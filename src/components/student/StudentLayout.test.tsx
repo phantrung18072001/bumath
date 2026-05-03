@@ -40,7 +40,7 @@ describe('StudentLayout', () => {
     await renderStudentLayout()
     const logoImg = screen.getByAltText('BuMath')
     expect(logoImg).toBeInTheDocument()
-    expect(logoImg).toHaveAttribute('src', expect.stringContaining('bumath.jpeg'))
+    expect(logoImg).toHaveAttribute('src', expect.stringContaining('bumathx.png'))
   })
 
   it('renders nav link "Khóa học của tôi" pointing to /courses', async () => {

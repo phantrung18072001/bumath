@@ -38,7 +38,7 @@ const Header = () => {
           to="/"
           className="row-span-2 flex items-center gap-2.5 pr-6"
         >
-          <img src={`${import.meta.env.BASE_URL}bumath.jpeg`} alt="BuMath-X" className="h-24 w-24 rounded-xl object-cover" />
+          <img src={`${import.meta.env.BASE_URL}bumathx.png`} alt="BuMath-X" className="h-24 w-24 rounded-xl object-cover" />
           <span className="text-3xl font-extrabold tracking-tight">
             Bu<span className="text-primary">Math</span>-X
           </span>
@@ -131,7 +131,7 @@ const Header = () => {
       {/* Mobile: single row */}
       <div className="container flex h-14 items-center justify-between md:hidden">
         <Link to="/" className="flex items-center gap-2">
-          <img src={`${import.meta.env.BASE_URL}bumath.jpeg`} alt="BuMath-X" className="h-8 w-8 rounded-xl object-cover" />
+          <img src={`${import.meta.env.BASE_URL}bumathx.png`} alt="BuMath-X" className="h-8 w-8 rounded-xl object-cover" />
           <span className="text-lg font-extrabold tracking-tight">
             Bu<span className="text-primary">Math</span>-X
           </span>

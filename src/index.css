@@ -76,7 +76,7 @@
   position: absolute;
   font-weight: 700;
   color: #F97316;
-  opacity: 0.13;
+  opacity: 0.20;
   pointer-events: none;
   user-select: none;
   animation: bm-float ease-in-out infinite;
@@ -114,6 +114,18 @@
 .bm-float-symbol-light:nth-child(16) { animation-duration: 5.8s; }
 .bm-float-symbol-light:nth-child(17) { animation-duration: 4.3s; }
 .bm-float-symbol-light:nth-child(18) { animation-duration: 6.2s; }
+.bm-float-symbol-light:nth-child(19) { animation-duration: 3.7s; }
+.bm-float-symbol-light:nth-child(20) { animation-duration: 5.1s; }
+.bm-float-symbol-light:nth-child(21) { animation-duration: 4.6s; }
+.bm-float-symbol-light:nth-child(22) { animation-duration: 6.8s; }
+.bm-float-symbol-light:nth-child(23) { animation-duration: 3.4s; }
+.bm-float-symbol-light:nth-child(24) { animation-duration: 5.6s; }
+.bm-float-symbol-light:nth-child(25) { animation-duration: 4.9s; }
+.bm-float-symbol-light:nth-child(26) { animation-duration: 7.2s; }
+.bm-float-symbol-light:nth-child(27) { animation-duration: 3.9s; }
+.bm-float-symbol-light:nth-child(28) { animation-duration: 5.3s; }
+.bm-float-symbol-light:nth-child(29) { animation-duration: 4.1s; }
+.bm-float-symbol-light:nth-child(30) { animation-duration: 6.4s; }
 
 /* === BuMath Chalkboard Background === */
 .bm-chalk-bg {
