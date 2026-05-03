@@ -1,5 +1,20 @@
 # BuMath LMS
 
+## Current Milestone: v3.0 Platform Expansion
+
+**Goal:** Mở rộng BuMath từ LMS cơ bản sang hệ sinh thái học toán đầy đủ — pricing/access control theo gói, chat bài học, thi thử, tài liệu học, và landing page nâng cấp với school navigator.
+
+**Target features:**
+- Audit + fix các button/link chưa có URL
+- Admin UX: form thêm chuyên đề/bài giảng tách trang riêng (reuse student UI)
+- YouTube video privacy strategy
+- Landing page: nội dung giới thiệu mới (Toán 7/8 cơ bản-nâng cao, ôn chuyên Tứ trụ)
+- Lesson tabs: Chat, Chấm bài, Tài liệu+Kiểm tra
+- School navigator: chọn trường chuyên → dẫn đến khóa học phù hợp
+- Mock exams: thi thử hàng tháng/quý với chấm điểm tự động
+- Study materials: tài liệu thi cho grades 7/8/9
+- Pricing + access control theo gói mua
+
 ## What This Is
 
 Nền tảng học toán trực tuyến dành cho học sinh THCS (lớp 7–9) và ôn thi chuyên Toán. Admin và giảng viên quản lý khóa học, upload bài giảng dạng video (YouTube embed), giao bài tập; học sinh đăng ký tài khoản, theo dõi tiến độ học, nộp bài dưới dạng ảnh chụp bài làm tay và nhận kết quả chấm trực tiếp trên hệ thống.
@@ -37,22 +52,33 @@ Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ t
 - ✓ CourseDetailPage preview mode cho học sinh chưa đăng ký — v1.0
 - ✓ Responsive 375px, tap targets 48px, giao diện tiếng Việt — v1.0
 
-### Active (v2.0 — UI Refactor)
+### Active (v3.0 — Platform Expansion)
 
-- [x] Toàn bộ UI ngoài landing page được refactor với thiết kế hiện đại, đẹp hơn — Validated in Phase 13: student-pages (Claymorphism Teal design system)
-- [x] Các trang danh sách (admin users, courses, submissions; student catalogue, courses) có pagination — Validated in Phase 11: admin-pages
-- [x] Các trang danh sách có bộ filter phù hợp (search, grade, status…) — Validated in Phase 11: admin-pages + Phase 13: student-pages
-- [ ] URL đồng nhất (English-only hoặc Vietnamese-only — cần quyết định)
-- [ ] Email notification khi bài được chấm (GRADE-04 original requirement)
+- [ ] AUDIT — Thống kê và fix các button/link chưa có URL tương ứng
+- [ ] ADMIN UX — Tách form "Thêm chuyên đề" + "Thêm bài giảng" ra trang riêng, reuse student-side UI
+- [ ] YOUTUBE PRIVACY — Implement cơ chế video YouTube private/unlisted an toàn
+- [ ] LANDING PAGE — Nâng cấp nội dung giới thiệu (Toán 7/8 cơ bản-nâng cao; ôn chuyên 9→10: A→Z, cấp tốc, Tứ trụ PTNK/CNN/CSP/KHTN)
+- [ ] LESSON TABS — 3 tabs ở mỗi bài học: Chat với giảng viên, Chấm bài, Tài liệu+Kiểm tra
+- [ ] SCHOOL NAVIGATOR — "Ôn thi chuyên toán" → scroll → chọn trường → Tìm → dẫn đến khóa học phù hợp
+- [ ] MOCK EXAMS — Thi thử hàng tháng/quý; học sinh làm bài → xem điểm
+- [ ] STUDY MATERIALS — Tài liệu thi giữa kỳ/cuối kỳ 7,8,9; vào 10; HSG; đội tuyển; trường chuyên
+- [ ] PRICING + ACCESS CONTROL — Bảng giá theo gói (1.5tr–4tr), cấp quyền xem bài học theo gói mua
+
+### Validated (v2.0 — UI Refactor)
+
+- ✓ Toàn bộ UI ngoài landing page refactor với design system hiện đại — Phase 13: student-pages
+- ✓ Các trang danh sách có pagination — Phase 11: admin-pages
+- ✓ Các trang danh sách có bộ filter — Phase 11: admin-pages + Phase 13: student-pages
+- ✓ URL tiếng Việt đồng nhất — Phase 9
 
 ### Out of Scope
 
-- Trắc nghiệm tự chấm — deferred to v2 (planned extension after manual grading works)
-- Self-hosted video storage — deferred to v2 (YouTube embed đủ cho MVP)
-- Payment/thanh toán — không xây trong v1 (quản lý enrollment thủ công)
+- Trắc nghiệm tự chấm — deferred, planned after mock exam system works
+- Self-hosted video storage — YouTube embed + private strategy đủ dùng
+- Payment gateway tự động — giá hiển thị + liên hệ admin (enrollment thủ công)
 - Mobile app (iOS/Android) — web-first, mobile later
-- Chat trực tiếp giảng viên–học sinh — complexity cao, ngoài scope LMS cơ bản
-- Thống kê/analytics nâng cao — v2+
+- Thống kê/analytics nâng cao — v4+
+- Email notification khi bài được chấm — bell notification đủ dùng cho v3
 
 ## Context
 
@@ -119,4 +145,4 @@ Last updated: Phase 12.1 complete — UI gap closure: touch targets, typography,
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-02 after Phase 13 student-pages — Claymorphism Teal design applied to CoursesPage, CataloguePage, CourseDetailPage; infinite scroll, Sheet drawer mobile nav, URL slug bug fixed; v2.0 UI Refactor milestone complete*
+*Last updated: 2026-05-03 — Milestone v3.0 Platform Expansion started*

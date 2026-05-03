@@ -1,30 +1,32 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: UI Refactor
-status: v2.0 milestone complete
-stopped_at: Completed 13-02-PLAN.md (CataloguePage search, infinite scroll, Claymorphism)
-last_updated: "2026-05-03T08:26:27.026Z"
+milestone: v3.0
+milestone_name: Platform Expansion
+status: Defining requirements
+stopped_at: Milestone v3.0 started — defining requirements
+last_updated: "2026-05-03T16:22:00.000Z"
 progress:
-  total_phases: 6
-  completed_phases: 5
-  total_plans: 27
-  completed_plans: 26
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-01 — v1.0 complete)
+See: .planning/PROJECT.md (updated 2026-05-03 — v3.0 milestone started)
 
 **Core value:** Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ thể từ giảng viên trên từng bài làm
-**Current focus:** Phase 13 — student-pages
+**Current focus:** Defining requirements for v3.0 Platform Expansion
 
 ## Current Position
 
-Phase: 13
-Plan: Not started
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-05-03 — Milestone v3.0 started
 
 ## Performance Metrics
 
@@ -137,9 +139,9 @@ Recent decisions affecting current work:
 - [Phase 06-ux-polish]: Replaced CataloguePage placeholder stub with full dual-query implementation (fetchAllCourses + getUserEnrollments)
 - [Phase 06-ux-polish]: Fixed test mock leak: empty state test explicitly resets fetchAllCourses to [] since vi.clearAllMocks() does not reset implementations
 - [Phase 06]: enrollmentsLoading in composite isLoading prevents mode flash before enrollment query resolves
-- [Phase 13]: Student pages use teal claymorphism variant (.bm-clay-card-student) on mint background (#F0FDFA)
-- [Phase 13-student-pages]: CoursesPage: bm-clay-card-student CSS class with border-0 shadow-none overrides for Claymorphism teal card styling
-- [Phase 13]: Sheet drawer replaces Tabs for enrolled mobile — cleaner UX, lg: breakpoints, Claymorphism preview card
+- [Phase 13]: Student pages use teal card variant (.bm-clay-card-student) on mint background (#F0FDFA)
+- [Phase 13-student-pages]: CoursesPage: bm-clay-card-student CSS class with border-0 shadow-none overrides for card styling
+- [Phase 13]: Sheet drawer replaces Tabs for enrolled mobile — cleaner UX, lg: breakpoints, preview card
 - [Phase 13-student-pages]: useInfiniteQuery replaces useQuery for paginated course loading in CataloguePage
 - [Phase 13-student-pages]: Client-side search+grade filter operates on all loaded pages (no re-fetch on type)
 
@@ -157,5 +159,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-05-02T13:22:57.531Z
-Stopped at: Completed 13-02-PLAN.md (CataloguePage search, infinite scroll, Claymorphism)
+Stopped at: Completed 13-02-PLAN.md (CataloguePage search, infinite scroll)
 Resume file: None
