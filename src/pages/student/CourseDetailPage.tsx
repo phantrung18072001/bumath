@@ -190,8 +190,8 @@ export default function CourseDetailPage() {
         isEnrolled ? (
           <>
             {/* Desktop layout — visible at lg and above */}
-            <div className="hidden lg:flex h-[calc(100vh-48px)]">
-              <div className="w-[280px] shrink-0 bg-white border-r border-[#F97316]/20">
+            <div className="hidden lg:flex h-[calc(100vh-80px)]">
+              <div className="w-[340px] shrink-0 bg-white border-r border-[#F97316]/20">
                 <LessonSidebar
                   chapters={chapters}
                   lessonsByChapter={lessonsByChapter}
@@ -268,8 +268,8 @@ export default function CourseDetailPage() {
           /* Preview mode — same layout, locked main content */
           <>
             {/* Desktop preview — visible at lg and above */}
-            <div className="hidden lg:flex h-[calc(100vh-48px)]">
-              <div className="w-[280px] shrink-0 bg-white border-r border-[#F97316]/20">
+            <div className="hidden lg:flex h-[calc(100vh-80px)]">
+              <div className="w-[340px] shrink-0 bg-white border-r border-[#F97316]/20">
                 <LessonSidebar
                   chapters={chapters}
                   lessonsByChapter={lessonsByChapter}

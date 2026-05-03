@@ -18,7 +18,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden isolate">
+    <div className="min-h-screen bg-white relative overflow-x-hidden isolate">
       {/* Floating math symbols background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10" aria-hidden="true">
         <span className="bm-float-symbol-light" style={{ top: '4%',  left: '2%',   fontSize: '52px' }}>π</span>

@@ -36,7 +36,16 @@ export async function fetchProfilesPaginated(
   }
 
   if (search) {
-    query = query.or(`full_name.ilike.%${search}%,phone.ilike.%${search}%`)
+    // Phone: prefix match only. Normalize 0↔+84 so both formats find each other.
+    const phoneFilters = [`phone.ilike.${search}%`]
+    if (search.startsWith('0')) {
+      phoneFilters.push(`phone.ilike.+84${search.slice(1)}%`)
+    } else if (search.startsWith('+84')) {
+      phoneFilters.push(`phone.ilike.0${search.slice(3)}%`)
+    } else if (search.startsWith('84') && search.length >= 4) {
+      phoneFilters.push(`phone.ilike.0${search.slice(2)}%`)
+    }
+    query = query.or(`full_name.ilike.%${search}%,${phoneFilters.join(',')}`)
   }
 
   const { data, error, count } = await query
