@@ -58,7 +58,13 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
   3. Học sinh không có package phù hợp bị chặn ở bài học với thông báo rõ ràng (không crash, không silent blank)
   4. Học sinh đã có package thấy đúng package đang sở hữu trong trang profile của mình
   5. `video_url` chỉ trả về qua RLS cho học sinh có quyền truy cập; unlisted + `youtube-nocookie.com` embed domain
-**Plans**: TBD
+**Plans**: 6 plans
+- [ ] 14-P01-PLAN.md — Database schema: packages, package_grades, user_packages + backfill migration + has_grade_access() + lessons_view + enrollment triggers
+- [ ] 14-P02-PLAN.md — API layer: packages.ts CRUD, user-packages.ts assign/revoke, fetchLessonsForStudent added to lessons.ts
+- [ ] 14-P03-PLAN.md — Admin Package Management UI: PackagesPage + PackageFormDialog + AdminLayout sidebar nav + App.tsx route
+- [ ] 14-P04-PLAN.md — Admin User Package Assignment UI: UserPackageDialog replaces UserEnrollmentDialog in UsersPage
+- [ ] 14-P05-PLAN.md — Student Profile Page (/ho-so) + locked lesson state in LessonContent + CourseDetailPage → lessons_view
+- [ ] 14-P06-PLAN.md — Vercel security headers: X-Frame-Options SAMEORIGIN in vercel.json
 **UI hint**: yes
 
 **⚠️ Migration constraint:** Backfill existing enrollments trước khi thay đổi RLS — không gộp backfill + RLS trong một migration. Mọi RLS policy mới phải dùng `get_my_role()` và `is_approved_user()`.
