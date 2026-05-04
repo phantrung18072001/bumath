@@ -45,7 +45,7 @@ function PackageCard({ up }: { up: UserPackageWithDetails }) {
 }
 
 export default function ProfilePage() {
-  const { profile } = useAuth()
+  const { profile, user } = useAuth()
   const { data: userPackages = [], isLoading } = useQuery<UserPackageWithDetails[]>({
     queryKey: ['my-packages'],
     queryFn: getMyPackages,
@@ -93,6 +93,12 @@ export default function ProfilePage() {
 
       {/* ── Main Content ─────────────────────────────────────────── */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 -mt-8 pb-12 relative z-10">
+
+        {/* Greeting heading */}
+        <h1 className="text-2xl font-bold text-foreground mb-5 pt-12">
+          Xin chào, {profile?.full_name ?? 'bạn'}!
+        </h1>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
           {/* ── Left: Profile Card ────────────────────── */}
@@ -103,13 +109,27 @@ export default function ProfilePage() {
                 <div className="w-20 h-20 rounded-full bg-primary/10 border-4 border-white shadow-md flex items-center justify-center shrink-0">
                   <span className="text-2xl font-bold text-primary">{initials || '?'}</span>
                 </div>
-                <div>
-                  <p className="text-base font-bold text-foreground leading-snug">
+                <div className="w-full text-left">
+                  <p className="text-base font-bold text-foreground text-center leading-snug mb-3">
                     {profile?.full_name ?? '—'}
                   </p>
-                  <p className="text-sm text-muted-foreground mt-0.5 break-all">
-                    {profile?.email ?? '—'}
+                  <Separator className="mb-3" />
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                    Thông tin cá nhân
                   </p>
+                  <div className="space-y-2">
+                    {[
+                      { label: 'Email', value: user?.email ?? '—' },
+                      { label: 'Số điện thoại', value: profile?.phone ?? '—' },
+                      { label: 'Năm sinh', value: profile?.year_of_birth ? String(profile.year_of_birth) : '—' },
+                      { label: 'Địa chỉ', value: profile?.address ?? '—' },
+                    ].map(({ label, value }) => (
+                      <div key={label}>
+                        <p className="text-xs text-muted-foreground">{label}</p>
+                        <p className="text-sm font-medium text-foreground break-all">{value}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <Separator />
                 {/* Stats */}
@@ -142,7 +162,7 @@ export default function ProfilePage() {
 
           {/* ── Right: Packages ──────────────────────── */}
           <div className="lg:col-span-2">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 mt-2 lg:mt-10">
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 mt-6 lg:mt-0">
               Gói học đang sở hữu
             </h2>
 
