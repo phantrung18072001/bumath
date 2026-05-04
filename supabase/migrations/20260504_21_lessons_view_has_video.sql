@@ -4,11 +4,15 @@
 --   2. RLS masking — student has no matching package
 -- has_video always reflects the true DB state, never masked.
 -- Client logic:
---   video_url != null          → show iframe
---   has_video = true  AND video_url = null → show lock (no package access)
---   has_video = false AND video_url = null → show nothing (no video set)
+--   video_url != null              → show iframe
+--   has_video = true, url = null   → show lock (no package access)
+--   has_video = false, url = null  → show nothing (no video set by teacher)
 
-CREATE OR REPLACE VIEW public.lessons_view
+-- Must DROP first because PostgreSQL does not allow adding columns in the
+-- middle of a view via CREATE OR REPLACE VIEW.
+DROP VIEW IF EXISTS public.lessons_view;
+
+CREATE VIEW public.lessons_view
   WITH (security_invoker = true, security_barrier = true)
 AS
 SELECT
@@ -29,9 +33,9 @@ SELECT
     ) THEN l.video_url
     ELSE NULL
   END AS video_url,
-  (l.video_url IS NOT NULL) AS has_video,
   l.created_at,
-  l.updated_at
+  l.updated_at,
+  (l.video_url IS NOT NULL) AS has_video
 FROM public.lessons l;
 
 GRANT SELECT ON public.lessons_view TO authenticated;
