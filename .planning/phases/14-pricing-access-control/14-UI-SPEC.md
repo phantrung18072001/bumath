@@ -43,7 +43,7 @@ Declared values (multiples of 4 only):
 
 Exceptions:
 - Touch targets: all interactive buttons use `min-h-[48px]` — established pattern in Phase 02+
-- Admin sidebar nav items: `py-2.5` (10px vertical) — matches existing AdminLayout.tsx pattern
+- Admin sidebar nav items: `py-2` (8px vertical) — inherits AdminLayout.tsx pattern, rounded to nearest multiple-of-4 (inherited, not new spacing)
 - Admin page container: `px-4 py-8` — matches CoursesPage.tsx pattern
 
 Source: Existing admin pages (CoursesPage.tsx, UsersPage.tsx, AdminLayout.tsx), CLAUDE.md pre-delivery checklist
@@ -54,18 +54,28 @@ Source: Existing admin pages (CoursesPage.tsx, UsersPage.tsx, AdminLayout.tsx), 
 
 All text uses "Be Vietnam Pro" font family.
 
+Exactly 2 font weights are declared:
+- **400 (normal)** — body text, muted copy, descriptions, table cells, badge labels, dialog body
+- **600 (semibold)** — all headings, labels, CTAs, display text, table column headers, form labels
+
+Exactly 4 font sizes are declared (no 18px/text-lg):
+
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
 | Body | 14px (text-sm) | 400 (normal) | 1.5 | Table cells, muted copy, badge labels, dialog body |
-| Label | 14px (text-sm) | 500 (medium) | 1.5 | Table column headers, form labels, section headings in dialogs |
+| Label | 14px (text-sm) | 600 (semibold) | 1.5 | Table column headers, form labels, section headings in dialogs |
+| UI | 16px (text-base) | 600 (semibold) | 1.5 | Dialog titles (shadcn DialogTitle default), identity card name, locked-lesson heading |
 | Heading | 20px (text-xl) | 600 (semibold) | 1.3 | Admin page h1 titles (e.g. "Quản lý gói học") |
-| Display | 24px (text-2xl) | 700 (bold) | 1.3 | Student page h1 titles (e.g. "Hồ sơ của tôi") — matches CoursesPage "Khóa học của tôi" |
+| Display | 24px (text-2xl) | 600 (semibold) | 1.3 | Student page h1 titles (e.g. "Hồ sơ của tôi") — size alone creates hierarchy |
 
 Rules:
 - Admin page headings: `text-xl font-semibold leading-[1.3]` — exact class pattern from CoursesPage.tsx line 138
-- Student page headings: `text-2xl font-bold` — exact class pattern from student CoursesPage.tsx line 71
+- Student page headings: `text-2xl font-semibold` — updated from `font-bold`; size alone creates hierarchy
 - Dialog titles: `text-base font-semibold` (DialogTitle default via shadcn)
+- Identity card name: `text-base font-semibold` — prominent within card but sub-heading level
+- Locked lesson heading: `text-base font-semibold`
 - Price display: `text-sm font-semibold text-foreground` — price_vnd shown in table rows, display only
+- **No text-lg (18px) anywhere** — scale is strictly text-sm / text-base / text-xl / text-2xl
 
 Source: CoursesPage.tsx, UsersPage.tsx, student/CoursesPage.tsx
 
@@ -112,6 +122,8 @@ Source: `src/index.css` CSS variables, `src/lib/constants/grades.ts`, AdminLayou
 
 Pattern: Identical to `/quan-tri/khoa-hoc` (CoursesPage.tsx). Decision D-11.
 
+**Focal point:** The data table with package names, prices, and grade badges — the primary action is "Tạo gói học" in the top-right header.
+
 **Layout:**
 - `<AdminLayout>` wrapper (sidebar + main content area)
 - `container mx-auto px-4 py-8` page container
@@ -130,7 +142,7 @@ Pattern: Identical to `/quan-tri/khoa-hoc` (CoursesPage.tsx). Decision D-11.
 | Tên gói học | Package name (font-normal) |
 | Giá (VND) | Price formatted as Vietnamese VND (e.g. "1.500.000 ₫") — text-sm |
 | Lớp phủ | Grade coverage badges (1–4 badges using GRADE_BADGE palette) |
-| Hành động | Edit button (Pencil icon, outline variant, min-h-[48px]) + Delete button (Trash2 icon, destructive outline) |
+| Hành động | Edit button (Pencil icon, outline variant, `aria-label="Chỉnh sửa gói {package.name}"`, `min-h-[48px]`) + Delete button (Trash2 icon, destructive outline, `aria-label="Xóa gói {package.name}"`) |
 
 **States:**
 - Loading: 5× `Skeleton` rows `h-10 w-full rounded-md`
@@ -154,6 +166,8 @@ Pattern: Identical to `/quan-tri/khoa-hoc` (CoursesPage.tsx). Decision D-11.
 
 Replaces `UserEnrollmentDialog`. Decision D-12. Pattern mirrors existing dialog.
 
+**Focal point:** The "Gán gói học" section at the bottom of the dialog — the primary action admins perform most often.
+
 - `DialogContent` `max-w-lg`
 - Title: "Quản lý gói học — {user.full_name}"
 - Section 1 — "Gói học đang sở hữu":
@@ -162,7 +176,7 @@ Replaces `UserEnrollmentDialog`. Decision D-12. Pattern mirrors existing dialog.
   - Loading: `Loader2 animate-spin`
 - Section 2 — "Gán gói học" (separated by `border-t pt-4`):
   - Select dropdown listing available (not yet assigned) packages — shows name + grade badges
-  - "Gán" primary button (`min-h-[48px]`, Plus icon)
+  - "Gán gói học" primary button (`min-h-[48px]`, Plus icon)
 - All-packages-assigned state: "Học sinh đã được gán tất cả gói học." (text-sm text-muted-foreground)
 
 **Revoke interaction:** Clicking Trash2 immediately revokes (no intermediate AlertDialog — same pattern as existing UserEnrollmentDialog). Toast on success: "Đã thu hồi gói học." Toast on error: "Thu hồi không thành công. Vui lòng thử lại."
@@ -175,10 +189,12 @@ Replaces `UserEnrollmentDialog`. Decision D-12. Pattern mirrors existing dialog.
 
 Layout: `<StudentLayout>` wrapper with inherited gradient background + floating math symbols.
 
+**Focal point:** The identity card at the top — confirms who the student is — followed by the active packages list.
+
 **Page structure:**
 ```
 <StudentLayout>
-  <div className="p-8 md:p-10">
+  <div className="p-8 md:p-12">
     <h1>Hồ sơ của tôi</h1>
     
     <!-- Identity card -->
@@ -201,7 +217,7 @@ Layout: `<StudentLayout>` wrapper with inherited gradient background + floating 
 
 **Identity card:**
 - Avatar: large circle, initials from `full_name`, `bg-primary/10 text-primary` — 56px diameter (w-14 h-14)
-- Name: `text-lg font-semibold`
+- Name: `text-base font-semibold`
 - Email: `text-sm text-muted-foreground`
 - Card: `bm-clay-card-student` with `p-6 flex items-center gap-4`
 
@@ -209,8 +225,8 @@ Layout: `<StudentLayout>` wrapper with inherited gradient background + floating 
 - CSS class: `bm-clay-card-student p-4` — no hover/cursor-pointer since not clickable
 - Package name: `text-base font-semibold`
 - Price (if non-zero): `text-sm text-muted-foreground` — formatted VND, display only
-- Grade coverage badges: `flex flex-wrap gap-1.5` using GRADE_BADGE palette
-- Assigned date: `text-xs text-muted-foreground` — "Gán ngày {date}"
+- Grade coverage badges: `flex flex-wrap gap-1` using GRADE_BADGE palette
+- Assigned date: `text-sm text-muted-foreground` — "Gán ngày {date}"
 
 **Empty state (no packages):**
 - Heading: "Bạn chưa có gói học nào"
@@ -224,6 +240,8 @@ Layout: `<StudentLayout>` wrapper with inherited gradient background + floating 
 ### Surface 4: Locked Lesson State
 
 Displayed in `LessonContent.tsx` when `lesson.video_url` is `null` (RLS returns NULL for unauthorized student). Decision D-05.
+
+**Focal point:** The Lock icon and heading — communicates access restriction immediately; body copy directs the student to the next action.
 
 **Location:** Replaces the `<AspectRatio>` video player section only. Lesson title, description, assignment, and progress button remain visible.
 
@@ -251,6 +269,8 @@ Displayed in `LessonContent.tsx` when `lesson.video_url` is `null` (RLS returns 
 
 ### Surface 5: Admin Sidebar — New Nav Item
 
+**Focal point:** The "Gói học" nav item directs admins to the package management page — positioned as a peer of "Khóa học" in the nav hierarchy.
+
 Add to `AdminLayout.tsx` navItems array:
 
 ```typescript
@@ -266,13 +286,15 @@ Add to `AdminLayout.tsx` navItems array:
 
 ### Surface 6: StudentLayout Header — Profile Link
 
+**Focal point:** The "Hồ sơ" link — student's entry point to their profile and package status.
+
 Add to header nav area (Decision D-15):
 
 ```tsx
 <NavLink
   to="/ho-so"
   className={({ isActive }) =>
-    `text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors ${
+    `text-sm font-semibold px-4 py-2 rounded-lg transition-colors ${
       isActive ? 'text-primary' : 'text-foreground hover:bg-muted'
     }`
   }
@@ -324,7 +346,7 @@ Add to header nav area (Decision D-15):
 | Search empty body | Thử thay đổi từ khóa. |
 | Delete dialog title | Xóa gói học |
 | Delete dialog description | Bạn có chắc muốn xóa gói "{name}"? Học sinh đang sở hữu gói này sẽ mất quyền truy cập. Hành động này không thể hoàn tác. |
-| Delete confirm button | Xóa |
+| Delete confirm button | Xóa gói học |
 | Delete cancel button | Hủy |
 | Create dialog title | Tạo gói học mới |
 | Edit dialog title | Chỉnh sửa gói học |
@@ -334,6 +356,8 @@ Add to header nav area (Decision D-15):
 | Success toast (edit) | Đã cập nhật gói học. |
 | Success toast (delete) | Đã xóa gói học. |
 | Error toast | Không thể lưu. Vui lòng thử lại. |
+| Edit button aria-label | Chỉnh sửa gói {package.name} |
+| Delete button aria-label | Xóa gói {package.name} |
 
 ### Admin — UserPackageDialog
 
@@ -344,7 +368,7 @@ Add to header nav area (Decision D-15):
 | Empty: no packages | Học sinh chưa có gói học nào. |
 | Section: assign packages | Gán gói học |
 | Select placeholder | Chọn gói học… |
-| Assign button | Gán |
+| Assign button | Gán gói học |
 | All assigned state | Học sinh đã được gán tất cả gói học. |
 | Success toast (assign) | Đã gán gói học cho học sinh. |
 | Success toast (revoke) | Đã thu hồi gói học. |
@@ -426,11 +450,11 @@ No third-party registries declared for this phase. All components already exist 
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS — Fixed: "Xóa" → "Xóa gói học"; aria-label added for delete button
+- [x] Dimension 2 Visuals: PASS — Fixed: Delete button aria-label declared in Surface 1 and Copywriting Contract
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS — Fixed: `text-xs` → `text-sm` for assigned date in Surface 3; 4 distinct font sizes maintained
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** APPROVED
