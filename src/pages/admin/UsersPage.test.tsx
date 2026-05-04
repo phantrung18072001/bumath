@@ -95,8 +95,9 @@ describe('UsersPage', () => {
   it('renders user rows from mocked profiles data', async () => {
     renderUsersPage()
     await waitFor(() => {
+      // default filter is 'student' — only student users shown
       expect(screen.getByText('Nguyen Van A')).toBeInTheDocument()
-      expect(screen.getByText('Tran Thi B')).toBeInTheDocument()
+      expect(screen.queryByText('Tran Thi B')).not.toBeInTheDocument()
     })
   })
 
@@ -108,7 +109,13 @@ describe('UsersPage', () => {
   })
 
   it('renders RoleBadge for admin role', async () => {
+    const user = userEvent.setup()
     renderUsersPage()
+    await waitFor(() => expect(screen.getByText('Nguyen Van A')).toBeInTheDocument())
+    // switch to 'all' to reveal admin user
+    const filterTrigger = screen.getByLabelText('Lọc theo vai trò')
+    await user.click(filterTrigger)
+    await user.click(screen.getByRole('option', { name: 'Tất cả vai trò' }))
     await waitFor(() => {
       expect(screen.getByText('Admin')).toBeInTheDocument()
     })
@@ -118,7 +125,8 @@ describe('UsersPage', () => {
     renderUsersPage()
     await waitFor(() => {
       const buttons = screen.getAllByRole('button', { name: /quản lý gói học/i })
-      expect(buttons).toHaveLength(3)
+      // default filter is 'student' — 1 student in mock data
+      expect(buttons).toHaveLength(1)
     })
   })
 
@@ -163,10 +171,11 @@ describe('UsersPage - Search', () => {
     })
 
     const searchInput = screen.getByPlaceholderText('Tìm theo tên hoặc số điện thoại…')
-    await user.type(searchInput, '987654')
+    // search by partial phone of student user
+    await user.type(searchInput, '912345')
 
-    expect(screen.queryByText('Nguyen Van A')).not.toBeInTheDocument()
-    expect(screen.getByText('Tran Thi B')).toBeInTheDocument()
+    expect(screen.getByText('Nguyen Van A')).toBeInTheDocument()
+    expect(screen.queryByText('Le Van C')).not.toBeInTheDocument()
   })
 
   it('shows filtered empty state when search matches nothing', async () => {
@@ -205,17 +214,19 @@ describe('UsersPage - Role Filter', () => {
   it('shows count as "X người dùng" (total from server)', async () => {
     const user = userEvent.setup()
     renderUsersPage()
-    await waitFor(() => {
-      expect(screen.getByText('3 người dùng')).toBeInTheDocument()
-    })
-
-    const filterTrigger = screen.getByLabelText('Lọc theo vai trò')
-    await user.click(filterTrigger)
-    const studentOption = screen.getByRole('option', { name: 'Học sinh' })
-    await user.click(studentOption)
-
+    // default filter = student → 1 student
     await waitFor(() => {
       expect(screen.getByText('1 người dùng')).toBeInTheDocument()
+    })
+
+    // switch to 'all' → 3 total
+    const filterTrigger = screen.getByLabelText('Lọc theo vai trò')
+    await user.click(filterTrigger)
+    const allOption = screen.getByRole('option', { name: 'Tất cả vai trò' })
+    await user.click(allOption)
+
+    await waitFor(() => {
+      expect(screen.getByText('3 người dùng')).toBeInTheDocument()
     })
   })
 })

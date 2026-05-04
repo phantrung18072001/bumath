@@ -6,6 +6,7 @@ export interface ProfilesFilter {
   pageSize: number
   role: 'all' | Profile['role']
   search: string
+  packageId?: string
 }
 
 export interface PaginatedProfiles {
@@ -21,9 +22,21 @@ export interface PaginatedProfiles {
 export async function fetchProfilesPaginated(
   params: ProfilesFilter
 ): Promise<PaginatedProfiles> {
-  const { page, pageSize, role, search } = params
+  const { page, pageSize, role, search, packageId } = params
   const from = (page - 1) * pageSize
   const to = from + pageSize - 1
+
+  // If filtering by package, first resolve which user IDs hold that package
+  let allowedUserIds: string[] | null = null
+  if (packageId) {
+    const { data: ups, error: upsError } = await supabase
+      .from('user_packages')
+      .select('user_id')
+      .eq('package_id', packageId)
+    if (upsError) throw upsError
+    allowedUserIds = (ups ?? []).map((up) => (up as { user_id: string }).user_id)
+    if (allowedUserIds.length === 0) return { data: [], total: 0 }
+  }
 
   let query = supabase
     .from('profiles')
@@ -33,6 +46,10 @@ export async function fetchProfilesPaginated(
 
   if (role !== 'all') {
     query = query.eq('role', role)
+  }
+
+  if (allowedUserIds) {
+    query = query.in('id', allowedUserIds)
   }
 
   if (search) {

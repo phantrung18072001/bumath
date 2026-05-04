@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { BookOpen, Search } from 'lucide-react'
 import { Profile } from '@/types/auth'
 import { fetchProfilesPaginated } from '@/lib/api/profiles'
+import { fetchPackages } from '@/lib/api/packages'
 import {
   Table,
   TableBody,
@@ -110,14 +111,21 @@ function UsersTable({
 export default function UsersPage() {
   const [enrollmentUser, setEnrollmentUser] = useState<Profile | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const [roleFilter, setRoleFilter] = useState<'all' | Profile['role']>('all')
+  const [roleFilter, setRoleFilter] = useState<'all' | Profile['role']>('student')
+  const [packageFilter, setPackageFilter] = useState<string>('')
   const [currentPage, setCurrentPage] = useState(1)
 
   const PAGE_SIZE = 20
 
+  const { data: packagesData } = useQuery({
+    queryKey: ['admin', 'packages'],
+    queryFn: fetchPackages,
+  })
+  const allPackages = packagesData ?? []
+
   const { data, isLoading } = useQuery({
-    queryKey: ['admin', 'profiles', { page: currentPage, pageSize: PAGE_SIZE, role: roleFilter, search: searchQuery }],
-    queryFn: () => fetchProfilesPaginated({ page: currentPage, pageSize: PAGE_SIZE, role: roleFilter, search: searchQuery }),
+    queryKey: ['admin', 'profiles', { page: currentPage, pageSize: PAGE_SIZE, role: roleFilter, search: searchQuery, packageId: packageFilter }],
+    queryFn: () => fetchProfilesPaginated({ page: currentPage, pageSize: PAGE_SIZE, role: roleFilter, search: searchQuery, packageId: packageFilter || undefined }),
   })
 
   const users = data?.data ?? []
@@ -131,6 +139,11 @@ export default function UsersPage() {
 
   function handleRoleFilter(value: string) {
     setRoleFilter(value as 'all' | Profile['role'])
+    setCurrentPage(1)
+  }
+
+  function handlePackageFilter(value: string) {
+    setPackageFilter(value === 'all' ? '' : value)
     setCurrentPage(1)
   }
 
@@ -163,6 +176,21 @@ export default function UsersPage() {
             <SelectItem value="admin">Admin</SelectItem>
           </SelectContent>
         </Select>
+        {allPackages.length > 0 && (
+          <Select value={packageFilter || 'all'} onValueChange={handlePackageFilter}>
+            <SelectTrigger className="w-full sm:w-[200px]" aria-label="Lọc theo gói học">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả gói học</SelectItem>
+              {allPackages.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         {!isLoading && (
           <span className="text-sm text-muted-foreground self-center whitespace-nowrap">
             {countCopy}
@@ -181,7 +209,7 @@ export default function UsersPage() {
         </div>
       ) : users.length === 0 ? (
         <div className="text-center py-16">
-          {!searchQuery && roleFilter === 'all' ? (
+          {!searchQuery && roleFilter === 'student' && !packageFilter ? (
             <>
               <p className="text-sm font-semibold text-foreground mb-1">Chưa có tài khoản nào</p>
               <p className="text-sm text-muted-foreground">Hệ thống chưa có người dùng nào đăng ký.</p>
