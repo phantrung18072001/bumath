@@ -16,7 +16,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { fetchCourseBySlug } from '@/lib/api/courses'
 import { fetchChapters } from '@/lib/api/chapters'
-import { fetchLessons, fetchLessonsForStudent, type Lesson } from '@/lib/api/lessons'
+import { fetchLessonsForStudent, type Lesson } from '@/lib/api/lessons'
 import { getLessonProgress, getCourseProgress } from '@/lib/api/lesson-progress'
 import { getSubmissions } from '@/lib/api/submissions'
 import { getUserEnrollments } from '@/lib/api/enrollments'
@@ -298,11 +298,8 @@ export default function CourseDetailPage() {
                       <Separator />
                       {isAuthenticated ? (
                         <div className="text-sm text-muted-foreground leading-relaxed space-y-1">
-                          <p className="font-medium text-foreground">Bạn chưa có gói học cho khóa này.</p>
-                          <p>Liên hệ giảng viên để được gán gói học phù hợp.</p>
-                          <Link to="/ho-so" className="inline-block mt-2 text-primary hover:underline font-medium transition-colors duration-150">
-                            Xem gói học của bạn →
-                          </Link>
+                          <p className="font-medium text-foreground">Bạn chưa được đăng ký khóa học này.</p>
+                          <p>Vui lòng liên hệ giảng viên để được đăng ký khóa học này.</p>
                         </div>
                       ) : (
                         <p className="text-sm text-muted-foreground leading-relaxed">Đăng nhập để học và theo dõi tiến độ của bạn.</p>
@@ -345,11 +342,8 @@ export default function CourseDetailPage() {
                     </div>
                     {isAuthenticated ? (
                       <div className="text-sm text-muted-foreground leading-relaxed max-w-xs space-y-1">
-                        <p className="font-medium text-foreground">Bạn chưa có gói học cho khóa này.</p>
-                        <p>Liên hệ giảng viên để được gán gói học phù hợp.</p>
-                        <Link to="/ho-so" className="inline-block mt-2 text-primary hover:underline font-medium transition-colors duration-150">
-                          Xem gói học của bạn →
-                        </Link>
+                        <p className="font-medium text-foreground">Bạn chưa được đăng ký khóa học này.</p>
+                        <p>Vui lòng liên hệ giảng viên để được đăng ký khóa học này.</p>
                       </div>
                     ) : (
                       <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">Đăng nhập để học và theo dõi tiến độ của bạn.</p>

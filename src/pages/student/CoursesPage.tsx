@@ -4,7 +4,7 @@ import { BookOpen } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { getUserEnrollments } from '@/lib/api/enrollments'
 import { fetchChapters } from '@/lib/api/chapters'
-import { fetchLessons } from '@/lib/api/lessons'
+import { fetchLessonsForStudent } from '@/lib/api/lessons'
 import { getLessonProgress, getCourseProgress } from '@/lib/api/lesson-progress'
 import { GRADE_BADGE } from '@/lib/constants/grades'
 import StudentLayout from '@/components/student/StudentLayout'
@@ -45,7 +45,7 @@ export default function CoursesPage() {
 
         // Fetch all lessons per chapter
         const lessonArrays = await Promise.all(
-          chapters.map(ch => fetchLessons(ch.id))
+          chapters.map(ch => fetchLessonsForStudent(ch.id))
         )
         const allLessons = lessonArrays.flat()
         const allLessonIds = allLessons.map(l => l.id)

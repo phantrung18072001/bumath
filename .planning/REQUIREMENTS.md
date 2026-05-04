@@ -11,11 +11,11 @@
 
 ### Pricing
 
-- [ ] **PRICE-01**: Admin có thể tạo và sửa package (tên, giá VND, grade coverage)
-- [ ] **PRICE-02**: Admin có thể gán package cho học sinh (thay thế enrollment thủ công hiện tại)
-- [ ] **PRICE-03**: Học sinh chỉ xem được bài học thuộc grade trong package đã được gán
+- [x] **PRICE-01**: Admin có thể tạo và sửa package (tên, giá VND, grade coverage)
+- [x] **PRICE-02**: Admin có thể gán package cho học sinh (thay thế enrollment thủ công hiện tại)
+- [x] **PRICE-03**: Học sinh chỉ xem được bài học thuộc grade trong package đã được gán
 - [ ] **PRICE-04**: Landing page hiển thị bảng giá 6 gói (Lớp 7: 1.5M, Lớp 8: 1.5M, Cấp tốc: 2M, Ôn chuyên: 3M, Tứ trụ: 2.5M, Toàn bộ: 4M)
-- [ ] **PRICE-05**: Học sinh xem được gói đang sở hữu trong trang profile
+- [x] **PRICE-05**: Học sinh xem được gói đang sở hữu trong trang profile
 
 ### Admin UX
 
@@ -63,7 +63,7 @@
 
 ### Video
 
-- [ ] **VIDEO-01**: Video YouTube dùng unlisted, `video_url` chỉ trả về cho học sinh có quyền truy cập (RLS), Vercel headers chặn embed từ domain khác
+- [x] **VIDEO-01**: Video YouTube dùng unlisted, `video_url` chỉ trả về cho học sinh có quyền truy cập (RLS), Vercel headers chặn embed từ domain khác
 - [ ] **VIDEO-02**: VideoPlayer component abstract hoá provider — hỗ trợ YouTube embed và self-hosted URL để dễ swap về sau
 
 ## v4 Requirements (Deferred)
@@ -98,11 +98,11 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | AUDIT-01 | Phase 15 | Pending |
-| PRICE-01 | Phase 14 | Pending |
-| PRICE-02 | Phase 14 | Pending |
-| PRICE-03 | Phase 14 | Pending |
+| PRICE-01 | Phase 14 | Complete |
+| PRICE-02 | Phase 14 | Complete |
+| PRICE-03 | Phase 14 | Complete |
 | PRICE-04 | Phase 19 | Pending |
-| PRICE-05 | Phase 14 | Pending |
+| PRICE-05 | Phase 14 | Complete |
 | ADMIN-01 | Phase 15 | Pending |
 | ADMIN-02 | Phase 15 | Pending |
 | ADMIN-03 | Phase 15 | Pending |
@@ -126,7 +126,7 @@
 | LAND-01 | Phase 19 | Pending |
 | LAND-02 | Phase 19 | Pending |
 | LAND-03 | Phase 19 | Pending |
-| VIDEO-01 | Phase 14 | Pending |
+| VIDEO-01 | Phase 14 | Complete |
 | VIDEO-02 | Phase 19 | Pending |
 
 **Coverage:**
