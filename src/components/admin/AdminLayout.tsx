@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Users, BookOpen, ClipboardList } from 'lucide-react'
+import { Users, BookOpen, ClipboardList, Package } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -13,6 +13,7 @@ type NavItem = {
 const navItems: NavItem[] = [
   { label: 'Quản lý tài khoản', to: '/quan-tri/nguoi-dung', icon: Users, adminOnly: true },
   { label: 'Quản lý khóa học', to: '/quan-tri/khoa-hoc', icon: BookOpen, adminOnly: true },
+  { label: 'Gói học', to: '/quan-tri/goi-hoc', icon: Package, adminOnly: true },
   { label: 'Chấm bài', to: '/quan-tri/bai-nop', icon: ClipboardList },
 ]
 
