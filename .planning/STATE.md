@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Platform Expansion
 status: completed
-stopped_at: Phase 16 context gathered
+stopped_at: Phase 15 UI-SPEC approved
 last_updated: "2026-05-04T11:45:18.515Z"
 last_activity: 2026-05-04 — Phase 14 all plans complete (commits 8dbc495, 1b1eb04, e14c7e9, 14154f6, 86040f9)
 progress:
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-03 — v3.0 milestone started)
 
 **Core value:** Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ thể từ giảng viên trên từng bài làm
-**Current focus:** v3.0 Platform Expansion — Phase 15: Admin UX + Audit (next)
+**Current focus:** v3.0 Platform Expansion — Phase 16: Lesson Tabs + Study Materials (plan next)
 
 ## Current Position
 
-Phase: 14 — Pricing + Access Control ✅ COMPLETE
+Phase: 15 — Admin UX + Audit ✅ COMPLETE (per ROADMAP + 15-P01..P03 SUMMARY)
 Plan: —
-Status: Phase 14 complete — all 6 plans shipped
-Last activity: 2026-05-04 — Phase 14 all plans complete (commits 8dbc495, 1b1eb04, e14c7e9, 14154f6, 86040f9)
+Status: Phase 16 ready to plan — `16-CONTEXT.md` present; ROADMAP Phase 16 plans still TBD
+Last activity: 2026-05-04 — Phase 14 shipped; Phase 15 artifacts complete on disk
 
 ```
 v3.0 Progress: ░░░░░░░░░░░░░░░░░░░░ 0/6 phases
@@ -176,6 +176,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-04T11:45:18.511Z
-Stopped at: Phase 16 context gathered
+Last session: 2026-05-04 (resume-work)
+Stopped at: Session resumed — v3.0 Phase 15 shipped per ROADMAP; Phase 16 has CONTEXT, plans not written (execute after plan)
 Resume file: .planning/phases/16-lesson-tabs-study-materials/16-CONTEXT.md

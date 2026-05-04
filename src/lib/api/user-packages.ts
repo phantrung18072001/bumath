@@ -55,6 +55,8 @@ export async function revokePackage(userPackageId: string): Promise<void> {
 
 /** Get current authenticated user's packages (student profile page, PRICE-05). */
 export async function getMyPackages(): Promise<UserPackageWithDetails[]> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return []
   const { data, error } = await supabase
     .from('user_packages')
     .select(`
@@ -63,6 +65,7 @@ export async function getMyPackages(): Promise<UserPackageWithDetails[]> {
         package_grades(grade)
       )
     `)
+    .eq('user_id', user.id)
     .order('assigned_at', { ascending: false })
   if (error) throw error
   return (data ?? []) as unknown as UserPackageWithDetails[]
