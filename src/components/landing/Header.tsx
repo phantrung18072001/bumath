@@ -4,20 +4,21 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { Menu, X, Phone, CreditCard, HelpCircle, LogOut, LayoutDashboard, BookOpen, UserCircle } from "lucide-react";
 
+/** In-app targets only — routes must exist in App.tsx (AUDIT-01). */
 const staticNavItems = [
-  { label: "Giới thiệu", to: "/gioi-thieu" },
+  { label: "Giới thiệu", to: "/" },
   { label: "Danh mục", to: "/danh-muc" },
-  { label: "Đề thi", to: "/de-thi" },
-  { label: "Tài liệu", to: "/tai-lieu" },
-  { label: "Tản mạn Toán & Cuộc sống", to: "/tan-man" },
+  { label: "Đề thi", to: "/danh-muc" },
+  { label: "Tài liệu", to: "/danh-muc" },
+  { label: "Tản mạn Toán & Cuộc sống", to: "/danh-muc" },
 ];
 
 const authNavItems = [
-  { label: "Giới thiệu", to: "/gioi-thieu" },
+  { label: "Giới thiệu", to: "/" },
   { label: "Vào học", to: "/khoa-hoc" },
-  { label: "Đề thi", to: "/de-thi" },
-  { label: "Tài liệu", to: "/tai-lieu" },
-  { label: "Tản mạn Toán & Cuộc sống", to: "/tan-man" },
+  { label: "Đề thi", to: "/danh-muc" },
+  { label: "Tài liệu", to: "/danh-muc" },
+  { label: "Tản mạn Toán & Cuộc sống", to: "/danh-muc" },
 ];
 
 const Header = () => {
@@ -54,8 +55,8 @@ const Header = () => {
             0123.456.789
           </a>
           <Link
-            to="/huong-dan"
-            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            to="/"
+            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           >
             <HelpCircle className="h-3.5 w-3.5" />
             Hướng dẫn
@@ -106,8 +107,8 @@ const Header = () => {
               </Link>
             </>
           )}
-          <Link to="/thanh-toan">
-            <Button variant="outline" className="h-9 px-4 text-sm gap-1.5">
+          <Link to="/danh-muc" className="cursor-pointer">
+            <Button variant="outline" className="h-9 px-4 text-sm gap-1.5 cursor-pointer">
               <CreditCard className="h-3.5 w-3.5" />
               Thanh toán
             </Button>
@@ -136,7 +137,7 @@ const Header = () => {
             Bu<span className="text-primary">Math</span>-X
           </span>
         </Link>
-        <button onClick={() => setMobileOpen(!mobileOpen)}>
+        <button type="button" className="cursor-pointer p-2" aria-label={mobileOpen ? "Đóng menu" : "Mở menu"} onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
@@ -206,8 +207,8 @@ const Header = () => {
             </div>
           )}
           <div className="mt-2">
-            <Link to="/thanh-toan" className="block">
-              <Button variant="outline" className="w-full gap-1" size="sm">
+            <Link to="/danh-muc" className="block cursor-pointer" onClick={() => setMobileOpen(false)}>
+              <Button variant="outline" className="w-full gap-1 cursor-pointer" size="sm">
                 <CreditCard className="h-3.5 w-3.5" />
                 Thanh toán
               </Button>

@@ -13,8 +13,6 @@ import AdminLayout from "./components/admin/AdminLayout";
 import StudentLayout from "./components/student/StudentLayout";
 import UsersPage from "./pages/admin/UsersPage";
 import CoursesPage from "./pages/admin/CoursesPage";
-import ChaptersPage from "./pages/admin/ChaptersPage";
-import LessonsPage from "./pages/admin/LessonsPage";
 import SubmissionsPage from "./pages/admin/SubmissionsPage";
 import GradingPage from "./pages/admin/GradingPage";
 import PackagesPage from "./pages/admin/PackagesPage";
@@ -39,8 +37,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="/quan-tri/nguoi-dung" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><UsersPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
             <Route path="/quan-tri/khoa-hoc" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><CoursesPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
-            <Route path="/quan-tri/khoa-hoc/:courseSlug" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><ChaptersPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
-            <Route path="/quan-tri/khoa-hoc/:courseSlug/chuong/:chapterSlug" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><LessonsPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
+            <Route path="/quan-tri/khoa-hoc/:courseSlug" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><StudentCourseDetailPage isAdmin /></AdminLayout></StudentLayout></ProtectedRoute>} />
             <Route path="/quan-tri/goi-hoc" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><PackagesPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
             <Route path="/quan-tri/bai-nop" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><StudentLayout><AdminLayout><SubmissionsPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
             <Route path="/quan-tri/bai-nop/:submissionId" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><StudentLayout><AdminLayout><GradingPage /></AdminLayout></StudentLayout></ProtectedRoute>} />

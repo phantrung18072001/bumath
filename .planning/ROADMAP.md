@@ -40,7 +40,7 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
 ### 📋 v3.0 Platform Expansion (Phases 14–19)
 
 - [x] **Phase 14: Pricing + Access Control** — Package model, DB-enforced lesson access, admin assignment UI, student package view
-- [ ] **Phase 15: Admin UX + Audit** — Full-page add/edit forms, broken link sweep, design consistency
+- [x] **Phase 15: Admin UX + Audit** — Inline sidebar forms on shared course detail, broken link sweep (2026-05-04)
 - [ ] **Phase 16: Lesson Tabs + Study Materials Library** — 3-tab lesson layout, PDF library with category × grade filter
 - [ ] **Phase 17: In-Lesson Chat** — Realtime student↔teacher messaging scoped per lesson, unread badge
 - [ ] **Phase 18: Mock Exam System** — Timed exam sessions, KaTeX questions, server-side enforcement, one-attempt rule
@@ -72,18 +72,22 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
 ---
 
 ### Phase 15: Admin UX + Audit
-**Goal**: Admin có thể thêm/sửa chuyên đề và bài giảng qua trang riêng biệt; toàn bộ button/link trong app dẫn đến URL hợp lệ
+**Goal**: Admin có thể thêm/sửa chuyên đề và bài giảng inline trong sidebar trên cùng trang course detail với học sinh; toàn bộ button/link trong app dẫn đến URL hợp lệ
 **Depends on**: Phase 14
 **Requirements**: AUDIT-01, ADMIN-01, ADMIN-02, ADMIN-03
 **Success Criteria** (what must be TRUE):
   1. Không còn button hoặc link nào trong app dẫn đến 404 hoặc không có `href`/`onClick` handler
-  2. Click "Thêm chuyên đề" điều hướng đến trang riêng với URL riêng (không mở dialog)
-  3. Click "Thêm bài giảng" điều hướng đến trang riêng với URL riêng (không mở dialog)
-  4. Trang thêm chuyên đề/bài giảng có giao diện nhất quán với student-side UI (card style, typography, spacing)
-**Plans**: TBD
+  2. Click "Thêm chuyên đề" mở form inline trong sidebar trên `/quan-tri/khoa-hoc/:courseSlug` (không dialog, không route con riêng)
+  3. Click "Thêm bài giảng" mở form inline trong sidebar dưới đúng chuyên đề (không dialog, không route con riêng)
+  4. Form inline dùng card/spacing/typography nhất quán với student-side (`#F0FDFA`, `bm-clay-card-student`, shadcn form controls)
+**Plans**: P01 (shared shell + routing), P02 (sidebar admin + inline forms), P03 (audit + docs alignment)
 **UI hint**: yes
 
-**⚠️ Route ordering:** Literal routes `/admin/khoa-hoc/them-chuyen-de` phải đứng trước param routes `/admin/khoa-hoc/:courseSlug` trong `App.tsx`.
+- [x] 15-P01-PLAN.md — Shared `CourseDetailPage` + `isAdmin`; admin lessons via `fetchLessons`; remove `/chuong/:chapterSlug` route
+- [x] 15-P02-PLAN.md — `LessonSidebar` admin + DnD; `ChapterInlineForm` / `LessonInlineForm`; remove `ChaptersPage` / `LessonsPage`
+- [x] 15-P03-PLAN.md — Header nav dead routes fixed; requirements already aligned for inline forms
+
+**⚠️ Route ordering:** Mọi literal route `/quan-tri/khoa-hoc/...` (nếu thêm sau này) phải đứng trước param route `/quan-tri/khoa-hoc/:courseSlug` trong `App.tsx`.
 
 ---
 

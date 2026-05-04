@@ -7,7 +7,7 @@
 
 ### Audit
 
-- [ ] **AUDIT-01**: Admin/dev có thể thấy và fix toàn bộ button/link chưa có URL hoặc dẫn đến 404
+- [x] **AUDIT-01**: Admin/dev có thể thấy và fix toàn bộ button/link chưa có URL hoặc dẫn đến 404 (landing Header + in-scope routes verified)
 
 ### Pricing
 
@@ -19,9 +19,9 @@
 
 ### Admin UX
 
-- [ ] **ADMIN-01**: Trang "Thêm chuyên đề" là trang riêng (không phải dialog), có URL riêng
-- [ ] **ADMIN-02**: Trang "Thêm bài giảng" là trang riêng (không phải dialog), có URL riêng
-- [ ] **ADMIN-03**: Trang thêm chuyên đề/bài giảng có thiết kế nhất quán với student-side UI
+- [x] **ADMIN-01**: Admin thêm chuyên đề qua **form inline mở rộng trong sidebar** trên `/quan-tri/khoa-hoc/:courseSlug` (cùng layout với học sinh), không dùng dialog modal, không route con riêng
+- [x] **ADMIN-02**: Admin thêm/sửa bài giảng qua **form inline trong sidebar** dưới đúng chuyên đề, không dùng dialog modal, không route con riêng
+- [x] **ADMIN-03**: Form inline dùng card/spacing/typography nhất quán với student-side UI (token và class như `bm-clay-card-student`, nền mint)
 
 ### Lesson UI
 
@@ -97,15 +97,15 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUDIT-01 | Phase 15 | Pending |
+| AUDIT-01 | Phase 15 | Complete |
 | PRICE-01 | Phase 14 | Complete |
 | PRICE-02 | Phase 14 | Complete |
 | PRICE-03 | Phase 14 | Complete |
 | PRICE-04 | Phase 19 | Pending |
 | PRICE-05 | Phase 14 | Complete |
-| ADMIN-01 | Phase 15 | Pending |
-| ADMIN-02 | Phase 15 | Pending |
-| ADMIN-03 | Phase 15 | Pending |
+| ADMIN-01 | Phase 15 | Complete |
+| ADMIN-02 | Phase 15 | Complete |
+| ADMIN-03 | Phase 15 | Complete |
 | LESSON-01 | Phase 16 | Pending |
 | LESSON-02 | Phase 16 | Pending |
 | LESSON-03 | Phase 16 | Pending |
