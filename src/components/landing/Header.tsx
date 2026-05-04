@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { Menu, X, Phone, CreditCard, HelpCircle, LogOut, LayoutDashboard, BookOpen } from "lucide-react";
+import { Menu, X, Phone, CreditCard, HelpCircle, LogOut, LayoutDashboard, BookOpen, UserCircle } from "lucide-react";
 
 const staticNavItems = [
   { label: "Giới thiệu", to: "/gioi-thieu" },
@@ -68,10 +68,10 @@ const Header = () => {
                 {profile?.full_name || 'Tài khoản'}
               </span>
               {profile?.role === 'student' && (
-                <Link to="/khoa-hoc">
+                <Link to="/ho-so">
                   <Button variant="ghost" className="h-9 px-4 text-sm gap-1.5">
-                    <BookOpen className="h-3.5 w-3.5" />
-                    Vào học
+                    <UserCircle className="h-3.5 w-3.5" />
+                    Hồ sơ
                   </Button>
                 </Link>
               )}
