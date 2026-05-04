@@ -177,3 +177,22 @@ export function getAssignmentPublicUrl(path: string): string {
 export function getAssignmentPublicUrls(path: string | null): string[] {
   return parseAssignmentPaths(path).map(getAssignmentPublicUrl)
 }
+
+// ─────────────────────────────────────────────────────────────────
+// Student view (access-controlled)
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * Fetch lessons for student view — reads from `lessons_view` (security view).
+ * video_url is masked to NULL by RLS when the student has no matching package.
+ * Use this in student-facing pages instead of fetchLessons (PRICE-03).
+ */
+export async function fetchLessonsForStudent(chapterId: string): Promise<Lesson[]> {
+  const { data, error } = await supabase
+    .from('lessons_view')
+    .select('id, chapter_id, title, description, video_url, assignment_path, order_index, created_at, updated_at')
+    .eq('chapter_id', chapterId)
+    .order('order_index', { ascending: true })
+  if (error) throw error
+  return data as Lesson[]
+}
