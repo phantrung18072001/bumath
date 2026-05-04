@@ -113,6 +113,7 @@ export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [roleFilter, setRoleFilter] = useState<'all' | Profile['role']>('student')
   const [packageFilter, setPackageFilter] = useState<string>('')
+  const [packageStatus, setPackageStatus] = useState<'' | 'has_package' | 'no_package'>('')
   const [currentPage, setCurrentPage] = useState(1)
 
   const PAGE_SIZE = 20
@@ -124,8 +125,8 @@ export default function UsersPage() {
   const allPackages = packagesData ?? []
 
   const { data, isLoading } = useQuery({
-    queryKey: ['admin', 'profiles', { page: currentPage, pageSize: PAGE_SIZE, role: roleFilter, search: searchQuery, packageId: packageFilter }],
-    queryFn: () => fetchProfilesPaginated({ page: currentPage, pageSize: PAGE_SIZE, role: roleFilter, search: searchQuery, packageId: packageFilter || undefined }),
+    queryKey: ['admin', 'profiles', { page: currentPage, pageSize: PAGE_SIZE, role: roleFilter, search: searchQuery, packageId: packageFilter, packageStatus }],
+    queryFn: () => fetchProfilesPaginated({ page: currentPage, pageSize: PAGE_SIZE, role: roleFilter, search: searchQuery, packageId: packageFilter || undefined, packageStatus: packageStatus || undefined }),
   })
 
   const users = data?.data ?? []
@@ -144,6 +145,13 @@ export default function UsersPage() {
 
   function handlePackageFilter(value: string) {
     setPackageFilter(value === 'all' ? '' : value)
+    setPackageStatus('')
+    setCurrentPage(1)
+  }
+
+  function handlePackageStatus(value: string) {
+    setPackageStatus(value === 'all' ? '' : value as 'has_package' | 'no_package')
+    setPackageFilter('')
     setCurrentPage(1)
   }
 
@@ -191,6 +199,16 @@ export default function UsersPage() {
             </SelectContent>
           </Select>
         )}
+        <Select value={packageStatus || 'all'} onValueChange={handlePackageStatus}>
+          <SelectTrigger className="w-full sm:w-[180px]" aria-label="Lọc theo trạng thái gói">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tất cả trạng thái</SelectItem>
+            <SelectItem value="has_package">Đã có gói học</SelectItem>
+            <SelectItem value="no_package">Chưa có gói học</SelectItem>
+          </SelectContent>
+        </Select>
         {!isLoading && (
           <span className="text-sm text-muted-foreground self-center whitespace-nowrap">
             {countCopy}
@@ -209,7 +227,7 @@ export default function UsersPage() {
         </div>
       ) : users.length === 0 ? (
         <div className="text-center py-16">
-          {!searchQuery && roleFilter === 'student' && !packageFilter ? (
+          {!searchQuery && roleFilter === 'student' && !packageFilter && !packageStatus ? (
             <>
               <p className="text-sm font-semibold text-foreground mb-1">Chưa có tài khoản nào</p>
               <p className="text-sm text-muted-foreground">Hệ thống chưa có người dùng nào đăng ký.</p>
