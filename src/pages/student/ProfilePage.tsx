@@ -51,7 +51,6 @@ export default function ProfilePage() {
     queryFn: getMyPackages,
   })
 
-  const firstName = (profile?.full_name ?? '').split(' ').filter(Boolean).pop() ?? ''
   const initials = (profile?.full_name ?? '')
     .split(' ').filter(Boolean).slice(0, 2)
     .map(w => w[0].toUpperCase()).join('')
@@ -81,7 +80,7 @@ export default function ProfilePage() {
           <div>
             <p className="text-white/80 text-xs font-medium uppercase tracking-widest mb-1">Hồ sơ học sinh</p>
             <p className="text-white text-xl font-bold drop-shadow-sm">
-              Xin chào{firstName ? `, ${firstName}` : ''}!
+              Xin chào, {profile?.full_name ?? 'bạn'}!
             </p>
           </div>
         </div>
@@ -89,13 +88,7 @@ export default function ProfilePage() {
 
       {/* ── Main Content ─────────────────────────────────────────── */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 -mt-8 pb-12 relative z-10">
-
-        {/* Greeting heading */}
-        <h1 className="text-2xl font-bold text-foreground mb-5 pt-12">
-          Xin chào, {profile?.full_name ?? 'bạn'}!
-        </h1>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 pt-12">
 
           {/* ── Left: Profile Card ────────────────────── */}
           <div className="lg:col-span-1 flex flex-col gap-4">
