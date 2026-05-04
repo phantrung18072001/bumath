@@ -31,7 +31,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
-import UserEnrollmentDialog from '@/components/admin/UserEnrollmentDialog'
+import UserPackageDialog from '@/components/admin/UserPackageDialog'
 
 function normalizePhone(phone: string): string {
   return phone.replace(/^\+84|^84/, '0')
@@ -96,7 +96,7 @@ function UsersTable({
                   onClick={() => onManageEnrollments(user)}
                 >
                   <BookOpen className="h-4 w-4 mr-1" />
-                  Quản lý khóa học
+                  Quản lý gói học
                 </Button>
               </TableCell>
             </TableRow>
@@ -243,7 +243,7 @@ export default function UsersPage() {
         </>
       )}
 
-      <UserEnrollmentDialog
+      <UserPackageDialog
         open={!!enrollmentUser}
         user={enrollmentUser}
         onClose={() => setEnrollmentUser(null)}
