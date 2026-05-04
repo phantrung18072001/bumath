@@ -45,7 +45,7 @@ function PackageCard({ up }: { up: UserPackageWithDetails }) {
 }
 
 export default function ProfilePage() {
-  const { profile, user } = useAuth()
+  const { profile } = useAuth()
   const { data: userPackages = [], isLoading } = useQuery<UserPackageWithDetails[]>({
     queryKey: ['my-packages'],
     queryFn: getMyPackages,
@@ -55,10 +55,6 @@ export default function ProfilePage() {
   const initials = (profile?.full_name ?? '')
     .split(' ').filter(Boolean).slice(0, 2)
     .map(w => w[0].toUpperCase()).join('')
-
-  const uniqueGrades = new Set(
-    userPackages.flatMap(up => up.package.package_grades.map(pg => pg.grade))
-  ).size
 
   return (
     <StudentLayout>
@@ -119,11 +115,10 @@ export default function ProfilePage() {
                   </p>
                   <div className="space-y-2">
                     {[
-                      { label: 'Email', value: user?.email ?? '—' },
-                      { label: 'Số điện thoại', value: profile?.phone ?? '—' },
-                      { label: 'Năm sinh', value: profile?.year_of_birth ? String(profile.year_of_birth) : '—' },
-                      { label: 'Địa chỉ', value: profile?.address ?? '—' },
-                    ].map(({ label, value }) => (
+                      { label: 'Số điện thoại', value: profile?.phone },
+                      { label: 'Năm sinh', value: profile?.year_of_birth ? String(profile.year_of_birth) : null },
+                      { label: 'Địa chỉ', value: profile?.address },
+                    ].filter(({ value }) => !!value).map(({ label, value }) => (
                       <div key={label}>
                         <p className="text-xs text-muted-foreground">{label}</p>
                         <p className="text-sm font-medium text-foreground break-all">{value}</p>
@@ -133,14 +128,10 @@ export default function ProfilePage() {
                 </div>
                 <Separator />
                 {/* Stats */}
-                <div className="w-full grid grid-cols-2 gap-3">
+                <div className="w-full">
                   <div className="flex flex-col items-center gap-0.5 p-2 bg-primary/5 rounded-xl">
                     <span className="text-xl font-bold text-primary">{isLoading ? '—' : userPackages.length}</span>
-                    <span className="text-xs text-muted-foreground">Gói học</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-0.5 p-2 bg-primary/5 rounded-xl">
-                    <span className="text-xl font-bold text-primary">{isLoading ? '—' : uniqueGrades}</span>
-                    <span className="text-xs text-muted-foreground">Khối lớp</span>
+                    <span className="text-xs text-muted-foreground">Gói học đang sở hữu</span>
                   </div>
                 </div>
               </CardContent>
