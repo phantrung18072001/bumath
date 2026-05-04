@@ -297,9 +297,12 @@ export default function CourseDetailPage() {
                       </div>
                       <Separator />
                       {isAuthenticated ? (
-                        <div className="text-sm text-muted-foreground leading-relaxed">
-                          <p>Bạn chưa đăng ký khóa học này.</p>
-                          <p>Vui lòng liên hệ giảng viên để được đăng ký khóa học này.</p>
+                        <div className="text-sm text-muted-foreground leading-relaxed space-y-1">
+                          <p className="font-medium text-foreground">Bạn chưa có gói học cho khóa này.</p>
+                          <p>Liên hệ giảng viên để được gán gói học phù hợp.</p>
+                          <Link to="/ho-so" className="inline-block mt-2 text-primary hover:underline font-medium transition-colors duration-150">
+                            Xem gói học của bạn →
+                          </Link>
                         </div>
                       ) : (
                         <p className="text-sm text-muted-foreground leading-relaxed">Đăng nhập để học và theo dõi tiến độ của bạn.</p>
@@ -341,9 +344,12 @@ export default function CourseDetailPage() {
                       <Lock className="h-6 w-6 text-[#F97316]" aria-hidden="true" />
                     </div>
                     {isAuthenticated ? (
-                      <div className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-                        <p>Bạn chưa đăng ký khóa học này.</p>
-                        <p>Vui lòng liên hệ giảng viên để được đăng ký khóa học này.</p>
+                      <div className="text-sm text-muted-foreground leading-relaxed max-w-xs space-y-1">
+                        <p className="font-medium text-foreground">Bạn chưa có gói học cho khóa này.</p>
+                        <p>Liên hệ giảng viên để được gán gói học phù hợp.</p>
+                        <Link to="/ho-so" className="inline-block mt-2 text-primary hover:underline font-medium transition-colors duration-150">
+                          Xem gói học của bạn →
+                        </Link>
                       </div>
                     ) : (
                       <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">Đăng nhập để học và theo dõi tiến độ của bạn.</p>

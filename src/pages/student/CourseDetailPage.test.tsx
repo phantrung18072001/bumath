@@ -80,7 +80,7 @@ describe('CourseDetailPage — Preview Mode', () => {
     vi.clearAllMocks()
   })
 
-  it('shows lock notice "Bạn chưa đăng ký khóa học này." when not enrolled', async () => {
+  it('shows lock notice "Bạn chưa có gói học cho khóa này." when not enrolled', async () => {
     const { fetchCourseBySlug } = await import('@/lib/api/courses')
     const { fetchChapters } = await import('@/lib/api/chapters')
     const { fetchLessonsForStudent } = await import('@/lib/api/lessons')
@@ -93,11 +93,11 @@ describe('CourseDetailPage — Preview Mode', () => {
 
     await renderCourseDetailPage()
     await waitFor(() => {
-      expect(screen.getByText('Bạn chưa đăng ký khóa học này.')).toBeInTheDocument()
+      expect(screen.getByText('Bạn chưa có gói học cho khóa này.')).toBeInTheDocument()
     })
   })
 
-  it('shows contact CTA "Vui lòng liên hệ giảng viên để được đăng ký khóa học này." in preview mode', async () => {
+  it('shows contact CTA "Liên hệ giảng viên để được gán gói học phù hợp." in preview mode', async () => {
     const { fetchCourseBySlug } = await import('@/lib/api/courses')
     const { fetchChapters } = await import('@/lib/api/chapters')
     const { fetchLessonsForStudent } = await import('@/lib/api/lessons')
@@ -110,7 +110,7 @@ describe('CourseDetailPage — Preview Mode', () => {
 
     await renderCourseDetailPage()
     await waitFor(() => {
-      expect(screen.getByText('Vui lòng liên hệ giảng viên để được đăng ký khóa học này.')).toBeInTheDocument()
+      expect(screen.getByText('Liên hệ giảng viên để được gán gói học phù hợp.')).toBeInTheDocument()
     })
   })
 
@@ -148,7 +148,7 @@ describe('CourseDetailPage — Preview Mode', () => {
 
     await renderCourseDetailPage()
     await waitFor(() => {
-      expect(screen.queryByText('Bạn chưa đăng ký khóa học này.')).not.toBeInTheDocument()
+      expect(screen.queryByText('Bạn chưa có gói học cho khóa này.')).not.toBeInTheDocument()
     })
   })
 

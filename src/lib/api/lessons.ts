@@ -6,6 +6,8 @@ export interface Lesson {
   title: string
   description: string | null
   video_url: string | null
+  /** Only present when fetched via lessons_view (student pages). True = teacher set a video; false = no video set. */
+  has_video?: boolean
   assignment_path: string | null
   order_index: number
   created_at: string
@@ -185,12 +187,14 @@ export function getAssignmentPublicUrls(path: string | null): string[] {
 /**
  * Fetch lessons for student view — reads from `lessons_view` (security view).
  * video_url is masked to NULL by RLS when the student has no matching package.
+ * has_video reflects the true DB state (not masked) — use it to distinguish
+ * "no video set" (has_video=false) from "access denied" (has_video=true, video_url=null).
  * Use this in student-facing pages instead of fetchLessons (PRICE-03).
  */
 export async function fetchLessonsForStudent(chapterId: string): Promise<Lesson[]> {
   const { data, error } = await supabase
     .from('lessons_view')
-    .select('id, chapter_id, title, description, video_url, assignment_path, order_index, created_at, updated_at')
+    .select('id, chapter_id, title, description, video_url, has_video, assignment_path, order_index, created_at, updated_at')
     .eq('chapter_id', chapterId)
     .order('order_index', { ascending: true })
   if (error) throw error
