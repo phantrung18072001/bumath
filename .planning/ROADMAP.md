@@ -39,7 +39,7 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
 
 ### 📋 v3.0 Platform Expansion (Phases 14–19)
 
-- [ ] **Phase 14: Pricing + Access Control** — Package model, DB-enforced lesson access, admin assignment UI, student package view
+- [x] **Phase 14: Pricing + Access Control** — Package model, DB-enforced lesson access, admin assignment UI, student package view
 - [ ] **Phase 15: Admin UX + Audit** — Full-page add/edit forms, broken link sweep, design consistency
 - [ ] **Phase 16: Lesson Tabs + Study Materials Library** — 3-tab lesson layout, PDF library with category × grade filter
 - [ ] **Phase 17: In-Lesson Chat** — Realtime student↔teacher messaging scoped per lesson, unread badge
@@ -59,12 +59,12 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
   4. Học sinh đã có package thấy đúng package đang sở hữu trong trang profile của mình
   5. `video_url` chỉ trả về qua RLS cho học sinh có quyền truy cập; unlisted + `youtube-nocookie.com` embed domain
 **Plans**: 6 plans
-- [ ] 14-P01-PLAN.md — Database schema: packages, package_grades, user_packages + backfill migration + has_grade_access() + lessons_view + enrollment triggers
-- [ ] 14-P02-PLAN.md — API layer: packages.ts CRUD, user-packages.ts assign/revoke, fetchLessonsForStudent added to lessons.ts
-- [ ] 14-P03-PLAN.md — Admin Package Management UI: PackagesPage + PackageFormDialog + AdminLayout sidebar nav + App.tsx route
-- [ ] 14-P04-PLAN.md — Admin User Package Assignment UI: UserPackageDialog replaces UserEnrollmentDialog in UsersPage
-- [ ] 14-P05-PLAN.md — Student Profile Page (/ho-so) + locked lesson state in LessonContent + CourseDetailPage → lessons_view
-- [ ] 14-P06-PLAN.md — Vercel security headers: X-Frame-Options SAMEORIGIN in vercel.json
+- [x] 14-P01-PLAN.md — Database schema: packages, package_grades, user_packages + backfill migration + has_grade_access() + lessons_view + enrollment triggers
+- [x] 14-P02-PLAN.md — API layer: packages.ts CRUD, user-packages.ts assign/revoke, fetchLessonsForStudent added to lessons.ts
+- [x] 14-P03-PLAN.md — Admin Package Management UI: PackagesPage + PackageFormDialog + AdminLayout sidebar nav + App.tsx route
+- [x] 14-P04-PLAN.md — Admin User Package Assignment UI: UserPackageDialog replaces UserEnrollmentDialog in UsersPage
+- [x] 14-P05-PLAN.md — Student Profile Page (/ho-so) + locked lesson state in LessonContent + CourseDetailPage → lessons_view
+- [x] 14-P06-PLAN.md — Vercel security headers: X-Frame-Options SAMEORIGIN in vercel.json
 **UI hint**: yes
 
 **⚠️ Migration constraint:** Backfill existing enrollments trước khi thay đổi RLS — không gộp backfill + RLS trong một migration. Mọi RLS policy mới phải dùng `get_my_role()` và `is_approved_user()`.
@@ -159,7 +159,7 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 14. Pricing + Access Control | 0/? | Not started | - |
+| 14. Pricing + Access Control | 6/6 | ✅ Complete | 8dbc495, 1b1eb04, e14c7e9, 14154f6, 86040f9 |
 | 15. Admin UX + Audit | 0/? | Not started | - |
 | 16. Lesson Tabs + Study Materials | 0/? | Not started | - |
 | 17. In-Lesson Chat | 0/? | Not started | - |
