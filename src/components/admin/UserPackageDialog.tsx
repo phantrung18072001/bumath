@@ -10,13 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Table,
   TableBody,
@@ -49,7 +43,7 @@ interface UserPackageDialogProps {
 
 export default function UserPackageDialog({ open, user, onClose }: UserPackageDialogProps) {
   const queryClient = useQueryClient()
-  const [selectedPackageId, setSelectedPackageId] = useState<string>('')
+  const [selectedPackageIds, setSelectedPackageIds] = useState<Set<string>>(new Set())
 
   const { data: allPackages = [] } = useQuery({
     queryKey: ['admin', 'packages'],
@@ -67,11 +61,13 @@ export default function UserPackageDialog({ open, user, onClose }: UserPackageDi
   const availablePackages = allPackages.filter((p) => !assignedPackageIds.has(p.id))
 
   const assignMutation = useMutation({
-    mutationFn: () => assignPackage(user!.id, selectedPackageId),
+    mutationFn: () =>
+      Promise.all([...selectedPackageIds].map((id) => assignPackage(user!.id, id))),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'user-packages', user?.id] })
-      setSelectedPackageId('')
-      toast.success('Đã gán gói học cho học sinh.')
+      const count = selectedPackageIds.size
+      setSelectedPackageIds(new Set())
+      toast.success(`Đã gán ${count} gói học cho học sinh.`)
     },
     onError: () => {
       toast.error('Gán không thành công. Vui lòng thử lại.')
@@ -90,12 +86,12 @@ export default function UserPackageDialog({ open, user, onClose }: UserPackageDi
   })
 
   function handleAssign() {
-    if (!selectedPackageId) return
+    if (selectedPackageIds.size === 0) return
     assignMutation.mutate()
   }
 
   function handleClose() {
-    setSelectedPackageId('')
+    setSelectedPackageIds(new Set())
     onClose()
   }
 
@@ -171,34 +167,51 @@ export default function UserPackageDialog({ open, user, onClose }: UserPackageDi
         {/* Assign new package */}
         {availablePackages.length > 0 && (
           <div className="border-t pt-4">
-            <h3 className="text-sm font-medium mb-2">Gán gói học</h3>
-            <div className="flex gap-2">
-              <Select value={selectedPackageId} onValueChange={setSelectedPackageId}>
-                <SelectTrigger className="flex-1 min-h-[48px]">
-                  <SelectValue placeholder="Chọn gói học..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {availablePackages.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {p.name}
-                      {p.package_grades.map((pg) => ` · ${GRADE_BADGE[pg.grade]?.label}`).join('')}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button
-                className="min-h-[48px]"
-                onClick={handleAssign}
-                disabled={!selectedPackageId || assignMutation.isPending}
-              >
-                {assignMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Plus className="h-4 w-4" />
-                )}
-                Gán gói học
-              </Button>
+            <h3 className="text-sm font-medium mb-3">Gán gói học</h3>
+            <div className="space-y-2 mb-3">
+              {availablePackages.map((p) => (
+                <label
+                  key={p.id}
+                  className="flex items-center gap-3 cursor-pointer rounded-md p-2 hover:bg-muted transition-colors"
+                >
+                  <Checkbox
+                    checked={selectedPackageIds.has(p.id)}
+                    onCheckedChange={(checked) => {
+                      setSelectedPackageIds((prev) => {
+                        const next = new Set(prev)
+                        if (checked) next.add(p.id)
+                        else next.delete(p.id)
+                        return next
+                      })
+                    }}
+                  />
+                  <span className="text-sm flex items-center gap-1 flex-wrap">
+                    {p.name}
+                    {p.package_grades.map((pg) => (
+                      <Badge
+                        key={pg.grade}
+                        variant="secondary"
+                        className={GRADE_BADGE[pg.grade]?.className}
+                      >
+                        {GRADE_BADGE[pg.grade]?.label}
+                      </Badge>
+                    ))}
+                  </span>
+                </label>
+              ))}
             </div>
+            <Button
+              className="w-full min-h-[48px]"
+              onClick={handleAssign}
+              disabled={selectedPackageIds.size === 0 || assignMutation.isPending}
+            >
+              {assignMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <Plus className="h-4 w-4 mr-2" />
+              )}
+              Gán{selectedPackageIds.size > 0 ? ` ${selectedPackageIds.size}` : ''} gói học
+            </Button>
           </div>
         )}
 

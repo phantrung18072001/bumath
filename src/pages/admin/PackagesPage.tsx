@@ -287,7 +287,7 @@ export default function PackagesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Xóa gói học</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc muốn xóa gói học &ldquo;{deletingPackage?.name}&rdquo;? Học sinh sở hữu gói này sẽ mất quyền truy cập.
+              Tất cả học sinh sở hữu gói học &ldquo;{deletingPackage?.name}&rdquo; sẽ mất quyền truy cập vào tất cả bài học liên quan và bị hủy đăng ký các khóa học tương ứng. Hành động này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

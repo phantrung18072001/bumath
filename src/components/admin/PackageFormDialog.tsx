@@ -161,10 +161,14 @@ export default function PackageFormDialog({
                   <FormLabel>Giá (VND)</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
-                      min={0}
-                      placeholder="1500000"
-                      {...field}
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="1.500.000"
+                      value={field.value ? Number(field.value).toLocaleString('vi-VN') : ''}
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/\./g, '').replace(/[^0-9]/g, '')
+                        field.onChange(raw === '' ? 0 : Number(raw))
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
