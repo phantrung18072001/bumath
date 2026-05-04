@@ -73,7 +73,7 @@ Notes:
 
 | Role | Value | Usage |
 |------|-------|-------|
-| Dominant (60%) | #F0FDFA (mint/teal-50) | AdminCourseDetailPage page background — matches student-side (source: CONTEXT.md D-14) |
+| Dominant (60%) | #F0FDFA (mint/teal-50) | Shared CourseDetailPage background — existing student-side color, dùng chung không đổi |
 | Secondary (30%) | #FFFFFF with `hsl(var(--card))` | Sidebar panel background, content area cards, inline form container |
 | Accent (10%) | #F97316 (`--bm-primary`, `hsl(var(--primary))`) | Active lesson indicator border-left, submit button, drag handle hover, progress bar fill |
 | Destructive | `hsl(var(--destructive))` — #EF4444 approx | Delete chapter/lesson AlertDialog confirm button only |
@@ -92,13 +92,15 @@ Border color for sidebar dividers: `rgba(249,115,22,0.20)` (matches existing `Le
 
 ## Layout Contract
 
-### AdminCourseDetailPage (`/quan-tri/khoa-hoc/:courseSlug`)
+### Shared CourseDetailPage (`/khoa-hoc/:courseSlug` + `/quan-tri/khoa-hoc/:courseSlug`)
 
-- **Page background:** `bg-[#F0FDFA]` (mint) — mirrors StudentCourseDetailPage
+Admin dùng chung component với student — không có trang riêng. Admin controls hiển thị có điều kiện khi `isAdmin === true` (hoặc role check từ auth context).
+
+- **Page background:** `bg-[#F0FDFA]` (mint) — student-side color, không đổi
 - **2-column layout:** `grid grid-cols-[320px_1fr]` on `lg:` breakpoint; single column stacked on mobile (`< 1024px`)
 - **Left sidebar width:** 320px fixed; `overflow-y-auto [scrollbar-width:none]`; sidebar background `bg-white` with `border-r border-[#F97316]/20`
 - **Right content area:** fills remaining width; `min-h-[calc(100vh-80px)]`; `overflow-y-auto`; background `bg-[#F0FDFA]`
-- **Mobile:** sidebar hidden by default; accessible via Sheet drawer (matches student CourseDetailPage pattern — source: CONTEXT.md D-02, `CourseDetailPage.tsx`)
+- **Mobile:** sidebar hidden by default; accessible via Sheet drawer
 - **Primary focal point:** the video embed in the right content area, which occupies the largest visible real estate above the fold on desktop (16:9 aspect ratio, full column width). All other content area elements (title, description, assignments) are subordinate to the video block.
 
 ### Sidebar Structure (left column)
@@ -106,13 +108,17 @@ Border color for sidebar dividers: `rgba(249,115,22,0.20)` (matches existing `Le
 ```
 [Breadcrumb] — fixed at top, not scrollable
 [Course title + grade badge] — sticky header
-[Progress bar] — only if relevant context warrants; omit for admin view
+[Progress bar] — student view only (hidden when isAdmin)
 [Chapter accordion list] — scrollable
-  [Chapter row] — drag handle | title | action buttons (edit, delete, add lesson)
-    [Inline form: ChapterInlineForm] — expand below row
-    [Lesson rows] — drag handle | title | action buttons (edit, delete)
-      [Inline form: LessonInlineForm] — expand below lesson row
-  [+ Thêm chuyên đề] — button at bottom of chapter list
+  [Chapter row]
+    — student: title only
+    — admin (+isAdmin): drag handle | title | action buttons (Sửa, Xóa, Thêm bài giảng)
+    [Inline form: ChapterInlineForm] — admin only, expand below row
+    [Lesson rows]
+      — student: title + completion indicator
+      — admin (+isAdmin): drag handle | title | action buttons (Sửa, Xóa)
+      [Inline form: LessonInlineForm] — admin only, expand below lesson row
+  [+ Thêm chuyên đề] — admin only, button at bottom of chapter list
 ```
 
 ### Content Area (right column)

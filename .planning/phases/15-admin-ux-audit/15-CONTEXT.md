@@ -7,7 +7,7 @@
 ## Phase Boundary
 
 Phase 15 delivers:
-1. **Admin Course Detail refactor** — Gom ChaptersPage + LessonsPage thành 1 trang duy nhất (`/quan-tri/khoa-hoc/:courseSlug`) với layout 2 cột giống StudentCourseDetailPage. Sidebar trái liệt kê chapters + lessons (expand/collapse). Cột phải hiển thị lesson detail read-only.
+1. **Admin Course Detail refactor** — Dùng chung `StudentCourseDetailPage` (hoặc tách thành shared `CourseDetailPage`). Route admin `/quan-tri/khoa-hoc/:courseSlug` render cùng component, hiển thị admin controls (Thêm/Sửa/Xóa) dựa trên role check — không build trang riêng cho admin.
 2. **Inline forms** — Form thêm/sửa chuyên đề và bài giảng là expandable section inline trong sidebar (không phải dialog, không phải trang riêng). Click "Thêm chuyên đề" → form expand trong sidebar. Click "Sửa" → form expand tại chỗ.
 3. **Broken link audit** — Sweep toàn app (admin + student + landing), tìm và fix tất cả button/link không có handler hoặc dẫn đến 404.
 
@@ -20,12 +20,12 @@ Phase 15 delivers:
 <decisions>
 ## Implementation Decisions
 
-### Admin Course Detail Page (gom ChaptersPage + LessonsPage)
-- **D-01:** Xóa route `/quan-tri/khoa-hoc/:courseSlug/chuong/:chapterSlug` (LessonsPage). Chỉ giữ `/quan-tri/khoa-hoc/:courseSlug` → trang mới `AdminCourseDetailPage`.
-- **D-02:** Layout 2 cột giống `StudentCourseDetailPage`: sidebar trái + content area phải.
-- **D-03:** Sidebar trái liệt kê chapters + lessons với expand/collapse. Pattern giống `LessonSidebar` trong student-side.
-- **D-04:** Cột phải: khi load trang, default chọn lesson đầu tiên. Click lesson trong sidebar → cột phải hiển thị lesson detail (read-only: title, video, description, assignments).
-- **D-05:** CRUD đầy đủ trong trang: drag-and-drop reorder (giữ `@dnd-kit` pattern), delete với AlertDialog, nút "Thêm chuyên đề" / "Thêm bài giảng" / "Sửa".
+### Admin Course Detail Page (shared UI approach)
+- **D-01:** Xóa route `/quan-tri/khoa-hoc/:courseSlug/chuong/:chapterSlug` (LessonsPage). Route admin `/quan-tri/khoa-hoc/:courseSlug` dùng chung component với student — không build `AdminCourseDetailPage` riêng.
+- **D-02:** Không cần mirror layout — đây IS layout của student. Admin thấy cùng UI, chỉ khác phần hiển thị admin controls.
+- **D-03:** Reuse trực tiếp `LessonSidebar` (hoặc tách thành shared component). Admin controls (drag handle, edit/delete/add buttons) được render có điều kiện qua `isAdmin` prop hoặc role check từ auth context.
+- **D-04:** Behavior giống student: default chọn lesson đầu tiên khi load. Click lesson → hiển thị lesson detail (read-only).
+- **D-05:** Admin controls hiển thị khi `isAdmin === true`: drag handle reorder (`@dnd-kit`), nút "Sửa" / "Xóa" trên mỗi row, nút "Thêm chuyên đề" / "Thêm bài giảng". Student không thấy các controls này.
 
 ### Inline Forms (Add/Edit Chapter & Lesson)
 - **D-06:** Form thêm/sửa là expandable section inline trong sidebar — không phải dialog, không có URL riêng.
@@ -40,7 +40,7 @@ Phase 15 delivers:
 - **D-13:** Audit bao gồm: `<Button>` không có `onClick`/`type="submit"`, `<Link>` với `to` trỏ đến route không tồn tại, `<a>` không có `href`.
 
 ### Form Design Consistency (ADMIN-03)
-- **D-14:** Trang `AdminCourseDetailPage` dùng teal design system (`.bm-clay-card-student`, mint background `#F0FDFA`) — nhất quán với student-side UI.
+- **D-14:** Không cần riêng — admin dùng chính student UI. Inline forms xuất hiện inline trong sidebar, dùng cùng `.bm-clay-card-student` / `#F0FDFA` background của student page.
 - **D-15:** Form fields sử dụng shadcn/ui components giống `LessonFormDialog` và `ChapterFormDialog` hiện tại (Input, Textarea, Form, Label pattern).
 
 ### Claude's Discretion
@@ -62,15 +62,15 @@ Phase 15 delivers:
 - `.planning/ROADMAP.md` §Phase 15 — Goal, Success Criteria, route ordering constraint
 
 ### Existing Code to Refactor/Replace
-- `src/pages/admin/ChaptersPage.tsx` — sẽ bị REPLACE bởi `AdminCourseDetailPage`
-- `src/pages/admin/LessonsPage.tsx` — sẽ bị REPLACE (merged vào `AdminCourseDetailPage`)
-- `src/components/admin/ChapterFormDialog.tsx` — form logic tái sử dụng, bỏ Dialog wrapper
-- `src/components/admin/LessonFormDialog.tsx` — form logic tái sử dụng, bỏ Dialog wrapper
-- `src/App.tsx` — xóa route `/quan-tri/khoa-hoc/:courseSlug/chuong/:chapterSlug`, giữ `/quan-tri/khoa-hoc/:courseSlug`
+- `src/pages/admin/ChaptersPage.tsx` — sẽ bị XÓA (thay bằng shared CourseDetailPage)
+- `src/pages/admin/LessonsPage.tsx` — sẽ bị XÓA (merged vào shared CourseDetailPage)
+- `src/components/admin/ChapterFormDialog.tsx` — form logic tái sử dụng, bỏ Dialog wrapper → `ChapterInlineForm`
+- `src/components/admin/LessonFormDialog.tsx` — form logic tái sử dụng, bỏ Dialog wrapper → `LessonInlineForm`
+- `src/App.tsx` — xóa route `/quan-tri/khoa-hoc/:courseSlug/chuong/:chapterSlug`, route admin `/quan-tri/khoa-hoc/:courseSlug` → shared component với `isAdmin={true}`
 
-### Student-side Reference (to mirror layout)
-- `src/pages/student/CourseDetailPage.tsx` — layout 2 cột, sidebar + content. Reference trực tiếp khi xây dựng AdminCourseDetailPage
-- `src/components/student/LessonSidebar.tsx` — sidebar expand/collapse pattern
+### Student-side to Extend (shared UI)
+- `src/pages/student/CourseDetailPage.tsx` — **BASE**: refactor thành shared `CourseDetailPage` nhận `isAdmin` prop, hoặc admin route render với role check từ auth context
+- `src/components/student/LessonSidebar.tsx` — **BASE**: thêm `isAdmin` prop để hiện admin controls (drag, edit, delete, add buttons)
 
 ### Design System
 - `src/index.css` — CSS variables, `.bm-clay-card-student`, teal color tokens
