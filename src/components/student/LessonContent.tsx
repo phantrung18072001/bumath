@@ -1,7 +1,7 @@
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, Lock } from 'lucide-react'
 import { getAssignmentPublicUrls, parseAssignmentPaths, type Lesson } from '@/lib/api/lessons'
 import type { Submission } from '@/lib/api/submissions'
 import LessonProgressButton from './LessonProgressButton'
@@ -34,8 +34,8 @@ export default function LessonContent({
 
   return (
     <div className="p-4 md:p-8">
-      {/* 1. YouTube embed */}
-      {lesson.video_url && (
+      {/* 1. YouTube embed or locked state */}
+      {lesson.video_url ? (
         <AspectRatio ratio={16 / 9} className="rounded-lg overflow-hidden bg-muted">
           <iframe
             src={lesson.video_url}
@@ -44,6 +44,14 @@ export default function LessonContent({
             allowFullScreen
             className="w-full h-full border-0"
           />
+        </AspectRatio>
+      ) : (
+        <AspectRatio ratio={16 / 9} className="rounded-lg overflow-hidden bg-muted">
+          <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-muted-foreground">
+            <Lock className="h-10 w-10" />
+            <p className="text-base font-semibold">Bài học bị khoá</p>
+            <p className="text-sm">Bạn chưa có gói học phù hợp</p>
+          </div>
         </AspectRatio>
       )}
 

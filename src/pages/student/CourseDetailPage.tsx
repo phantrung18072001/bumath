@@ -16,7 +16,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { fetchCourseBySlug } from '@/lib/api/courses'
 import { fetchChapters } from '@/lib/api/chapters'
-import { fetchLessons, type Lesson } from '@/lib/api/lessons'
+import { fetchLessons, fetchLessonsForStudent, type Lesson } from '@/lib/api/lessons'
 import { getLessonProgress, getCourseProgress } from '@/lib/api/lesson-progress'
 import { getSubmissions } from '@/lib/api/submissions'
 import { getUserEnrollments } from '@/lib/api/enrollments'
@@ -70,7 +70,7 @@ export default function CourseDetailPage() {
   } = useQuery({
     queryKey: ['lessons', courseId],
     queryFn: async () => {
-      const allLessons = await Promise.all(chapters!.map(c => fetchLessons(c.id)))
+      const allLessons = await Promise.all(chapters!.map(c => fetchLessonsForStudent(c.id)))
       return new Map<string, Lesson[]>(chapters!.map((c, i) => [c.id, allLessons[i]]))
     },
     enabled: !!chapters && chapters.length > 0,

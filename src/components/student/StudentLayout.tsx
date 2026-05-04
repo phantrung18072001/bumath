@@ -85,6 +85,16 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
           >
             Khám phá khóa học
           </NavLink>
+          <NavLink
+            to="/ho-so"
+            className={({ isActive }) =>
+              `text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors ${
+                isActive ? 'text-primary' : 'text-foreground hover:bg-muted'
+              }`
+            }
+          >
+            Hồ sơ
+          </NavLink>
           {profile?.role === 'admin' && (
             <NavLink
               to="/quan-tri/nguoi-dung"

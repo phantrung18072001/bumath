@@ -41,7 +41,7 @@ vi.mock('@/lib/api/profiles', () => ({
   fetchProfilesPaginated: vi.fn(),
 }))
 
-vi.mock('@/components/admin/UserEnrollmentDialog', () => ({
+vi.mock('@/components/admin/UserPackageDialog', () => ({
   default: ({ open }: { open: boolean }) =>
     open ? <div data-testid="enrollment-dialog" /> : null,
 }))
@@ -114,10 +114,10 @@ describe('UsersPage', () => {
     })
   })
 
-  it('renders "Quản lý khóa học" button for each user', async () => {
+  it('renders "Quản lý gói học" button for each user', async () => {
     renderUsersPage()
     await waitFor(() => {
-      const buttons = screen.getAllByRole('button', { name: /quản lý khóa học/i })
+      const buttons = screen.getAllByRole('button', { name: /quản lý gói học/i })
       expect(buttons).toHaveLength(3)
     })
   })

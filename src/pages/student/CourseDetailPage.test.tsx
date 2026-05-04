@@ -27,6 +27,7 @@ vi.mock('@/lib/api/chapters', () => ({
 
 vi.mock('@/lib/api/lessons', () => ({
   fetchLessons: vi.fn().mockResolvedValue([]),
+  fetchLessonsForStudent: vi.fn().mockResolvedValue([]),
 }))
 
 vi.mock('@/lib/api/lesson-progress', () => ({
@@ -82,12 +83,12 @@ describe('CourseDetailPage — Preview Mode', () => {
   it('shows lock notice "Bạn chưa đăng ký khóa học này." when not enrolled', async () => {
     const { fetchCourseBySlug } = await import('@/lib/api/courses')
     const { fetchChapters } = await import('@/lib/api/chapters')
-    const { fetchLessons } = await import('@/lib/api/lessons')
+    const { fetchLessonsForStudent } = await import('@/lib/api/lessons')
     const { getUserEnrollments } = await import('@/lib/api/enrollments')
     
     ;(fetchCourseBySlug as ReturnType<typeof vi.fn>).mockResolvedValue(mockCourse)
     ;(fetchChapters as ReturnType<typeof vi.fn>).mockResolvedValue(mockChapters)
-    ;(fetchLessons as ReturnType<typeof vi.fn>).mockResolvedValue(mockLessons)
+    ;(fetchLessonsForStudent as ReturnType<typeof vi.fn>).mockResolvedValue(mockLessons)
     ;(getUserEnrollments as ReturnType<typeof vi.fn>).mockResolvedValue([]) // Not enrolled
 
     await renderCourseDetailPage()
@@ -99,12 +100,12 @@ describe('CourseDetailPage — Preview Mode', () => {
   it('shows contact CTA "Vui lòng liên hệ giảng viên để được đăng ký khóa học này." in preview mode', async () => {
     const { fetchCourseBySlug } = await import('@/lib/api/courses')
     const { fetchChapters } = await import('@/lib/api/chapters')
-    const { fetchLessons } = await import('@/lib/api/lessons')
+    const { fetchLessonsForStudent } = await import('@/lib/api/lessons')
     const { getUserEnrollments } = await import('@/lib/api/enrollments')
     
     ;(fetchCourseBySlug as ReturnType<typeof vi.fn>).mockResolvedValue(mockCourse)
     ;(fetchChapters as ReturnType<typeof vi.fn>).mockResolvedValue(mockChapters)
-    ;(fetchLessons as ReturnType<typeof vi.fn>).mockResolvedValue(mockLessons)
+    ;(fetchLessonsForStudent as ReturnType<typeof vi.fn>).mockResolvedValue(mockLessons)
     ;(getUserEnrollments as ReturnType<typeof vi.fn>).mockResolvedValue([])
 
     await renderCourseDetailPage()
@@ -116,12 +117,12 @@ describe('CourseDetailPage — Preview Mode', () => {
   it('shows Lock icon next to lesson titles in preview mode', async () => {
     const { fetchCourseBySlug } = await import('@/lib/api/courses')
     const { fetchChapters } = await import('@/lib/api/chapters')
-    const { fetchLessons } = await import('@/lib/api/lessons')
+    const { fetchLessonsForStudent } = await import('@/lib/api/lessons')
     const { getUserEnrollments } = await import('@/lib/api/enrollments')
     
     ;(fetchCourseBySlug as ReturnType<typeof vi.fn>).mockResolvedValue(mockCourse)
     ;(fetchChapters as ReturnType<typeof vi.fn>).mockResolvedValue(mockChapters)
-    ;(fetchLessons as ReturnType<typeof vi.fn>).mockResolvedValue(mockLessons)
+    ;(fetchLessonsForStudent as ReturnType<typeof vi.fn>).mockResolvedValue(mockLessons)
     ;(getUserEnrollments as ReturnType<typeof vi.fn>).mockResolvedValue([])
 
     await renderCourseDetailPage()
@@ -135,12 +136,12 @@ describe('CourseDetailPage — Preview Mode', () => {
   it('does NOT show preview mode when user is enrolled', async () => {
     const { fetchCourseBySlug } = await import('@/lib/api/courses')
     const { fetchChapters } = await import('@/lib/api/chapters')
-    const { fetchLessons } = await import('@/lib/api/lessons')
+    const { fetchLessonsForStudent } = await import('@/lib/api/lessons')
     const { getUserEnrollments } = await import('@/lib/api/enrollments')
     
     ;(fetchCourseBySlug as ReturnType<typeof vi.fn>).mockResolvedValue(mockCourse)
     ;(fetchChapters as ReturnType<typeof vi.fn>).mockResolvedValue(mockChapters)
-    ;(fetchLessons as ReturnType<typeof vi.fn>).mockResolvedValue(mockLessons)
+    ;(fetchLessonsForStudent as ReturnType<typeof vi.fn>).mockResolvedValue(mockLessons)
     ;(getUserEnrollments as ReturnType<typeof vi.fn>).mockResolvedValue([
       { id: 'e1', user_id: 'user-1', course_id: 'c1', enrolled_at: '2026-01-01' }
     ])

@@ -21,6 +21,7 @@ import PackagesPage from "./pages/admin/PackagesPage";
 import StudentCoursesPage from "./pages/student/CoursesPage";
 import StudentCourseDetailPage from "./pages/student/CourseDetailPage";
 import StudentCataloguePage from "./pages/student/CataloguePage";
+import ProfilePage from "./pages/student/ProfilePage";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
             <Route path="/khoa-hoc" element={<ProtectedRoute><StudentCoursesPage /></ProtectedRoute>} />
             <Route path="/khoa-hoc/:courseSlug" element={<StudentCourseDetailPage />} />
             <Route path="/danh-muc" element={<StudentCataloguePage />} />
+            <Route path="/ho-so" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
