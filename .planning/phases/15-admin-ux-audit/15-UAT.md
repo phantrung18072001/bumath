@@ -11,12 +11,12 @@ updated: 2026-05-05T09:35:00Z
 
 ## Current Test
 
-number: 1
-name: Admin Course Detail Page Access
+number: 2
+name: Inline Chapter Form
 expected: |
-  Truy cập /quan-tri/khoa-hoc/:courseSlug với tài khoản admin.
-  Trang hiển thị course detail giống như student view nhưng có thêm tính năng admin.
-  Không có route /quan-tri/khoa-hoc/:courseSlug/chuong/:chapterSlug nữa.
+  Click "Thêm chuyên đề" mở form inline trong sidebar (không phải dialog).
+  Form dùng card/spacing/typography nhất quán với student-side (#F0FDFA, bm-clay-card-student).
+  Nhập tên chuyên đề và submit → chuyên đề xuất hiện trong sidebar ngay lập tức.
 awaiting: user response
 
 ## Tests
@@ -26,9 +26,8 @@ expected: |
   Truy cập /quan-tri/khoa-hoc/:courseSlug với tài khoản admin.
   Trang hiển thị course detail giống như student view nhưng có thêm tính năng admin.
   Không có route /quan-tri/khoa-hoc/:courseSlug/chuong/:chapterSlug nữa.
-result: issue
-reported: "Uncaught ReferenceError: attributes is not defined at AdminSortableChapterItem (LessonSidebar.tsx:93:15)"
-severity: blocker
+result: pass
+note: "Fixed - Added missing 'attributes' destructuring in useSortable hook (LessonSidebar.tsx:71)"
 
 ### 2. Inline Chapter Form
 expected: |
@@ -90,13 +89,27 @@ blocked: 0
 ## Gaps
 
 - truth: "Admin Course Detail Page Access - Không bị lỗi runtime"
-  status: failed
-  reason: "User reported: Uncaught ReferenceError: attributes is not defined at AdminSortableChapterItem (LessonSidebar.tsx:93:15)"
+  status: fixed
+  reason: "User reported: Uncaught ReferenceError: attributes is not defined"
   severity: blocker
   test: 1
-  root_cause: "useSortable hook destructuring missing 'attributes' variable, but line 93 uses {...attributes}"
+  root_cause: "useSortable hook destructuring missing 'attributes' variable"
   artifacts:
     - path: "src/components/student/LessonSidebar.tsx:71"
       issue: "Missing attributes in destructuring"
   missing:
-    - "Add 'attributes' to useSortable destructuring at line 71"
+    - "Add 'attributes' to useSortable destructuring"
+
+- truth: "Admin Course Detail Page - UI layout đẹp, đúng padding, không double scrollbar"
+  status: failed
+  reason: "User reported: UI xấu - bỏ hết padding, bỏ button '<- Quản lý khóa học', màn hình hiện 2 scrollbar"
+  severity: major
+  test: 1
+  root_cause: "Admin layout CSS issues - negative margin offset causing padding loss, overflow settings causing double scrollbar"
+  artifacts:
+    - path: "src/pages/student/CourseDetailPage.tsx"
+      issue: "Admin panel layout, padding, scrollbar"
+  missing:
+    - "Fix padding loss in admin view"
+    - "Remove redundant back button"
+    - "Fix double scrollbar issue"

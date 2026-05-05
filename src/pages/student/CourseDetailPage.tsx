@@ -639,11 +639,8 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
 
   if (isAuthenticated && isAdmin) {
     return (
-      <div className="w-[calc(100%+3rem)] max-w-none -mx-6 -my-8 min-h-[calc(100vh-80px)] flex flex-col">
-        <div className="px-4 pt-3 pb-2 border-b border-border shrink-0 bg-background/80">
-          {backLink}
-        </div>
-        <div className="flex-1 min-h-0">{pageContent}</div>
+      <div className="flex-1 min-h-0 overflow-hidden">
+        {pageContent}
       </div>
     )
   }
