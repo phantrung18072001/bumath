@@ -83,27 +83,29 @@ function AdminSortableChapterItem({
       ref={setNodeRef}
       style={style}
       value={chapter.id}
-      className="border-0 border-b border-[#F97316]/15 last:border-b-0"
+      className="w-full border-0 border-b border-[#F97316]/15 last:border-b-0"
       {...attributes}
     >
-      <div className="flex w-full items-stretch min-h-[48px]">
+      <div className="group flex w-full items-center min-h-[48px]">
         <button
           type="button"
-          className="cursor-grab active:cursor-grabbing touch-none shrink-0 px-2 flex items-center text-muted-foreground hover:text-foreground transition-colors"
+          className="cursor-grab active:cursor-grabbing touch-none shrink-0 px-2 flex items-center self-stretch text-muted-foreground hover:text-foreground transition-colors"
           aria-label="Kéo để sắp xếp chuyên đề"
           {...listeners}
         >
           <GripVertical className="h-4 w-4" />
         </button>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <AccordionTrigger className="text-base font-bold px-1 py-2 flex-1 hover:no-underline min-w-0 [&>svg]:shrink-0">
-              <span className="truncate text-left">{chapter.title}</span>
-            </AccordionTrigger>
-          </TooltipTrigger>
-          <TooltipContent side="right" className="max-w-[220px]">{chapter.title}</TooltipContent>
-        </Tooltip>
-        <div className="flex items-center gap-0.5 shrink-0 pr-1 self-center">
+        <div className="flex-1 min-w-0 self-stretch flex items-center">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <AccordionTrigger className="text-base font-bold px-1 py-2 w-full hover:no-underline min-w-0 gap-2 [&>svg]:shrink-0">
+                <span className="truncate text-left min-w-0 flex-1">{chapter.title}</span>
+              </AccordionTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="max-w-[220px]">{chapter.title}</TooltipContent>
+          </Tooltip>
+        </div>
+        <div className="flex items-center gap-0.5 shrink-0 pr-1">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -140,30 +142,12 @@ function AdminSortableChapterItem({
             </TooltipTrigger>
             <TooltipContent side="top">Xóa chuyên đề</TooltipContent>
           </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 cursor-pointer shrink-0 text-muted-foreground hover:text-foreground"
-                aria-label="Thêm bài giảng"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onAddLesson?.(chapter.id)
-                }}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="top">Thêm bài giảng</TooltipContent>
-          </Tooltip>
         </div>
       </div>
       <AccordionContent className="pb-0 pt-0">
         <SortableContext items={lessonIds} strategy={verticalListSortingStrategy}>
           {lessons.map((lesson) => (
-                        <SortableLessonShell key={lesson.id} lesson={lesson} isAdmin>
+            <SortableLessonShell key={lesson.id} lesson={lesson} isAdmin>
               <div className="flex w-full items-center min-h-[48px] pr-1">
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -188,46 +172,22 @@ function AdminSortableChapterItem({
                   </TooltipTrigger>
                   <TooltipContent side="right" className="max-w-[220px]">{lesson.title}</TooltipContent>
                 </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 cursor-pointer shrink-0"
-                      aria-label="Sửa bài giảng"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onEditLesson?.(chapter.id, lesson)
-                      }}
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top">Sửa bài giảng</TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 cursor-pointer shrink-0 text-destructive hover:text-destructive"
-                      aria-label="Xóa bài giảng"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onDeleteLesson?.(chapter.id, lesson)
-                      }}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top">Xóa bài giảng</TooltipContent>
-                </Tooltip>
               </div>
             </SortableLessonShell>
           ))}
         </SortableContext>
+        {onAddLesson && (
+          <div className="px-3 pb-3 pt-1">
+            <button
+              type="button"
+              onClick={() => onAddLesson(chapter.id)}
+              className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg border border-dashed border-[#F97316]/40 text-xs font-medium text-[#92400E]/50 hover:text-[#92400E] hover:border-[#F97316]/70 hover:bg-[#FFF7ED] transition-all duration-200 cursor-pointer group/add"
+            >
+              <Plus className="h-3.5 w-3.5 transition-transform duration-200 group-hover/add:scale-110" />
+              Thêm bài giảng
+            </button>
+          </div>
+        )}
       </AccordionContent>
     </AccordionItem>
   )
@@ -436,19 +396,6 @@ export default function LessonSidebar({
           <span className="text-sm text-muted-foreground mt-1 block">{progress}% hoàn thành</span>
         </div>
       )}
-      {isAdmin && onAddChapter && (
-        <div className="px-3 py-2 border-b border-[#F97316]/20 shrink-0">
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full min-h-[44px] gap-1.5 border-[#F97316]/40 text-[#92400E] hover:bg-[#FFEDD5]/50 cursor-pointer"
-            onClick={onAddChapter}
-          >
-            <Plus className="h-4 w-4" />
-            Thêm chuyên đề
-          </Button>
-        </div>
-      )}
       <div
         className={
           scrollable
@@ -457,6 +404,19 @@ export default function LessonSidebar({
         }
       >
         {accordion}
+        {isAdmin && onAddChapter && (
+          <div className="px-3 py-3 border-t border-[#F97316]/20">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full min-h-[44px] gap-1.5 border-[#F97316]/40 text-[#92400E] hover:bg-[#FFEDD5]/50 cursor-pointer"
+              onClick={onAddChapter}
+            >
+              <Plus className="h-4 w-4" />
+              Thêm chuyên đề
+            </Button>
+          </div>
+        )}
       </div>
     </>
   )

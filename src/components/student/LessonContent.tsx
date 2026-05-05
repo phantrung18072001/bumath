@@ -1,7 +1,7 @@
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
-import { ExternalLink, Lock } from 'lucide-react'
+import { ExternalLink, Lock, Pencil, Trash2 } from 'lucide-react'
 import { getAssignmentPublicUrls, parseAssignmentPaths, type Lesson } from '@/lib/api/lessons'
 import type { Submission } from '@/lib/api/submissions'
 import LessonProgressButton from './LessonProgressButton'
@@ -13,7 +13,8 @@ interface LessonContentProps {
   submission: Submission | null
   userId: string
   courseId: string
-  hideTitle?: boolean
+  onEdit?: () => void
+  onDelete?: () => void
 }
 
 export default function LessonContent({
@@ -22,7 +23,8 @@ export default function LessonContent({
   submission,
   userId,
   courseId,
-  hideTitle = false,
+  onEdit,
+  onDelete,
 }: LessonContentProps) {
   if (!lesson) {
     return (
@@ -36,8 +38,34 @@ export default function LessonContent({
 
   return (
     <div className="p-4 md:p-8">
-      {/* 1. Lesson title — hidden when shown in content header */}
-      {!hideTitle && <h2 className="text-xl font-semibold mb-4">{lesson.title}</h2>}
+      {/* 1. Lesson title with optional admin actions */}
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <h2 className="text-xl font-semibold">{lesson.title}</h2>
+        {(onEdit || onDelete) && (
+          <div className="flex gap-1 shrink-0">
+            {onEdit && (
+              <button
+                type="button"
+                onClick={onEdit}
+                className="h-10 w-10 flex items-center justify-center rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground cursor-pointer"
+                aria-label="Sửa bài học"
+              >
+                <Pencil className="h-4 w-4" />
+              </button>
+            )}
+            {onDelete && (
+              <button
+                type="button"
+                onClick={onDelete}
+                className="h-10 w-10 flex items-center justify-center rounded-md hover:bg-muted transition-colors text-destructive cursor-pointer"
+                aria-label="Xóa bài học"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* 2. Video section: 3 states */}
       {lesson.video_url ? (
