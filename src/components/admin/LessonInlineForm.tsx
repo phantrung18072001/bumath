@@ -194,11 +194,8 @@ export default function LessonInlineForm({
   }
 
   return (
-    <div className="bm-clay-card-student rounded-2xl border border-[#0D9488]/15 bg-[#F0FDFA] p-4 shadow-sm transition-colors duration-200">
-      <h3 className="text-sm font-bold text-[#92400E] mb-3">
-        {isEditing ? 'Chỉnh sửa bài học' : 'Thêm bài học'}
-      </h3>
-      <ScrollArea className="max-h-[min(70vh,520px)] pr-2">
+    <>
+      <ScrollArea className="max-h-[min(65vh,500px)] pr-2">
         <Form {...form}>
           <form id="lesson-inline-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 px-0.5 pb-2">
             <FormField
@@ -354,7 +351,7 @@ export default function LessonInlineForm({
         </Form>
       </ScrollArea>
 
-      <div className="flex gap-2 justify-end pt-4 border-t border-[#0D9488]/10 mt-3">
+      <div className="flex gap-2 justify-end pt-4 border-t mt-3">
         <Button type="button" variant="outline" onClick={onCancel} className="cursor-pointer min-h-[44px]">
           Hủy
         </Button>
@@ -368,6 +365,6 @@ export default function LessonInlineForm({
           {isEditing ? 'Lưu bài học' : 'Thêm bài học'}
         </Button>
       </div>
-    </div>
+    </>
   )
 }

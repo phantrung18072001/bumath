@@ -71,36 +71,31 @@ export default function ChapterInlineForm({
   })
 
   return (
-    <div className="bm-clay-card-student rounded-2xl border border-[#0D9488]/15 bg-[#F0FDFA] p-4 shadow-sm transition-colors duration-200">
-      <h3 className="text-sm font-bold text-[#92400E] mb-3">
-        {isEditing ? 'Chỉnh sửa chuyên đề' : 'Thêm chuyên đề'}
-      </h3>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit((v) => mutation.mutate(v))} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Tên chuyên đề</FormLabel>
-                <FormControl>
-                  <Input placeholder="VD: Chương 1 — Số nguyên" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="flex gap-2 justify-end pt-1">
-            <Button type="button" variant="outline" onClick={onCancel} className="cursor-pointer min-h-[44px]">
-              Hủy
-            </Button>
-            <Button type="submit" disabled={mutation.isPending} className="cursor-pointer min-h-[44px]">
-              {mutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
-              {isEditing ? 'Lưu chuyên đề' : 'Thêm chuyên đề'}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit((v) => mutation.mutate(v))} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tên chuyên đề</FormLabel>
+              <FormControl>
+                <Input placeholder="VD: Chương 1 — Số nguyên" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="flex gap-2 justify-end pt-1">
+          <Button type="button" variant="outline" onClick={onCancel} className="cursor-pointer min-h-[44px]">
+            Hủy
+          </Button>
+          <Button type="submit" disabled={mutation.isPending} className="cursor-pointer min-h-[44px]">
+            {mutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
+            {isEditing ? 'Lưu chuyên đề' : 'Thêm chuyên đề'}
+          </Button>
+        </div>
+      </form>
+    </Form>
   )
 }

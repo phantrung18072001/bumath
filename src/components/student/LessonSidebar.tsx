@@ -103,7 +103,7 @@ function AdminSortableChapterItem({
           </TooltipTrigger>
           <TooltipContent side="right" className="max-w-[220px]">{chapter.title}</TooltipContent>
         </Tooltip>
-        <div className="flex items-center gap-0.5 shrink-0 pr-1 self-center">
+        <div className="flex items-center shrink-0 pr-1 self-center">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -121,42 +121,6 @@ function AdminSortableChapterItem({
               </Button>
             </TooltipTrigger>
             <TooltipContent side="top">Thêm bài giảng</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-10 w-10 cursor-pointer shrink-0 text-muted-foreground hover:text-foreground"
-                aria-label="Sửa chuyên đề"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onEditChapter?.(chapter)
-                }}
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="top">Sửa chuyên đề</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-10 w-10 cursor-pointer shrink-0 text-destructive hover:text-destructive"
-                aria-label="Xóa chuyên đề"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onDeleteChapter?.(chapter)
-                }}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="top">Xóa chuyên đề</TooltipContent>
           </Tooltip>
         </div>
       </div>

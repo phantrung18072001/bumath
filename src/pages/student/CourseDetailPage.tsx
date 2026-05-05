@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Lock, LogIn, Menu, Loader2 } from 'lucide-react'
+import { ArrowLeft, Lock, LogIn, Menu, Loader2, Pencil, Trash2 } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/contexts/AuthContext'
 import StudentLayout from '@/components/student/StudentLayout'
@@ -412,7 +413,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
         isEnrolled ? (
           <>
             <div className="hidden lg:flex flex-1 min-h-0">
-              <div className="w-[340px] shrink-0 bg-white border-r border-[#F97316]/20 flex flex-col">
+              <div className="w-[420px] shrink-0 bg-white border-r border-[#F97316]/20 flex flex-col">
                 <div className="flex-1 min-h-0 flex flex-col">
                   <LessonSidebar
                     {...sidebarShared}
@@ -420,16 +421,56 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                   />
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto bg-white">
-                {profile && (
-                  <LessonContent
-                    lesson={activeLesson}
-                    isCompleted={completedLessonIds.has(activeLessonId ?? '')}
-                    submission={activeSubmission}
-                    userId={profile.id}
-                    courseId={courseId!}
-                  />
-                )}
+              <div className="flex-1 overflow-hidden flex flex-col bg-white">
+                {isAdmin && (() => {
+                  const activeChapter = chapters?.find(c =>
+                    (lessonsByChapter?.get(c.id) ?? []).some(l => l.id === activeLessonId)
+                  )
+                  return activeChapter ? (
+                    <div className="flex items-center justify-between px-6 py-2 border-b shrink-0 bg-muted/30">
+                      <span className="text-sm font-semibold text-muted-foreground truncate">{activeChapter.title}</span>
+                      <div className="flex gap-1 shrink-0 ml-3">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground cursor-pointer"
+                              aria-label="Sửa chuyên đề"
+                              onClick={() => setAdminPanel({ kind: 'chapter-edit', chapter: activeChapter })}
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>Sửa chuyên đề</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-muted transition-colors text-destructive cursor-pointer"
+                              aria-label="Xóa chuyên đề"
+                              onClick={() => setDeletingChapter(activeChapter)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>Xóa chuyên đề</TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </div>
+                  ) : null
+                })()}
+                <div className="flex-1 overflow-y-auto">
+                  {profile && (
+                    <LessonContent
+                      lesson={activeLesson}
+                      isCompleted={completedLessonIds.has(activeLessonId ?? '')}
+                      submission={activeSubmission}
+                      userId={profile.id}
+                      courseId={courseId!}
+                    />
+                  )}
+                </div>
               </div>
             </div>
 
