@@ -13,6 +13,7 @@ interface LessonContentProps {
   submission: Submission | null
   userId: string
   courseId: string
+  hideTitle?: boolean
 }
 
 export default function LessonContent({
@@ -21,6 +22,7 @@ export default function LessonContent({
   submission,
   userId,
   courseId,
+  hideTitle = false,
 }: LessonContentProps) {
   if (!lesson) {
     return (
@@ -34,8 +36,8 @@ export default function LessonContent({
 
   return (
     <div className="p-4 md:p-8">
-      {/* 1. Lesson title */}
-      <h2 className="text-xl font-semibold mb-4">{lesson.title}</h2>
+      {/* 1. Lesson title — hidden when shown in content header */}
+      {!hideTitle && <h2 className="text-xl font-semibold mb-4">{lesson.title}</h2>}
 
       {/* 2. Video section: 3 states */}
       {lesson.video_url ? (

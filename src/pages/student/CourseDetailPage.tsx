@@ -435,39 +435,44 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                 </div>
               </div>
               <div className="flex-1 overflow-hidden flex flex-col bg-white">
-                {isAdmin && course && (
-                  <div className="flex items-center justify-between px-6 py-2 border-b shrink-0 bg-muted/30">
-                    <span className="text-sm font-semibold truncate">{course.title}</span>
-                    <div className="flex gap-1 shrink-0 ml-3">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            type="button"
-                            className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground cursor-pointer"
-                            aria-label="Sửa khóa học"
-                            onClick={() => setCourseFormOpen(true)}
-                          >
-                            <Pencil className="h-3.5 w-3.5" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>Sửa khóa học</TooltipContent>
-                      </Tooltip>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            type="button"
-                            className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-muted transition-colors text-destructive cursor-pointer"
-                            aria-label="Xóa khóa học"
-                            onClick={() => setCourseDeleteConfirm(true)}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>Xóa khóa học</TooltipContent>
-                      </Tooltip>
+                {isAdmin && activeLesson && (() => {
+                  const chapterId = chapters?.find(c =>
+                    (lessonsByChapter?.get(c.id) ?? []).some(l => l.id === activeLessonId)
+                  )?.id ?? ''
+                  return (
+                    <div className="flex items-center justify-between px-6 py-2 border-b shrink-0 bg-muted/30">
+                      <span className="text-sm font-semibold truncate">{activeLesson.title}</span>
+                      <div className="flex gap-1 shrink-0 ml-3">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground cursor-pointer"
+                              aria-label="Sửa bài học"
+                              onClick={() => setAdminPanel({ kind: 'lesson-edit', chapterId, lesson: activeLesson })}
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>Sửa bài học</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-muted transition-colors text-destructive cursor-pointer"
+                              aria-label="Xóa bài học"
+                              onClick={() => setDeletingLesson({ chapterId, lesson: activeLesson })}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>Xóa bài học</TooltipContent>
+                        </Tooltip>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )
+                })()}
                 <div className="flex-1 overflow-y-auto">
                   {profile && (
                     <LessonContent
@@ -476,6 +481,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                       submission={activeSubmission}
                       userId={profile.id}
                       courseId={courseId!}
+                      hideTitle={isAdmin && !!activeLesson}
                     />
                   )}
                 </div>
