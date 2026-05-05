@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { Users, BookOpen, ClipboardList, Package } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
+import type { ReactNode } from 'react'
 
 type NavItem = {
   label: string
@@ -17,7 +18,7 @@ const navItems: NavItem[] = [
   { label: 'Chấm bài', to: '/quan-tri/bai-nop', icon: ClipboardList },
 ]
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children, fullBleed = false }: { children: ReactNode; fullBleed?: boolean }) {
   const location = useLocation()
   const { profile } = useAuth()
   const isAdmin = profile?.role === 'admin'
@@ -26,9 +27,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const visibleItems = navItems.filter((item) => !item.adminOnly || isAdmin)
 
   return (
-    <div className="flex min-h-[calc(100vh-48px)]">
-      {/* Sidebar — min-h offset accounts for StudentLayout 48px sticky header */}
-      <aside className="w-60 shrink-0 border-r bg-card">
+    <div className={cn('flex', fullBleed ? 'h-[calc(100vh-80px)] overflow-hidden' : 'min-h-[calc(100vh-80px)]')}>
+      {/* Sidebar */}
+      <aside className={cn('w-60 shrink-0 border-r bg-card', fullBleed && 'overflow-y-auto')}>
         <nav className="p-3 space-y-1">
           {visibleItems.map(({ label, to, icon: Icon }) => {
             const active = location.pathname.startsWith(to)
@@ -52,10 +53,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Page content */}
-      <main className="flex-1 overflow-auto">
-        <div className="container mx-auto px-6 py-8">
-          {children}
-        </div>
+      <main className={cn('flex-1', fullBleed ? 'overflow-hidden flex flex-col' : 'overflow-auto')}>
+        {fullBleed ? children : (
+          <div className="container mx-auto px-6 py-8">
+            {children}
+          </div>
+        )}
       </main>
     </div>
   )
