@@ -397,7 +397,7 @@ export default function LessonSidebar({
             : ''
         }
       >
-        <TooltipProvider delayDuration={400}>{accordion}</TooltipProvider>
+        {accordion}
       </div>
     </>
   )

@@ -34,7 +34,10 @@ export default function LessonContent({
 
   return (
     <div className="p-4 md:p-8">
-      {/* 1. Video section: 3 states */}
+      {/* 1. Lesson title */}
+      <h2 className="text-xl font-semibold mb-4">{lesson.title}</h2>
+
+      {/* 2. Video section: 3 states */}
       {lesson.video_url ? (
         <AspectRatio ratio={16 / 9} className="rounded-lg overflow-hidden bg-muted">
           <iframe
@@ -56,13 +59,14 @@ export default function LessonContent({
         </AspectRatio>
       ) : null /* has_video=false or undefined → teacher hasn't added a video yet */}
 
-      {/* 2. Lesson title and description */}
-      <Separator className="my-6" />
-      <h2 className="text-xl font-semibold">{lesson.title}</h2>
+      {/* 3. Description */}
       {lesson.description && (
-        <p className="text-base text-muted-foreground whitespace-pre-wrap mt-2">
-          {lesson.description}
-        </p>
+        <>
+          <Separator className="my-6" />
+          <p className="text-base text-muted-foreground whitespace-pre-wrap">
+            {lesson.description}
+          </p>
+        </>
       )}
 
       {/* 3. Assignment file link + submission area (only if lesson has assignment) */}
