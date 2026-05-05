@@ -6,7 +6,7 @@ source:
   - 15-P02-SUMMARY.md
   - 15-P03-SUMMARY.md
 started: 2026-05-05T09:30:00Z
-updated: 2026-05-05T09:35:00Z
+updated: 2026-05-05T09:50:00Z
 ---
 
 ## Current Test
@@ -27,7 +27,7 @@ expected: |
   Trang hiển thị course detail giống như student view nhưng có thêm tính năng admin.
   Không có route /quan-tri/khoa-hoc/:courseSlug/chuong/:chapterSlug nữa.
 result: pass
-note: "Fixed - Added missing 'attributes' destructuring in useSortable hook (LessonSidebar.tsx:71)"
+note: "Fixed - Simplified admin layout, removed negative margin causing padding loss, removed back button, fixed double scrollbar"
 
 ### 2. Inline Chapter Form
 expected: |
@@ -80,8 +80,8 @@ result: pending
 ## Summary
 
 total: 8
-passed: 0
-issues: 1
+passed: 1
+issues: 0
 pending: 7
 skipped: 0
 blocked: 0
@@ -101,15 +101,15 @@ blocked: 0
     - "Add 'attributes' to useSortable destructuring"
 
 - truth: "Admin Course Detail Page - UI layout đẹp, đúng padding, không double scrollbar"
-  status: failed
-  reason: "User reported: UI xấu - bỏ hết padding, bỏ button '<- Quản lý khóa học', màn hình hiện 2 scrollbar"
+  status: fixed
+  reason: "User reported: UI xấu - negative margin, back button, double scrollbar"
   severity: major
   test: 1
   root_cause: "Admin layout CSS issues - negative margin offset causing padding loss, overflow settings causing double scrollbar"
   artifacts:
-    - path: "src/pages/student/CourseDetailPage.tsx"
-      issue: "Admin panel layout, padding, scrollbar"
+    - path: "src/pages/student/CourseDetailPage.tsx:640-646"
+      issue: "Admin layout with negative margin and back button"
   missing:
-    - "Fix padding loss in admin view"
-    - "Remove redundant back button"
-    - "Fix double scrollbar issue"
+    - "Simplify admin layout wrapper"
+    - "Remove negative margin -mx-6 -my-8"
+    - "Remove back button from admin view"
