@@ -94,9 +94,14 @@ function AdminSortableChapterItem({
         >
           <GripVertical className="h-4 w-4" />
         </button>
-        <AccordionTrigger className="text-base font-bold px-1 py-2 flex-1 hover:no-underline min-w-0 [&>svg]:shrink-0">
-          <span className="truncate text-left">{chapter.title}</span>
-        </AccordionTrigger>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <AccordionTrigger className="text-base font-bold px-1 py-2 flex-1 hover:no-underline min-w-0 [&>svg]:shrink-0">
+              <span className="truncate text-left">{chapter.title}</span>
+            </AccordionTrigger>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="max-w-[220px]">{chapter.title}</TooltipContent>
+        </Tooltip>
         <div className="flex items-center gap-0.5 shrink-0 pr-1 self-center">
           <Button
             type="button"
@@ -144,24 +149,29 @@ function AdminSortableChapterItem({
           {lessons.map((lesson) => (
                         <SortableLessonShell key={lesson.id} lesson={lesson} isAdmin>
               <div className="flex w-full items-center min-h-[48px] pr-1">
-                <button
-                  type="button"
-                  onClick={() => onSelectLesson(lesson)}
-                  className={cn(
-                    'flex items-center gap-2 flex-1 min-w-0 px-2 py-2 text-left text-sm hover:bg-sidebar-accent transition-colors rounded-md cursor-pointer',
-                    activeLessonId === lesson.id && 'bg-sidebar-accent border-l-2 border-primary',
-                  )}
-                  aria-current={activeLessonId === lesson.id ? 'true' : undefined}
-                >
-                  {completedLessonIds.has(lesson.id) ? (
-                    <Check className="h-4 w-4 text-green-600 shrink-0" />
-                  ) : activeLessonId === lesson.id ? (
-                    <ChevronRight className="h-4 w-4 text-primary shrink-0" />
-                  ) : (
-                    <Circle className="h-4 w-4 text-muted-foreground shrink-0" />
-                  )}
-                  <span className="truncate">{lesson.title}</span>
-                </button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => onSelectLesson(lesson)}
+                      className={cn(
+                        'flex items-center gap-2 flex-1 min-w-0 px-2 py-2 text-left text-sm hover:bg-sidebar-accent transition-colors rounded-md cursor-pointer',
+                        activeLessonId === lesson.id && 'bg-sidebar-accent border-l-2 border-primary',
+                      )}
+                      aria-current={activeLessonId === lesson.id ? 'true' : undefined}
+                    >
+                      {completedLessonIds.has(lesson.id) ? (
+                        <Check className="h-4 w-4 text-green-600 shrink-0" />
+                      ) : activeLessonId === lesson.id ? (
+                        <ChevronRight className="h-4 w-4 text-primary shrink-0" />
+                      ) : (
+                        <Circle className="h-4 w-4 text-muted-foreground shrink-0" />
+                      )}
+                      <span className="truncate">{lesson.title}</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" className="max-w-[220px]">{lesson.title}</TooltipContent>
+                </Tooltip>
                 <Button
                   type="button"
                   variant="ghost"
