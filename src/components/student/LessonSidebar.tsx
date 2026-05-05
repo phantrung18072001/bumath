@@ -83,6 +83,7 @@ function AdminSortableChapterItem({
       style={style}
       value={chapter.id}
       className="border-0 border-b border-[#F97316]/15 last:border-b-0"
+      {...attributes}
     >
       <div className="flex w-full items-stretch min-h-[48px]">
         <button
@@ -90,7 +91,6 @@ function AdminSortableChapterItem({
           className="cursor-grab active:cursor-grabbing touch-none shrink-0 px-2 flex items-center text-muted-foreground hover:text-foreground transition-colors"
           aria-label="Kéo để sắp xếp chuyên đề"
           {...listeners}
-          {...attributes}
         >
           <GripVertical className="h-4 w-4" />
         </button>
@@ -216,14 +216,13 @@ function SortableLessonShell({
     opacity: isDragging ? 0.65 : 1,
   }
   return (
-    <div ref={setNodeRef} style={style} className="flex items-stretch border-b border-border/40 last:border-b-0">
+    <div ref={setNodeRef} style={style} className="flex items-stretch border-b border-border/40 last:border-b-0" {...attributes}>
       {isAdmin && (
         <button
           type="button"
           className="cursor-grab active:cursor-grabbing touch-none shrink-0 px-2 flex items-center text-muted-foreground hover:text-foreground transition-colors"
           aria-label="Kéo để sắp xếp bài học"
           {...listeners}
-          {...attributes}
         >
           <GripVertical className="h-4 w-4" />
         </button>
