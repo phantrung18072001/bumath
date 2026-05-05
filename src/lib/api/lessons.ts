@@ -64,6 +64,18 @@ export async function updateLesson(id: string, payload: LessonUpdate): Promise<L
   return data as Lesson
 }
 
+export async function moveLessonToChapter(
+  lessonId: string,
+  toChapterId: string,
+  orderIndex: number,
+): Promise<void> {
+  const { error } = await supabase
+    .from('lessons')
+    .update({ chapter_id: toChapterId, order_index: orderIndex })
+    .eq('id', lessonId)
+  if (error) throw error
+}
+
 export async function removeLesson(id: string): Promise<void> {
   const { error } = await supabase.from('lessons').delete().eq('id', id)
   if (error) throw error

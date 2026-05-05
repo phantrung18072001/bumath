@@ -41,6 +41,7 @@ export interface LessonSidebarProps {
   onAddLesson?: (chapterId: string) => void
   onEditLesson?: (chapterId: string, lesson: Lesson) => void
   onDeleteLesson?: (chapterId: string, lesson: Lesson) => void
+  onMoveLesson?: (lessonId: string, fromChapterId: string, toChapterId: string, newIndex: number) => void
 }
 
 function AdminSortableChapterItem({
@@ -103,45 +104,60 @@ function AdminSortableChapterItem({
           <TooltipContent side="right" className="max-w-[220px]">{chapter.title}</TooltipContent>
         </Tooltip>
         <div className="flex items-center gap-0.5 shrink-0 pr-1 self-center">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-10 w-10 cursor-pointer shrink-0 text-muted-foreground hover:text-foreground"
-            aria-label="Thêm bài giảng"
-            onClick={(e) => {
-              e.stopPropagation()
-              onAddLesson?.(chapter.id)
-            }}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-10 w-10 cursor-pointer shrink-0 text-muted-foreground hover:text-foreground"
-            aria-label="Sửa chuyên đề"
-            onClick={(e) => {
-              e.stopPropagation()
-              onEditChapter?.(chapter)
-            }}
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-10 w-10 cursor-pointer shrink-0 text-destructive hover:text-destructive"
-            aria-label="Xóa chuyên đề"
-            onClick={(e) => {
-              e.stopPropagation()
-              onDeleteChapter?.(chapter)
-            }}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 cursor-pointer shrink-0 text-muted-foreground hover:text-foreground"
+                aria-label="Thêm bài giảng"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onAddLesson?.(chapter.id)
+                }}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">Thêm bài giảng</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 cursor-pointer shrink-0 text-muted-foreground hover:text-foreground"
+                aria-label="Sửa chuyên đề"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onEditChapter?.(chapter)
+                }}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">Sửa chuyên đề</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 cursor-pointer shrink-0 text-destructive hover:text-destructive"
+                aria-label="Xóa chuyên đề"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onDeleteChapter?.(chapter)
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">Xóa chuyên đề</TooltipContent>
+          </Tooltip>
         </div>
       </div>
       <AccordionContent className="pb-0 pt-0">
@@ -172,32 +188,42 @@ function AdminSortableChapterItem({
                   </TooltipTrigger>
                   <TooltipContent side="right" className="max-w-[220px]">{lesson.title}</TooltipContent>
                 </Tooltip>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9 cursor-pointer shrink-0"
-                  aria-label="Sửa bài giảng"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onEditLesson?.(chapter.id, lesson)
-                  }}
-                >
-                  <Pencil className="h-3.5 w-3.5" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9 cursor-pointer shrink-0 text-destructive hover:text-destructive"
-                  aria-label="Xóa bài giảng"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onDeleteLesson?.(chapter.id, lesson)
-                  }}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 cursor-pointer shrink-0"
+                      aria-label="Sửa bài giảng"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onEditLesson?.(chapter.id, lesson)
+                      }}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">Sửa bài giảng</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 cursor-pointer shrink-0 text-destructive hover:text-destructive"
+                      aria-label="Xóa bài giảng"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onDeleteLesson?.(chapter.id, lesson)
+                      }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">Xóa bài giảng</TooltipContent>
+                </Tooltip>
               </div>
             </SortableLessonShell>
           ))}
@@ -259,6 +285,7 @@ export default function LessonSidebar({
   onAddLesson,
   onEditLesson,
   onDeleteLesson,
+  onMoveLesson,
 }: LessonSidebarProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -283,20 +310,42 @@ export default function LessonSidebar({
     if (activeId.startsWith('lesson:') && overId.startsWith('lesson:')) {
       const activeLessonId = activeId.replace('lesson:', '')
       const overLessonId = overId.replace('lesson:', '')
-      let foundChapterId: string | null = null
+      let activeChapterId: string | null = null
+      let overChapterId: string | null = null
       for (const c of chapters) {
         const ls = lessonsByChapter.get(c.id) ?? []
-        if (ls.some((l) => l.id === activeLessonId) && ls.some((l) => l.id === overLessonId)) {
-          foundChapterId = c.id
+        if (ls.some((l) => l.id === activeLessonId)) activeChapterId = c.id
+        if (ls.some((l) => l.id === overLessonId)) overChapterId = c.id
+      }
+      if (!activeChapterId || !overChapterId) return
+      if (activeChapterId === overChapterId) {
+        if (!onReorderLessons) return
+        const list = [...(lessonsByChapter.get(activeChapterId) ?? [])]
+        const oldIndex = list.findIndex((l) => l.id === activeLessonId)
+        const newIndex = list.findIndex((l) => l.id === overLessonId)
+        if (oldIndex < 0 || newIndex < 0) return
+        onReorderLessons(activeChapterId, arrayMove(list, oldIndex, newIndex))
+      } else {
+        if (!onMoveLesson) return
+        const overList = lessonsByChapter.get(overChapterId) ?? []
+        const newIndex = overList.findIndex((l) => l.id === overLessonId)
+        onMoveLesson(activeLessonId, activeChapterId, overChapterId, newIndex >= 0 ? newIndex : overList.length)
+      }
+    }
+
+    if (activeId.startsWith('lesson:') && overId.startsWith('chapter:')) {
+      const activeLessonId = activeId.replace('lesson:', '')
+      const toChapterId = overId.replace('chapter:', '')
+      let fromChapterId: string | null = null
+      for (const c of chapters) {
+        if ((lessonsByChapter.get(c.id) ?? []).some((l) => l.id === activeLessonId)) {
+          fromChapterId = c.id
           break
         }
       }
-      if (!foundChapterId || !onReorderLessons) return
-      const list = [...(lessonsByChapter.get(foundChapterId) ?? [])]
-      const oldIndex = list.findIndex((l) => l.id === activeLessonId)
-      const newIndex = list.findIndex((l) => l.id === overLessonId)
-      if (oldIndex < 0 || newIndex < 0) return
-      onReorderLessons(foundChapterId, arrayMove(list, oldIndex, newIndex))
+      if (!fromChapterId || fromChapterId === toChapterId || !onMoveLesson) return
+      const toList = lessonsByChapter.get(toChapterId) ?? []
+      onMoveLesson(activeLessonId, fromChapterId, toChapterId, toList.length)
     }
   }
 

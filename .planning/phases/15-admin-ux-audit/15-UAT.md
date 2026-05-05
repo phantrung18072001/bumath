@@ -6,7 +6,7 @@ source:
   - 15-P02-SUMMARY.md
   - 15-P03-SUMMARY.md
 started: 2026-05-05T09:30:00Z
-updated: 2026-05-05T09:50:00Z
+updated: 2026-05-05T10:07:00Z
 ---
 
 ## Current Test
@@ -19,6 +19,10 @@ expected: |
   Nhập tên chuyên đề và submit → chuyên đề xuất hiện trong sidebar ngay lập tức.
 awaiting: user response
 
+note: >-
+  Test 1 fixed 3 bugs: attributes ReferenceError, layout/padding/scrollbar issues,
+  dnd-kit tooltip leak. Also added lesson title to top of content and chapter/lesson tooltips.
+
 ## Tests
 
 ### 1. Admin Course Detail Page Access
@@ -27,7 +31,7 @@ expected: |
   Trang hiển thị course detail giống như student view nhưng có thêm tính năng admin.
   Không có route /quan-tri/khoa-hoc/:courseSlug/chuong/:chapterSlug nữa.
 result: pass
-note: "Fixed - Simplified admin layout, removed negative margin causing padding loss, removed back button, fixed double scrollbar"
+note: "Fixed bugs: attributes ReferenceError, layout/padding/double scrollbar, dnd-kit tooltip. Added lesson title to top of content, chapter/lesson name tooltips."
 
 ### 2. Inline Chapter Form
 expected: |

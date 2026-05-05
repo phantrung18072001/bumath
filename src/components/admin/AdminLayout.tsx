@@ -28,29 +28,31 @@ export default function AdminLayout({ children, fullBleed = false }: { children:
 
   return (
     <div className={cn('flex', fullBleed ? 'h-[calc(100vh-80px)] overflow-hidden' : 'min-h-[calc(100vh-80px)]')}>
-      {/* Sidebar */}
-      <aside className={cn('w-60 shrink-0 border-r bg-card', fullBleed && 'overflow-y-auto')}>
-        <nav className="p-3 space-y-1">
-          {visibleItems.map(({ label, to, icon: Icon }) => {
-            const active = location.pathname.startsWith(to)
-            return (
-              <Link
-                key={to}
-                to={to}
-                className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-                  active
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                )}
-              >
-                <Icon className="h-4 w-4 shrink-0" />
-                {label}
-              </Link>
-            )
-          })}
-        </nav>
-      </aside>
+      {/* Sidebar — hidden on full-bleed pages (e.g. course detail) */}
+      {!fullBleed && (
+        <aside className="w-60 shrink-0 border-r bg-card overflow-y-auto">
+          <nav className="p-3 space-y-1">
+            {visibleItems.map(({ label, to, icon: Icon }) => {
+              const active = location.pathname.startsWith(to)
+              return (
+                <Link
+                  key={to}
+                  to={to}
+                  className={cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                    active
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  )}
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
+                  {label}
+                </Link>
+              )
+            })}
+          </nav>
+        </aside>
+      )}
 
       {/* Page content */}
       <main className={cn('flex-1', fullBleed ? 'overflow-hidden flex flex-col' : 'overflow-auto')}>

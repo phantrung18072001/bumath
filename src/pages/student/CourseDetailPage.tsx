@@ -11,6 +11,7 @@ import ChapterInlineForm from '@/components/admin/ChapterInlineForm'
 import LessonInlineForm from '@/components/admin/LessonInlineForm'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -38,6 +39,7 @@ import {
   fetchLessons,
   removeLesson,
   batchReorderLessons,
+  moveLessonToChapter,
   deleteAssignment,
   type Lesson,
 } from '@/lib/api/lessons'
@@ -231,6 +233,39 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
     if (updates.length > 0) reorderLessonsMutation.mutate(updates)
   }
 
+  const moveLessonMutation = useMutation({
+    mutationFn: ({ lessonId, toChapterId, newIndex }: { lessonId: string; toChapterId: string; newIndex: number; fromChapterId: string; fromList: Lesson[]; toList: Lesson[] }) =>
+      moveLessonToChapter(lessonId, toChapterId, newIndex),
+    onSuccess: (_, { fromList, toList }) => {
+      const fromUpdates = fromList.map((l, i) => ({ id: l.id, order_index: i }))
+      const toUpdates = toList.map((l, i) => ({ id: l.id, order_index: i }))
+      Promise.all([
+        fromUpdates.length ? batchReorderLessons(fromUpdates) : Promise.resolve(),
+        toUpdates.length ? batchReorderLessons(toUpdates) : Promise.resolve(),
+      ]).finally(() => invalidateCourseContent())
+      toast.success('Đã di chuyển bài học.')
+    },
+    onError: () => {
+      invalidateCourseContent()
+      toast.error('Di chuyển không thành công. Vui lòng thử lại.')
+    },
+  })
+
+  function handleMoveLesson(lessonId: string, fromChapterId: string, toChapterId: string, newIndex: number) {
+    if (!lessonsByChapter) return
+    const nextMap = new Map(lessonsByChapter)
+    const fromList = [...(nextMap.get(fromChapterId) ?? [])]
+    const lesson = fromList.find((l) => l.id === lessonId)
+    if (!lesson) return
+    const filteredFrom = fromList.filter((l) => l.id !== lessonId)
+    const toList = [...(nextMap.get(toChapterId) ?? [])]
+    toList.splice(newIndex, 0, { ...lesson, chapter_id: toChapterId })
+    nextMap.set(fromChapterId, filteredFrom)
+    nextMap.set(toChapterId, toList)
+    queryClient.setQueryData(['lessons', courseId, 'admin'], nextMap)
+    moveLessonMutation.mutate({ lessonId, toChapterId, newIndex, fromChapterId, fromList: filteredFrom, toList: [...toList] })
+  }
+
   const backLink = (
     <Link
       to={isAdmin ? '/quan-tri/khoa-hoc' : isAuthenticated ? '/khoa-hoc' : '/danh-muc'}
@@ -241,76 +276,56 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
     </Link>
   )
 
-  function renderAdminInlineForm() {
-    if (!isAdmin || !courseId || !chapters) return null
-    if (adminPanel?.kind === 'chapter-create') {
-      return (
-        <div className="px-3 pb-3 shrink-0 border-b border-[#F97316]/15">
+  const adminFormDialog = isAdmin && courseId && chapters ? (
+    <Dialog open={adminPanel !== null} onOpenChange={(open) => { if (!open) setAdminPanel(null) }}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>
+            {adminPanel?.kind === 'chapter-create' && 'Thêm chuyên đề'}
+            {adminPanel?.kind === 'chapter-edit' && 'Sửa chuyên đề'}
+            {adminPanel?.kind === 'lesson-create' && 'Thêm bài học'}
+            {adminPanel?.kind === 'lesson-edit' && 'Sửa bài học'}
+          </DialogTitle>
+        </DialogHeader>
+        {(adminPanel?.kind === 'chapter-create') && (
           <ChapterInlineForm
             courseId={courseId}
             chapter={null}
             nextOrderIndex={chapters.length}
-            onSuccess={() => {
-              invalidateCourseContent()
-              setAdminPanel(null)
-            }}
+            onSuccess={() => { invalidateCourseContent(); setAdminPanel(null) }}
             onCancel={() => setAdminPanel(null)}
           />
-        </div>
-      )
-    }
-    if (adminPanel?.kind === 'chapter-edit') {
-      return (
-        <div className="px-3 pb-3 shrink-0 border-b border-[#F97316]/15">
+        )}
+        {(adminPanel?.kind === 'chapter-edit') && (
           <ChapterInlineForm
             courseId={courseId}
             chapter={adminPanel.chapter}
             nextOrderIndex={chapters.length}
-            onSuccess={() => {
-              invalidateCourseContent()
-              setAdminPanel(null)
-            }}
+            onSuccess={() => { invalidateCourseContent(); setAdminPanel(null) }}
             onCancel={() => setAdminPanel(null)}
           />
-        </div>
-      )
-    }
-    if (adminPanel?.kind === 'lesson-create') {
-      const list = lessonsByChapter?.get(adminPanel.chapterId) ?? []
-      return (
-        <div className="px-3 pb-3 shrink-0 border-b border-[#F97316]/15 max-h-[60vh] overflow-y-auto">
+        )}
+        {(adminPanel?.kind === 'lesson-create') && (
           <LessonInlineForm
             chapterId={adminPanel.chapterId}
             lesson={null}
-            nextOrderIndex={list.length}
-            onSuccess={() => {
-              invalidateCourseContent()
-              setAdminPanel(null)
-            }}
+            nextOrderIndex={(lessonsByChapter?.get(adminPanel.chapterId) ?? []).length}
+            onSuccess={() => { invalidateCourseContent(); setAdminPanel(null) }}
             onCancel={() => setAdminPanel(null)}
           />
-        </div>
-      )
-    }
-    if (adminPanel?.kind === 'lesson-edit') {
-      const list = lessonsByChapter?.get(adminPanel.chapterId) ?? []
-      return (
-        <div className="px-3 pb-3 shrink-0 border-b border-[#F97316]/15 max-h-[60vh] overflow-y-auto">
+        )}
+        {(adminPanel?.kind === 'lesson-edit') && (
           <LessonInlineForm
             chapterId={adminPanel.chapterId}
             lesson={adminPanel.lesson}
-            nextOrderIndex={list.length}
-            onSuccess={() => {
-              invalidateCourseContent()
-              setAdminPanel(null)
-            }}
+            nextOrderIndex={(lessonsByChapter?.get(adminPanel.chapterId) ?? []).length}
+            onSuccess={() => { invalidateCourseContent(); setAdminPanel(null) }}
             onCancel={() => setAdminPanel(null)}
           />
-        </div>
-      )
-    }
-    return null
-  }
+        )}
+      </DialogContent>
+    </Dialog>
+  ) : null
 
   const sidebarShared = isAdmin && chapters && lessonsByChapter
     ? {
@@ -330,6 +345,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
         onEditLesson: (chapterId: string, lesson: Lesson) =>
           setAdminPanel({ kind: 'lesson-edit', chapterId, lesson }),
         onDeleteLesson: (chapterId: string, lesson: Lesson) => setDeletingLesson({ chapterId, lesson }),
+        onMoveLesson: handleMoveLesson,
       }
     : {
         chapters: chapters ?? [],
@@ -386,22 +402,9 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
         <div className="px-4 py-4">
           <div className="mb-4">{backLink}</div>
           <p className="text-muted-foreground mb-3">Chưa có chuyên đề. Thêm chuyên đề để bắt đầu.</p>
-          {adminPanel?.kind === 'chapter-create' ? (
-            <ChapterInlineForm
-              courseId={courseId}
-              chapter={null}
-              nextOrderIndex={0}
-              onSuccess={() => {
-                invalidateCourseContent()
-                setAdminPanel(null)
-              }}
-              onCancel={() => setAdminPanel(null)}
-            />
-          ) : (
-            <Button type="button" className="cursor-pointer min-h-[48px]" onClick={() => setAdminPanel({ kind: 'chapter-create' })}>
-              Thêm chuyên đề
-            </Button>
-          )}
+          <Button type="button" className="cursor-pointer min-h-[48px]" onClick={() => setAdminPanel({ kind: 'chapter-create' })}>
+            Thêm chuyên đề
+          </Button>
         </div>
       )}
 
@@ -410,7 +413,6 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
           <>
             <div className="hidden lg:flex flex-1 min-h-0">
               <div className="w-[340px] shrink-0 bg-white border-r border-[#F97316]/20 flex flex-col">
-                {renderAdminInlineForm()}
                 <div className="flex-1 min-h-0 flex flex-col">
                   <LessonSidebar
                     {...sidebarShared}
@@ -463,7 +465,6 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                       Danh sách bài học
                     </SheetTitle>
                   </SheetHeader>
-                  {isAdmin && <div className="shrink-0 overflow-y-auto max-h-[45vh]">{renderAdminInlineForm()}</div>}
                   <div className="flex-1 min-h-0 overflow-y-auto">
                     <LessonSidebar
                       {...sidebarShared}
@@ -641,6 +642,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
     return (
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
         {pageContent}
+        {adminFormDialog}
       </div>
     )
   }
