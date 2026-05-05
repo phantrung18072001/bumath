@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link, useSearchParams } from 'react-router-dom'
+import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Lock, LogIn, Menu, Loader2, Pencil, Trash2 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -10,6 +10,7 @@ import LessonSidebar from '@/components/student/LessonSidebar'
 import LessonContent from '@/components/student/LessonContent'
 import ChapterInlineForm from '@/components/admin/ChapterInlineForm'
 import LessonInlineForm from '@/components/admin/LessonInlineForm'
+import CourseFormDialog from '@/components/admin/CourseFormDialog'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -28,7 +29,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { fetchCourseBySlug } from '@/lib/api/courses'
+import { fetchCourseBySlug, deleteCourse } from '@/lib/api/courses'
 import {
   fetchChapters,
   removeChapter,
@@ -59,6 +60,7 @@ type AdminPanelState =
 
 export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolean }) {
   const { courseSlug } = useParams<{ courseSlug: string }>()
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { user, profile, loading: authLoading } = useAuth()
   const isAuthenticated = !authLoading && !!user
@@ -69,6 +71,8 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
   const [adminPanel, setAdminPanel] = useState<AdminPanelState>(null)
   const [deletingChapter, setDeletingChapter] = useState<Chapter | null>(null)
   const [deletingLesson, setDeletingLesson] = useState<{ chapterId: string; lesson: Lesson } | null>(null)
+  const [courseFormOpen, setCourseFormOpen] = useState(false)
+  const [courseDeleteConfirm, setCourseDeleteConfirm] = useState(false)
 
   const { data: course, isLoading: courseLoading, isError: courseError } = useQuery({
     queryKey: ['course', courseSlug],
@@ -173,6 +177,15 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
     queryClient.invalidateQueries({ queryKey: ['lessons', courseId, 'admin'] })
     queryClient.invalidateQueries({ queryKey: ['lessons', courseId, 'student'] })
   }
+
+  const deleteCourseMutation = useMutation({
+    mutationFn: () => deleteCourse(courseId!),
+    onSuccess: () => {
+      toast.success('Đã xóa khóa học.')
+      navigate('/quan-tri/khoa-hoc')
+    },
+    onError: () => toast.error('Xóa không thành công. Vui lòng thử lại.'),
+  })
 
   const deleteChapterMutation = useMutation({
     mutationFn: (id: string) => removeChapter(id),
@@ -422,44 +435,39 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                 </div>
               </div>
               <div className="flex-1 overflow-hidden flex flex-col bg-white">
-                {isAdmin && (() => {
-                  const activeChapter = chapters?.find(c =>
-                    (lessonsByChapter?.get(c.id) ?? []).some(l => l.id === activeLessonId)
-                  )
-                  return activeChapter ? (
-                    <div className="flex items-center justify-between px-6 py-2 border-b shrink-0 bg-muted/30">
-                      <span className="text-sm font-semibold text-muted-foreground truncate">{activeChapter.title}</span>
-                      <div className="flex gap-1 shrink-0 ml-3">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              type="button"
-                              className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground cursor-pointer"
-                              aria-label="Sửa chuyên đề"
-                              onClick={() => setAdminPanel({ kind: 'chapter-edit', chapter: activeChapter })}
-                            >
-                              <Pencil className="h-3.5 w-3.5" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent>Sửa chuyên đề</TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              type="button"
-                              className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-muted transition-colors text-destructive cursor-pointer"
-                              aria-label="Xóa chuyên đề"
-                              onClick={() => setDeletingChapter(activeChapter)}
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent>Xóa chuyên đề</TooltipContent>
-                        </Tooltip>
-                      </div>
+                {isAdmin && course && (
+                  <div className="flex items-center justify-between px-6 py-2 border-b shrink-0 bg-muted/30">
+                    <span className="text-sm font-semibold truncate">{course.title}</span>
+                    <div className="flex gap-1 shrink-0 ml-3">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground cursor-pointer"
+                            aria-label="Sửa khóa học"
+                            onClick={() => setCourseFormOpen(true)}
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>Sửa khóa học</TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-muted transition-colors text-destructive cursor-pointer"
+                            aria-label="Xóa khóa học"
+                            onClick={() => setCourseDeleteConfirm(true)}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>Xóa khóa học</TooltipContent>
+                      </Tooltip>
                     </div>
-                  ) : null
-                })()}
+                  </div>
+                )}
                 <div className="flex-1 overflow-y-auto">
                   {profile && (
                     <LessonContent
@@ -684,6 +692,36 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
         {pageContent}
         {adminFormDialog}
+        <CourseFormDialog
+          open={courseFormOpen}
+          course={course ?? null}
+          onSuccess={() => {
+            queryClient.invalidateQueries({ queryKey: ['course', courseSlug] })
+            setCourseFormOpen(false)
+          }}
+          onClose={() => setCourseFormOpen(false)}
+        />
+        <AlertDialog open={courseDeleteConfirm} onOpenChange={(open) => !open && setCourseDeleteConfirm(false)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Xóa khóa học?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Bạn có chắc muốn xóa khóa học &quot;{course?.title}&quot;? Toàn bộ chuyên đề và bài học sẽ bị xóa theo. Hành động này không thể hoàn tác.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="cursor-pointer">Hủy</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+                onClick={() => deleteCourseMutation.mutate()}
+                disabled={deleteCourseMutation.isPending}
+              >
+                {deleteCourseMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
+                Xóa
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     )
   }
