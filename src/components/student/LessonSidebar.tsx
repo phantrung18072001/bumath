@@ -68,7 +68,7 @@ function AdminSortableChapterItem({
   onEditLesson?: (chapterId: string, lesson: Lesson) => void
   onDeleteLesson?: (chapterId: string, lesson: Lesson) => void
 }) {
-  const { listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: `chapter:${chapter.id}`,
   })
   const style = {
