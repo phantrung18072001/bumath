@@ -206,7 +206,7 @@ function SortableLessonShell({
   isAdmin: boolean
   children: React.ReactNode
 }) {
-  const { listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: `lesson:${lesson.id}`,
     disabled: !isAdmin,
   })
