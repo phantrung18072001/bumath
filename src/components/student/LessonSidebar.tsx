@@ -4,21 +4,11 @@ import { Progress } from '@/components/ui/progress'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
 import { Check, ChevronRight, Circle, GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
-import {
-  DndContext,
-  closestCorners,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from '@dnd-kit/core'
+import { useDroppable } from '@dnd-kit/core'
 import {
   SortableContext,
-  sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
-  arrayMove,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import type { Chapter } from '@/lib/api/chapters'
@@ -69,13 +59,14 @@ function AdminSortableChapterItem({
   onEditLesson?: (chapterId: string, lesson: Lesson) => void
   onDeleteLesson?: (chapterId: string, lesson: Lesson) => void
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({
     id: `chapter:${chapter.id}`,
   })
-  const style = {
+  const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.65 : 1,
+    opacity: isDragging ? 0.4 : 1,
+    position: isDragging ? 'relative' : undefined,
+    zIndex: isDragging ? 999 : undefined,
   }
 
   return (
@@ -83,7 +74,7 @@ function AdminSortableChapterItem({
       ref={setNodeRef}
       style={style}
       value={chapter.id}
-      className="w-full border-0 border-b border-[#F97316]/15 last:border-b-0"
+      className={cn('w-full border-0 border-b border-[#F97316]/15 last:border-b-0', isDragging ? 'transition-none' : 'transition-transform duration-200')}
       {...attributes}
     >
       <div className="group flex w-full items-center min-h-[48px]">
@@ -176,6 +167,7 @@ function AdminSortableChapterItem({
             </SortableLessonShell>
           ))}
         </SortableContext>
+        <ChapterEndSentinel chapterId={chapter.id} />
         {onAddLesson && (
           <div className="px-3 pb-3 pt-1">
             <button
@@ -193,6 +185,16 @@ function AdminSortableChapterItem({
   )
 }
 
+function ChapterEndSentinel({ chapterId }: { chapterId: string }) {
+  const { setNodeRef, isOver } = useDroppable({ id: `end:${chapterId}` })
+  return (
+    <div
+      ref={setNodeRef}
+      className={cn('h-3 w-full transition-all duration-150', isOver && 'h-6 bg-primary/10 rounded')}
+    />
+  )
+}
+
 function SortableLessonShell({
   lesson,
   isAdmin,
@@ -202,17 +204,18 @@ function SortableLessonShell({
   isAdmin: boolean
   children: React.ReactNode
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({
     id: `lesson:${lesson.id}`,
     disabled: !isAdmin,
   })
-  const style = {
+  const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.65 : 1,
+    opacity: isDragging ? 0.4 : 1,
+    position: isDragging ? 'relative' : undefined,
+    zIndex: isDragging ? 999 : undefined,
   }
   return (
-    <div ref={setNodeRef} style={style} className="flex items-stretch border-b border-border/40 last:border-b-0" {...attributes}>
+    <div ref={setNodeRef} style={style} className={cn('flex items-stretch border-b border-border/40 last:border-b-0', isDragging ? 'transition-none' : 'transition-transform duration-200')} {...attributes}>
       {isAdmin && (
         <button
           type="button"
@@ -247,68 +250,6 @@ export default function LessonSidebar({
   onDeleteLesson,
   onMoveLesson,
 }: LessonSidebarProps) {
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
-  )
-
-  function handleDragEnd(event: DragEndEvent) {
-    if (!isAdmin) return
-    const { active, over } = event
-    if (!over || active.id === over.id) return
-    const activeId = String(active.id)
-    const overId = String(over.id)
-
-    if (activeId.startsWith('chapter:') && overId.startsWith('chapter:')) {
-      const oldIndex = chapters.findIndex((c) => `chapter:${c.id}` === activeId)
-      const newIndex = chapters.findIndex((c) => `chapter:${c.id}` === overId)
-      if (oldIndex < 0 || newIndex < 0 || !onReorderChapters) return
-      onReorderChapters(arrayMove(chapters, oldIndex, newIndex))
-      return
-    }
-
-    if (activeId.startsWith('lesson:') && overId.startsWith('lesson:')) {
-      const activeLessonId = activeId.replace('lesson:', '')
-      const overLessonId = overId.replace('lesson:', '')
-      let activeChapterId: string | null = null
-      let overChapterId: string | null = null
-      for (const c of chapters) {
-        const ls = lessonsByChapter.get(c.id) ?? []
-        if (ls.some((l) => l.id === activeLessonId)) activeChapterId = c.id
-        if (ls.some((l) => l.id === overLessonId)) overChapterId = c.id
-      }
-      if (!activeChapterId || !overChapterId) return
-      if (activeChapterId === overChapterId) {
-        if (!onReorderLessons) return
-        const list = [...(lessonsByChapter.get(activeChapterId) ?? [])]
-        const oldIndex = list.findIndex((l) => l.id === activeLessonId)
-        const newIndex = list.findIndex((l) => l.id === overLessonId)
-        if (oldIndex < 0 || newIndex < 0) return
-        onReorderLessons(activeChapterId, arrayMove(list, oldIndex, newIndex))
-      } else {
-        if (!onMoveLesson) return
-        const overList = lessonsByChapter.get(overChapterId) ?? []
-        const newIndex = overList.findIndex((l) => l.id === overLessonId)
-        onMoveLesson(activeLessonId, activeChapterId, overChapterId, newIndex >= 0 ? newIndex : overList.length)
-      }
-    }
-
-    if (activeId.startsWith('lesson:') && overId.startsWith('chapter:')) {
-      const activeLessonId = activeId.replace('lesson:', '')
-      const toChapterId = overId.replace('chapter:', '')
-      let fromChapterId: string | null = null
-      for (const c of chapters) {
-        if ((lessonsByChapter.get(c.id) ?? []).some((l) => l.id === activeLessonId)) {
-          fromChapterId = c.id
-          break
-        }
-      }
-      if (!fromChapterId || fromChapterId === toChapterId || !onMoveLesson) return
-      const toList = lessonsByChapter.get(toChapterId) ?? []
-      onMoveLesson(activeLessonId, fromChapterId, toChapterId, toList.length)
-    }
-  }
-
   const chapterIds = chapters.map((c) => `chapter:${c.id}`)
 
   const accordion = (
@@ -341,8 +282,8 @@ export default function LessonSidebar({
           <Tooltip key={chapter.id}>
             <AccordionItem value={chapter.id}>
               <TooltipTrigger asChild>
-                <AccordionTrigger className="text-base font-bold px-4">
-                  {chapter.title}
+                <AccordionTrigger className="text-base font-bold px-4 hover:no-underline min-w-0 gap-2 [&>svg]:shrink-0">
+                  <span className="truncate text-left min-w-0 flex-1">{chapter.title}</span>
                 </AccordionTrigger>
               </TooltipTrigger>
               <AccordionContent className="pb-0">
@@ -422,14 +363,6 @@ export default function LessonSidebar({
   )
 
   const rootClass = scrollable ? 'flex flex-col h-full' : 'flex flex-col'
-
-  if (isAdmin && (onReorderChapters || onReorderLessons)) {
-    return (
-      <DndContext sensors={sensors} collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
-        <div className={rootClass}>{body}</div>
-      </DndContext>
-    )
-  }
 
   return <div className={rootClass}>{body}</div>
 }

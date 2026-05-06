@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { LogIn, Search, BookOpen } from 'lucide-react'
+import { LogIn, Search, BookOpen, Loader2 } from 'lucide-react'
 
 const GRADE_FILTERS: { value: Course['target_grade'] | 'all'; label: string }[] = [
   { value: 'all', label: 'Tất cả' },
@@ -239,6 +239,14 @@ export default function CataloguePage() {
 
   if (isAuthenticated) {
     return <StudentLayout>{content}</StudentLayout>
+  }
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    )
   }
 
   return (

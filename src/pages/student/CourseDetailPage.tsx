@@ -498,7 +498,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
         isEnrolled ? (
           <>
             <div className="hidden lg:flex h-[calc(100vh-80px)]">
-              <div className="w-[420px] shrink-0 bg-white border-r border-[#F97316]/20 flex flex-col">
+              <div className="w-[420px] shrink-0 bg-white border-r border-[#F97316]/20 flex flex-col h-full">
                 <div className="flex-1 min-h-0 flex flex-col">
                   <LessonSidebar
                     {...sidebarShared}
@@ -808,6 +808,14 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
 
   if (isAuthenticated && !isAdmin) {
     return <StudentLayout>{pageContent}</StudentLayout>
+  }
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    )
   }
 
   return (
