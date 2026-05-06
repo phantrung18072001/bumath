@@ -2,30 +2,38 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { Menu, X, Phone, CreditCard, HelpCircle, LogOut, LayoutDashboard, BookOpen, UserCircle } from "lucide-react";
+import {
+  Menu, X, Phone, CreditCard, LogOut, LayoutDashboard, BookOpen, UserCircle, ChevronDown, HelpCircle
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-/** In-app targets only — routes must exist in App.tsx (AUDIT-01). */
+/** In-app targets — exactly 5 nav items for consistent layout */
 const staticNavItems = [
-  { label: "Giới thiệu", to: "/" },
+  { label: "Giới thiệu", to: "/gioi-thieu" },
   { label: "Danh mục", to: "/danh-muc" },
-  { label: "Đề thi", to: "/danh-muc" },
-  { label: "Tài liệu", to: "/danh-muc" },
-  { label: "Tản mạn Toán & Cuộc sống", to: "/danh-muc" },
+  { label: "Đề thi", to: "/de-thi" },
+  { label: "Tài liệu", to: "/tai-lieu" },
+  { label: "Tản mạn Toán & Cuộc sống", to: "/tan-man" },
 ];
 
 const authNavItems = [
-  { label: "Giới thiệu", to: "/" },
+  { label: "Giới thiệu", to: "/gioi-thieu" },
   { label: "Vào học", to: "/khoa-hoc" },
-  { label: "Đề thi", to: "/danh-muc" },
-  { label: "Tài liệu", to: "/danh-muc" },
-  { label: "Tản mạn Toán & Cuộc sống", to: "/danh-muc" },
+  { label: "Đề thi", to: "/de-thi" },
+  { label: "Tài liệu", to: "/tai-lieu" },
+  { label: "Tản mạn Toán & Cuộc sống", to: "/tan-man" },
 ];
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, profile, loading, signOut } = useAuth();
   const isAuthenticated = !loading && !!user;
-
   const navItems = isAuthenticated ? authNavItems : staticNavItems;
 
   return (
@@ -45,7 +53,7 @@ const Header = () => {
           </span>
         </Link>
 
-        {/* Row 1: SĐT / Hướng dẫn / Đăng nhập / Đăng ký / Thanh toán */}
+        {/* Row 1: Always 5 items — SĐT / Hướng dẫn / Auth / Thanh toán / (space) */}
         <div className="flex h-14 items-center justify-end gap-3 border-b border-border/50 pl-6">
           <a
             href="tel:0123456789"
@@ -64,35 +72,35 @@ const Header = () => {
           {loading ? (
             <div className="h-9 w-24 rounded bg-muted animate-pulse" />
           ) : isAuthenticated ? (
-            <>
-              <span className="text-sm font-medium text-foreground">
-                {profile?.full_name || 'Tài khoản'}
-              </span>
-              {profile?.role === 'student' && (
-                <Link to="/ho-so">
-                  <Button variant="ghost" className="h-9 px-4 text-sm gap-1.5">
-                    <UserCircle className="h-3.5 w-3.5" />
-                    Hồ sơ
-                  </Button>
-                </Link>
-              )}
-              {profile?.role === 'admin' && (
-                <Link to="/quan-tri/nguoi-dung">
-                  <Button variant="outline" className="h-9 px-4 text-sm gap-1.5">
-                    <LayoutDashboard className="h-3.5 w-3.5" />
-                    Trang quản lý
-                  </Button>
-                </Link>
-              )}
-              <Button
-                variant="ghost"
-                className="h-9 px-4 text-sm gap-1.5"
-                onClick={() => signOut()}
-              >
-                <LogOut className="h-3.5 w-3.5" />
-                Đăng xuất
-              </Button>
-            </>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-9 px-3 text-sm gap-1.5">
+                  <UserCircle className="h-4 w-4" />
+                  <span className="max-w-[100px] truncate">{profile?.full_name || 'Tài khoản'}</span>
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {profile?.role === 'student' && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/ho-so" className="cursor-pointer flex items-center gap-2">
+                      <UserCircle className="h-4 w-4" /> Hồ sơ
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                {profile?.role === 'admin' && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/quan-tri/nguoi-dung" className="cursor-pointer flex items-center gap-2">
+                      <LayoutDashboard className="h-4 w-4" /> Trang quản lý
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer flex items-center gap-2 text-destructive">
+                  <LogOut className="h-4 w-4" /> Đăng xuất
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <>
               <Link to="/dang-nhap">
@@ -115,13 +123,13 @@ const Header = () => {
           </Link>
         </div>
 
-        {/* Row 2: Nav links */}
+        {/* Row 2: Nav links — exactly 5 items, consistent across all states */}
         <nav className="flex h-14 items-center justify-evenly pl-6">
           {navItems.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className="rounded-lg px-3 py-1.5 text-base font-medium text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
+              className="rounded-lg px-3 py-1.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
             >
               {item.label}
             </Link>

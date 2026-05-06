@@ -3,20 +3,20 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
-import { Loader2, Youtube, Paperclip, FileText, X, Plus } from 'lucide-react'
+import { Loader2, Youtube, Paperclip, X, Plus, Video, BookOpen } from 'lucide-react'
+import { getFileIcon } from '@/lib/file-icon'
 import { toast } from 'sonner'
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+import { AspectRatio } from '@/components/ui/aspect-ratio'
+import { cn } from '@/lib/utils'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Lesson,
   LessonInsert,
@@ -194,84 +194,158 @@ export default function LessonInlineForm({
   }
 
   return (
-    <>
-      <ScrollArea className="max-h-[min(65vh,500px)] pr-2">
-        <Form {...form}>
-          <form id="lesson-inline-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 px-0.5 pb-2">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tên bài học</FormLabel>
-                  <FormControl>
-                    <Input placeholder="VD: Bài 1 — Phương trình bậc nhất" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+    <Form {...form}>
+      <form id="lesson-inline-form" onSubmit={form.handleSubmit(onSubmit)} className="p-4 md:p-8 space-y-8">
 
-            <FormField
-              control={form.control}
-              name="youtube_url"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-1">
-                    <Youtube className="h-4 w-4" />
-                    Đường dẫn video YouTube
-                    <span className="text-xs font-normal text-muted-foreground ml-1">(không bắt buộc)</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://www.youtube.com/watch?v=..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                  {youtubePreviewId && (
-                    <div className="aspect-video w-full rounded-md overflow-hidden border">
-                      <iframe
-                        src={`https://www.youtube.com/embed/${youtubePreviewId}`}
-                        title="YouTube preview"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        className="w-full h-full border-0"
-                      />
-                    </div>
-                  )}
-                </FormItem>
-              )}
-            />
+        {/* Action bar */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <BookOpen className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold leading-tight">{isEditing ? 'Chỉnh sửa bài học' : 'Thêm bài học mới'}</p>
+              <p className="text-xs text-muted-foreground">Điền thông tin rồi nhấn Lưu</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <Button type="button" variant="outline" size="sm" onClick={onCancel} className="cursor-pointer h-9">
+              Hủy
+            </Button>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={mutation.isPending || !!fileError}
+              className="cursor-pointer h-9 bg-[#F97316] hover:bg-[#ea6c0c] text-white border-0 shadow-[0_3px_0_0_#c2540a] active:shadow-none active:translate-y-px transition-all duration-150"
+            >
+              {mutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
+              {isEditing ? 'Lưu bài học' : 'Thêm bài học'}
+            </Button>
+          </div>
+        </div>
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Mô tả bài học</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Mô tả ngắn về nội dung bài học (không bắt buộc)"
-                      rows={3}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="space-y-3 w-full overflow-hidden">
-              <label className="text-sm font-medium leading-none flex items-center gap-1">
-                <Paperclip className="h-4 w-4" />
-                Tài liệu đính kèm cho học sinh
-                <span className="text-xs font-normal text-muted-foreground ml-1">(không bắt buộc, nhiều file)</span>
+        {/* Title */}
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2 block">
+                Tên bài học <span className="text-destructive">*</span>
               </label>
+              <FormControl>
+                <input
+                  autoFocus
+                  placeholder="VD: Bài 1 — Phương trình bậc nhất"
+                  className="text-2xl font-bold bg-transparent outline-none border-b-2 border-muted-foreground/20 focus:border-primary w-full transition-colors duration-200 placeholder:text-muted-foreground/25 pb-2"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
+        {/* Video */}
+        <FormField
+          control={form.control}
+          name="youtube_url"
+          render={({ field }) => (
+            <FormItem>
+              <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                <Youtube className="h-3.5 w-3.5 text-red-500" />
+                Video YouTube
+                <span className="font-normal normal-case tracking-normal text-muted-foreground/70">(không bắt buộc)</span>
+              </label>
+              <div className="max-w-4xl mb-3">
+              <AspectRatio
+                ratio={16 / 9}
+                className={cn(
+                  'rounded-2xl overflow-hidden transition-colors duration-200',
+                  youtubePreviewId ? 'bg-black' : 'bg-muted/50 border-2 border-dashed border-border'
+                )}
+              >
+                {youtubePreviewId ? (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${youtubePreviewId}`}
+                    title="YouTube preview"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full border-0"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-muted-foreground">
+                    <div className="h-14 w-14 rounded-2xl bg-background/70 flex items-center justify-center shadow-sm">
+                      <Video className="h-7 w-7 text-muted-foreground/40" />
+                    </div>
+                    <p className="text-sm text-muted-foreground/50">Chưa có video — dán URL bên dưới</p>
+                  </div>
+                )}
+              </AspectRatio>
+              </div>
+              <FormControl>
+                <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-muted/30 px-3.5 py-2.5 focus-within:border-primary/50 focus-within:bg-white/60 transition-all duration-150">
+                  <Youtube className="h-4 w-4 text-red-500 shrink-0" />
+                  <input
+                    placeholder="Dán URL YouTube vào đây..."
+                    className="flex-1 text-sm bg-transparent outline-none placeholder:text-muted-foreground/40"
+                    {...field}
+                  />
+                  {field.value && (
+                    <button
+                      type="button"
+                      onClick={() => field.onChange('')}
+                      className="text-muted-foreground/50 hover:text-foreground transition-colors cursor-pointer"
+                      aria-label="Xóa URL"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Description */}
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2 block">
+                Mô tả bài học
+                <span className="font-normal normal-case tracking-normal ml-1 text-muted-foreground/70">(không bắt buộc)</span>
+              </label>
+              <FormControl>
+                <Textarea
+                  placeholder="Mô tả ngắn về nội dung, mục tiêu học tập của bài học..."
+                  rows={8}
+                  className="resize-y bg-muted/30 border border-border/50 rounded-xl text-base placeholder:text-muted-foreground/30 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary/40 min-h-[120px]"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* File attachments */}
+        <div className="rounded-2xl border border-border/50 bg-muted/20 p-4 space-y-3">
+          <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+            <Paperclip className="h-3.5 w-3.5" />
+            Tài liệu đính kèm
+            <span className="font-normal normal-case tracking-normal text-muted-foreground/70">(JPG, PNG, PDF — tối đa 10MB)</span>
+          </label>
+            <div className="space-y-3 w-full overflow-hidden">
               {(keptPaths.length > 0 || selectedFiles.length > 0) && (
                 <div className="flex flex-wrap gap-3">
                   {keptPaths.map((p) => {
                     const name = p.split('/').pop() ?? p
                     const isImage = /\.(jpg|jpeg|png|gif|webp|heic|avif)$/i.test(name)
                     const publicUrl = getAssignmentPublicUrl(p)
+                    const { Icon: FileIcon, colorClass, label } = getFileIcon(name)
                     return (
                       <div key={p} className="relative w-24 flex flex-col gap-1">
                         <div className="relative w-24 h-32 rounded-md border bg-muted/40 overflow-hidden">
@@ -279,8 +353,8 @@ export default function LessonInlineForm({
                             <img src={publicUrl} alt={name} className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full flex flex-col items-center justify-center gap-1 text-muted-foreground">
-                              <FileText className="h-8 w-8" />
-                              <span className="text-[10px] uppercase font-medium">PDF</span>
+                              <FileIcon className={`h-8 w-8 ${colorClass}`} />
+                              <span className="text-[10px] uppercase font-medium">{label}</span>
                             </div>
                           )}
                           <button
@@ -298,7 +372,7 @@ export default function LessonInlineForm({
 
                   {selectedFiles.map((file, i) => {
                     const previewUrl = newFilePreviews[i]
-                    const isPdf = file.type === 'application/pdf'
+                    const { Icon: FileIcon, colorClass, label } = getFileIcon(file.name)
                     return (
                       <div key={i} className="relative w-24 flex flex-col gap-1">
                         <div className="relative w-24 h-32 rounded-md border border-dashed bg-muted/20 overflow-hidden">
@@ -306,8 +380,8 @@ export default function LessonInlineForm({
                             <img src={previewUrl} alt={file.name} className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full flex flex-col items-center justify-center gap-1 text-muted-foreground">
-                              <FileText className="h-8 w-8" />
-                              <span className="text-[10px] uppercase font-medium">{isPdf ? 'PDF' : file.name.split('.').pop()?.toUpperCase()}</span>
+                              <FileIcon className={`h-8 w-8 ${colorClass}`} />
+                              <span className="text-[10px] uppercase font-medium">{label}</span>
                             </div>
                           )}
                           <button
@@ -338,33 +412,19 @@ export default function LessonInlineForm({
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-9 px-3 text-sm cursor-pointer"
+                className="h-9 px-3 text-sm cursor-pointer border-border/60 bg-white/60 hover:bg-white"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Thêm file (JPG, PNG, WebP, HEIC, PDF — tối đa 10MB)
+                Thêm file
               </Button>
 
               {fileError && <p className="text-sm text-destructive">{fileError}</p>}
             </div>
-          </form>
-        </Form>
-      </ScrollArea>
+        </div>
 
-      <div className="flex gap-2 justify-end pt-4 border-t mt-3">
-        <Button type="button" variant="outline" onClick={onCancel} className="cursor-pointer min-h-[44px]">
-          Hủy
-        </Button>
-        <Button
-          type="submit"
-          form="lesson-inline-form"
-          disabled={mutation.isPending || !!fileError}
-          className="cursor-pointer min-h-[44px]"
-        >
-          {mutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
-          {isEditing ? 'Lưu bài học' : 'Thêm bài học'}
-        </Button>
-      </div>
-    </>
+      </form>
+    </Form>
   )
+
 }

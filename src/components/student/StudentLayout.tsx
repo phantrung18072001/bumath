@@ -18,9 +18,9 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/20 relative overflow-x-hidden isolate">
+    <div className="min-h-screen bg-white relative overflow-x-hidden isolate">
       {/* Floating math symbols background */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10" aria-hidden="true">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 hidden" aria-hidden="true">
         {/* Row 1 — ~6% */}
         <span className="bm-float-symbol-light" style={{ top: '3%',  left: '2%',   fontSize: '52px' }}>π</span>
         <span className="bm-float-symbol-light" style={{ top: '6%',  left: '18%',  fontSize: '36px' }}>θ</span>
