@@ -76,7 +76,7 @@ blocked: 0
   debug_session: ""
 
 - truth: "Pagination có STT column và page size selector (10/20/50)"
-  status: failed
+  status: fixed
   reason: "User reported: cần thêm cột STT (tính theo trang), page size selector (10/20/50) cạnh pagination, cho cả UsersPage và CoursesPage"
   severity: minor
   test: 3
@@ -86,9 +86,4 @@ blocked: 0
       issue: "line 107: const PAGE_SIZE = 25 (hardcoded); UsersTable sub-component has no currentPage/pageSize props; no STT column"
     - path: "src/pages/admin/CoursesPage.tsx"
       issue: "line 80: const PAGE_SIZE = 20 (hardcoded); no STT column in inline table"
-  missing:
-    - "Replace const PAGE_SIZE with useState(10); reset page on size change"
-    - "Add STT TableHead + TableCell with formula: (currentPage-1)*pageSize + index + 1"
-    - "Pass currentPage/pageSize props to UsersTable sub-component"
-    - "Add Select (10/20/50) next to Pagination in both pages"
-  debug_session: ""
+  fix: "commit cb176d3 — pageSize useState(20), Select (10/20/50) next to pagination, STT column in both pages"
