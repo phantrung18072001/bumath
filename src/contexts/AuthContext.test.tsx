@@ -16,7 +16,6 @@ vi.mock('@/lib/supabase', () => {
       year_of_birth: 2010,
       address: 'Ha Noi',
       role: 'student',
-      approval_status: 'pending',
       created_at: '2026-01-01T00:00:00Z',
     },
     error: null,

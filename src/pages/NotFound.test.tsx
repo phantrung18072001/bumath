@@ -11,14 +11,12 @@ const mockStudentProfile = {
   id: 'user-1',
   full_name: 'Nguyen Van A',
   role: 'student' as const,
-  approval_status: 'approved' as const,
 }
 
 const mockAdminProfile = {
   id: 'user-2',
   full_name: 'Admin',
   role: 'admin' as const,
-  approval_status: 'approved' as const,
 }
 
 function renderNotFound() {

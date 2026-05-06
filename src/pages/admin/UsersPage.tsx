@@ -115,8 +115,7 @@ export default function UsersPage() {
   const [packageFilter, setPackageFilter] = useState<string>('')
   const [packageStatus, setPackageStatus] = useState<'' | 'has_package' | 'no_package'>('')
   const [currentPage, setCurrentPage] = useState(1)
-
-  const PAGE_SIZE = 20
+  const [pageSize, setPageSize] = useState(20)
 
   const { data: packagesData } = useQuery({
     queryKey: ['admin', 'packages'],
@@ -125,13 +124,13 @@ export default function UsersPage() {
   const allPackages = packagesData ?? []
 
   const { data, isLoading } = useQuery({
-    queryKey: ['admin', 'profiles', { page: currentPage, pageSize: PAGE_SIZE, role: roleFilter, search: searchQuery, packageId: packageFilter, packageStatus }],
-    queryFn: () => fetchProfilesPaginated({ page: currentPage, pageSize: PAGE_SIZE, role: roleFilter, search: searchQuery, packageId: packageFilter || undefined, packageStatus: packageStatus || undefined }),
+    queryKey: ['admin', 'profiles', { page: currentPage, pageSize, role: roleFilter, search: searchQuery, packageId: packageFilter, packageStatus }],
+    queryFn: () => fetchProfilesPaginated({ page: currentPage, pageSize, role: roleFilter, search: searchQuery, packageId: packageFilter || undefined, packageStatus: packageStatus || undefined }),
   })
 
   const users = data?.data ?? []
   const totalCount = data?.total ?? 0
-  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
+  const totalPages = Math.ceil(totalCount / pageSize)
 
   function handleSearch(value: string) {
     setSearchQuery(value)
@@ -152,6 +151,11 @@ export default function UsersPage() {
   function handlePackageStatus(value: string) {
     setPackageStatus(value === 'all' ? '' : value as 'has_package' | 'no_package')
     setPackageFilter('')
+    setCurrentPage(1)
+  }
+
+  function handlePageSizeChange(value: string) {
+    setPageSize(Number(value))
     setCurrentPage(1)
   }
 
@@ -244,11 +248,24 @@ export default function UsersPage() {
           <UsersTable
             users={users}
             currentPage={currentPage}
-            pageSize={PAGE_SIZE}
+            pageSize={pageSize}
             onManageEnrollments={(user) => setEnrollmentUser(user)}
           />
           {totalPages > 1 && (
-            <div className="mt-6 flex items-center justify-between gap-3">
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground whitespace-nowrap">Số hàng:</span>
+                <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
+                  <SelectTrigger className="w-[80px] h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>

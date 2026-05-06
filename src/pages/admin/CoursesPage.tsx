@@ -68,17 +68,16 @@ export default function CoursesPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [gradeFilter, setGradeFilter] = useState<'all' | Course['target_grade']>('all')
   const [currentPage, setCurrentPage] = useState(1)
-
-  const PAGE_SIZE = 20
+  const [pageSize, setPageSize] = useState(20)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['admin', 'courses', { page: currentPage, pageSize: PAGE_SIZE, grade: gradeFilter, search: searchQuery }],
-    queryFn: () => fetchCoursesPaginated({ page: currentPage, pageSize: PAGE_SIZE, grade: gradeFilter, search: searchQuery }),
+    queryKey: ['admin', 'courses', { page: currentPage, pageSize, grade: gradeFilter, search: searchQuery }],
+    queryFn: () => fetchCoursesPaginated({ page: currentPage, pageSize, grade: gradeFilter, search: searchQuery }),
   })
 
   const courses = data?.data ?? []
   const totalCount = data?.total ?? 0
-  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
+  const totalPages = Math.ceil(totalCount / pageSize)
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteCourse(id),
@@ -127,6 +126,11 @@ export default function CoursesPage() {
 
   function handleGradeFilter(value: string) {
     setGradeFilter(value as 'all' | Course['target_grade'])
+    setCurrentPage(1)
+  }
+
+  function handlePageSizeChange(value: string) {
+    setPageSize(Number(value))
     setCurrentPage(1)
   }
 
@@ -217,7 +221,7 @@ export default function CoursesPage() {
               <TableBody>
                 {courses.map((course, index) => (
                   <TableRow key={course.id}>
-                    <TableCell className="w-12 text-muted-foreground">{(currentPage - 1) * PAGE_SIZE + index + 1}</TableCell>
+                    <TableCell className="w-12 text-muted-foreground">{(currentPage - 1) * pageSize + index + 1}</TableCell>
                     <TableCell className="font-normal">{course.title}</TableCell>
                     <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
                       {course.description ?? '—'}
@@ -291,7 +295,20 @@ export default function CoursesPage() {
           </div>
 
           {totalPages > 1 && (
-            <div className="mt-6 flex items-center justify-end gap-3">
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground whitespace-nowrap">Số hàng:</span>
+                <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
+                  <SelectTrigger className="w-[80px] h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>

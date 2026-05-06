@@ -50,7 +50,7 @@ vi.mock('@/lib/api/submissions', () => ({
 vi.mock('@/contexts/AuthContext', () => ({
   useAuth: vi.fn().mockReturnValue({
     user: { id: 'admin-1' },
-    profile: { id: 'admin-1', role: 'admin', approval_status: 'approved' },
+    profile: { id: 'admin-1', role: 'admin' },
     loading: false,
     signOut: vi.fn(),
   }),
