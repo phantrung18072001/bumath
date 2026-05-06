@@ -1,4 +1,14 @@
 import { useState, useEffect } from 'react'
+import {
+  DndContext,
+  closestCorners,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import { sortableKeyboardCoordinates, arrayMove } from '@dnd-kit/sortable'
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Lock, LogIn, Menu, Loader2, Pencil, Trash2 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -166,7 +176,8 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
   const activeLesson = allLessons.find(l => l.id === activeLessonId) ?? null
   const activeSubmission = activeLessonId ? submissionMap.get(activeLessonId) ?? null : null
 
-  const isLoading = authLoading || courseLoading || chaptersLoading || lessonsLoading ||
+  const isLoading = authLoading || courseLoading || chaptersLoading ||
+    (!!chapters && chapters.length > 0 && !lessonsByChapter && !lessonsError) ||
     (isAuthenticated && !isAdmin && enrollmentsLoading)
 
   const hasError = courseError || chaptersError || lessonsError
@@ -265,6 +276,67 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
     },
   })
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
+
+  function handleDragEndDnd(event: DragEndEvent) {
+    if (!isAdmin || !chapters || !lessonsByChapter) return
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const activeId = String(active.id)
+    const overId = String(over.id)
+
+    if (activeId.startsWith('chapter:') && overId.startsWith('chapter:')) {
+      const oldIndex = chapters.findIndex((c) => `chapter:${c.id}` === activeId)
+      const newIndex = chapters.findIndex((c) => `chapter:${c.id}` === overId)
+      if (oldIndex < 0 || newIndex < 0) return
+      handleReorderChapters(arrayMove(chapters, oldIndex, newIndex))
+      return
+    }
+
+    if (activeId.startsWith('lesson:') && overId.startsWith('lesson:')) {
+      const activeLessonId = activeId.replace('lesson:', '')
+      const overLessonId = overId.replace('lesson:', '')
+      let activeChapterId: string | null = null
+      let overChapterId: string | null = null
+      for (const c of chapters) {
+        const ls = lessonsByChapter.get(c.id) ?? []
+        if (ls.some((l) => l.id === activeLessonId)) activeChapterId = c.id
+        if (ls.some((l) => l.id === overLessonId)) overChapterId = c.id
+      }
+      if (!activeChapterId || !overChapterId) return
+      if (activeChapterId === overChapterId) {
+        const list = [...(lessonsByChapter.get(activeChapterId) ?? [])]
+        const oldIndex = list.findIndex((l) => l.id === activeLessonId)
+        const newIndex = list.findIndex((l) => l.id === overLessonId)
+        if (oldIndex < 0 || newIndex < 0) return
+        handleReorderLessons(activeChapterId, arrayMove(list, oldIndex, newIndex))
+      } else {
+        const overList = lessonsByChapter.get(overChapterId) ?? []
+        const newIndex = overList.findIndex((l) => l.id === overLessonId)
+        handleMoveLesson(activeLessonId, activeChapterId, overChapterId, newIndex >= 0 ? newIndex : overList.length)
+      }
+      return
+    }
+
+    if (activeId.startsWith('lesson:') && (overId.startsWith('chapter:') || overId.startsWith('end:'))) {
+      const activeLessonId = activeId.replace('lesson:', '')
+      const toChapterId = overId.startsWith('end:') ? overId.replace('end:', '') : overId.replace('chapter:', '')
+      let fromChapterId: string | null = null
+      for (const c of chapters) {
+        if ((lessonsByChapter.get(c.id) ?? []).some((l) => l.id === activeLessonId)) {
+          fromChapterId = c.id
+          break
+        }
+      }
+      if (!fromChapterId || fromChapterId === toChapterId) return
+      const toList = lessonsByChapter.get(toChapterId) ?? []
+      handleMoveLesson(activeLessonId, fromChapterId, toChapterId, toList.length)
+    }
+  }
+
   function handleMoveLesson(lessonId: string, fromChapterId: string, toChapterId: string, newIndex: number) {
     if (!lessonsByChapter) return
     const nextMap = new Map(lessonsByChapter)
@@ -347,7 +419,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
         lessonsByChapter,
         completedLessonIds,
         activeLessonId,
-        onSelectLesson: (lesson: Lesson) => setActiveLessonId(lesson.id),
+        onSelectLesson: (lesson: Lesson) => { setActiveLessonId(lesson.id); setAdminPanel(null) },
         progress,
         isAdmin: true,
         onReorderChapters: handleReorderChapters,
@@ -425,7 +497,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
       {!isLoading && !hasError && chapters && chapters.length > 0 && lessonsByChapter && (
         isEnrolled ? (
           <>
-            <div className="hidden lg:flex flex-1 min-h-0">
+            <div className="hidden lg:flex h-[calc(100vh-80px)]">
               <div className="w-[420px] shrink-0 bg-white border-r border-[#F97316]/20 flex flex-col">
                 <div className="flex-1 min-h-0 flex flex-col">
                   <LessonSidebar
@@ -435,7 +507,42 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                 </div>
               </div>
               <div className="flex-1 overflow-y-auto bg-white">
-                {profile && (() => {
+                {isAdmin && adminPanel && courseId && chapters ? (
+                  <>
+                    {(adminPanel.kind === 'chapter-create' || adminPanel.kind === 'chapter-edit') && (
+                      <div className="p-6 max-w-2xl mx-auto">
+                        <h2 className="text-lg font-semibold mb-4">
+                          {adminPanel.kind === 'chapter-create' ? 'Thêm chuyên đề' : 'Sửa chuyên đề'}
+                        </h2>
+                        <ChapterInlineForm
+                          courseId={courseId}
+                          chapter={adminPanel.kind === 'chapter-edit' ? adminPanel.chapter : null}
+                          nextOrderIndex={chapters.length}
+                          onSuccess={() => { invalidateCourseContent(); setAdminPanel(null) }}
+                          onCancel={() => setAdminPanel(null)}
+                        />
+                      </div>
+                    )}
+                    {(adminPanel.kind === 'lesson-create') && (
+                      <LessonInlineForm
+                        chapterId={adminPanel.chapterId}
+                        lesson={null}
+                        nextOrderIndex={(lessonsByChapter?.get(adminPanel.chapterId) ?? []).length}
+                        onSuccess={() => { invalidateCourseContent(); setAdminPanel(null) }}
+                        onCancel={() => setAdminPanel(null)}
+                      />
+                    )}
+                    {(adminPanel.kind === 'lesson-edit') && (
+                      <LessonInlineForm
+                        chapterId={adminPanel.chapterId}
+                        lesson={adminPanel.lesson}
+                        nextOrderIndex={(lessonsByChapter?.get(adminPanel.chapterId) ?? []).length}
+                        onSuccess={() => { invalidateCourseContent(); setAdminPanel(null) }}
+                        onCancel={() => setAdminPanel(null)}
+                      />
+                    )}
+                  </>
+                ) : profile && (() => {
                   const chapterId = isAdmin && activeLessonId
                     ? chapters?.find(c => (lessonsByChapter?.get(c.id) ?? []).some(l => l.id === activeLessonId))?.id ?? ''
                     : ''
@@ -454,8 +561,8 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
               </div>
             </div>
 
-            <div className="block lg:hidden">
-              <div className="px-4 pt-3 pb-2">
+            <div className="block lg:hidden h-[calc(100vh-80px)] flex flex-col">
+              <div className="px-4 pt-3 pb-2 shrink-0">
                 <Button
                   variant="outline"
                   onClick={() => setDrawerOpen(true)}
@@ -467,7 +574,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                 </Button>
               </div>
 
-              <div className="overflow-y-auto bg-white">
+              <div className="flex-1 overflow-y-auto bg-white">
                 {profile && (
                   <LessonContent
                     lesson={activeLesson}
@@ -661,9 +768,9 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
 
   if (isAuthenticated && isAdmin) {
     return (
+      <DndContext sensors={sensors} collisionDetection={closestCorners} onDragEnd={handleDragEndDnd}>
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
         {pageContent}
-        {adminFormDialog}
         <CourseFormDialog
           open={courseFormOpen}
           course={course ?? null}
@@ -695,6 +802,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
           </AlertDialogContent>
         </AlertDialog>
       </div>
+      </DndContext>
     )
   }
 
