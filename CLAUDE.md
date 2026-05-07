@@ -57,6 +57,23 @@ Follow the pre-delivery checklist (no emoji icons, cursor-pointer on clickables,
 - **Icons**: Lucide React
 - **Font**: "Be Vietnam Pro" (Vietnamese language support)
 
+### Viewport-filling layout rule (NO-SCROLL BUG — has occurred 6× times)
+
+**Root cause**: Any `border`, `padding`, or `margin` on a wrapper that uses `min-h-[calc(100vh-Xpx)]` causes 1 px overflow → body scrollbar.
+
+**Correct pattern** for `StudentLayout` (and any fixed-viewport shell):
+```
+root   → h-screen overflow-hidden flex flex-col
+header → h-20 shrink-0          (fixed 80px)
+main   → flex-1 min-h-0 overflow-y-auto   (fills remainder; scrolls inside, NOT at body)
+```
+
+**Rules**:
+1. **Never** put `border-t`, `padding`, or `margin` on `<main>` / layout wrappers that wrap viewport-height content. Let the page component own its own borders.
+2. **Never** use `min-h-screen` on the root of a full-screen layout — use `h-screen overflow-hidden` instead.
+3. Pages that need full-viewport two-column layout (like `CourseDetailPage`) still use `h-[calc(100vh-80px)]` or equivalently `h-full` (since `main` is now exactly `calc(100vh-80px)` via `flex-1`).
+4. Pages that need normal scrolling (course list, profile…) work naturally because `main` has `overflow-y-auto`.
+
 ### Styling conventions
 - Tailwind utility classes with CSS variables for theming (HSL format, defined in `src/index.css`)
 - Dark mode via class strategy

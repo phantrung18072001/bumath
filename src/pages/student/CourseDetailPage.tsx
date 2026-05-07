@@ -497,7 +497,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
       {!isLoading && !hasError && chapters && chapters.length > 0 && lessonsByChapter && (
         isEnrolled ? (
           <>
-            <div className="hidden lg:flex h-[calc(100vh-80px)]">
+            <div className="hidden lg:flex h-[calc(100vh-80px)] border-t border-border">
               <div className="w-[420px] shrink-0 bg-white border-r border-[#F97316]/20 flex flex-col h-full">
                 <div className="flex-1 min-h-0 flex flex-col">
                   <LessonSidebar
@@ -553,6 +553,8 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                       submission={activeSubmission}
                       userId={profile.id}
                       courseId={courseId!}
+                      isAdmin={isAdmin}
+                      courseGrade={course?.target_grade}
                       onEdit={isAdmin && activeLesson ? () => setAdminPanel({ kind: 'lesson-edit', chapterId, lesson: activeLesson }) : undefined}
                       onDelete={isAdmin && activeLesson ? () => setDeletingLesson({ chapterId, lesson: activeLesson }) : undefined}
                     />
@@ -561,7 +563,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
               </div>
             </div>
 
-            <div className="block lg:hidden h-[calc(100vh-80px)] flex flex-col">
+            <div className="block lg:hidden h-[calc(100vh-80px)] flex flex-col border-t border-border">
               <div className="px-4 pt-3 pb-2 shrink-0">
                 <Button
                   variant="outline"
@@ -582,6 +584,8 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                     submission={activeSubmission}
                     userId={profile.id}
                     courseId={courseId!}
+                    isAdmin={isAdmin}
+                    courseGrade={course?.target_grade}
                   />
                 )}
               </div>
@@ -609,7 +613,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
           </>
         ) : (
           <>
-            <div className="hidden lg:flex h-full">
+            <div className="hidden lg:flex h-[calc(100vh-80px)] border-t border-border">
               <div className="w-[340px] shrink-0 bg-white border-r border-[#F97316]/20">
                 <LessonSidebar
                   chapters={chapters}
@@ -658,7 +662,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
               </div>
             </div>
 
-            <div className="block lg:hidden">
+            <div className="block lg:hidden border-t border-border">
               <Tabs defaultValue="outline">
                 <TabsList className="w-full h-12 rounded-none border-b bg-transparent p-0 gap-0">
                   <TabsTrigger

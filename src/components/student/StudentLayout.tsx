@@ -18,7 +18,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white relative overflow-x-hidden isolate">
+    <div className="h-screen overflow-hidden flex flex-col bg-white relative isolate">
       {/* Floating math symbols background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 hidden" aria-hidden="true">
         {/* Row 1 — ~6% */}
@@ -129,7 +129,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
       </header>
 
       {/* Page content — remaining viewport height */}
-      <main className="min-h-[calc(100vh-80px)]">
+      <main className="flex-1 min-h-0 overflow-y-auto">
         {children}
       </main>
     </div>

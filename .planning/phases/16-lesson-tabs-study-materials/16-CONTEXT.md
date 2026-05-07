@@ -1,6 +1,6 @@
 # Phase 16: Lesson Tabs + Study Materials Library - Context
 
-**Gathered:** 2026-05-04
+**Gathered:** 2026-05-04 | **Updated:** 2026-05-07 (v2 — tab structure corrected)
 **Status:** Ready for planning
 
 <domain>
@@ -8,10 +8,10 @@
 
 Phase 16 delivers:
 
-1. **Lesson page tabs (no full reload)** — Trang xem bài học có 3 tab: "Bài giảng", "Chấm bài", "Tài liệu & Kiểm tra"; chuyển tab không reload trang (LESSON-01).
-2. **Preserve submission UX** — Tab "Chấm bài" chứa toàn bộ submission area + grading status như hiện tại trong `LessonContent` (LESSON-02) — refactor layout, không cắt tính năng.
-3. **Study materials (lesson-scoped)** — Tài liệu PDF gắn **theo từng bài học (`lesson_id`)**; admin upload trên luồng chỉnh sửa bài giảng; học sinh có quyền truy cập bài học (theo package/grade như video) mới xem/tải (MAT-01, bổ sung quyền theo thảo luận).
-4. **Tab "Tài liệu & Kiểm tra"** — Hiển thị tài liệu của **bài học đang chọn**; phần **đợt thi thử / mock exam** không triển khai trong phase này (Phase 18). LESSON-03 phần thi thử được coi là capability khác — không empty state marketing bắt buộc trong Phase 16.
+1. **Lesson page tabs (no full reload)** — Trang xem bài học có 3 tab: **"Bài giảng"**, **"Bài kiểm tra"**, **"Thảo luận"**; chuyển tab không reload trang (LESSON-01).
+2. **Study materials trong Tab 1** — Study materials (PDF/ảnh từ bảng `study_materials` mới, gắn `lesson_id`) hiển thị trong Tab 1 "Bài giảng"; admin upload inline trong cùng tab (MAT-01).
+3. **Preserve submission UX trong Tab 2** — Tab "Bài kiểm tra" chứa file `assignment_path` (đề thi/bài tập) + toàn bộ `SubmissionArea` + grading status (LESSON-02) — refactor layout, không cắt tính năng.
+4. **Tab 3 "Thảo luận" là placeholder** — Phase 16 chỉ tạo tab shell; Chat thật implement ở Phase 17 (LESSON-03 phần chat). Mock exam thuộc Phase 18.
 
 **Explicitly NOT in Phase 16**
 
@@ -32,8 +32,8 @@ Phase 16 delivers:
 - **D-01:** **Không** đồng bộ tab lên query URL — trạng thái tab chỉ dùng React state (local); URL giữ hành vi chọn bài như hiện tại.
 - **D-02:** Khi học sinh chọn **bài học khác** trong sidebar, **reset về tab 1** ("Bài giảng").
 
-### Tab 3 vs mock exam (LESSON-03)
-- **D-03:** Phase 16 **không** xây UI/link đợt thi thử; "thi thử" thuộc Phase 18. Tab 3 chỉ **tách UI** — đưa tài liệu (và placeholder tối thiểu nếu cần) vào tab; không bắt buộc section marketing "Sắp có" cho thi thử.
+### Tab 3 — Thảo luận (placeholder)
+- **D-03:** Tab 3 "Thảo luận" trong Phase 16 là **placeholder shell** — hiển thị tab nhưng nội dung chỉ là empty state "Tính năng sắp có" hoặc tương tự. Chat thật implement ở Phase 17 (slot vào đây). Không xây UI mock exam trong Phase 16.
 
 ### Scope: bài học vs landing
 - **D-04:** Phase 16 **chỉ** ngữ cảnh **trang bài học** (`CourseDetailPage` / tab). **Không** gồm trang tài liệu landing hoặc thư viện global trong phase này.
@@ -43,8 +43,21 @@ Phase 16 delivers:
 - **D-06:** Metadata upload gồm **category** (giữa kỳ, cuối kỳ, vào 10, HSG, chuyên toán) và **grade** (7/8/9) theo MAT-01; **row gắn `lesson_id`** (đã chọn trong thảo luận).
 - **D-07:** Trong tab bài học, danh sách tài liệu là **của đúng `lesson_id` đang active**. Ưu tiên **filter/lọc theo category** trong UI nếu nhiều file; **không bắt buộc** filter grade riêng trong tab (grade đã ngầm định qua khóa học/bài) — có thể lưu `grade` trên row phục vụ admin/report.
 
+### Tab content split (v2 — corrected 2026-05-07)
+- **D-11:** `assignment_path` (đề thi/bài tập) → **Tab 2 "Bài kiểm tra"** cùng `SubmissionArea`. Đây là file đề bài học sinh cần tải + nộp bài.
+- **D-11b:** Study materials (bảng `study_materials` mới, PDF/ảnh) → **Tab 1 "Bài giảng"**, hiển thị bên dưới video + mô tả.
+- **D-12:** Bài học không có `assignment_path` → **ẩn Tab 2 "Bài kiểm tra" hoàn toàn** (chỉ hiển thị Tab 1 + Tab 3).
+- **D-14:** `LessonProgressButton` đặt ở **cuối Tab 1** "Bài giảng".
+
+**Layout 3 tab (v2):**
+| Tab | Nội dung |
+|-----|----------|
+| Tab 1 — Bài giảng | Video + Mô tả + Study materials (PDF/ảnh, admin upload) + LessonProgressButton |
+| Tab 2 — Bài kiểm tra | File `assignment_path` (đề thi) + SubmissionArea _(ẩn nếu assignment_path = null)_ |
+| Tab 3 — Thảo luận | Placeholder (Phase 16); Chat thật Phase 17 |
+
 ### Admin upload
-- **D-08:** Luồng upload PDF + chọn category + grade: **trên trang/chỉnh sửa bài giảng phía admin** (cùng khu vực quản lý nội dung bài), không bắt buộc trang menu riêng `/quan-tri/tai-lieu` trong Phase 16.
+- **D-13 (v2):** Admin upload study materials **trong Tab 1 "Bài giảng"** — nút "Thêm tài liệu" + form upload inline hiển thị **chỉ khi `isAdmin`**. Học sinh thấy cùng danh sách tài liệu nhưng không có nút upload. Không thay đổi `LessonInlineForm`.
 
 ### Access / RLS (tài liệu gắn bài)
 - **D-09:** Tài liệu **gắn bài học**: chỉ học sinh **có quyền truy cập bài học đó** (cùng philosophy với package-grade / lesson access như Phase 14) — **không** áp dụng kiểu "mọi approved user" cho loại này.
@@ -75,7 +88,7 @@ Phase 16 delivers:
 ### Code integration (implement touchpoints)
 - `src/pages/student/CourseDetailPage.tsx` — layout chứa `LessonContent`; đã import `Tabs`; nơi gắn tab cấp trang + state `activeLessonId`
 - `src/components/student/LessonContent.tsx` — video, assignment links, `SubmissionArea`, `LessonProgressButton` — tách nội dung theo tab
-- `src/components/student/SubmissionArea.tsx` — giữ nguyên hành vi trong tab "Chấm bài"
+- `src/components/student/SubmissionArea.tsx` — giữ nguyên hành vi, chuyển vào Tab 2 "Bài kiểm tra"
 - `src/components/ui/tabs.tsx` — shadcn Tabs (không sửa tay primitive; compose từ app)
 
 ### Design
@@ -88,7 +101,7 @@ Phase 16 delivers:
 
 ### Reusable Assets
 - **shadcn `Tabs`** — đã dùng trong `CourseDetailPage.tsx`; reuse cho 3 tab bài học.
-- **`LessonContent`** — gom logic hiện tại; tách thành các vùng/tab: video + mô tả (Bài giảng); assignment + submission (Chấm bài); danh sách/tải tài liệu (Tài liệu & Kiểm tra).
+- **`LessonContent`** — refactor thành 3 vùng: (1) video + mô tả + study materials (Tab 1 "Bài giảng"); (2) assignment_path + SubmissionArea (Tab 2 "Bài kiểm tra"); (3) placeholder (Tab 3 "Thảo luận").
 - **`getAssignmentPublicUrls` / Storage patterns** — tham chiếu cho signed URL flow; bucket mới `study-materials` theo roadmap.
 - **Phase 14 lesson fetch** — `fetchLessonsForStudent` / `lessons_view`; tài liệu cần policy nhất quán với quyền xem bài.
 

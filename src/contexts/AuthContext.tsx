@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { Session, User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { Profile, AuthContextValue } from '@/types/auth'
+import { Loader2 } from 'lucide-react'
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
@@ -42,6 +43,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut()
+  }
+
+  if (loading) {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center gap-3 bg-white">
+        <img
+          src={`${import.meta.env.BASE_URL}bumathx.png`}
+          alt="BuMath"
+          className="h-14 w-14 rounded-2xl object-cover"
+        />
+        <Loader2 className="h-5 w-5 animate-spin text-primary" />
+      </div>
+    )
   }
 
   return (
