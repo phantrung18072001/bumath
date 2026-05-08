@@ -497,7 +497,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
       {!isLoading && !hasError && chapters && chapters.length > 0 && lessonsByChapter && (
         isEnrolled ? (
           <>
-            <div className="hidden lg:flex h-[calc(100vh-80px)] border-t border-border">
+            <div className="hidden lg:flex h-[calc(100vh-80px)] border-t border-border overflow-hidden">
               <div className="w-[420px] shrink-0 bg-white border-r border-[#F97316]/20 flex flex-col h-full">
                 <div className="flex-1 min-h-0 flex flex-col">
                   <LessonSidebar
@@ -563,7 +563,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
               </div>
             </div>
 
-            <div className="block lg:hidden h-[calc(100vh-80px)] flex flex-col border-t border-border">
+            <div className="block lg:hidden h-[calc(100vh-80px)] flex flex-col border-t border-border overflow-hidden">
               <div className="px-4 pt-3 pb-2 shrink-0">
                 <Button
                   variant="outline"

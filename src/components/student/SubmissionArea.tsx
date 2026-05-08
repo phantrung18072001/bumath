@@ -199,7 +199,7 @@ export default function SubmissionArea({
           </div>
         )}
 
-        {submission.status === 'graded' && submission.teacher_images && submission.teacher_images.length > 0 && (
+        {submission.status === 'graded' && (submission.teacher_images ?? []).filter(Boolean).length > 0 && (
           <div className="mt-4 space-y-2">
             <h4 className="font-semibold leading-relaxed">Hình ảnh phản hồi từ giáo viên</h4>
             <TeacherImages paths={submission.teacher_images} />
