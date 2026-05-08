@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { Lock, Pencil, Trash2, BookOpen, FileText, MessageCircle } from 'lucide-react'
+import { Lock, Pencil, Trash2, BookOpen, FileText } from 'lucide-react'
 import { getFileIcon } from '@/lib/file-icon'
 import { getAssignmentPublicUrls, parseAssignmentPaths, type Lesson } from '@/lib/api/lessons'
 import type { Submission } from '@/lib/api/submissions'
@@ -9,6 +9,7 @@ import type { StudyMaterialGrade } from '@/lib/api/study-materials'
 import LessonProgressButton from './LessonProgressButton'
 import SubmissionArea from './SubmissionArea'
 import StudyMaterialsList from './StudyMaterialsList'
+import ChatPanel from './ChatPanel'
 
 interface LessonContentProps {
   lesson: Lesson | null
@@ -142,14 +143,12 @@ export default function LessonContent({
               Bài kiểm tra
             </TabsTrigger>
           )}
-          {!isAdmin && (
-            <TabsTrigger
-              value="thao-luan"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none pb-3 font-medium text-sm text-muted-foreground"
-            >
-              Thảo luận
-            </TabsTrigger>
-          )}
+          <TabsTrigger
+            value="thao-luan"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none pb-3 font-medium text-sm text-muted-foreground"
+          >
+            Thảo luận
+          </TabsTrigger>
         </TabsList>
 
         {/* Tab 1 — Bài giảng: description + study materials + progress button */}
@@ -228,16 +227,10 @@ export default function LessonContent({
           </TabsContent>
         )}
 
-        {/* Tab 3 — Thảo luận (placeholder, student only) */}
-        {!isAdmin && (
-          <TabsContent value="thao-luan" className="px-4 md:px-8 py-6 mt-0">
-            <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
-              <MessageCircle className="h-10 w-10 text-muted-foreground/30" />
-              <p className="text-sm font-medium text-muted-foreground">Tính năng sắp có</p>
-              <p className="text-xs text-muted-foreground/60">Phần thảo luận đang được phát triển.</p>
-            </div>
-          </TabsContent>
-        )}
+        {/* Tab 3 — Thảo luận (all roles) */}
+        <TabsContent value="thao-luan" className="flex flex-col flex-1 min-h-0 mt-0 p-0">
+          <ChatPanel lessonId={lesson.id} />
+        </TabsContent>
       </Tabs>
     </div>
   )
