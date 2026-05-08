@@ -1,7 +1,8 @@
 ---
 phase: 17
 slug: in-lesson-chat
-status: draft
+status: approved
+reviewed_at: 2026-05-08
 shadcn_initialized: true
 preset: default / slate base / CSS variables
 created: 2026-05-08
