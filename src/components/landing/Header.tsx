@@ -76,7 +76,7 @@ const Header = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-9 px-3 text-sm gap-1.5">
                   <UserCircle className="h-4 w-4" />
-                  <span className="max-w-[100px] truncate">{profile?.full_name || 'Tài khoản'}</span>
+                  <span className="truncate">{profile?.full_name || 'Tài khoản'}</span>
                   <ChevronDown className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
@@ -187,8 +187,8 @@ const Header = () => {
                 </Link>
               )}
               {profile?.role === 'admin' && (
-                <Link to="/quan-tri/nguoi-dung" onClick={() => setMobileOpen(false)}>
-                  <Button variant="outline" className="w-full min-h-[48px] gap-1 mb-1" size="sm">
+                <Link to="/quan-tri/nguoi-dung" onClick={() => setMobileOpen(false)} >
+                  <Button variant="outline" className="w-full min-h-[48px] gap-1 mb-1 flex-1" size="sm">
                     <LayoutDashboard className="h-4 w-4" />
                     Trang quản lý
                   </Button>

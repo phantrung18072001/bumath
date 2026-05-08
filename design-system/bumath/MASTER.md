@@ -1,202 +1,211 @@
-# Design System Master File
-
-> **LOGIC:** When building a specific page, first check `design-system/pages/[page-name].md`.
-> If that file exists, its rules **override** this Master file.
-> If not, strictly follow the rules below.
+# BuMath Design System Rules
+> **Global Source of Truth** for all UI/UX decisions across the project.
+> Generated via `ui-ux-pro-max` skill · Last updated: 2026-05-09
 
 ---
 
-**Project:** BuMath
-**Generated:** 2026-05-01 17:55:58
-**Category:** Educational App
+## 🎨 Brand Identity
+
+**Product:** BuMath — EdTech learning platform for K-12 math  
+**Brand voice:** Warm, encouraging, premium — not childish, not corporate  
+**Primary accent:** `#F97316` (Orange 500) — used for CTAs, highlights, active states  
+**Design philosophy:** Clean white surfaces + bold orange accents + subtle depth
 
 ---
 
-## Global Rules
+## 🖌 Color Palette
 
-### Color Palette
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `brand-orange` | `#F97316` | Primary CTA, active tabs, send buttons, role badges |
+| `brand-orange-dark` | `#EA6C0C` | Hover state of orange elements |
+| `brand-orange-light` | `#FED7AA` | Backgrounds, subtle tints |
+| `brand-orange-faint` | `#FFF7ED` | Panel backgrounds, card tints |
+| `text-primary` | `#1E293B` (slate-800) | Main headings, prominent labels |
+| `text-secondary` | `#475569` (slate-600) | Body text, descriptions |
+| `text-muted` | `#94A3B8` (slate-400) | Timestamps, hints, placeholders |
+| `surface-white` | `#FFFFFF` | Cards, message bubbles |
+| `surface-subtle` | `#F8FAFC` (slate-50) | Panel backgrounds |
+| `border-default` | `#E2E8F0` (slate-200) | Card borders, dividers |
+| `border-active` | `#FED7AA` (orange-200) | Focused/active element borders |
 
-| Role | Hex | CSS Variable |
-|------|-----|--------------|
-| Primary | `#F97316` | `--color-primary` |
-| Secondary | `#2DD4BF` | `--color-secondary` |
-| CTA/Accent | `#F97316` | `--color-cta` |
-| Background | `#F3F0ED` | `--color-background` |
-| Text | `#92400E` | `--color-text` |
-
-**Color Notes:** Progress orange + achievement orange
-
-### Typography
-
-- **Heading Font:** Baloo 2
-- **Body Font:** Comic Neue
-- **Mood:** kids, education, playful, friendly, colorful, learning
-- **Google Fonts:** [Baloo 2 + Comic Neue](https://fonts.google.com/share?selection.family=Baloo+2:wght@400;500;600;700|Comic+Neue:wght@300;400;700)
-
-**CSS Import:**
-```css
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=Comic+Neue:wght@300;400;700&display=swap');
-```
-
-### Spacing Variables
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--space-xs` | `4px` / `0.25rem` | Tight gaps |
-| `--space-sm` | `8px` / `0.5rem` | Icon gaps, inline spacing |
-| `--space-md` | `16px` / `1rem` | Standard padding |
-| `--space-lg` | `24px` / `1.5rem` | Section padding |
-| `--space-xl` | `32px` / `2rem` | Large gaps |
-| `--space-2xl` | `48px` / `3rem` | Section margins |
-| `--space-3xl` | `64px` / `4rem` | Hero padding |
-
-### Shadow Depths
-
-| Level | Value | Usage |
-|-------|-------|-------|
-| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)` | Subtle lift |
-| `--shadow-md` | `0 4px 6px rgba(0,0,0,0.1)` | Cards, buttons |
-| `--shadow-lg` | `0 10px 15px rgba(0,0,0,0.1)` | Modals, dropdowns |
-| `--shadow-xl` | `0 20px 25px rgba(0,0,0,0.15)` | Hero images, featured cards |
+### ❌ Never use
+- Raw Tailwind defaults like `bg-primary` (maps to teal in shadcn) — always use explicit orange
+- `text-muted-foreground` for anything important — contrast is too low
+- Teal/green palettes (shadcn defaults conflict with brand)
 
 ---
 
-## Component Specs
+## 🔤 Typography
 
-### Buttons
+**Font stack (already imported in index.css):**
+- `Be Vietnam Pro` — All UI text (primary font)
+- `Baloo 2` — Display headings, hero sections
+- `Comic Neue` — Decorative/playful contexts only
 
-```css
-/* Primary Button */
-.btn-primary {
-  background: #F97316;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
-  cursor: pointer;
-}
+**Scale:**
+| Use | Class | Notes |
+|-----|-------|-------|
+| Page title | `text-2xl font-bold` | Baloo 2 preferred |
+| Section heading | `text-lg font-semibold` | Be Vietnam Pro |
+| Card title | `text-base font-semibold` | |
+| Body | `text-sm` | leading-relaxed |
+| Caption / meta | `text-xs text-slate-400` | |
+| Micro label | `text-[11px]` | timestamps, badges |
 
-.btn-primary:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
+---
 
-/* Secondary Button */
-.btn-secondary {
-  background: transparent;
-  color: #F97316;
-  border: 2px solid #F97316;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
-  cursor: pointer;
-}
-```
+## 🧱 Component Patterns
 
 ### Cards
-
-```css
-.card {
-  background: #F3F0ED;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: var(--shadow-md);
-  transition: all 200ms ease;
-  cursor: pointer;
-}
-
-.card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
+```tsx
+// Standard card — white surface with subtle orange shadow
+<div className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow duration-200">
 ```
 
-### Inputs
-
-```css
-.input {
-  padding: 12px 16px;
-  border: 1px solid #E2E8F0;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 200ms ease;
-}
-
-.input:focus {
-  border-color: #F97316;
-  outline: none;
-  box-shadow: 0 0 0 3px #F9731620;
-}
+```tsx
+// Orange-accented card (featured, staff messages)
+<div className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200/60 rounded-2xl shadow-sm">
 ```
 
-### Modals
+### Buttons
+```tsx
+// Primary CTA — always orange
+<button className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl font-medium transition-colors duration-150 cursor-pointer">
 
-```css
-.modal-overlay {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
+// Ghost / secondary
+<button className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl font-medium transition-colors duration-150 cursor-pointer">
 
-.modal {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: var(--shadow-xl);
-  max-width: 500px;
-  width: 90%;
-}
+// Destructive
+<button className="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm transition-colors duration-150 cursor-pointer">
+```
+
+### Role Badges
+```tsx
+// Teacher / Admin role chip
+<span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-orange-100 text-orange-700">
+  Giảng viên
+</span>
+```
+
+### Avatars
+```tsx
+// Staff avatar — orange gradient
+<div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 text-white ring-2 ring-orange-200 flex items-center justify-center text-xs font-bold">
+// Student avatar — slate gradient  
+<div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 text-slate-600 ring-2 ring-slate-100 flex items-center justify-center text-xs font-bold">
+```
+
+### Input Focus Ring
+```tsx
+// Orange focus ring — use on all inputs
+className="focus:border-orange-300 focus:ring-1 focus:ring-orange-200/50"
+```
+
+### Live / Online Indicator
+```tsx
+<span className="relative flex h-2 w-2">
+  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+</span>
 ```
 
 ---
 
-## Style Guidelines
+## ✨ Micro-interactions & Animation
 
-**Style:** Claymorphism
+| Situation | Rule |
+|-----------|------|
+| Cards on hover | `hover:shadow-md hover:-translate-y-0.5 transition-all duration-200` |
+| Buttons on click | `active:scale-95 transition-transform duration-100` |
+| New items appearing | `animate-in fade-in-0 slide-in-from-bottom-1 duration-200` |
+| Sending/loading | `animate-spin` on Loader2 icon only |
+| State transitions | Always 150–200ms, `ease-out` |
+| Layout shifts on hover | ❌ FORBIDDEN — never use scale on layout-affecting elements |
 
-**Keywords:** Soft 3D, chunky, playful, toy-like, bubbly, thick borders (3-4px), double shadows, rounded (16-24px)
-
-**Best For:** Educational apps, children's apps, SaaS platforms, creative tools, fun-focused, onboarding, casual games
-
-**Key Effects:** Inner+outer shadows (subtle, no hard lines), soft press (200ms ease-out), fluffy elements, smooth transitions
-
-### Page Pattern
-
-**Pattern Name:** Feature-Rich Showcase
-
-- **CTA Placement:** Above fold
-- **Section Order:** Hero > Features > CTA
-
----
-
-## Anti-Patterns (Do NOT Use)
-
-- ❌ Dark modes
-- ❌ Complex jargon
-
-### Additional Forbidden Patterns
-
-- ❌ **Emojis as icons** — Use SVG icons (Heroicons, Lucide, Simple Icons)
-- ❌ **Missing cursor:pointer** — All clickable elements must have cursor:pointer
-- ❌ **Layout-shifting hovers** — Avoid scale transforms that shift layout
-- ❌ **Low contrast text** — Maintain 4.5:1 minimum contrast ratio
-- ❌ **Instant state changes** — Always use transitions (150-300ms)
-- ❌ **Invisible focus states** — Focus states must be visible for a11y
+### `prefers-reduced-motion` rule
+```css
+@media (prefers-reduced-motion: reduce) {
+  /* All animate-* classes should be suppressed */
+}
+```
+Add `.bm-clay-card-student` pattern already in index.css as reference.
 
 ---
 
-## Pre-Delivery Checklist
+## 📐 Spacing & Layout
 
-Before delivering any UI code, verify:
+| Token | Value | Use for |
+|-------|-------|---------|
+| Panel padding | `px-4 py-3` | Headers, footers |
+| Content padding | `px-4 md:px-5 py-5` | Scrollable message areas |
+| Card padding | `p-4` or `p-5` | Content cards |
+| Gap between items | `space-y-4` | Message lists, form groups |
+| Icon gap | `gap-2` | Icon + label |
+| Radius sm | `rounded-lg` | Badges, chips |
+| Radius md | `rounded-xl` | Buttons, inputs |
+| Radius lg | `rounded-2xl` | Cards, panels, bubbles |
+| Radius full | `rounded-full` | Avatars, pills |
 
-- [ ] No emojis used as icons (use SVG instead)
-- [ ] All icons from consistent icon set (Heroicons/Lucide)
-- [ ] `cursor-pointer` on all clickable elements
-- [ ] Hover states with smooth transitions (150-300ms)
-- [ ] Light mode: text contrast 4.5:1 minimum
-- [ ] Focus states visible for keyboard navigation
-- [ ] `prefers-reduced-motion` respected
-- [ ] Responsive: 375px, 768px, 1024px, 1440px
-- [ ] No content hidden behind fixed navbars
-- [ ] No horizontal scroll on mobile
+---
+
+## ♿ Accessibility Rules
+
+- [ ] All interactive elements have `cursor-pointer`
+- [ ] All buttons have `aria-label` when icon-only
+- [ ] Focus states visible: always include focus-visible ring
+- [ ] Color is **never** the sole indicator of state
+- [ ] `role="log" aria-live="polite"` on chat/notification feeds
+- [ ] Minimum touch target: `min-h-[44px] min-w-[44px]` on mobile
+- [ ] Contrast ratio: 4.5:1 minimum (text), 3:1 (UI components)
+
+---
+
+## 📱 Responsive Breakpoints
+
+| Breakpoint | Behavior |
+|-----------|----------|
+| `< 640px` | Stack layouts, hide secondary hints (sm:block → hidden) |
+| `640–1024px` | Tablet layout |
+| `> 1024px` | Full desktop layout with sidebars |
+
+Pattern: mobile-first. Use `md:` / `lg:` for enhancements.
+
+---
+
+## 🚫 Anti-patterns (Project-wide)
+
+| ❌ Don't | ✅ Do instead |
+|---------|-------------|
+| `text-muted-foreground` for body text | `text-slate-600` or `text-slate-500` |
+| `bg-primary` / `text-primary` | `bg-orange-500` / `text-orange-600` |
+| Emojis as UI icons | Lucide icons (`lucide-react`) |
+| `border-l-2 border-l-[#F97316]` inline | Use Tailwind `border-l-2 border-orange-400` |
+| `hover:scale-105` on cards | `hover:-translate-y-0.5` (subtle lift) |
+| More than 500ms transitions | Keep 150–200ms |
+| Showing delete without confirm | Always use inline confirm pattern |
+| Empty state with just text | Include icon + descriptive sub-text |
+| Skeleton as single wide bar | Match real content shape (avatar + lines) |
+
+---
+
+## 🗂 Page-specific Overrides
+
+Check `design-system/bumath/pages/[page].md` before implementing any page.  
+Currently defined:
+- `design-system/bumath/pages/chat.md` — Chat panel overrides
+
+---
+
+## Pre-delivery Checklist
+
+Before submitting any UI:
+- [ ] Uses `#F97316` / `orange-*` Tailwind classes — not shadcn `primary`
+- [ ] All icons from `lucide-react`, consistent 16–20px size
+- [ ] `cursor-pointer` on every clickable element
+- [ ] Hover + focus states defined
+- [ ] Transitions: 150–200ms ease
+- [ ] Empty states have icon + primary + secondary text
+- [ ] Loading skeletons match real content layout
+- [ ] Mobile tested (no horizontal overflow, min touch targets)
+- [ ] `prefers-reduced-motion` considered

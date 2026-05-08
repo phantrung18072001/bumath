@@ -100,28 +100,67 @@ export default function ChatPanel({ lessonId }: ChatPanelProps) {
   }, {})
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 h-full">
+    <div className="flex flex-col flex-1 min-h-0 h-full bg-slate-50/50">
+      {/* Panel header */}
+      <div className="shrink-0 flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-white">
+        <div className="flex items-center gap-2">
+          <MessageCircle className="h-4 w-4 text-orange-500" />
+          <span className="text-sm font-semibold text-slate-800">Thảo luận bài học</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+          </span>
+          <span className="text-[11px] text-slate-400">Trực tuyến</span>
+        </div>
+      </div>
+
+      {/* Messages */}
       <ScrollArea className="flex-1 min-h-0">
-        <div role="log" aria-live="polite" className="px-4 md:px-6 py-4 space-y-3">
+        <div role="log" aria-live="polite" className="px-4 md:px-5 py-5 space-y-4">
           {isLoading ? (
-            <div className="space-y-3" aria-label="Đang tải tin nhắn…">
-              <Skeleton className="h-12 w-3/4 rounded-lg" />
-              <Skeleton className="h-12 w-2/3 rounded-lg" />
-              <Skeleton className="h-12 w-3/5 rounded-lg" />
+            <div className="space-y-4" aria-label="Đang tải tin nhắn…">
+              {[0.75, 0.6, 0.7].map((w, i) => (
+                <div key={i} className="flex gap-3">
+                  <Skeleton className="h-8 w-8 rounded-full shrink-0" />
+                  <div className="flex-1 space-y-1.5">
+                    <Skeleton className="h-3 w-24 rounded" />
+                    <Skeleton className={`h-10 rounded-2xl`} style={{ width: `${w * 100}%` }} />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : isError ? (
-            <p className="text-sm text-destructive text-center py-8">
-              Không tải được tin nhắn. Thử lại sau.
-            </p>
+            <div className="flex flex-col items-center justify-center py-12 gap-2 text-center">
+              <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
+                <MessageCircle className="h-6 w-6 text-red-400" />
+              </div>
+              <p className="text-sm font-medium text-slate-600">Không tải được tin nhắn</p>
+              <p className="text-xs text-slate-400">Kiểm tra kết nối và thử lại</p>
+            </div>
           ) : messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
-              <MessageCircle className="h-10 w-10 text-muted-foreground/30" />
-              <p className="text-sm font-medium text-muted-foreground">Chưa có câu hỏi nào</p>
-              <p className="text-xs text-muted-foreground/60">Hãy đặt câu hỏi cho giảng viên về bài học này.</p>
+            <div className="flex flex-col items-center justify-center py-16 gap-4 text-center select-none">
+              <div className="relative">
+                <div className="w-16 h-16 rounded-2xl bg-orange-50 border-2 border-orange-100 flex items-center justify-center">
+                  <MessageCircle className="h-8 w-8 text-orange-400" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center">
+                  <span className="text-white text-[10px] font-bold">?</span>
+                </div>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-700">Chưa có câu hỏi nào</p>
+                <p className="text-xs text-slate-400 mt-1 max-w-[200px] mx-auto leading-relaxed">
+                  {isStaff
+                    ? 'Học sinh chưa đặt câu hỏi nào cho bài học này.'
+                    : 'Hãy đặt câu hỏi đầu tiên cho giảng viên về bài học này.'}
+                </p>
+              </div>
             </div>
           ) : (
             roots.map(root => (
-              <div key={root.id} className="space-y-2">
+              <div key={root.id} className="space-y-3">
                 <ChatMessage message={root} viewerRole={role} lessonId={lessonId} />
                 {(repliesByParent[root.id] ?? []).map(reply => (
                   <ChatMessage key={reply.id} message={reply} viewerRole={role} isReply lessonId={lessonId} />
@@ -132,6 +171,7 @@ export default function ChatPanel({ lessonId }: ChatPanelProps) {
           <div ref={bottomRef} />
         </div>
       </ScrollArea>
+
       <ChatInput
         onSend={handleSend}
         placeholder={isStaff ? 'Trả lời câu hỏi của học sinh…' : 'Đặt câu hỏi về bài học này…'}
