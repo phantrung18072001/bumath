@@ -117,7 +117,11 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
   2. Giảng viên/admin vào cùng bài học, thấy câu hỏi và có thể reply — học sinh thấy reply trong real-time
   3. Chat tab hiển thị badge số tin nhắn chưa đọc (vd: "Chat (2)") khi có câu hỏi mới
   4. Chuyển sang bài học khác và quay lại không tạo ra duplicate messages hoặc orphaned subscriptions
-**Plans**: TBD
+**Plans**: 4 plans
+- [ ] 17-01-PLAN.md — DB foundation: lesson_chat_messages + lesson_chat_reads tables, RLS policies, delete_chat_message + get_teacher_unread_chat_count RPCs, REPLICA IDENTITY FULL
+- [ ] 17-02-PLAN.md — API contract (src/lib/api/lesson-chat.ts) + Wave 0 test scaffolds (ChatPanel, ChatMessage, ChatInput, BellNotification chat-unread stubs)
+- [ ] 17-03-PLAN.md — ChatMessage + ChatInput + ChatPanel components; integrate into LessonContent.tsx Tab 3 (remove !isAdmin guards); activate component tests
+- [ ] 17-04-PLAN.md — Extend BellNotification.tsx with merged graded+chat unread badge; activate chat-unread tests
 **UI hint**: yes
 
 **⚠️ Realtime:** Mọi `supabase.channel().subscribe()` PHẢI có cleanup `return () => supabase.removeChannel(channel)`. Chỉ mở channel khi Chat tab active (lazy-open). Deduplicate messages bằng UUID. Test với React StrictMode bật.
@@ -157,6 +161,16 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
 
 **Note:** VideoPlayer abstraction KHÔNG xóa YouTube — chỉ wrap nó. School Navigator dùng static constants map, không cần DB.
 
+### Phase 20: Thay đổi UI/UX: Landing page hiện đại theo phong cách AI EdTech SaaS
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 19
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 20 to break down)
+
 ---
 
 ## Progress
@@ -166,6 +180,6 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
 | 14. Pricing + Access Control | 6/6 | ✅ Complete | 8dbc495, 1b1eb04, e14c7e9, 14154f6, 86040f9 |
 | 15. Admin UX + Audit | 0/? | Not started | - |
 | 16. Lesson Tabs + Study Materials | 0/? | Not started | - |
-| 17. In-Lesson Chat | 0/? | Not started | - |
+| 17. In-Lesson Chat | 0/4 | Planned | - |
 | 18. Mock Exam System | 0/? | Not started | - |
 | 19. Landing Page + Navigator + Video | 0/? | Not started | - |
