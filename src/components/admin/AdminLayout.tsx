@@ -3,6 +3,7 @@ import { Users, BookOpen, ClipboardList, Package } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
 import type { ReactNode } from 'react'
+import MathBackground from '@/components/shared/MathBackground'
 
 type NavItem = {
   label: string
@@ -27,7 +28,8 @@ export default function AdminLayout({ children, fullBleed = false }: { children:
   const visibleItems = navItems.filter((item) => !item.adminOnly || isAdmin)
 
   return (
-    <div className={cn('flex app-admin bg-gradient-to-br from-primary/5 via-background to-secondary/20', fullBleed ? 'h-[calc(100vh-80px)] overflow-hidden' : 'min-h-[calc(100vh-80px)]')}>
+    <div className={cn('flex app-admin bg-gradient-to-br from-primary/5 via-background to-secondary/20 relative isolate', fullBleed ? 'h-[calc(100vh-80px)] overflow-hidden' : 'min-h-[calc(100vh-80px)]')}>
+      <MathBackground />
       {/* Sidebar — hidden on full-bleed pages (e.g. course detail) */}
       {!fullBleed && (
         <aside className="w-60 shrink-0 border-r border-white/30 bg-white/80 backdrop-blur-sm overflow-y-auto">
