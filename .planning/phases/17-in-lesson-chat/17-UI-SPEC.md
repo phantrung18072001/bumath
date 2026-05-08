@@ -198,7 +198,7 @@ Note: Tab 3 is visible to both students and teachers/admins. The `!isAdmin` guar
 | Has messages | Messages loaded | Scrollable `ChatMessage` list |
 | Sending | Send in flight | Send button shows `Loader2` spinner 16px, `animate-spin`; input `pointer-events-none` |
 | Send error | Supabase error | Toast (Sonner) — error variant |
-| Delete confirm | Teacher clicks Trash2 | Inline confirmation row replaces delete icon: "Xoá?" + "Xoá" (destructive) + "Huỷ" buttons — NO modal dialog |
+| Delete confirm | Teacher clicks Trash2 | Inline confirmation row replaces delete icon: "Xoá tin nhắn này?" + "Xoá" (destructive) + "Giữ lại" buttons — NO modal dialog |
 
 ---
 
@@ -214,7 +214,7 @@ Note: Tab 3 is visible to both students and teachers/admins. The `!isAdmin` guar
 | Input placeholder (teacher/admin) | "Trả lời câu hỏi của học sinh…" |
 | Error state (send fail) | "Không gửi được tin nhắn. Kiểm tra kết nối và thử lại." |
 | Error state (load fail) | "Không tải được tin nhắn. Thử lại sau." |
-| Delete inline confirm | "Xoá tin nhắn này?" → "Xoá" (destructive red) + "Huỷ" |
+| Delete inline confirm | "Xoá tin nhắn này?" → "Xoá" (destructive red) + "Giữ lại" |
 | Tab trigger | "Thảo luận" (existing — no change) |
 | Tab trigger with unread | "Thảo luận (N)" via Badge component overlay — not changing tab text |
 | Teacher badge in message | "• Giảng viên" suffix after sender name |
