@@ -23,7 +23,7 @@ created: 2026-05-08
 | Student: `CoursesPage`, `CataloguePage`, `CourseDetailPage`, `ProfilePage`, `StudentLayout` | Landing page `/` — do NOT touch |
 | Admin: `CoursesPage`, `UsersPage`, `GradingPage`, `SubmissionsPage`, `PackagesPage`, admin layout/sidebar | New features, API changes, route changes |
 | Component-level: cards, buttons, badges, progress bars, inputs, navigation active states, LessonSidebar | `src/components/ui/*.tsx` shadcn base files — className overrides ONLY |
-| CSS: `src/index.css` custom classes and `:root` CSS variables | Page-level backgrounds (`bg-[#F0FDFA]`, `bg-background`, layout wrappers) |
+| CSS: `src/index.css` custom classes and `:root` CSS variables | Landing page `/` backgrounds |
 
 ---
 
@@ -58,21 +58,32 @@ created: 2026-05-08
 | Success | `#22C55E` | `green-500` | "Đã đăng ký" (enrolled), graded status — keep current green badges |
 
 > **60 / 30 / 10 split:**
-> - 60% Dominant: page backgrounds (LOCKED — not modified), card surfaces (`bg-white/80`)
+> - 60% Dominant: page backgrounds (gradient `from-primary/5 via-background to-secondary/20`), card surfaces (`bg-white/80`)
 > - 30% Secondary: sidebar, table header rows, section labels, muted areas
 > - 10% Accent: indigo on interactive elements; cyan **only** on enrolled badge and stat numbers
 
-### Background Consistency Lock (D-05, D-06 — CRITICAL)
+### Background Rule — Login-Style Gradient (replaces D-05/D-06 lock)
+
+All student and admin screens use the same gradient background pattern as the login page:
 
 ```
-DO NOT modify any of these in any file:
-  bg-[#F0FDFA]          ← student page background (if present)
-  bg-background          ← CSS var background
-  bg-white               ← StudentLayout wrapper (h-screen)
-  Any layout wrapper background class
+bg-gradient-to-br from-primary/5 via-background to-secondary/20
 ```
 
-Only these surfaces change: cards, buttons, badges, progress bars, inputs, nav active states.
+After the CSS var update, this resolves to: `from-indigo/5 via-white to-purple/20` — a subtle, premium AI SaaS wash.
+
+**Applies to:**
+- `StudentLayout` wrapper (`h-screen` root div)
+- Admin layout wrapper
+- All page-level containers that currently have `bg-[#F0FDFA]` or `bg-background`
+
+**Replace:**
+```
+bg-[#F0FDFA]        →  bg-gradient-to-br from-primary/5 via-background to-secondary/20
+bg-background        →  bg-gradient-to-br from-primary/5 via-background to-secondary/20
+```
+
+**Do NOT touch:** `src/pages/Index.tsx` (landing page) — its background is independent and must not change.
 
 ### CSS Variable Updates Required in `src/index.css`
 
@@ -497,7 +508,7 @@ All changes must hold at:
 
 | Screen | Changes Required |
 |--------|-----------------|
-| `StudentLayout.tsx` | CSS var update propagates `text-primary` active states to indigo automatically. No file changes needed unless orange hardcoded values found. |
+| `StudentLayout.tsx` | **Background:** replace `bg-white` (h-screen wrapper) → `bg-gradient-to-br from-primary/5 via-background to-secondary/20`. CSS var update propagates `text-primary` active states to indigo automatically. |
 | `CoursesPage.tsx` | h1: gradient text. Cards: `bm-clay-card-student` → `bm-glass-card`. Progress: `bm-progress-teal` → `bm-progress-indigo`, `bg-[#FFEDD5]` → `bg-indigo-100`. Empty icon: `text-[#F97316]` → `text-indigo-400`. CTA button: `bm-btn-cta` (inherits gradient after CSS update). Heading color: `text-[#92400E]` → gradient. |
 | `CataloguePage.tsx` | h1: gradient text. Cards: glassmorphism. Search input: remove `border-[#F97316]` override. Filter pills: `bg-[#F97316]` → `bg-indigo-600`. Empty icons: `text-[#F97316]` → `text-indigo-400`. Heading colors: `text-[#92400E]` → `text-[#0F172A]`. CTA btn: update class. |
 | `CourseDetailPage.tsx` | Course title area: gradient text on course heading. Card/panel: glassmorphism. Badge and button colors: via CSS var propagation. Locked content indication: indigo lock icon. |
@@ -521,12 +532,15 @@ All changes must hold at:
 The following changes to `src/index.css` are the complete set:
 
 1. **Update `:root` CSS variables** — `--primary`, `--ring`, `--sidebar-primary`, `--sidebar-ring`, `--bm-primary`, `--bm-cta`, `--bm-border` to indigo values
-2. **Replace `.bm-clay-card-student`** — keep the selector, replace the content with glassmorphism properties (OR keep old + add new `.bm-glass-card`; prefer keeping old for any edge case backward compat and using `bm-glass-card` in JSX)
-3. **Update `.bm-btn-cta`** — gradient `from #4F46E5 to #7C3AED`
-4. **Add `.bm-progress-indigo`** — indigo fill override
-5. **Add `.bm-glass-card`** — new glassmorphism card class with reduced-motion support
-6. **Keep `.bm-clay-card`** — NOT changed (used in landing, out of scope)
-7. **Keep `.bm-float-symbol-light`** — float symbols div is `hidden` class in StudentLayout; no visible impact
+2. **Update `StudentLayout` root wrapper** — `bg-white` (h-screen) → `bg-gradient-to-br from-primary/5 via-background to-secondary/20`
+3. **Update Admin layout root wrapper** — same gradient: `bg-gradient-to-br from-primary/5 via-background to-secondary/20`
+4. **Replace `bg-[#F0FDFA]`** anywhere it appears in student pages → use gradient (usually removed entirely since the layout wrapper sets it)
+5. **Replace `.bm-clay-card-student`** — keep the selector, replace the content with glassmorphism properties (OR keep old + add new `.bm-glass-card`; prefer keeping old for any edge case backward compat and using `bm-glass-card` in JSX)
+6. **Update `.bm-btn-cta`** — gradient `from #4F46E5 to #7C3AED`
+7. **Add `.bm-progress-indigo`** — indigo fill override
+8. **Add `.bm-glass-card`** — new glassmorphism card class with reduced-motion support
+9. **Keep `.bm-clay-card`** — NOT changed (used in landing, out of scope)
+10. **Keep `.bm-float-symbol-light`** — float symbols div is `hidden` class in StudentLayout; no visible impact
 
 ---
 
@@ -563,7 +577,7 @@ Do NOT bundle student + admin into one task. Separate audit passes produce separ
 - [x] Dimension 5 Spacing: PASS
 - [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** approved 2026-05-08
+**Approval:** approved 2026-05-08 (revised: background rule updated from lock → login gradient pattern)
 
 ---
 
