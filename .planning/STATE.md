@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Platform Expansion
 status: unknown
-stopped_at: Completed 17-in-lesson-chat-01-PLAN.md
-last_updated: "2026-05-08T16:30:14.202Z"
+stopped_at: Completed 17-02-PLAN.md
+last_updated: "2026-05-08T16:30:27.011Z"
 progress:
   total_phases: 7
   completed_phases: 2
@@ -75,6 +75,7 @@ Plan: 1 of 4
 | Phase 13 P03 | 8min | 2 tasks | 2 files |
 | Phase 13-student-pages P02 | 251 | 2 tasks | 2 files |
 | Phase 17-in-lesson-chat P01 | 2m 23s | 3 tasks | 1 files |
+| Phase 17 P02 | 3min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -159,6 +160,8 @@ Recent decisions affecting current work:
 - [Phase 17-in-lesson-chat]: No UPDATE/DELETE RLS policies on lesson_chat_messages — soft-delete exclusively via SECURITY DEFINER RPC delete_chat_message
 - [Phase 17-in-lesson-chat]: REPLICA IDENTITY FULL on lesson_chat_messages — required for Supabase Realtime UPDATE/DELETE to deliver full old row for client state reconciliation
 - [Phase 17-in-lesson-chat]: get_teacher_unread_chat_count uses per-lesson read_at from lesson_chat_reads with epoch fallback — avoids NULL edge case for never-read lessons
+- [Phase 17-02]: Placeholder component stubs (ChatPanel/ChatMessage/ChatInput.tsx) required — Vite resolves dynamic imports at transform time even inside it.skip; stubs prevent ReferenceError (Phase 05 precedent: CataloguePage.tsx stub)
+- [Phase 17-02]: it.skip used (not it.todo) for Wave 0 stubs — allows dynamic import() pattern with concrete expect(Component).toBeDefined() assertions; Plan 03 switches to it + fills render
 
 ### Pending Todos
 
@@ -173,6 +176,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-08T16:30:03.972Z
-Stopped at: Completed 17-in-lesson-chat-01-PLAN.md
+Last session: 2026-05-08T16:30:27.008Z
+Stopped at: Completed 17-02-PLAN.md
 Resume file: None
