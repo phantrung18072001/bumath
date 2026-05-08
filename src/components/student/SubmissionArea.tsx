@@ -4,7 +4,7 @@ import { compressImage, uploadSubmission, resubmitSubmission, getSubmissionSigne
 import type { Submission } from '@/lib/api/submissions'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Camera, Loader2, X } from 'lucide-react'
+import { Camera, Loader2, X, ImageIcon, MessageSquare } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface SubmissionAreaProps {
@@ -156,52 +156,62 @@ export default function SubmissionArea({
     </div>
   )
 
+  const LABEL = 'text-[11px] font-semibold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5'
+
   if (submission) {
     return (
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold">Nộp bài làm</span>
-          {submission.status === 'submitted' && (
-            <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">Đã nộp (đang chờ chấm)</Badge>
+      <div className="space-y-4">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <p className={LABEL}>
+              <Camera className="h-3.5 w-3.5" />
+              Nộp bài làm
+            </p>
+            {submission.status === 'submitted' && (
+              <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">Đã nộp (đang chờ chấm)</Badge>
+            )}
+            {submission.status === 'graded' && (
+              <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Đã chấm</Badge>
+            )}
+          </div>
+
+          {submittedImageUrls.length > 0 && !resubmitMode && (
+            <div className="flex flex-wrap gap-3">
+              {submittedImageUrls.map((url, i) => (
+                <img
+                  key={i}
+                  src={url}
+                  alt={`Bài làm ${i + 1}`}
+                  className="w-[200px] h-[200px] rounded-md border object-cover cursor-pointer shrink-0"
+                  onClick={() => window.open(url, '_blank', 'noopener')}
+                />
+              ))}
+            </div>
           )}
-          {submission.status === 'graded' && (
-            <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Đã chấm</Badge>
+
+          <p className="text-xs text-muted-foreground">
+            Đã nộp lúc {new Date(submission.submitted_at).toLocaleString('vi-VN', {
+              day: '2-digit', month: '2-digit', year: 'numeric',
+              hour: '2-digit', minute: '2-digit',
+            })}
+          </p>
+
+          {submission.status === 'graded' && submission.score !== null && (
+            <div className="p-3 bg-muted rounded-lg space-y-1">
+              <p className="text-sm font-semibold">Điểm: {submission.score}/10</p>
+              {submission.comment && (
+                <p className="text-sm text-muted-foreground">{submission.comment}</p>
+              )}
+            </div>
           )}
         </div>
 
-        {submittedImageUrls.length > 0 && !resubmitMode && (
-          <div className="flex flex-wrap gap-2">
-            {submittedImageUrls.map((url, i) => (
-              <img
-                key={i}
-                src={url}
-                alt={`Bài làm ${i + 1}`}
-                className="w-[200px] h-[200px] rounded-lg object-cover cursor-zoom-in"
-                onClick={() => window.open(url, '_blank', 'noopener')}
-              />
-            ))}
-          </div>
-        )}
-
-        <p className="text-sm text-muted-foreground">
-          Đã nộp lúc {new Date(submission.submitted_at).toLocaleString('vi-VN', {
-            day: '2-digit', month: '2-digit', year: 'numeric',
-            hour: '2-digit', minute: '2-digit',
-          })}
-        </p>
-
-        {submission.status === 'graded' && submission.score !== null && (
-          <div className="p-3 bg-muted rounded-lg space-y-1">
-            <p className="text-sm font-semibold">Điểm: {submission.score}/10</p>
-            {submission.comment && (
-              <p className="text-sm text-muted-foreground">{submission.comment}</p>
-            )}
-          </div>
-        )}
-
         {submission.status === 'graded' && (submission.teacher_images ?? []).filter(Boolean).length > 0 && (
-          <div className="mt-4 space-y-2">
-            <h4 className="font-semibold leading-relaxed">Hình ảnh phản hồi từ giáo viên</h4>
+          <div className="space-y-3">
+            <p className={LABEL}>
+              <MessageSquare className="h-3.5 w-3.5" />
+              Hình ảnh phản hồi từ giáo viên
+            </p>
             <TeacherImages paths={submission.teacher_images} />
           </div>
         )}
@@ -222,7 +232,10 @@ export default function SubmissionArea({
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <span className="text-sm font-semibold">Nộp bài làm</span>
+        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+          <Camera className="h-3.5 w-3.5" />
+          Nộp bài làm
+        </p>
         <Badge className="bg-slate-100 text-slate-600 hover:bg-slate-100">Chưa nộp</Badge>
       </div>
       <FilePickerSection onSubmit={() => uploadMutation.mutate()} isPending={uploadMutation.isPending} />
@@ -238,11 +251,15 @@ function TeacherImages({ paths }: { paths: string[] }) {
   })
   if (!urls) return null
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+    <div className="flex flex-wrap gap-3">
       {urls.map((u, i) => (
-        <a key={i} href={u} target="_blank" rel="noreferrer">
-          <img src={u} alt={`Phản hồi ${i + 1}`} className="rounded-md border w-[200px] h-[200px] object-cover" />
-        </a>
+        <img
+          key={i}
+          src={u}
+          alt={`Phản hồi ${i + 1}`}
+          className="w-[200px] h-[200px] rounded-md border object-cover cursor-pointer shrink-0"
+          onClick={() => window.open(u, '_blank', 'noopener')}
+        />
       ))}
     </div>
   )

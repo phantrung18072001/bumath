@@ -184,7 +184,10 @@ export default function LessonContent({
               const paths = parseAssignmentPaths(lesson.assignment_path)
               return (
                 <>
-                  <div className="rounded-2xl border border-border/50 bg-muted/20 p-4 space-y-3">
+                  <div className={isAdmin
+                    ? 'rounded-2xl border border-border/50 bg-muted/20 p-4 space-y-3'
+                    : 'space-y-3'
+                  }>
                     <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
                       <FileText className="h-3.5 w-3.5" /> Đề bài
                     </p>
@@ -194,7 +197,7 @@ export default function LessonContent({
                         const isImage = /\.(jpg|jpeg|png|gif|webp|heic|avif)$/i.test(name)
                         const { Icon, colorClass } = getFileIcon(name)
                         return (
-                          <div key={url} className="flex flex-col gap-1">
+                          <div key={url} className="flex flex-col gap-1 shrink-0">
                             <div
                               className="w-[200px] h-[200px] rounded-md border bg-muted/40 overflow-hidden cursor-pointer"
                               onClick={() => window.open(url, '_blank', 'noopener')}
