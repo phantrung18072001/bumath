@@ -4,12 +4,12 @@ milestone: v3.0
 milestone_name: Platform Expansion
 status: unknown
 stopped_at: Completed 17-03-PLAN.md
-last_updated: "2026-05-08T16:56:10.735Z"
+last_updated: "2026-05-08T17:10:00.000Z"
 progress:
   total_phases: 7
-  completed_phases: 3
+  completed_phases: 5
   total_plans: 14
-  completed_plans: 13
+  completed_plans: 14
 ---
 
 # Project State
@@ -19,7 +19,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-03 — v3.0 milestone started)
 
 **Core value:** Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ thể từ giảng viên trên từng bài làm
-**Current focus:** Phase 17 — in-lesson-chat
+**Current focus:** Phase 17 — COMPLETED; Phase 18 (mock-exam-system) is next
 
 ## Current Position
 
