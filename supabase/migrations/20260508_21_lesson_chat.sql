@@ -80,3 +80,49 @@ CREATE POLICY "chat_reads_update_own" ON public.lesson_chat_reads
   FOR UPDATE TO authenticated
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
+
+-- ── 5. delete_chat_message RPC (soft delete, role-gated) ─────────
+CREATE OR REPLACE FUNCTION public.delete_chat_message(p_message_id uuid)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF get_my_role() NOT IN ('admin', 'teacher') THEN
+    RAISE EXCEPTION 'forbidden: only admin or teacher can delete chat messages';
+  END IF;
+  UPDATE lesson_chat_messages
+  SET deleted_at = now()
+  WHERE id = p_message_id
+    AND deleted_at IS NULL;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.delete_chat_message(uuid) FROM public;
+GRANT EXECUTE ON FUNCTION public.delete_chat_message(uuid) TO authenticated;
+
+-- ── 6. get_teacher_unread_chat_count RPC ─────────────────────────
+-- Counts messages from non-staff senders newer than caller's last read per lesson.
+CREATE OR REPLACE FUNCTION public.get_teacher_unread_chat_count()
+RETURNS integer
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT COALESCE(COUNT(*), 0)::integer
+  FROM lesson_chat_messages m
+  WHERE m.deleted_at IS NULL
+    AND m.sender_id IN (
+      SELECT id FROM profiles WHERE role = 'student'
+    )
+    AND m.created_at > COALESCE(
+      (SELECT r.read_at FROM lesson_chat_reads r
+        WHERE r.lesson_id = m.lesson_id AND r.user_id = auth.uid()),
+      'epoch'::timestamptz
+    );
+$$;
+
+REVOKE ALL ON FUNCTION public.get_teacher_unread_chat_count() FROM public;
+GRANT EXECUTE ON FUNCTION public.get_teacher_unread_chat_count() TO authenticated;
