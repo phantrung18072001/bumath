@@ -25,3 +25,58 @@ CREATE TABLE IF NOT EXISTS public.lesson_chat_reads (
   read_at    timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (user_id, lesson_id)
 );
+
+-- ── 3. RLS on lesson_chat_messages ───────────────────────────────
+ALTER TABLE public.lesson_chat_messages ENABLE ROW LEVEL SECURITY;
+
+-- SELECT: students see messages in lessons whose course target_grade they have access to;
+--         teachers/admins see all.
+CREATE POLICY "chat_select_access" ON public.lesson_chat_messages
+  FOR SELECT
+  TO authenticated
+  USING (
+    get_my_role() IN ('admin', 'teacher')
+    OR has_grade_access((
+      SELECT c.target_grade::text
+      FROM public.lessons l
+      JOIN public.chapters ch ON ch.id = l.chapter_id
+      JOIN public.courses c ON c.id = ch.course_id
+      WHERE l.id = lesson_chat_messages.lesson_id
+    ))
+  );
+
+-- INSERT: sender must be the caller; same access gate as SELECT.
+CREATE POLICY "chat_insert_own" ON public.lesson_chat_messages
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    sender_id = auth.uid()
+    AND (
+      get_my_role() IN ('admin', 'teacher')
+      OR has_grade_access((
+        SELECT c.target_grade::text
+        FROM public.lessons l
+        JOIN public.chapters ch ON ch.id = l.chapter_id
+        JOIN public.courses c ON c.id = ch.course_id
+        WHERE l.id = lesson_id
+      ))
+    )
+  );
+-- NOTE: no UPDATE policy and no DELETE policy. Soft-delete is performed
+-- exclusively by the SECURITY DEFINER function delete_chat_message (Task 3).
+
+-- ── 4. RLS on lesson_chat_reads ──────────────────────────────────
+ALTER TABLE public.lesson_chat_reads ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "chat_reads_select_own" ON public.lesson_chat_reads
+  FOR SELECT TO authenticated
+  USING (user_id = auth.uid());
+
+CREATE POLICY "chat_reads_insert_own" ON public.lesson_chat_reads
+  FOR INSERT TO authenticated
+  WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY "chat_reads_update_own" ON public.lesson_chat_reads
+  FOR UPDATE TO authenticated
+  USING (user_id = auth.uid())
+  WITH CHECK (user_id = auth.uid());
