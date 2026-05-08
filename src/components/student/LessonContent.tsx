@@ -184,10 +184,7 @@ export default function LessonContent({
               const paths = parseAssignmentPaths(lesson.assignment_path)
               return (
                 <>
-                  <div className={isAdmin
-                    ? 'rounded-2xl border border-border/50 bg-muted/20 p-4 space-y-3'
-                    : 'space-y-3'
-                  }>
+                  <div className="space-y-3">
                     <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
                       <FileText className="h-3.5 w-3.5" /> Đề bài
                     </p>
