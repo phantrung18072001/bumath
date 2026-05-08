@@ -34,6 +34,7 @@ export default function ChatPanel({ lessonId }: ChatPanelProps) {
   })
 
   const [messages, setMessages] = useState<ChatMessageType[]>([])
+  const [replyTo, setReplyTo] = useState<ChatMessageType | null>(null)
   useEffect(() => { setMessages(history) }, [history])
 
   // Auto-scroll only when message count grows
@@ -82,9 +83,11 @@ export default function ChatPanel({ lessonId }: ChatPanelProps) {
 
   const handleSend = async (content: string) => {
     try {
-      const inserted = await sendMessage({ lessonId, content })
+      const parentId = replyTo?.parent_id || replyTo?.id || undefined
+      const inserted = await sendMessage({ lessonId, content, parentId })
       // Optimistic append (Realtime will dedup by id)
       setMessages(prev => prev.some(m => m.id === inserted.id) ? prev : [...prev, inserted])
+      setReplyTo(null)
     } catch (err) {
       toast.error('Không gửi được tin nhắn. Kiểm tra kết nối và thử lại.')
     }
@@ -161,9 +164,9 @@ export default function ChatPanel({ lessonId }: ChatPanelProps) {
           ) : (
             roots.map(root => (
               <div key={root.id} className="space-y-3">
-                <ChatMessage message={root} viewerRole={role} lessonId={lessonId} />
+                <ChatMessage message={root} viewerRole={role} lessonId={lessonId} onReply={() => setReplyTo(root)} />
                 {(repliesByParent[root.id] ?? []).map(reply => (
-                  <ChatMessage key={reply.id} message={reply} viewerRole={role} isReply lessonId={lessonId} />
+                  <ChatMessage key={reply.id} message={reply} viewerRole={role} isReply lessonId={lessonId} onReply={() => setReplyTo(reply)} />
                 ))}
               </div>
             ))
@@ -177,6 +180,8 @@ export default function ChatPanel({ lessonId }: ChatPanelProps) {
         placeholder={isStaff ? 'Trả lời câu hỏi của học sinh…' : 'Đặt câu hỏi về bài học này…'}
         ariaLabel={isStaff ? 'Nội dung trả lời' : 'Nội dung câu hỏi'}
         sendAriaLabel={isStaff ? 'Gửi trả lời' : 'Gửi câu hỏi'}
+        replyToName={replyTo ? (replyTo.profiles?.full_name || 'Người dùng') : undefined}
+        onCancelReply={replyTo ? () => setReplyTo(null) : undefined}
       />
     </div>
   )

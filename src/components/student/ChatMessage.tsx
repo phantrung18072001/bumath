@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Trash2, Check, X } from 'lucide-react'
+import { Trash2, Check, X, Reply } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { deleteMessage, type ChatMessage as ChatMessageType } from '@/lib/api/lesson-chat'
 import { useQueryClient } from '@tanstack/react-query'
@@ -9,6 +9,7 @@ interface ChatMessageProps {
   viewerRole: 'student' | 'teacher' | 'admin'
   isReply?: boolean
   lessonId: string
+  onReply?: () => void
 }
 
 function getInitials(name?: string | null): string {
@@ -43,6 +44,7 @@ export default function ChatMessage({
   viewerRole,
   isReply = false,
   lessonId,
+  onReply,
 }: ChatMessageProps) {
   const canDelete = viewerRole === 'admin' || viewerRole === 'teacher'
   const senderRole = message.profiles?.role ?? 'student'
@@ -99,16 +101,27 @@ export default function ChatMessage({
           <span className="text-xs text-slate-400 ml-auto shrink-0">
             {formatTime(message.created_at)}
           </span>
-          {/* Delete trigger — inline, visible on group hover */}
-          {canDelete && !confirming && (
-            <button
-              aria-label="Xoá tin nhắn"
-              onClick={() => setConfirming(true)}
-              className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 p-1 rounded-md text-slate-300 hover:text-red-500 hover:bg-red-50 cursor-pointer"
-            >
-              <Trash2 className="h-3 w-3" />
-            </button>
-          )}
+          {/* Action triggers — inline, visible on group hover */}
+          <div className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-center">
+            {onReply && !confirming && (
+              <button
+                aria-label="Trả lời"
+                onClick={onReply}
+                className="p-1 rounded-md text-slate-300 hover:text-orange-500 hover:bg-orange-50 cursor-pointer"
+              >
+                <Reply className="h-3 w-3" />
+              </button>
+            )}
+            {canDelete && !confirming && (
+              <button
+                aria-label="Xoá tin nhắn"
+                onClick={() => setConfirming(true)}
+                className="p-1 rounded-md text-slate-300 hover:text-red-500 hover:bg-red-50 cursor-pointer"
+              >
+                <Trash2 className="h-3 w-3" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Message card */}

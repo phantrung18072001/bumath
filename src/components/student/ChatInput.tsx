@@ -7,6 +7,8 @@ interface ChatInputProps {
   placeholder?: string
   ariaLabel?: string
   sendAriaLabel?: string
+  replyToName?: string | null
+  onCancelReply?: () => void
 }
 
 const MAX_HEIGHT = 160 // px — ~6 lines
@@ -16,6 +18,8 @@ export default function ChatInput({
   placeholder = 'Đặt câu hỏi về bài học này…',
   ariaLabel = 'Nội dung câu hỏi',
   sendAriaLabel = 'Gửi câu hỏi',
+  replyToName,
+  onCancelReply,
 }: ChatInputProps) {
   const [value, setValue] = useState('')
   const [sending, setSending] = useState(false)
@@ -57,7 +61,19 @@ export default function ChatInput({
   }
 
   return (
-    <div className="shrink-0 border-t border-slate-100 bg-white/80 backdrop-blur-sm px-3 py-2">
+    <div className="shrink-0 border-t border-slate-100 bg-white/80 backdrop-blur-sm px-3 py-2 flex flex-col gap-1.5">
+      {replyToName && (
+        <div className="flex items-center gap-2 px-2 py-1 text-xs font-medium text-slate-600 bg-slate-100 w-fit rounded-md border border-slate-200">
+          <span className="truncate max-w-[200px]">Đang trả lời: {replyToName}</span>
+          <button
+            onClick={onCancelReply}
+            className="hover:text-slate-800 focus:outline-none focus:text-slate-800"
+            aria-label="Hủy trả lời"
+          >
+            ✕
+          </button>
+        </div>
+      )}
       <div
         className={cn(
           'flex items-end gap-2 rounded-xl border px-2.5 py-1.5 transition-all duration-200',

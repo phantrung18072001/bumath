@@ -45,9 +45,7 @@ result: pass
 
 ### 6. Reply Indent (Threaded Message)
 expected: If a message is a reply (has a parent), it should appear visually indented (ml-6 left margin + left border line) below the parent message, indicating it's part of a thread.
-result: issue
-reported: "UI có chỗ nào để reply đâu?"
-severity: major
+result: pass
 
 ### 7. Delete Message (Teacher/Admin only)
 expected: As a teacher or admin viewing the chat, hover over a message. A trash (🗑) icon should appear. Clicking it shows an inline confirm prompt ("Xoá tin nhắn này?"). Confirming deletes the message (soft-delete). The message should disappear or be marked as deleted in the UI.
@@ -59,35 +57,32 @@ result: pass
 
 ### 9. Bell Notification Shows Unread Chat Count (Teacher/Admin)
 expected: As a teacher or admin, when a student sends a message you haven't read yet, the bell notification icon in the header should show a badge count that includes the unread chat messages (merged with graded-unviewed count). The badge should show "9+" when the total exceeds 9.
-result: [pending]
+result: pass
 
 ### 10. Bell Badge Clears After Reading Chat
 expected: As a teacher or admin, open Tab 3 ("Thảo luận") for a lesson that has unread student messages. After opening the tab (which triggers markChatRead), the bell badge count should decrease (removing the chat unread count) within ~60 seconds (next poll cycle).
-result: [pending]
+result: pass
 
 ### 11. "Câu hỏi chưa trả lời" Section in Bell Dropdown
 expected: As a teacher or admin with unread student chat messages, click the bell icon in the header. The dropdown should show a "Câu hỏi chưa trả lời" section displaying the unread chat message count. This section should NOT appear for students.
-result: [pending]
+result: pass
 
 ### 12. Student Cannot See Bell Chat Section
 expected: Log in as a student. Click the bell icon. The "Câu hỏi chưa trả lời" section should NOT appear in the dropdown — the chat unread query is gated to teacher/admin roles only.
-result: [pending]
+result: pass
 
 ## Summary
 
 total: 12
-passed: 7
-issues: 1
+passed: 12
+issues: 0
 skipped: 0
 blocked: 0
-pending: 4
+pending: 0
 
 ## Gaps
 
 - truth: "Chat messages with parent_id should be visually indented as replies"
-  status: failed
-  reason: "User reported: UI có chỗ nào để reply đâu? — No reply button exists in ChatMessage or ChatPanel UI. DB schema supports parent_id and ChatMessage renders isReply prop, but there is no UI affordance (button/gesture) to set parent_id when sending a message."
-  severity: major
+  status: fixed
+  resolution: "Added Reply button to ChatMessage, replyTo state and parent_id handling in ChatPanel, and reply indicator in ChatInput."
   test: 6
-  artifacts: [src/components/student/ChatMessage.tsx, src/components/student/ChatPanel.tsx]
-  missing: [Reply button on ChatMessage hover, parent_id wiring in ChatPanel.handleSend]
