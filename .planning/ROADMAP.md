@@ -42,7 +42,7 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
 - [x] **Phase 14: Pricing + Access Control** — Package model, DB-enforced lesson access, admin assignment UI, student package view
 - [x] **Phase 15: Admin UX + Audit** — Inline sidebar forms on shared course detail, broken link sweep (2026-05-04)
 - [ ] **Phase 16: Lesson Tabs + Study Materials Library** — 3-tab lesson layout, PDF library with category × grade filter
-- [ ] **Phase 17: In-Lesson Chat** — Realtime student↔teacher messaging scoped per lesson, unread badge
+- [x] **Phase 17: In-Lesson Chat** — Realtime student↔teacher messaging scoped per lesson, unread badge (completed 2026-05-08)
 - [ ] **Phase 18: Mock Exam System** — Timed exam sessions, KaTeX questions, server-side enforcement, one-attempt rule
 - [ ] **Phase 19: Landing Page + Navigator + Video Abstraction** — School navigator, course content sections, VideoPlayer abstraction, pricing display
 
@@ -166,7 +166,7 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
 **Goal:** Áp dụng design language hiện đại (glassmorphism, indigo/purple palette, premium SaaS aesthetic) lên toàn bộ màn hình học sinh và quản trị — giữ nguyên backgrounds hiện tại, chỉ nâng cấp cards, buttons, badges và interactive elements
 **Requirements**: TBD
 **Depends on:** Phase 19
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 
 **Background lock rule:** Mọi plan trong phase này phải giữ nguyên background colors (`#F0FDFA` mint cho student, current bg cho admin). Chỉ sửa card/button/badge styles.
 
@@ -182,6 +182,6 @@ Plans:
 | 14. Pricing + Access Control | 6/6 | ✅ Complete | 8dbc495, 1b1eb04, e14c7e9, 14154f6, 86040f9 |
 | 15. Admin UX + Audit | 0/? | Not started | - |
 | 16. Lesson Tabs + Study Materials | 0/? | Not started | - |
-| 17. In-Lesson Chat | 3/4 | In Progress|  |
+| 17. In-Lesson Chat | 4/4 | Complete   | 2026-05-08 |
 | 18. Mock Exam System | 0/? | Not started | - |
 | 19. Landing Page + Navigator + Video | 0/? | Not started | - |

@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Platform Expansion
 status: unknown
-stopped_at: Completed 17-04-PLAN.md
-last_updated: "2026-05-08T16:34:22.611Z"
+stopped_at: Completed 17-03-PLAN.md
+last_updated: "2026-05-08T16:56:10.735Z"
 progress:
   total_phases: 7
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 14
-  completed_plans: 12
+  completed_plans: 13
 ---
 
 # Project State
@@ -77,6 +77,7 @@ Plan: 1 of 4
 | Phase 17-in-lesson-chat P01 | 2m 23s | 3 tasks | 1 files |
 | Phase 17 P02 | 3min | 3 tasks | 8 files |
 | Phase 17-in-lesson-chat P04 | 2 | 1 tasks | 2 files |
+| Phase 17-in-lesson-chat P03 | 22 | 4 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -165,6 +166,9 @@ Recent decisions affecting current work:
 - [Phase 17-02]: it.skip used (not it.todo) for Wave 0 stubs — allows dynamic import() pattern with concrete expect(Component).toBeDefined() assertions; Plan 03 switches to it + fills render
 - [Phase 17-in-lesson-chat]: queryKey 'teacher-chat-unread' exact string — matches ChatPanel invalidateQueries in Plan 03
 - [Phase 17-04]: enabled: isTeacherOrAdmin gates chat unread poll — students never trigger get_teacher_unread_chat_count RPC
+- [Phase 17-03]: vi.hoisted() required for supabase channel spies in test files — vi.mock factory is hoisted before let/const declarations in test files
+- [Phase 17-03]: Don't mock both @/lib/supabase AND @/contexts/AuthContext in same vitest file — causes module-registry hang; use AuthProvider wrapper with mocked supabase instead
+- [Phase 17-03]: chatApi container object pattern for lesson-chat mocks — prevents vi.clearAllMocks() resetting implementations between tests
 
 ### Pending Todos
 
@@ -179,6 +183,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-08T16:34:22.608Z
-Stopped at: Completed 17-04-PLAN.md
+Last session: 2026-05-08T16:56:10.731Z
+Stopped at: Completed 17-03-PLAN.md
 Resume file: None
