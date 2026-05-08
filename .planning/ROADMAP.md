@@ -161,12 +161,14 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
 
 **Note:** VideoPlayer abstraction KHÔNG xóa YouTube — chỉ wrap nó. School Navigator dùng static constants map, không cần DB.
 
-### Phase 20: Thay đổi UI/UX: Landing page hiện đại theo phong cách AI EdTech SaaS
+### Phase 20: Student + Admin UI/UX — AI EdTech SaaS Design Language
 
-**Goal:** [To be planned]
+**Goal:** Áp dụng design language hiện đại (glassmorphism, indigo/purple palette, premium SaaS aesthetic) lên toàn bộ màn hình học sinh và quản trị — giữ nguyên backgrounds hiện tại, chỉ nâng cấp cards, buttons, badges và interactive elements
 **Requirements**: TBD
 **Depends on:** Phase 19
-**Plans:** 2/4 plans executed
+**Plans:** 0 plans
+
+**Background lock rule:** Mọi plan trong phase này phải giữ nguyên background colors (`#F0FDFA` mint cho student, current bg cho admin). Chỉ sửa card/button/badge styles.
 
 Plans:
 - [ ] TBD (run /gsd:plan-phase 20 to break down)
