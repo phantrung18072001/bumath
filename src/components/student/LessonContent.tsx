@@ -123,13 +123,6 @@ export default function LessonContent({
           </div>
         ) : null}
 
-        {/* Description */}
-        {lesson.description && (
-          <div className="rounded-2xl bg-muted/40 border border-border/40 p-5">
-            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">Mô tả bài học</p>
-            <p className="text-base text-foreground/80 whitespace-pre-wrap leading-relaxed">{lesson.description}</p>
-          </div>
-        )}
       </div>
 
       {/* 3-tab content */}
@@ -157,8 +150,12 @@ export default function LessonContent({
           </TabsTrigger>
         </TabsList>
 
-        {/* Tab 1 — Bài giảng: study materials + progress button */}
+        {/* Tab 1 — Bài giảng: description + study materials + progress button */}
         <TabsContent value="bai-giang" className="px-4 md:px-8 py-6 space-y-8 mt-0">
+          {lesson.description && (
+            <p className="text-base text-foreground/80 whitespace-pre-wrap leading-relaxed">{lesson.description}</p>
+          )}
+
           <StudyMaterialsList
             lessonId={lesson.id}
             isAdmin={isAdmin}
