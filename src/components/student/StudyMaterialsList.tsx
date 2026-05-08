@@ -28,7 +28,7 @@ interface StudyMaterialsListProps {
 }
 
 const LABEL_CLASS = 'text-[11px] font-semibold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5'
-const THUMB_CLASS = 'relative w-[200px] h-[200px] rounded-md border bg-muted/40 overflow-hidden cursor-pointer shrink-0'
+const THUMB_CLASS = 'relative w-40 h-40 sm:w-[200px] sm:h-[200px] rounded-md border bg-muted/40 overflow-hidden cursor-pointer shrink-0'
 
 export default function StudyMaterialsList({
   lessonId,
@@ -39,7 +39,7 @@ export default function StudyMaterialsList({
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [deletingPath, setDeletingPath] = useState<string | null>(null)
 
-  const { data: materials, isLoading } = useQuery({
+  const { data: materials, isLoading, isError } = useQuery({
     queryKey: ['study-materials', lessonId],
     queryFn: () => fetchStudyMaterials(lessonId),
     enabled: !!lessonId,
@@ -67,11 +67,13 @@ export default function StudyMaterialsList({
   if (isLoading) {
     return (
       <div className="flex flex-wrap gap-3">
-        <Skeleton className="w-[200px] h-[200px] rounded-md shrink-0" />
-        <Skeleton className="w-[200px] h-[200px] rounded-md shrink-0" />
+        <Skeleton className="w-40 h-40 sm:w-[200px] sm:h-[200px] rounded-md shrink-0" />
+        <Skeleton className="w-40 h-40 sm:w-[200px] sm:h-[200px] rounded-md shrink-0" />
       </div>
     )
   }
+
+  if (isError) return null
 
   const list = materials ?? []
   if (list.length === 0 && !isAdmin) return null
@@ -91,7 +93,7 @@ export default function StudyMaterialsList({
                 <img src={signedUrl} alt={material.title} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center gap-1 text-muted-foreground">
-                  <FileText className="h-8 w-8 text-red-400" />
+                  <FileText className="h-8 w-8 text-destructive/60" />
                   <span className="text-[10px] uppercase font-medium">PDF</span>
                 </div>
               )}
@@ -109,7 +111,7 @@ export default function StudyMaterialsList({
                 </button>
               )}
             </div>
-            <p className="text-[11px] text-muted-foreground truncate text-center w-[200px]" title={material.title}>
+            <p className="text-[11px] text-muted-foreground truncate text-center w-40 sm:w-[200px]" title={material.title}>
               {material.title}
             </p>
           </div>
@@ -130,6 +132,9 @@ export default function StudyMaterialsList({
           {isAdmin && <span className="font-normal normal-case tracking-normal text-muted-foreground/70">(PDF, ảnh)</span>}
         </label>
         {thumbnails}
+        {isAdmin && list.length === 0 && (
+          <p className="text-xs text-muted-foreground/70">Chưa có tài liệu nào. Thêm tài liệu bên dưới.</p>
+        )}
         {isAdmin && (
           <StudyMaterialUploadForm lessonId={lessonId} defaultGrade={defaultGrade} />
         )}

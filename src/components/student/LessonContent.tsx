@@ -160,7 +160,7 @@ export default function LessonContent({
 
           <StudyMaterialsList
             lessonId={lesson.id}
-            isAdmin={false}
+            isAdmin={isAdmin}
             defaultGrade={toMaterialGrade(courseGrade)}
           />
 
@@ -196,7 +196,7 @@ export default function LessonContent({
                         return (
                           <div key={url} className="flex flex-col gap-1 shrink-0">
                             <div
-                              className="w-[200px] h-[200px] rounded-md border bg-muted/40 overflow-hidden cursor-pointer"
+                              className="w-40 h-40 sm:w-[200px] sm:h-[200px] rounded-md border bg-muted/40 overflow-hidden cursor-pointer"
                               onClick={() => window.open(url, '_blank', 'noopener')}
                             >
                               {isImage ? (
@@ -208,7 +208,7 @@ export default function LessonContent({
                                 </div>
                               )}
                             </div>
-                            <p className="text-[11px] text-muted-foreground truncate text-center w-[200px]" title={name}>{name}</p>
+                            <p className="text-[11px] text-muted-foreground truncate text-center w-40 sm:w-[200px]" title={name}>{name}</p>
                           </div>
                         )
                       })}
@@ -228,14 +228,16 @@ export default function LessonContent({
           </TabsContent>
         )}
 
-        {/* Tab 3 — Thảo luận (placeholder) */}
-        <TabsContent value="thao-luan" className="px-4 md:px-8 py-6 mt-0">
-          <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
-            <MessageCircle className="h-10 w-10 text-muted-foreground/30" />
-            <p className="text-sm font-medium text-muted-foreground">Tính năng sắp có</p>
-            <p className="text-xs text-muted-foreground/60">Phần thảo luận đang được phát triển.</p>
-          </div>
-        </TabsContent>
+        {/* Tab 3 — Thảo luận (placeholder, student only) */}
+        {!isAdmin && (
+          <TabsContent value="thao-luan" className="px-4 md:px-8 py-6 mt-0">
+            <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
+              <MessageCircle className="h-10 w-10 text-muted-foreground/30" />
+              <p className="text-sm font-medium text-muted-foreground">Tính năng sắp có</p>
+              <p className="text-xs text-muted-foreground/60">Phần thảo luận đang được phát triển.</p>
+            </div>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   )

@@ -36,9 +36,9 @@ export default function StudyMaterialUploadForm({
         ),
       )
       queryClient.invalidateQueries({ queryKey: ['study-materials', lessonId] })
-      toast.success('Đã thêm tài liệu!')
+      toast.success('Đã thêm tài liệu thành công!')
     } catch {
-      toast.error('Tải lên thất bại. Vui lòng thử lại.')
+      toast.error('Tải tài liệu lên thất bại. Vui lòng thử lại.')
     } finally {
       setUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
