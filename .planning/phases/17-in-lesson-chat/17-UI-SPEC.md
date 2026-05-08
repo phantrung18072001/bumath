@@ -41,9 +41,9 @@ Declared values (multiples of 4 only):
 | 2xl | 48px | Empty state vertical centering padding |
 | 3xl | 64px | Not used in this phase |
 
-Exceptions:
-- Touch targets (send button, delete button): minimum 44px height/width — matches existing `min-h-[48px]` pattern from `BellNotification.tsx` and `LessonProgressButton.tsx`
-- Chat input textarea: minimum 44px height at single-line, grows with content
+Constraint note (not a new scale token):
+- Touch targets (send button, delete button) inherit the existing minimum 44px touch target pattern from `BellNotification.tsx` (`min-h-[48px]`) and `LessonProgressButton.tsx`. No new spacing token declared.
+- Chat input textarea: minimum 44px height at single-line, grows with content — same inherited constraint.
 
 ---
 
@@ -54,12 +54,13 @@ Exceptions:
 | Body (message text) | 14px | 400 | 1.5 |
 | Label (sender name, role badge) | 12px | 600 | 1.4 |
 | Timestamp | 12px | 400 | 1.4 |
-| Tab trigger label | 14px | 500 | 1.0 |
+
+Declared weights: **400** (body, timestamp) and **600** (sender name, role badge) — 2 weights only.
 
 Notes:
-- Matches existing tab trigger pattern: `text-sm font-medium` (14px, 500) from `LessonContent.tsx` line 133
-- Sender name + role rendered together: `"Nguyễn Văn A • Giảng viên"` — full name in weight 600, role suffix `• Giảng viên` in weight 400 muted
-- Input placeholder: 14px weight 400, `text-muted-foreground`
+- Tab trigger label (`text-sm font-medium`) inherits existing shadcn `Tabs` component styling from `LessonContent.tsx` — not declared as a new typography token for this phase.
+- Sender name + role rendered together: `"Nguyễn Văn A • Giảng viên"` — full name in weight 600, role suffix `• Giảng viên` in weight 400 muted.
+- Input placeholder: 14px weight 400, `text-muted-foreground`.
 
 Source: Existing `LessonContent.tsx` typography patterns
 
@@ -75,7 +76,7 @@ Source: Existing `LessonContent.tsx` typography patterns
 | Destructive | `hsl(var(--destructive))` (#E53E3E approx) | Delete message icon/button (teacher/admin only) |
 
 Accent reserved for:
-- Send button fill (`bg-[#F97316]`)
+- Send button fill (`bg-[#F97316]`) — **primary focal point**: the orange Send button in the input row draws the eye as the sole high-contrast orange fill element on the screen. All other accent uses are decorative (borders, badges) at reduced opacity.
 - Unread chat badge on Tab 3 trigger (e.g., "Thảo luận (2)")
 - Active tab underline on Tab 3 when selected
 - Teacher/admin reply bubble left border accent stripe
@@ -206,7 +207,7 @@ Note: Tab 3 is visible to both students and teachers/admins. The `!isAdmin` guar
 | Element | Copy |
 |---------|------|
 | Primary CTA (student) | "Gửi câu hỏi" (send button label, visible as aria-label; icon-only on narrow) |
-| Primary CTA (reply) | "Trả lời" (teacher reply trigger) |
+| Primary CTA (reply) | "Trả lời" — noun is implied by inline reply context: the button appears directly below the parent message, making the object of the action unambiguous. Alternative "Trả lời học sinh" is acceptable if wider touch target is needed. |
 | Empty state heading | "Chưa có câu hỏi nào" |
 | Empty state body | "Hãy đặt câu hỏi cho giảng viên về bài học này." |
 | Input placeholder (student) | "Đặt câu hỏi về bài học này…" |
