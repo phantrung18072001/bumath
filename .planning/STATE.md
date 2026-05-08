@@ -2,16 +2,15 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Platform Expansion
-status: completed
-stopped_at: Phase 15 UI-SPEC approved
-last_updated: "2026-05-04T11:45:18.515Z"
-last_activity: 2026-05-04 — Phase 14 all plans complete (commits 8dbc495, 1b1eb04, e14c7e9, 14154f6, 86040f9)
+status: planning
+stopped_at: Phase 17 context gathered
+last_updated: "2026-05-08T15:47:55.339Z"
+last_activity: 2026-05-04 — Phase 14 shipped; Phase 15 artifacts complete on disk
 progress:
   total_phases: 6
-  completed_phases: 1
-  total_plans: 6
-  completed_plans: 6
-  percent: 100
+  completed_phases: 2
+  total_plans: 10
+  completed_plans: 9
 ---
 
 # Project State
@@ -176,6 +175,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-04 (resume-work)
-Stopped at: Session resumed — v3.0 Phase 15 shipped per ROADMAP; Phase 16 has CONTEXT, plans not written (execute after plan)
-Resume file: .planning/phases/16-lesson-tabs-study-materials/16-CONTEXT.md
+Last session: 2026-05-08T15:47:55.337Z
+Stopped at: Phase 17 context gathered
+Resume file: .planning/phases/17-in-lesson-chat/17-CONTEXT.md
