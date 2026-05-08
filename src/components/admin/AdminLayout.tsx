@@ -32,7 +32,7 @@ export default function AdminLayout({ children, fullBleed = false }: { children:
       <MathBackground />
       {/* Sidebar — hidden on full-bleed pages (e.g. course detail) */}
       {!fullBleed && (
-        <aside className="w-60 shrink-0 border-r border-white/30 bg-white/80 backdrop-blur-sm overflow-y-auto">
+        <aside className="w-60 shrink-0 border-r border-indigo-200/60 bg-white/80 backdrop-blur-sm overflow-y-auto">
           <nav className="p-3 space-y-1">
             {visibleItems.map(({ label, to, icon: Icon }) => {
               const active = location.pathname.startsWith(to)

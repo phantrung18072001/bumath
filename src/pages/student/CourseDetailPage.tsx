@@ -505,7 +505,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
         isEnrolled ? (
           <>
             <div className="hidden lg:flex h-[calc(100vh-80px)] border-t border-border overflow-hidden">
-              <div className="w-[420px] shrink-0 bg-white/80 backdrop-blur-sm border-r border-white/30 flex flex-col h-full">
+              <div className="w-[420px] shrink-0 bg-white/80 backdrop-blur-sm border-r border-indigo-200/60 flex flex-col h-full">
                 <div className="flex-1 min-h-0 flex flex-col">
                   <LessonSidebar
                     {...sidebarShared}
@@ -630,7 +630,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
         ) : (
           <>
             <div className="hidden lg:flex h-[calc(100vh-80px)] border-t border-border">
-              <div className="w-[340px] shrink-0 bg-card/50 border-r border-indigo-200/30">
+              <div className="w-[340px] shrink-0 bg-card/50 border-r border-indigo-200/60">
                 <LessonSidebar
                   chapters={chapters}
                   lessonsByChapter={lessonsByChapter}

@@ -22,7 +22,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
     <div className="h-screen overflow-hidden flex flex-col app-student bg-gradient-to-br from-primary/5 via-background to-secondary/20 relative isolate">
       <MathBackground />
       {/* Header — h-20 (80px) */}
-      <header className="h-20 bg-white/80 backdrop-blur-sm border-b border-white/30 flex items-center px-6 sticky top-0 z-10">
+      <header className="h-20 bg-white/80 backdrop-blur-sm border-b border-indigo-200/60 flex items-center px-6 sticky top-0 z-10">
         <Link
           to="/"
           className="flex items-center gap-3"
