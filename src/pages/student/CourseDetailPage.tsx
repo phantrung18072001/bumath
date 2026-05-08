@@ -60,6 +60,13 @@ import { getSubmissions } from '@/lib/api/submissions'
 import { getUserEnrollments } from '@/lib/api/enrollments'
 import { GRADE_BADGE } from '@/lib/constants/grades'
 import { toast } from 'sonner'
+import StudyMaterialsList from '@/components/student/StudyMaterialsList'
+import type { StudyMaterialGrade } from '@/lib/api/study-materials'
+
+function toMaterialGrade(grade?: string): StudyMaterialGrade {
+  if (grade === 'grade_7' || grade === 'grade_8' || grade === 'grade_9') return grade
+  return 'grade_9'
+}
 
 type AdminPanelState =
   | null
@@ -533,13 +540,22 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                       />
                     )}
                     {(adminPanel.kind === 'lesson-edit') && (
-                      <LessonInlineForm
-                        chapterId={adminPanel.chapterId}
-                        lesson={adminPanel.lesson}
-                        nextOrderIndex={(lessonsByChapter?.get(adminPanel.chapterId) ?? []).length}
-                        onSuccess={() => { invalidateCourseContent(); setAdminPanel(null) }}
-                        onCancel={() => setAdminPanel(null)}
-                      />
+                      <>
+                        <LessonInlineForm
+                          chapterId={adminPanel.chapterId}
+                          lesson={adminPanel.lesson}
+                          nextOrderIndex={(lessonsByChapter?.get(adminPanel.chapterId) ?? []).length}
+                          onSuccess={() => { invalidateCourseContent(); setAdminPanel(null) }}
+                          onCancel={() => setAdminPanel(null)}
+                        />
+                        <div className="px-6 pb-6">
+                          <StudyMaterialsList
+                            lessonId={adminPanel.lesson.id}
+                            isAdmin
+                            defaultGrade={toMaterialGrade(course?.target_grade)}
+                          />
+                        </div>
+                      </>
                     )}
                   </>
                 ) : profile && (() => {
