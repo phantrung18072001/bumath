@@ -338,7 +338,7 @@ export default function LessonInlineForm({
             Bài kiểm tra
             <span className="font-normal normal-case tracking-normal text-muted-foreground/70">(JPG, PNG, PDF — tối đa 10MB)</span>
           </label>
-            <div className="space-y-3 w-full overflow-hidden">
+            <div className="space-y-3 w-full">
               {(keptPaths.length > 0 || selectedFiles.length > 0) && (
                 <div className="flex flex-wrap gap-3">
                   {keptPaths.map((p) => {
@@ -347,7 +347,7 @@ export default function LessonInlineForm({
                     const publicUrl = getAssignmentPublicUrl(p)
                     const { Icon: FileIcon, colorClass, label } = getFileIcon(name)
                     return (
-                      <div key={p} className="relative w-24 flex flex-col gap-1">
+                      <div key={p} className="relative w-[200px] shrink-0 flex flex-col gap-1">
                         <div className="relative w-[200px] h-[200px] rounded-md border bg-muted/40 overflow-hidden">
                           {isImage ? (
                             <img src={publicUrl} alt={name} className="w-full h-full object-cover" />
@@ -374,7 +374,7 @@ export default function LessonInlineForm({
                     const previewUrl = newFilePreviews[i]
                     const { Icon: FileIcon, colorClass, label } = getFileIcon(file.name)
                     return (
-                      <div key={i} className="relative w-24 flex flex-col gap-1">
+                      <div key={i} className="relative w-[200px] shrink-0 flex flex-col gap-1">
                         <div className="relative w-[200px] h-[200px] rounded-md border border-dashed bg-muted/20 overflow-hidden">
                           {previewUrl ? (
                             <img src={previewUrl} alt={file.name} className="w-full h-full object-cover" />
