@@ -335,7 +335,7 @@ export default function LessonInlineForm({
         <div className="rounded-2xl border border-border/50 bg-muted/20 p-4 space-y-3">
           <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
             <Paperclip className="h-3.5 w-3.5" />
-            Tài liệu đính kèm
+            Bài kiểm tra
             <span className="font-normal normal-case tracking-normal text-muted-foreground/70">(JPG, PNG, PDF — tối đa 10MB)</span>
           </label>
             <div className="space-y-3 w-full overflow-hidden">
