@@ -8,6 +8,10 @@ vi.mock('@/lib/api/submissions', () => ({
   getGradedUnviewed: vi.fn().mockResolvedValue([]),
 }))
 
+vi.mock('@/lib/api/lesson-chat', () => ({
+  getTeacherUnreadChatCount: vi.fn().mockResolvedValue(0),
+}))
+
 // --- Helpers ---
 
 function renderBellNotification() {
@@ -42,6 +46,19 @@ describe('BellNotification', () => {
     })
     // Badge span should not exist
     expect(screen.queryByText(/[0-9]/)).not.toBeInTheDocument()
+  })
+
+  it.skip('shows merged badge count = items.length + chatUnread when role is teacher (chat unread)', async () => {
+    const { default: BellNotification } = await import('./BellNotification')
+    expect(BellNotification).toBeDefined()
+    // TODO Plan 04: mock getGradedUnviewed → [1 item], mock getTeacherUnreadChatCount → 3,
+    //               assert badge text is "4" (or "9+" if total > 9).
+  })
+
+  it.skip('does NOT call getTeacherUnreadChatCount when role is student (chat unread)', async () => {
+    const { default: BellNotification } = await import('./BellNotification')
+    expect(BellNotification).toBeDefined()
+    // TODO Plan 04: re-mock useAuth to role='student', assert getTeacherUnreadChatCount NOT called.
   })
 
   it('shows badge with count when unviewed grades exist', async () => {
