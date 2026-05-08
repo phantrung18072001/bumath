@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { ExternalLink, Lock, Pencil, Trash2, BookOpen, FileText, MessageCircle } from 'lucide-react'
+import { Lock, Pencil, Trash2, BookOpen, FileText, MessageCircle } from 'lucide-react'
 import { getFileIcon } from '@/lib/file-icon'
 import { getAssignmentPublicUrls, parseAssignmentPaths, type Lesson } from '@/lib/api/lessons'
 import type { Submission } from '@/lib/api/submissions'
@@ -142,12 +142,14 @@ export default function LessonContent({
               Bài kiểm tra
             </TabsTrigger>
           )}
-          <TabsTrigger
-            value="thao-luan"
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none pb-3 font-medium text-sm text-muted-foreground"
-          >
-            Thảo luận
-          </TabsTrigger>
+          {!isAdmin && (
+            <TabsTrigger
+              value="thao-luan"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none pb-3 font-medium text-sm text-muted-foreground"
+            >
+              Thảo luận
+            </TabsTrigger>
+          )}
         </TabsList>
 
         {/* Tab 1 — Bài giảng: description + study materials + progress button */}
@@ -158,18 +160,20 @@ export default function LessonContent({
 
           <StudyMaterialsList
             lessonId={lesson.id}
-            isAdmin={isAdmin}
+            isAdmin={false}
             defaultGrade={toMaterialGrade(courseGrade)}
           />
 
-          <div>
-            <LessonProgressButton
-              lessonId={lesson.id}
-              userId={userId}
-              isCompleted={isCompleted}
-              courseId={courseId}
-            />
-          </div>
+          {!isAdmin && (
+            <div>
+              <LessonProgressButton
+                lessonId={lesson.id}
+                userId={userId}
+                isCompleted={isCompleted}
+                courseId={courseId}
+              />
+            </div>
+          )}
         </TabsContent>
 
         {/* Tab 2 — Bài kiểm tra (only rendered when hasAssignment) */}
@@ -184,31 +188,40 @@ export default function LessonContent({
                     <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
                       <FileText className="h-3.5 w-3.5" /> Đề bài
                     </p>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-3">
                       {urls.map((url, i) => {
                         const name = paths[i]?.split('/').pop() ?? `Tài liệu ${i + 1}`
+                        const isImage = /\.(jpg|jpeg|png|gif|webp|heic|avif)$/i.test(name)
                         const { Icon, colorClass } = getFileIcon(name)
                         return (
-                          <button
-                            key={url}
-                            type="button"
-                            onClick={() => window.open(url, '_blank', 'noopener')}
-                            className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 bg-white hover:bg-primary/5 hover:border-primary/30 transition-colors cursor-pointer text-sm min-h-[44px]"
-                          >
-                            <Icon className={`h-3.5 w-3.5 shrink-0 ${colorClass}`} />
-                            <span className="truncate max-w-[180px] text-foreground/80">{name}</span>
-                            <ExternalLink className="h-3 w-3 text-muted-foreground/40 shrink-0" />
-                          </button>
+                          <div key={url} className="flex flex-col gap-1">
+                            <div
+                              className="w-[200px] h-[200px] rounded-md border bg-muted/40 overflow-hidden cursor-pointer"
+                              onClick={() => window.open(url, '_blank', 'noopener')}
+                            >
+                              {isImage ? (
+                                <img src={url} alt={name} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex flex-col items-center justify-center gap-1 text-muted-foreground">
+                                  <Icon className={`h-8 w-8 ${colorClass}`} />
+                                  <span className="text-[10px] uppercase font-medium">{name.split('.').pop()}</span>
+                                </div>
+                              )}
+                            </div>
+                            <p className="text-[11px] text-muted-foreground truncate text-center w-[200px]" title={name}>{name}</p>
+                          </div>
                         )
                       })}
                     </div>
                   </div>
-                  <SubmissionArea
-                    lessonId={lesson.id}
-                    userId={userId}
-                    courseId={courseId}
-                    submission={submission}
-                  />
+                  {!isAdmin && (
+                    <SubmissionArea
+                      lessonId={lesson.id}
+                      userId={userId}
+                      courseId={courseId}
+                      submission={submission}
+                    />
+                  )}
                 </>
               )
             })()}

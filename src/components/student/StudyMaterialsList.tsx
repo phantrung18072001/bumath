@@ -92,7 +92,7 @@ export default function StudyMaterialsList({
               return (
                 <div key={material.id} className="relative w-24 flex flex-col gap-1">
                   <div
-                    className="relative w-24 h-32 rounded-md border bg-muted/40 overflow-hidden cursor-pointer"
+                    className="relative w-[200px] h-[200px] rounded-md border bg-muted/40 overflow-hidden cursor-pointer"
                     onClick={() => signedUrl && window.open(signedUrl, '_blank', 'noopener')}
                   >
                     {isImage && signedUrl ? (
@@ -117,7 +117,7 @@ export default function StudyMaterialsList({
                       </button>
                     )}
                   </div>
-                  <p className="text-[11px] text-muted-foreground truncate text-center w-24" title={material.title}>
+                  <p className="text-[11px] text-muted-foreground truncate text-center w-[200px]" title={material.title}>
                     {material.title}
                   </p>
                 </div>

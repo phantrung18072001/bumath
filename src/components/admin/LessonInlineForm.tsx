@@ -348,7 +348,7 @@ export default function LessonInlineForm({
                     const { Icon: FileIcon, colorClass, label } = getFileIcon(name)
                     return (
                       <div key={p} className="relative w-24 flex flex-col gap-1">
-                        <div className="relative w-24 h-32 rounded-md border bg-muted/40 overflow-hidden">
+                        <div className="relative w-[200px] h-[200px] rounded-md border bg-muted/40 overflow-hidden">
                           {isImage ? (
                             <img src={publicUrl} alt={name} className="w-full h-full object-cover" />
                           ) : (
@@ -365,7 +365,7 @@ export default function LessonInlineForm({
                             <X className="h-3 w-3" />
                           </button>
                         </div>
-                        <p className="text-[11px] text-muted-foreground truncate text-center w-24" title={name}>{name}</p>
+                        <p className="text-[11px] text-muted-foreground truncate text-center w-[200px]" title={name}>{name}</p>
                       </div>
                     )
                   })}
@@ -375,7 +375,7 @@ export default function LessonInlineForm({
                     const { Icon: FileIcon, colorClass, label } = getFileIcon(file.name)
                     return (
                       <div key={i} className="relative w-24 flex flex-col gap-1">
-                        <div className="relative w-24 h-32 rounded-md border border-dashed bg-muted/20 overflow-hidden">
+                        <div className="relative w-[200px] h-[200px] rounded-md border border-dashed bg-muted/20 overflow-hidden">
                           {previewUrl ? (
                             <img src={previewUrl} alt={file.name} className="w-full h-full object-cover" />
                           ) : (
@@ -392,7 +392,7 @@ export default function LessonInlineForm({
                             <X className="h-3 w-3" />
                           </button>
                         </div>
-                        <p className="text-[11px] text-muted-foreground truncate text-center w-24" title={file.name}>{file.name}</p>
+                        <p className="text-[11px] text-muted-foreground truncate text-center w-[200px]" title={file.name}>{file.name}</p>
                         <p className="text-[10px] text-muted-foreground text-center">{formatFileSize(file.size)}</p>
                       </div>
                     )

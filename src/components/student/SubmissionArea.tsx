@@ -176,7 +176,7 @@ export default function SubmissionArea({
                 key={i}
                 src={url}
                 alt={`Bài làm ${i + 1}`}
-                className="w-full max-w-[200px] rounded-lg object-cover cursor-zoom-in"
+                className="w-[200px] h-[200px] rounded-lg object-cover cursor-zoom-in"
                 onClick={() => window.open(url, '_blank', 'noopener')}
               />
             ))}
@@ -241,7 +241,7 @@ function TeacherImages({ paths }: { paths: string[] }) {
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
       {urls.map((u, i) => (
         <a key={i} href={u} target="_blank" rel="noreferrer">
-          <img src={u} alt={`Phản hồi ${i + 1}`} className="rounded-md border w-full object-cover" />
+          <img src={u} alt={`Phản hồi ${i + 1}`} className="rounded-md border w-[200px] h-[200px] object-cover" />
         </a>
       ))}
     </div>
