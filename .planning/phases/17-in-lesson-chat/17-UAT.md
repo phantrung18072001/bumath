@@ -13,12 +13,12 @@ updated: 2026-05-09T00:03:00+07:00
 ## Current Test
 <!-- OVERWRITE each test - shows where we are -->
 
-number: 7
-name: Delete Message (Teacher/Admin only)
+number: 9
+name: Bell Notification Shows Unread Chat Count (Teacher/Admin)
 expected: |
-  As a teacher or admin viewing the chat, hover over a message. A trash icon
-  should appear. Clicking it shows an inline confirm ("Xoá tin nhắn này?").
-  Confirming soft-deletes the message — it disappears from the list.
+  As a teacher or admin, when a student sends a message you haven't read,
+  the bell icon in the header should show a badge count that includes unread
+  chat messages (merged with graded-unviewed). Badge shows "9+" when total > 9.
 awaiting: user response
 
 ## Tests
@@ -51,11 +51,11 @@ severity: major
 
 ### 7. Delete Message (Teacher/Admin only)
 expected: As a teacher or admin viewing the chat, hover over a message. A trash (🗑) icon should appear. Clicking it shows an inline confirm prompt ("Xoá tin nhắn này?"). Confirming deletes the message (soft-delete). The message should disappear or be marked as deleted in the UI.
-result: [pending]
+result: pass
 
 ### 8. Realtime: New Message Appears Without Refresh
 expected: Open Tab 3 in a lesson in two browser windows (or two accounts). Send a message from one window. The other window should receive and display the new message automatically — without a page refresh.
-result: [pending]
+result: pass
 
 ### 9. Bell Notification Shows Unread Chat Count (Teacher/Admin)
 expected: As a teacher or admin, when a student sends a message you haven't read yet, the bell notification icon in the header should show a badge count that includes the unread chat messages (merged with graded-unviewed count). The badge should show "9+" when the total exceeds 9.
@@ -76,11 +76,11 @@ result: [pending]
 ## Summary
 
 total: 12
-passed: 5
+passed: 7
 issues: 1
 skipped: 0
 blocked: 0
-pending: 6
+pending: 4
 
 ## Gaps
 

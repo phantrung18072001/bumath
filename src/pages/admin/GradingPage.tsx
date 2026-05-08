@@ -150,7 +150,7 @@ export default function GradingPage() {
         Quay lại
       </Link>
 
-      <h1 className="text-xl font-semibold mb-6 leading-relaxed">Chấm bài nộp</h1>
+      <h1 className="text-xl font-bold mb-6 leading-relaxed bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Chấm bài nộp</h1>
 
       {/* Two-column layout: image left, form right */}
       <div className="flex flex-col lg:flex-row gap-8 items-start">
@@ -289,7 +289,7 @@ export default function GradingPage() {
               Lưu điểm
             </Button>
           ) : (
-            <div className="rounded-lg border p-4 space-y-3 bg-muted">
+            <div className="bm-glass-card p-4 space-y-3">
               <p className="text-sm font-semibold leading-relaxed">
                 Bạn chắc chắn muốn lưu điểm {score}/10?
               </p>

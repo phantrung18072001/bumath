@@ -163,7 +163,7 @@ export default function UsersPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-xl font-semibold leading-[1.3] mb-6">Quản lý tài khoản</h1>
+      <h1 className="text-xl font-bold leading-[1.3] mb-6 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Quản lý tài khoản</h1>
 
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row gap-2 mb-6">
@@ -245,6 +245,7 @@ export default function UsersPage() {
         </div>
       ) : (
         <>
+          <div className="bm-glass-card p-6">
           <UsersTable
             users={users}
             currentPage={currentPage}
@@ -303,6 +304,7 @@ export default function UsersPage() {
               </Pagination>
             </div>
           )}
+          </div>
         </>
       )}
 

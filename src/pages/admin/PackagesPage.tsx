@@ -45,7 +45,7 @@ const GRADE_BADGE: Record<GradeValue, { label: string; className: string }> = {
   grade_7: { label: 'Lớp 7', className: 'bg-blue-100 text-blue-700 hover:bg-blue-100' },
   grade_8: { label: 'Lớp 8', className: 'bg-green-100 text-green-700 hover:bg-green-100' },
   grade_9: { label: 'Lớp 9', className: 'bg-purple-100 text-purple-700 hover:bg-purple-100' },
-  advanced: { label: 'Ôn chuyên', className: 'bg-orange-100 text-orange-700 hover:bg-orange-100' },
+  advanced: { label: 'Ôn chuyên', className: 'bg-indigo-100 text-indigo-700 hover:bg-indigo-100' },
 }
 
 function buildPageNumbers(current: number, total: number): (number | 'ellipsis')[] {
@@ -113,8 +113,8 @@ export default function PackagesPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-semibold leading-[1.3]">Quản lý gói học</h1>
-        <Button className="min-h-[48px]" onClick={handleOpenCreate}>
+        <h1 className="text-xl font-bold leading-[1.3] bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Quản lý gói học</h1>
+        <Button className="min-h-[48px] bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white border-0" onClick={handleOpenCreate}>
           <Plus className="h-4 w-4 mr-1" />
           Tạo gói học
         </Button>
@@ -168,7 +168,7 @@ export default function PackagesPage() {
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto">
+          <div className="bm-glass-card p-6 overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>

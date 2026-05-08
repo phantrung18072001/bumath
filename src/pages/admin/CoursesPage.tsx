@@ -139,8 +139,8 @@ export default function CoursesPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-semibold leading-[1.3]">Quản lý khóa học</h1>
-        <Button className="min-h-[48px]" onClick={handleOpenCreate}>
+        <h1 className="text-xl font-bold leading-[1.3] bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Quản lý khóa học</h1>
+        <Button className="min-h-[48px] bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white border-0" onClick={handleOpenCreate}>
           <Plus className="h-4 w-4 mr-1" />
           Tạo khóa học
         </Button>
@@ -206,7 +206,7 @@ export default function CoursesPage() {
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto">
+          <div className="bm-glass-card p-6 overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>

@@ -87,18 +87,28 @@ export default function ChatMessage({
       {/* Bubble */}
       <div className="flex-1 min-w-0">
         {/* Header row */}
-        <div className="flex items-center gap-2 mb-1 flex-wrap">
+        <div className="flex items-center gap-1.5 mb-1">
           <span className="text-sm font-semibold text-slate-800 truncate">
             {message.profiles?.full_name ?? 'Người dùng'}
           </span>
           {roleLabel && (
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-orange-100 text-orange-700 leading-none">
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-orange-100 text-orange-700 leading-none shrink-0">
               {roleLabel}
             </span>
           )}
           <span className="text-xs text-slate-400 ml-auto shrink-0">
             {formatTime(message.created_at)}
           </span>
+          {/* Delete trigger — inline, visible on group hover */}
+          {canDelete && !confirming && (
+            <button
+              aria-label="Xoá tin nhắn"
+              onClick={() => setConfirming(true)}
+              className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 p-1 rounded-md text-slate-300 hover:text-red-500 hover:bg-red-50 cursor-pointer"
+            >
+              <Trash2 className="h-3 w-3" />
+            </button>
+          )}
         </div>
 
         {/* Message card */}
@@ -144,16 +154,6 @@ export default function ChatMessage({
         </div>
       </div>
 
-      {/* Delete trigger — top-right, visible on hover */}
-      {canDelete && !confirming && (
-        <button
-          aria-label="Xoá tin nhắn"
-          onClick={() => setConfirming(true)}
-          className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 cursor-pointer"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </button>
-      )}
     </div>
   )
 }
