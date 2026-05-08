@@ -505,7 +505,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
         isEnrolled ? (
           <>
             <div className="hidden lg:flex h-[calc(100vh-80px)] border-t border-border overflow-hidden">
-              <div className="w-[420px] shrink-0 bg-white border-r border-[#F97316]/20 flex flex-col h-full">
+              <div className="w-[420px] shrink-0 bg-white/80 backdrop-blur-sm border-r border-white/30 flex flex-col h-full">
                 <div className="flex-1 min-h-0 flex flex-col">
                   <LessonSidebar
                     {...sidebarShared}
@@ -513,9 +513,9 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                   />
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto bg-white">
+              <div className="flex-1 overflow-y-auto bg-white/60">
                 {isAdmin && adminPanel && courseId && chapters ? (
-                  <>
+                   <>
                     {(adminPanel.kind === 'chapter-create' || adminPanel.kind === 'chapter-edit') && (
                       <div className="p-6 max-w-2xl mx-auto">
                         <h2 className="text-lg font-semibold mb-4">
@@ -584,7 +584,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                 <Button
                   variant="outline"
                   onClick={() => setDrawerOpen(true)}
-                  className="min-h-[48px] gap-2 border-[#F97316] text-[#F97316] hover:bg-[#F3F0ED] cursor-pointer"
+                  className="min-h-[48px] gap-2 border-indigo-300 text-indigo-600 hover:bg-indigo-50 cursor-pointer"
                   aria-label="Mở danh sách bài học"
                 >
                   <Menu className="h-4 w-4" />
@@ -592,7 +592,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                 </Button>
               </div>
 
-              <div className="flex-1 overflow-y-auto bg-white">
+              <div className="flex-1 overflow-y-auto bg-white/60">
                 {profile && (
                   <LessonContent
                     lesson={activeLesson}
@@ -609,7 +609,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
               <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
                 <SheetContent side="left" className="w-[85vw] max-w-[320px] p-0 flex flex-col">
                   <SheetHeader className="px-4 pt-4 pb-2 border-b border-border shrink-0">
-                    <SheetTitle className="text-base font-bold text-[#92400E]">
+                    <SheetTitle className="text-base font-bold text-[#0F172A]">
                       Danh sách bài học
                     </SheetTitle>
                   </SheetHeader>
@@ -630,7 +630,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
         ) : (
           <>
             <div className="hidden lg:flex h-[calc(100vh-80px)] border-t border-border">
-              <div className="w-[340px] shrink-0 bg-white border-r border-[#F97316]/20">
+              <div className="w-[340px] shrink-0 bg-card/50 border-r border-indigo-200/30">
                 <LessonSidebar
                   chapters={chapters}
                   lessonsByChapter={lessonsByChapter}
@@ -640,15 +640,15 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                   progress={0}
                 />
               </div>
-              <div className="flex-1 overflow-y-auto bg-white flex flex-col">
+              <div className="flex-1 overflow-y-auto bg-transparent flex flex-col">
                 <div className="flex-1 flex items-start justify-center px-8 pt-12 pb-8">
-                  <Card className="bm-clay-card-student border-0 shadow-none w-full max-w-sm p-0">
+                  <Card className="bm-glass-card border-0 shadow-none w-full max-w-sm p-0">
                     <CardContent className="pt-8 pb-8 flex flex-col items-center text-center gap-4">
-                      <div className="w-16 h-16 rounded-full bg-[#FFEDD5] border-2 border-[#F97316] flex items-center justify-center">
-                        <Lock className="h-7 w-7 text-[#F97316]" aria-hidden="true" />
+                      <div className="w-16 h-16 rounded-full bg-indigo-50 border-2 border-indigo-400 flex items-center justify-center">
+                        <Lock className="h-7 w-7 text-indigo-500" aria-hidden="true" />
                       </div>
                       <div className="space-y-2">
-                        <h2 className="text-xl font-bold leading-snug text-[#92400E]">{course?.title}</h2>
+                        <h2 className="text-xl font-bold leading-snug text-[#0F172A]">{course?.title}</h2>
                         {course && (
                           <Badge className={GRADE_BADGE[course.target_grade].className}>
                             {GRADE_BADGE[course.target_grade].label}
@@ -683,21 +683,21 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                 <TabsList className="w-full h-12 rounded-none border-b bg-transparent p-0 gap-0">
                   <TabsTrigger
                     value="content"
-                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-[#F97316] data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-bold cursor-pointer"
+                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-bold cursor-pointer"
                   >
                     Nội dung
                   </TabsTrigger>
                   <TabsTrigger
                     value="outline"
-                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-[#F97316] data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-bold cursor-pointer"
+                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-bold cursor-pointer"
                   >
                     Mục lục
                   </TabsTrigger>
                 </TabsList>
-                <TabsContent value="content" className="mt-0 bg-white">
+                <TabsContent value="content" className="mt-0 bg-transparent">
                   <div className="flex flex-col items-center text-center px-6 pt-12 pb-8 gap-4">
-                    <div className="w-14 h-14 rounded-full bg-[#FFEDD5] border-2 border-[#F97316] flex items-center justify-center">
-                      <Lock className="h-6 w-6 text-[#F97316]" aria-hidden="true" />
+                    <div className="w-14 h-14 rounded-full bg-indigo-50 border-2 border-indigo-400 flex items-center justify-center">
+                      <Lock className="h-6 w-6 text-indigo-500" aria-hidden="true" />
                     </div>
                     {isAuthenticated ? (
                       <div className="text-sm text-muted-foreground leading-relaxed max-w-xs space-y-1">
@@ -839,7 +839,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen app-student bg-gradient-to-br from-primary/5 via-background to-secondary/20">
       <Header />
       <main>{pageContent}</main>
     </div>

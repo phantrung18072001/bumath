@@ -13,13 +13,12 @@ updated: 2026-05-09T00:03:00+07:00
 ## Current Test
 <!-- OVERWRITE each test - shows where we are -->
 
-number: 5
-name: Teacher/Admin Message Bubble Styling
+number: 7
+name: Delete Message (Teacher/Admin only)
 expected: |
-  When a teacher or admin sends a message, their bubble should have a white/warm
-  background with an orange left accent, and show a role badge ("Giảng viên" or
-  "Quản trị"). Student messages should have a plain muted bubble with no left
-  accent.
+  As a teacher or admin viewing the chat, hover over a message. A trash icon
+  should appear. Clicking it shows an inline confirm ("Xoá tin nhắn này?").
+  Confirming soft-deletes the message — it disappears from the list.
 awaiting: user response
 
 ## Tests
@@ -42,11 +41,13 @@ result: pass
 
 ### 5. Teacher/Admin Message Bubble Styling
 expected: When a teacher or admin sends a message (or you view a lesson chat as teacher/admin), teacher/admin messages should appear with a white bubble and an orange left border, and show a role suffix (e.g., "Giảng viên" or "Admin"). Student messages should have the muted background style with no left border.
-result: [pending]
+result: pass
 
 ### 6. Reply Indent (Threaded Message)
 expected: If a message is a reply (has a parent), it should appear visually indented (ml-6 left margin + left border line) below the parent message, indicating it's part of a thread.
-result: [pending]
+result: issue
+reported: "UI có chỗ nào để reply đâu?"
+severity: major
 
 ### 7. Delete Message (Teacher/Admin only)
 expected: As a teacher or admin viewing the chat, hover over a message. A trash (🗑) icon should appear. Clicking it shows an inline confirm prompt ("Xoá tin nhắn này?"). Confirming deletes the message (soft-delete). The message should disappear or be marked as deleted in the UI.
@@ -75,12 +76,18 @@ result: [pending]
 ## Summary
 
 total: 12
-passed: 4
-issues: 0
+passed: 5
+issues: 1
 skipped: 0
 blocked: 0
-pending: 8
+pending: 6
 
 ## Gaps
 
-[none yet]
+- truth: "Chat messages with parent_id should be visually indented as replies"
+  status: failed
+  reason: "User reported: UI có chỗ nào để reply đâu? — No reply button exists in ChatMessage or ChatPanel UI. DB schema supports parent_id and ChatMessage renders isReply prop, but there is no UI affordance (button/gesture) to set parent_id when sending a message."
+  severity: major
+  test: 6
+  artifacts: [src/components/student/ChatMessage.tsx, src/components/student/ChatPanel.tsx]
+  missing: [Reply button on ChatMessage hover, parent_id wiring in ChatPanel.handleSend]

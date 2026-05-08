@@ -68,7 +68,7 @@ export default function CoursesPage() {
   return (
     <StudentLayout>
       <div className="p-8 md:p-10">
-        <h1 className="text-2xl font-bold mb-4 text-[#92400E]">Khóa học của tôi</h1>
+        <h1 className="text-2xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Khóa học của tôi</h1>
 
         {/* Error state */}
         {enrollmentsError && (
@@ -89,8 +89,8 @@ export default function CoursesPage() {
         {/* Empty state */}
         {!isLoading && !enrollmentsError && enrollments?.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-            <BookOpen className="h-16 w-16 text-[#F97316]" aria-hidden="true" />
-            <h2 className="text-xl font-bold text-[#92400E]">Bạn chưa có khóa học nào</h2>
+            <BookOpen className="h-16 w-16 text-indigo-400" aria-hidden="true" />
+            <h2 className="text-xl font-bold text-slate-800">Bạn chưa có khóa học nào</h2>
             <p className="text-base text-muted-foreground max-w-sm">
               Liên hệ giảng viên để được thêm vào khóa học, hoặc khám phá danh mục.
             </p>
@@ -118,9 +118,9 @@ export default function CoursesPage() {
                   to={`/khoa-hoc/${course.slug}`}
                   className="block"
                 >
-                  <Card className="bm-clay-card-student border-0 shadow-none p-0 overflow-hidden h-full min-h-[200px] flex flex-col">
+                  <Card className="bm-glass-card border-0 shadow-none p-0 overflow-hidden h-full min-h-[200px] flex flex-col">
                     <CardHeader className="p-5 pb-3">
-                      <CardTitle className="text-base font-bold leading-snug text-[#92400E] mb-2">
+                      <CardTitle className="text-base font-bold leading-snug text-slate-800 mb-2">
                         {course.title}
                       </CardTitle>
                       <Badge className={`${gradeBadge.className} shrink-0 w-fit`}>
@@ -138,7 +138,7 @@ export default function CoursesPage() {
                       <div>
                         <Progress
                           value={progress}
-                          className="h-1.5 bg-[#FFEDD5] bm-progress-teal"
+                          className="h-1.5 bg-indigo-100 bm-progress-indigo"
                           aria-label={`Tiến độ hoàn thành: ${progress}%`}
                         />
                         <span className="text-xs text-muted-foreground mt-1.5 block">

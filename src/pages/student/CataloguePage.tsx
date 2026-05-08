@@ -88,7 +88,7 @@ export default function CataloguePage() {
     <div className="p-8 md:p-10">
       <div className="flex items-start justify-between gap-4 mb-2 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-[#92400E]">Khám phá khóa học</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Khám phá khóa học</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Tất cả các khóa học đang có tại BuMath
           </p>
@@ -111,7 +111,7 @@ export default function CataloguePage() {
           placeholder="Tìm kiếm khóa học..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9 min-h-[48px] rounded-xl border-[#F97316] focus-visible:ring-[#F97316]"
+          className="pl-9 min-h-[48px] rounded-xl border-indigo-300 focus-visible:ring-indigo-500"
           aria-label="Tìm kiếm khóa học"
         />
       </div>
@@ -125,7 +125,7 @@ export default function CataloguePage() {
             className={[
               'rounded-full px-4 py-2 text-sm font-bold transition-colors duration-150 cursor-pointer min-h-[44px] border',
               activeGrade === f.value
-                ? 'bg-[#F97316] text-white border-[#F97316]'
+                ? 'bg-indigo-600 text-white border-indigo-600'
                 : 'bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground',
             ].join(' ')}
           >
@@ -153,8 +153,8 @@ export default function CataloguePage() {
       {/* Empty state — filtered zero results (D-18) */}
       {!coursesLoading && !coursesError && allCourses.length > 0 && filteredCourses.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-          <Search className="h-16 w-16 text-[#F97316]" aria-hidden="true" />
-          <h2 className="text-xl font-bold text-[#92400E]">Không tìm thấy kết quả</h2>
+          <Search className="h-16 w-16 text-indigo-400" aria-hidden="true" />
+          <h2 className="text-xl font-bold text-slate-800">Không tìm thấy kết quả</h2>
           <p className="text-base text-muted-foreground max-w-sm">
             Thử thay đổi từ khóa hoặc chọn lớp khác.
           </p>
@@ -164,8 +164,8 @@ export default function CataloguePage() {
       {/* Empty state — no courses at all */}
       {!coursesLoading && !coursesError && allCourses.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-          <BookOpen className="h-16 w-16 text-[#F97316]" aria-hidden="true" />
-          <h2 className="text-xl font-bold text-[#92400E]">Chưa có khóa học nào</h2>
+          <BookOpen className="h-16 w-16 text-indigo-400" aria-hidden="true" />
+          <h2 className="text-xl font-bold text-slate-800">Chưa có khóa học nào</h2>
           <p className="text-base text-muted-foreground max-w-sm">
             Hiện tại chưa có khóa học nào. Vui lòng quay lại sau.
           </p>
@@ -185,9 +185,9 @@ export default function CataloguePage() {
                 to={`/khoa-hoc/${course.slug}`}
                 className="block"
               >
-                <Card className="bm-clay-card-student border-0 shadow-none p-0 h-full min-h-[200px] overflow-hidden flex flex-col">
+                <Card className="bm-glass-card border-0 shadow-none p-0 h-full min-h-[200px] overflow-hidden flex flex-col">
                   <CardHeader className="p-5 pb-3">
-                    <CardTitle className="text-base font-bold leading-snug text-[#92400E] mb-2">
+                    <CardTitle className="text-base font-bold leading-snug text-slate-800 mb-2">
                       {course.title}
                     </CardTitle>
                     <div className="flex flex-wrap gap-1">
@@ -250,7 +250,7 @@ export default function CataloguePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen app-student bg-gradient-to-br from-primary/5 via-background to-secondary/20">
       <Header />
       <main>{content}</main>
     </div>

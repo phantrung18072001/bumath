@@ -74,7 +74,7 @@ function AdminSortableChapterItem({
       ref={setNodeRef}
       style={style}
       value={chapter.id}
-      className={cn('w-full border-0 border-b border-[#F97316]/15 last:border-b-0', isDragging ? 'transition-none' : 'transition-transform duration-200')}
+      className={cn('w-full border-0 border-b border-indigo-200/60 last:border-b-0', isDragging ? 'transition-none' : 'transition-transform duration-200')}
       {...attributes}
     >
       <div className="group flex w-full items-center min-h-[48px]">
@@ -173,7 +173,7 @@ function AdminSortableChapterItem({
             <button
               type="button"
               onClick={() => onAddLesson(chapter.id)}
-              className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg border border-dashed border-[#F97316]/40 text-xs font-medium text-[#92400E]/50 hover:text-[#92400E] hover:border-[#F97316]/70 hover:bg-[#FFF7ED] transition-all duration-200 cursor-pointer group/add"
+              className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg border border-dashed border-indigo-300/50 text-xs font-medium text-indigo-400 hover:text-indigo-700 hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200 cursor-pointer group/add"
             >
               <Plus className="h-3.5 w-3.5 transition-transform duration-200 group-hover/add:scale-110" />
               Thêm bài giảng
@@ -328,10 +328,10 @@ export default function LessonSidebar({
   const body = (
     <>
       {!isAdmin && (
-        <div className="px-4 py-4 border-b border-[#F97316]/20 shrink-0">
+        <div className="px-4 py-4 border-b border-indigo-200 shrink-0">
           <Progress
             value={progress}
-            className="h-2 bg-[#FFEDD5] bm-progress-teal"
+            className="h-2 bg-indigo-100 bm-progress-indigo"
             aria-label={`Tiến độ hoàn thành: ${progress}%`}
           />
           <span className="text-sm text-muted-foreground mt-1 block">{progress}% hoàn thành</span>
@@ -346,11 +346,11 @@ export default function LessonSidebar({
       >
         {accordion}
         {isAdmin && onAddChapter && (
-          <div className="px-3 py-3 border-t border-[#F97316]/20">
+          <div className="px-3 py-3 border-t border-indigo-200/60">
             <Button
               type="button"
               variant="outline"
-              className="w-full min-h-[44px] gap-1.5 border-[#F97316]/40 text-[#92400E] hover:bg-[#FFEDD5]/50 cursor-pointer"
+              className="w-full min-h-[44px] gap-1.5 border-indigo-300/60 text-indigo-700 hover:bg-indigo-50/50 cursor-pointer"
               onClick={onAddChapter}
             >
               <Plus className="h-4 w-4" />

@@ -12,7 +12,7 @@ const GRADE_BADGE: Record<string, { label: string; className: string }> = {
   grade_7:  { label: 'Lớp 7',   className: 'bg-blue-100   text-blue-700   hover:bg-blue-100'   },
   grade_8:  { label: 'Lớp 8',   className: 'bg-green-100  text-green-700  hover:bg-green-100'  },
   grade_9:  { label: 'Lớp 9',   className: 'bg-purple-100 text-purple-700 hover:bg-purple-100' },
-  advanced: { label: 'Ôn chuyên', className: 'bg-orange-100 text-orange-700 hover:bg-orange-100' },
+  advanced: { label: 'Ôn chuyên', className: 'bg-indigo-100 text-indigo-700 hover:bg-indigo-100' },
 }
 
 const formatVND = (amount: number) =>
@@ -23,7 +23,7 @@ function PackageCard({ up }: { up: UserPackageWithDetails }) {
     day: '2-digit', month: '2-digit', year: 'numeric',
   })
   return (
-    <div className="bm-clay-card-student p-4 flex flex-col gap-2 transition-shadow duration-200 hover:shadow-lg">
+    <div className="bm-glass-card p-4 flex flex-col gap-2">
       <div className="flex items-start justify-between gap-2">
         <p className="text-sm font-semibold text-foreground leading-snug">{up.package.name}</p>
         {up.package.price_vnd > 0 && (
@@ -66,7 +66,7 @@ export default function ProfilePage() {
           loading="eager"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/85 via-primary/60 to-indigo-500/50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/85 via-indigo-500/60 to-purple-500/50" />
         {/* Decorative math symbols */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden select-none" aria-hidden="true">
           <span className="absolute text-white/20 text-5xl font-light top-3 left-10">∑</span>
@@ -92,11 +92,11 @@ export default function ProfilePage() {
 
           {/* ── Left: Profile Card ────────────────────── */}
           <div className="lg:col-span-1 flex flex-col gap-4">
-            <Card className="bm-clay-card-student">
+            <Card className="bm-glass-card">
               <CardContent className="p-5 flex flex-col items-center text-center gap-3">
                 {/* Avatar */}
-                <div className="w-20 h-20 rounded-full bg-primary/10 border-4 border-white shadow-md flex items-center justify-center shrink-0">
-                  <span className="text-2xl font-bold text-primary">{initials || '?'}</span>
+                <div className="w-20 h-20 rounded-full bg-indigo-50 border-4 border-white shadow-md flex items-center justify-center shrink-0">
+                  <span className="text-2xl font-bold text-indigo-600">{initials || '?'}</span>
                 </div>
                 <div className="w-full text-left">
                   <p className="text-base font-bold text-foreground text-center leading-snug mb-3">
@@ -122,8 +122,8 @@ export default function ProfilePage() {
                 <Separator />
                 {/* Stats */}
                 <div className="w-full">
-                  <div className="flex flex-col items-center gap-0.5 p-2 bg-primary/5 rounded-xl">
-                    <span className="text-xl font-bold text-primary">{isLoading ? '—' : userPackages.length}</span>
+                  <div className="flex flex-col items-center gap-0.5 p-2 bg-indigo-50/50 rounded-xl">
+                    <span className="text-xl font-bold text-indigo-600">{isLoading ? '—' : userPackages.length}</span>
                     <span className="text-xs text-muted-foreground">Gói học đang sở hữu</span>
                   </div>
                 </div>
@@ -137,7 +137,7 @@ export default function ProfilePage() {
                 alt="Học sinh đang học tập"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-indigo-600/60 to-transparent" />
               <p className="absolute bottom-3 left-3 right-3 text-white text-xs font-semibold leading-snug drop-shadow">
                 Học giỏi mỗi ngày, tiến xa hơn mỗi bước!
               </p>
@@ -156,7 +156,7 @@ export default function ProfilePage() {
                 <Skeleton className="h-24 w-full rounded-xl" />
               </div>
             ) : userPackages.length === 0 ? (
-              <Card className="bm-clay-card-student">
+              <Card className="bm-glass-card">
                 <CardContent className="py-14 flex flex-col items-center text-center gap-3">
                   <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center">
                     <Package className="h-7 w-7 text-muted-foreground" aria-hidden="true" />
