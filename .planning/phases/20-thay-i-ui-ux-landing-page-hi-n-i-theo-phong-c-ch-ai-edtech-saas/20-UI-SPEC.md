@@ -128,7 +128,7 @@ Sidebar hover zones — minimum `min-h-[48px]` per lesson item (existing — kee
 
 > Gradient text application (D-11): Apply `bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent` on **page-level h1 headings** only (CoursesPage h1, CataloguePage h1, Admin section headings). Do NOT apply to card titles or body text.
 
-> Font weight rule (D-10): Only 2 weights in use — 400 (body, labels, descriptions) and 700 (headings, card titles, button labels). Semibold 600 may be used for navigation items only.
+> Font weight rule (D-10): Only 2 weights in use — 400 (body, labels, descriptions, inactive nav items) and 700 (headings, card titles, button labels, active nav items). No other weights.
 
 > `text-[#92400E]` (brown) found in existing code — **replace all instances** with `text-[#0F172A]` or gradient variant per the table above.
 
@@ -426,7 +426,7 @@ Apply `bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transpar
 | `CoursesPage` | `<h1>Khóa học của tôi</h1>` | `text-[#92400E]` |
 | `CataloguePage` | `<h1>Khám phá khóa học</h1>` | `text-[#92400E]` |
 | `ProfilePage` | Profile hero greeting text optional | `text-white` (keep white on dark hero) |
-| Admin `CoursesPage` | `<h1>Quản lý khóa học</h1>` | `text-xl font-semibold` |
+| Admin `CoursesPage` | `<h1>Quản lý khóa học</h1>` | `text-xl font-bold` |
 | Admin `UsersPage` | `<h1>Quản lý người dùng</h1>` | plain text |
 | Admin `PackagesPage` | `<h1>Quản lý gói học</h1>` | plain text |
 
@@ -472,7 +472,7 @@ All changes must hold at:
 - Focus rings: `--ring` updated to indigo → all shadcn interactive elements get `ring-indigo-600` automatically
 - `cursor-pointer` — existing pattern, keep on ALL clickable elements
 - `min-h-[48px]` — existing pattern, keep on ALL interactive elements
-- `aria-label` — keep all existing aria labels
+- `aria-label` — keep all existing aria labels. Icon-only action buttons in admin tables MUST have explicit aria-label values: `aria-label="Chỉnh sửa"` (edit), `aria-label="Xóa"` (delete). Executors must verify these exist on every icon button during the style refactor.
 - `prefers-reduced-motion` — add to `.bm-glass-card` in CSS (see card contract above)
 - Screen reader: no changes to semantic HTML structure
 
@@ -556,14 +556,14 @@ Do NOT bundle student + admin into one task. Separate audit passes produce separ
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS (FLAG: aria-label note added for icon-only buttons)
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS (fixed — semibold weight removed, nav uses 400/700 only)
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved 2026-05-08
 
 ---
 
