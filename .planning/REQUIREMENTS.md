@@ -31,9 +31,9 @@
 
 ### Chat
 
-- [ ] **CHAT-01**: Học sinh có thể gửi câu hỏi cho giảng viên trong ngữ cảnh từng bài học cụ thể
-- [ ] **CHAT-02**: Giảng viên và admin có thể reply và xem toàn bộ tin nhắn theo bài học
-- [ ] **CHAT-03**: Giảng viên thấy badge thông báo khi có câu hỏi mới chưa trả lời
+- [x] **CHAT-01**: Học sinh có thể gửi câu hỏi cho giảng viên trong ngữ cảnh từng bài học cụ thể
+- [x] **CHAT-02**: Giảng viên và admin có thể reply và xem toàn bộ tin nhắn theo bài học
+- [x] **CHAT-03**: Giảng viên thấy badge thông báo khi có câu hỏi mới chưa trả lời
 
 ### Materials
 
@@ -109,9 +109,9 @@
 | LESSON-01 | Phase 16 | Pending |
 | LESSON-02 | Phase 16 | Pending |
 | LESSON-03 | Phase 16 | Pending |
-| CHAT-01 | Phase 17 | Pending |
-| CHAT-02 | Phase 17 | Pending |
-| CHAT-03 | Phase 17 | Pending |
+| CHAT-01 | Phase 17 | Complete |
+| CHAT-02 | Phase 17 | Complete |
+| CHAT-03 | Phase 17 | Complete |
 | MAT-01 | Phase 16 | Pending |
 | MAT-02 | Phase 16 | Pending |
 | MAT-03 | Phase 16 | Pending |

@@ -2,15 +2,14 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Platform Expansion
-status: planning
-stopped_at: Phase 17 context gathered
-last_updated: "2026-05-08T15:47:55.339Z"
-last_activity: 2026-05-04 — Phase 14 shipped; Phase 15 artifacts complete on disk
+status: unknown
+stopped_at: Completed 17-in-lesson-chat-01-PLAN.md
+last_updated: "2026-05-08T16:30:14.202Z"
 progress:
-  total_phases: 6
+  total_phases: 7
   completed_phases: 2
-  total_plans: 10
-  completed_plans: 9
+  total_plans: 14
+  completed_plans: 11
 ---
 
 # Project State
@@ -20,18 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-03 — v3.0 milestone started)
 
 **Core value:** Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ thể từ giảng viên trên từng bài làm
-**Current focus:** v3.0 Platform Expansion — Phase 16: Lesson Tabs + Study Materials (plan next)
+**Current focus:** Phase 17 — in-lesson-chat
 
 ## Current Position
 
-Phase: 15 — Admin UX + Audit ✅ COMPLETE (per ROADMAP + 15-P01..P03 SUMMARY)
-Plan: —
-Status: Phase 16 ready to plan — `16-CONTEXT.md` present; ROADMAP Phase 16 plans still TBD
-Last activity: 2026-05-04 — Phase 14 shipped; Phase 15 artifacts complete on disk
-
-```
-v3.0 Progress: ░░░░░░░░░░░░░░░░░░░░ 0/6 phases
-```
+Phase: 17 (in-lesson-chat) — EXECUTING
+Plan: 1 of 4
 
 ## Performance Metrics
 
@@ -81,6 +74,7 @@ v3.0 Progress: ░░░░░░░░░░░░░░░░░░░░ 0/6 
 | Phase 13-student-pages P01 | 5 | 2 tasks | 2 files |
 | Phase 13 P03 | 8min | 2 tasks | 2 files |
 | Phase 13-student-pages P02 | 251 | 2 tasks | 2 files |
+| Phase 17-in-lesson-chat P01 | 2m 23s | 3 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -89,6 +83,7 @@ v3.0 Progress: ░░░░░░░░░░░░░░░░░░░░ 0/6 
 - Phase 6 added: UX Polish — grading filters, student course discovery, nav fixes, progress bar color
 - Phase 12.1 inserted after Phase 12: UI fix - error states typography touch targets (URGENT)
 - v3.0 Phases 14–19 created 2026-05-03: 31 requirements mapped across 6 phases
+- Phase 20 added: Thay đổi UI/UX: Landing page hiện đại theo phong cách AI EdTech SaaS
 
 ### v3.0 Phase Map
 
@@ -161,6 +156,9 @@ Recent decisions affecting current work:
 - [Phase 13]: Sheet drawer replaces Tabs for enrolled mobile — cleaner UX, lg: breakpoints, preview card
 - [Phase 13-student-pages]: useInfiniteQuery replaces useQuery for paginated course loading in CataloguePage
 - [Phase 13-student-pages]: Client-side search+grade filter operates on all loaded pages (no re-fetch on type)
+- [Phase 17-in-lesson-chat]: No UPDATE/DELETE RLS policies on lesson_chat_messages — soft-delete exclusively via SECURITY DEFINER RPC delete_chat_message
+- [Phase 17-in-lesson-chat]: REPLICA IDENTITY FULL on lesson_chat_messages — required for Supabase Realtime UPDATE/DELETE to deliver full old row for client state reconciliation
+- [Phase 17-in-lesson-chat]: get_teacher_unread_chat_count uses per-lesson read_at from lesson_chat_reads with epoch fallback — avoids NULL edge case for never-read lessons
 
 ### Pending Todos
 
@@ -175,6 +173,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-08T15:47:55.337Z
-Stopped at: Phase 17 context gathered
-Resume file: .planning/phases/17-in-lesson-chat/17-CONTEXT.md
+Last session: 2026-05-08T16:30:03.972Z
+Stopped at: Completed 17-in-lesson-chat-01-PLAN.md
+Resume file: None

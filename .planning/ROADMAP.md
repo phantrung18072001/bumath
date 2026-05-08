@@ -166,7 +166,7 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
 **Goal:** [To be planned]
 **Requirements**: TBD
 **Depends on:** Phase 19
-**Plans:** 0 plans
+**Plans:** 2/4 plans executed
 
 Plans:
 - [ ] TBD (run /gsd:plan-phase 20 to break down)
@@ -180,6 +180,6 @@ Plans:
 | 14. Pricing + Access Control | 6/6 | ✅ Complete | 8dbc495, 1b1eb04, e14c7e9, 14154f6, 86040f9 |
 | 15. Admin UX + Audit | 0/? | Not started | - |
 | 16. Lesson Tabs + Study Materials | 0/? | Not started | - |
-| 17. In-Lesson Chat | 0/4 | Planned | - |
+| 17. In-Lesson Chat | 2/4 | In Progress|  |
 | 18. Mock Exam System | 0/? | Not started | - |
 | 19. Landing Page + Navigator + Video | 0/? | Not started | - |
