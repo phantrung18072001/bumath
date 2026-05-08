@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Platform Expansion
 status: unknown
-stopped_at: Phase 20 context gathered
-last_updated: "2026-05-08T16:34:08.334Z"
+stopped_at: Completed 17-04-PLAN.md
+last_updated: "2026-05-08T16:34:22.611Z"
 progress:
   total_phases: 7
   completed_phases: 2
@@ -76,6 +76,7 @@ Plan: 1 of 4
 | Phase 13-student-pages P02 | 251 | 2 tasks | 2 files |
 | Phase 17-in-lesson-chat P01 | 2m 23s | 3 tasks | 1 files |
 | Phase 17 P02 | 3min | 3 tasks | 8 files |
+| Phase 17-in-lesson-chat P04 | 2 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -162,6 +163,8 @@ Recent decisions affecting current work:
 - [Phase 17-in-lesson-chat]: get_teacher_unread_chat_count uses per-lesson read_at from lesson_chat_reads with epoch fallback — avoids NULL edge case for never-read lessons
 - [Phase 17-02]: Placeholder component stubs (ChatPanel/ChatMessage/ChatInput.tsx) required — Vite resolves dynamic imports at transform time even inside it.skip; stubs prevent ReferenceError (Phase 05 precedent: CataloguePage.tsx stub)
 - [Phase 17-02]: it.skip used (not it.todo) for Wave 0 stubs — allows dynamic import() pattern with concrete expect(Component).toBeDefined() assertions; Plan 03 switches to it + fills render
+- [Phase 17-in-lesson-chat]: queryKey 'teacher-chat-unread' exact string — matches ChatPanel invalidateQueries in Plan 03
+- [Phase 17-04]: enabled: isTeacherOrAdmin gates chat unread poll — students never trigger get_teacher_unread_chat_count RPC
 
 ### Pending Todos
 
@@ -176,6 +179,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-08T16:34:08.331Z
-Stopped at: Phase 20 context gathered
-Resume file: .planning/phases/20-thay-i-ui-ux-landing-page-hi-n-i-theo-phong-c-ch-ai-edtech-saas/20-CONTEXT.md
+Last session: 2026-05-08T16:34:22.608Z
+Stopped at: Completed 17-04-PLAN.md
+Resume file: None

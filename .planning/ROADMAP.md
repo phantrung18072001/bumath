@@ -166,7 +166,7 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
 **Goal:** Áp dụng design language hiện đại (glassmorphism, indigo/purple palette, premium SaaS aesthetic) lên toàn bộ màn hình học sinh và quản trị — giữ nguyên backgrounds hiện tại, chỉ nâng cấp cards, buttons, badges và interactive elements
 **Requirements**: TBD
 **Depends on:** Phase 19
-**Plans:** 0 plans
+**Plans:** 3/4 plans executed
 
 **Background lock rule:** Mọi plan trong phase này phải giữ nguyên background colors (`#F0FDFA` mint cho student, current bg cho admin). Chỉ sửa card/button/badge styles.
 
@@ -182,6 +182,6 @@ Plans:
 | 14. Pricing + Access Control | 6/6 | ✅ Complete | 8dbc495, 1b1eb04, e14c7e9, 14154f6, 86040f9 |
 | 15. Admin UX + Audit | 0/? | Not started | - |
 | 16. Lesson Tabs + Study Materials | 0/? | Not started | - |
-| 17. In-Lesson Chat | 2/4 | In Progress|  |
+| 17. In-Lesson Chat | 3/4 | In Progress|  |
 | 18. Mock Exam System | 0/? | Not started | - |
 | 19. Landing Page + Navigator + Video | 0/? | Not started | - |
