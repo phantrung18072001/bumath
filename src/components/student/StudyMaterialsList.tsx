@@ -28,7 +28,7 @@ interface StudyMaterialsListProps {
 }
 
 const LABEL_CLASS = 'text-[11px] font-semibold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5'
-const THUMB_CLASS = 'w-[200px] h-[200px] rounded-md border bg-muted/40 overflow-hidden cursor-pointer shrink-0'
+const THUMB_CLASS = 'relative w-[200px] h-[200px] rounded-md border bg-muted/40 overflow-hidden cursor-pointer shrink-0'
 
 export default function StudyMaterialsList({
   lessonId,
