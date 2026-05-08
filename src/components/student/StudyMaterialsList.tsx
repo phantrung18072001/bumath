@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { FileText, Image, File, Download, Trash2, MessageCircle } from 'lucide-react'
+import { FileText, Image, File, Download, Trash2 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import {
@@ -95,6 +95,8 @@ export default function StudyMaterialsList({
 
   const isEmpty = (materials ?? []).length === 0
 
+  if (isEmpty && !isAdmin) return null
+
   return (
     <>
       <div className="space-y-3">
@@ -130,26 +132,7 @@ export default function StudyMaterialsList({
           <StudyMaterialUploadForm lessonId={lessonId} defaultGrade={defaultGrade} />
         )}
 
-        {isEmpty ? (
-          <div className="flex flex-col items-center justify-center py-8 gap-3 text-center">
-            <MessageCircle className="h-10 w-10 text-muted-foreground/30" />
-            {isAdmin ? (
-              <>
-                <p className="text-sm font-medium text-muted-foreground">Chưa có tài liệu nào</p>
-                <p className="text-xs text-muted-foreground/60">
-                  Nhấn "Thêm tài liệu" để upload PDF hoặc ảnh cho bài học này.
-                </p>
-              </>
-            ) : (
-              <>
-                <p className="text-sm font-medium text-muted-foreground">Chưa có tài liệu</p>
-                <p className="text-xs text-muted-foreground/60">
-                  Tài liệu học tập sẽ sớm được cập nhật.
-                </p>
-              </>
-            )}
-          </div>
-        ) : filtered.length === 0 ? (
+        {filtered.length === 0 && !isEmpty ? (
           <p className="text-sm text-muted-foreground py-4 text-center">
             Không có tài liệu nào cho loại này.
           </p>

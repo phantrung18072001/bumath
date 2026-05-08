@@ -92,8 +92,48 @@ export default function LessonContent({
         )}
       </div>
 
+      {/* Video + description — always visible above tabs */}
+      <div className="px-4 md:px-8 py-6 space-y-6">
+        {/* Video: 3 states */}
+        {lesson.video_url ? (
+          <div className="max-w-4xl">
+            <AspectRatio ratio={16 / 9} className="rounded-2xl overflow-hidden bg-black shadow-sm">
+              <iframe
+                src={lesson.video_url}
+                title={`Video bài học: ${lesson.title}`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full border-0"
+              />
+            </AspectRatio>
+          </div>
+        ) : lesson.has_video ? (
+          <div className="max-w-4xl">
+            <AspectRatio ratio={16 / 9} className="rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
+              <div className="w-full h-full flex flex-col items-center justify-center gap-4">
+                <div className="h-16 w-16 rounded-2xl bg-white/80 flex items-center justify-center shadow-sm">
+                  <Lock className="h-8 w-8 text-slate-400" aria-hidden="true" />
+                </div>
+                <div className="text-center">
+                  <p className="text-base font-semibold text-slate-600">Bài học bị khoá</p>
+                  <p className="text-sm text-slate-400 mt-1">Bạn chưa có gói học phù hợp</p>
+                </div>
+              </div>
+            </AspectRatio>
+          </div>
+        ) : null}
+
+        {/* Description */}
+        {lesson.description && (
+          <div className="rounded-2xl bg-muted/40 border border-border/40 p-5">
+            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">Mô tả bài học</p>
+            <p className="text-base text-foreground/80 whitespace-pre-wrap leading-relaxed">{lesson.description}</p>
+          </div>
+        )}
+      </div>
+
       {/* 3-tab content */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-3">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="w-full border-b border-border rounded-none bg-transparent px-4 md:px-8 h-auto pb-0 justify-start gap-1 sticky top-0 bg-white z-10">
           <TabsTrigger
             value="bai-giang"
@@ -117,54 +157,14 @@ export default function LessonContent({
           </TabsTrigger>
         </TabsList>
 
-        {/* Tab 1 — Bài giảng */}
+        {/* Tab 1 — Bài giảng: study materials + progress button */}
         <TabsContent value="bai-giang" className="px-4 md:px-8 py-6 space-y-8 mt-0">
-
-          {/* Video: 3 states */}
-          {lesson.video_url ? (
-            <div className="max-w-4xl">
-              <AspectRatio ratio={16 / 9} className="rounded-2xl overflow-hidden bg-black shadow-sm">
-                <iframe
-                  src={lesson.video_url}
-                  title={`Video bài học: ${lesson.title}`}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full border-0"
-                />
-              </AspectRatio>
-            </div>
-          ) : lesson.has_video ? (
-            <div className="max-w-4xl">
-              <AspectRatio ratio={16 / 9} className="rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
-                <div className="w-full h-full flex flex-col items-center justify-center gap-4">
-                  <div className="h-16 w-16 rounded-2xl bg-white/80 flex items-center justify-center shadow-sm">
-                    <Lock className="h-8 w-8 text-slate-400" aria-hidden="true" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-base font-semibold text-slate-600">Bài học bị khoá</p>
-                    <p className="text-sm text-slate-400 mt-1">Bạn chưa có gói học phù hợp</p>
-                  </div>
-                </div>
-              </AspectRatio>
-            </div>
-          ) : null}
-
-          {/* Description */}
-          {lesson.description && (
-            <div className="rounded-2xl bg-muted/40 border border-border/40 p-5">
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">Mô tả bài học</p>
-              <p className="text-base text-foreground/80 whitespace-pre-wrap leading-relaxed">{lesson.description}</p>
-            </div>
-          )}
-
-          {/* Study materials */}
           <StudyMaterialsList
             lessonId={lesson.id}
             isAdmin={isAdmin}
             defaultGrade={toMaterialGrade(courseGrade)}
           />
 
-          {/* Mark complete */}
           <div>
             <LessonProgressButton
               lessonId={lesson.id}
