@@ -104,6 +104,7 @@ export default function StudyMaterialsList({
           <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
             <FileText className="h-3.5 w-3.5" />
             Tài liệu học tập
+            <span className="font-normal normal-case tracking-normal text-muted-foreground/70">(PDF, ảnh)</span>
           </label>
 
           {!isEmpty && (

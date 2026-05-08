@@ -73,10 +73,10 @@ export default function StudyMaterialUploadForm({
       <Button
         variant="outline"
         size="sm"
-        className="min-h-[44px]"
+        className="h-9 px-3 text-sm cursor-pointer border-border/60 bg-white/60 hover:bg-white"
         onClick={() => setOpen(true)}
       >
-        <Plus className="h-4 w-4 mr-1.5" />
+        <Plus className="h-4 w-4 mr-2" />
         Thêm tài liệu
       </Button>
     )
