@@ -128,7 +128,7 @@ export default function LessonContent({
 
       {/* 3-tab content */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="w-full border-b border-border rounded-none bg-transparent px-4 md:px-8 h-auto pb-0 justify-start gap-1 sticky top-0 bg-white z-10">
+        <TabsList className="w-full border-b border-border rounded-none bg-white/80 backdrop-blur-sm px-4 md:px-8 h-auto pb-0 justify-start gap-1 sticky top-0 z-10">
           <TabsTrigger
             value="bai-giang"
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none pb-3 font-medium text-sm text-muted-foreground"
