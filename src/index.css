@@ -34,6 +34,32 @@
     0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
+/* === BuMath Glassmorphism Card (Phase 20) === */
+.bm-glass-card {
+  background: rgba(255, 255, 255, 0.80);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  border-radius: 24px;
+  box-shadow:
+    0 10px 15px rgba(0, 0, 0, 0.08),
+    0 4px 6px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+.bm-glass-card:hover {
+  box-shadow:
+    0 20px 25px rgba(0, 0, 0, 0.12),
+    0 8px 10px rgba(0, 0, 0, 0.06);
+  transform: translateY(-4px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .bm-glass-card,
+  .bm-glass-card:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bm-clay-card-student {
     transition: none;
@@ -47,6 +73,12 @@
 .bm-progress-teal [data-slot="progress-indicator"],
 .bm-progress-teal > div {
   background-color: #F97316 !important;
+}
+
+/* === BuMath Indigo Progress Bar Override (Phase 20) === */
+.bm-progress-indigo [data-slot="progress-indicator"],
+.bm-progress-indigo > div {
+  background-color: #4F46E5 !important;
 }
 
 /* === BuMath Float Animation (math symbols) === */
@@ -75,7 +107,7 @@
 .bm-float-symbol-light {
   position: absolute;
   font-weight: 700;
-  color: #F97316;
+  color: #4F46E5;
   opacity: 0.20;
   pointer-events: none;
   user-select: none;
@@ -246,6 +278,28 @@
     --sidebar-border: 20 15% 18%;
     --sidebar-ring: 24 95% 53%;
   }
+}
+
+/* === Phase 20: Indigo theme scoped to authenticated app shells === */
+/* Landing page (/) keeps orange primary because it has no .app-student/.app-admin wrapper. */
+.app-student,
+.app-admin {
+  --primary: 245 94% 58%;           /* #4F46E5 indigo */
+  --primary-foreground: 0 0% 100%;
+  --ring: 245 94% 58%;
+  --secondary: 270 67% 47%;         /* #7C3AED purple */
+  --sidebar-primary: 245 94% 58%;
+  --sidebar-ring: 245 94% 58%;
+  --bm-primary: #4F46E5;
+  --bm-secondary: #7C3AED;
+  --bm-cta: #4F46E5;
+  --bm-border: #4F46E5;
+}
+
+/* Override bm-btn-cta to use indigo→purple gradient inside authenticated app */
+.app-student .bm-btn-cta,
+.app-admin .bm-btn-cta {
+  background: linear-gradient(to right, #4F46E5, #7C3AED) !important;
 }
 
 @layer base {

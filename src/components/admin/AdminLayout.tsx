@@ -27,10 +27,10 @@ export default function AdminLayout({ children, fullBleed = false }: { children:
   const visibleItems = navItems.filter((item) => !item.adminOnly || isAdmin)
 
   return (
-    <div className={cn('flex', fullBleed ? 'h-[calc(100vh-80px)] overflow-hidden' : 'min-h-[calc(100vh-80px)]')}>
+    <div className={cn('flex app-admin bg-gradient-to-br from-primary/5 via-background to-secondary/20', fullBleed ? 'h-[calc(100vh-80px)] overflow-hidden' : 'min-h-[calc(100vh-80px)]')}>
       {/* Sidebar — hidden on full-bleed pages (e.g. course detail) */}
       {!fullBleed && (
-        <aside className="w-60 shrink-0 border-r bg-card overflow-y-auto">
+        <aside className="w-60 shrink-0 border-r border-white/30 bg-white/80 backdrop-blur-sm overflow-y-auto">
           <nav className="p-3 space-y-1">
             {visibleItems.map(({ label, to, icon: Icon }) => {
               const active = location.pathname.startsWith(to)

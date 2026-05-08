@@ -13,13 +13,13 @@ updated: 2026-05-09T00:03:00+07:00
 ## Current Test
 <!-- OVERWRITE each test - shows where we are -->
 
-number: 2
-name: Send a Chat Message (Student)
+number: 5
+name: Teacher/Admin Message Bubble Styling
 expected: |
-  As a student, open Tab 3 (Thảo luận) in a lesson. Type a message in the
-  textarea and press Enter (or click the orange Send button). The message should
-  appear in the chat immediately with a "muted" bubble style. The input field
-  should clear and refocus after sending.
+  When a teacher or admin sends a message, their bubble should have a white/warm
+  background with an orange left accent, and show a role badge ("Giảng viên" or
+  "Quản trị"). Student messages should have a plain muted bubble with no left
+  accent.
 awaiting: user response
 
 ## Tests
@@ -30,15 +30,15 @@ result: pass
 
 ### 2. Send a Chat Message (Student)
 expected: As a student, open Tab 3 (Thảo luận) in a lesson. Type a message in the textarea and press Enter (or click the orange Send button). The message should appear in the chat immediately with a "muted" bubble style. The input field should clear and refocus after sending.
-result: [pending]
+result: pass
 
 ### 3. Shift+Enter Creates Newline (No Send)
 expected: In the chat input textarea, press Shift+Enter. The cursor should move to a new line inside the textarea — the message should NOT be sent.
-result: [pending]
+result: pass
 
 ### 4. Send Button Disabled on Empty Input
 expected: With the chat input textarea empty (or containing only whitespace), the orange Send button should be disabled (grayed out / not clickable).
-result: [pending]
+result: pass
 
 ### 5. Teacher/Admin Message Bubble Styling
 expected: When a teacher or admin sends a message (or you view a lesson chat as teacher/admin), teacher/admin messages should appear with a white bubble and an orange left border, and show a role suffix (e.g., "Giảng viên" or "Admin"). Student messages should have the muted background style with no left border.
@@ -75,11 +75,11 @@ result: [pending]
 ## Summary
 
 total: 12
-passed: 1
+passed: 4
 issues: 0
 skipped: 0
 blocked: 0
-pending: 11
+pending: 8
 
 ## Gaps
 

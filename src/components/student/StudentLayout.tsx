@@ -18,7 +18,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
   }
 
   return (
-    <div className="h-screen overflow-hidden flex flex-col bg-white relative isolate">
+    <div className="h-screen overflow-hidden flex flex-col app-student bg-gradient-to-br from-primary/5 via-background to-secondary/20 relative isolate">
       {/* Floating math symbols background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 hidden" aria-hidden="true">
         {/* Row 1 — ~6% */}
@@ -51,7 +51,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
         <span className="bm-float-symbol-light" style={{ top: '86%', right: '1%',  fontSize: '50px' }}>∈</span>
       </div>
       {/* Header — h-20 (80px) */}
-      <header className="h-20 bg-card border-b border-border flex items-center px-6 sticky top-0 z-10">
+      <header className="h-20 bg-white/80 backdrop-blur-sm border-b border-white/30 flex items-center px-6 sticky top-0 z-10">
         <Link
           to="/"
           className="flex items-center gap-3"

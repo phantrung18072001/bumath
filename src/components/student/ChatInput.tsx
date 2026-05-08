@@ -1,6 +1,5 @@
-import { useRef, useState, type KeyboardEvent } from 'react'
+import { useRef, useState, useEffect, type KeyboardEvent } from 'react'
 import { SendHorizontal, Loader2 } from 'lucide-react'
-import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 
 interface ChatInputProps {
@@ -9,6 +8,8 @@ interface ChatInputProps {
   ariaLabel?: string
   sendAriaLabel?: string
 }
+
+const MAX_HEIGHT = 160 // px — ~6 lines
 
 export default function ChatInput({
   onSend,
@@ -22,12 +23,26 @@ export default function ChatInput({
   const trimmed = value.trim()
   const canSend = !sending && trimmed.length > 0
 
+  // Auto-resize: reset to 'auto' first so shrinking works, then grow to scrollHeight
+  const resize = () => {
+    const el = ref.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${Math.min(el.scrollHeight, MAX_HEIGHT)}px`
+  }
+
+  useEffect(() => {
+    resize()
+  }, [value])
+
   const submit = async () => {
     if (!canSend) return
     setSending(true)
     try {
       await onSend(trimmed)
       setValue('')
+      // Reset height after clearing
+      if (ref.current) ref.current.style.height = 'auto'
       ref.current?.focus()
     } finally {
       setSending(false)
@@ -42,17 +57,17 @@ export default function ChatInput({
   }
 
   return (
-    <div className="shrink-0 border-t border-slate-100 bg-white/80 backdrop-blur-sm px-4 py-3">
+    <div className="shrink-0 border-t border-slate-100 bg-white/80 backdrop-blur-sm px-3 py-2">
       <div
         className={cn(
-          'flex items-end gap-2 rounded-2xl border px-3 py-2 transition-all duration-200',
+          'flex items-end gap-2 rounded-xl border px-2.5 py-1.5 transition-all duration-200',
           'bg-white shadow-sm',
           value.length > 0
             ? 'border-orange-300 shadow-orange-100 shadow-md ring-1 ring-orange-200/50'
             : 'border-slate-200 hover:border-slate-300',
         )}
       >
-        <Textarea
+        <textarea
           ref={ref}
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -61,17 +76,18 @@ export default function ChatInput({
           aria-label={ariaLabel}
           rows={1}
           disabled={sending}
+          style={{ height: 'auto', maxHeight: `${MAX_HEIGHT}px` }}
           className={cn(
-            'flex-1 min-h-[28px] max-h-[120px] resize-none border-0 bg-transparent p-0',
-            'text-sm text-slate-800 placeholder:text-slate-400',
-            'focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none',
+            'flex-1 resize-none overflow-y-auto bg-transparent p-0 py-1',
+            'text-sm text-slate-800 placeholder:text-slate-400 leading-[1.5]',
+            'border-0 outline-none ring-0 focus:outline-none focus:ring-0 shadow-none',
           )}
         />
 
-        {/* Hint */}
+        {/* Hint — only when empty */}
         {value.length === 0 && (
-          <span className="text-[10px] text-slate-300 shrink-0 mb-0.5 hidden sm:block">
-            Enter gửi · Shift↵ xuống dòng
+          <span className="text-[10px] text-slate-300 shrink-0 mb-1 hidden sm:block whitespace-nowrap">
+            Enter gửi · Shift↵ dòng mới
           </span>
         )}
 
@@ -82,21 +98,21 @@ export default function ChatInput({
           disabled={!canSend}
           onClick={() => void submit()}
           className={cn(
-            'shrink-0 flex items-center justify-center w-8 h-8 rounded-xl transition-all duration-200 cursor-pointer',
+            'shrink-0 flex items-center justify-center w-7 h-7 rounded-lg mb-0.5 transition-all duration-150 cursor-pointer',
             canSend
-              ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-sm hover:shadow-orange-200 hover:shadow-md active:scale-95'
+              ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-sm hover:shadow-orange-200 hover:shadow active:scale-95'
               : 'bg-slate-100 text-slate-300 cursor-not-allowed',
           )}
         >
           {sending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
           ) : (
-            <SendHorizontal className="h-4 w-4" />
+            <SendHorizontal className="h-3.5 w-3.5" />
           )}
         </button>
       </div>
 
-      <p className="text-[10px] text-slate-400 mt-1.5 px-1 sm:hidden">
+      <p className="text-[10px] text-slate-400 mt-1 px-0.5 sm:hidden">
         Enter gửi · Shift+Enter xuống dòng
       </p>
     </div>

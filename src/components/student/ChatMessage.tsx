@@ -31,6 +31,7 @@ function formatTime(iso: string): string {
       minute: '2-digit',
       day: '2-digit',
       month: '2-digit',
+      year: 'numeric',
     })
   } catch {
     return ''
@@ -87,7 +88,7 @@ export default function ChatMessage({
       <div className="flex-1 min-w-0">
         {/* Header row */}
         <div className="flex items-center gap-2 mb-1 flex-wrap">
-          <span className="text-xs font-semibold text-slate-800 truncate">
+          <span className="text-sm font-semibold text-slate-800 truncate">
             {message.profiles?.full_name ?? 'Người dùng'}
           </span>
           {roleLabel && (
@@ -95,7 +96,7 @@ export default function ChatMessage({
               {roleLabel}
             </span>
           )}
-          <span className="text-[11px] text-slate-400 ml-auto shrink-0">
+          <span className="text-xs text-slate-400 ml-auto shrink-0">
             {formatTime(message.created_at)}
           </span>
         </div>
