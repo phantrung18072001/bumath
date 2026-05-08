@@ -160,7 +160,7 @@ export default function LessonContent({
 
           <StudyMaterialsList
             lessonId={lesson.id}
-            isAdmin={isAdmin}
+            isAdmin={false}
             defaultGrade={toMaterialGrade(courseGrade)}
           />
 

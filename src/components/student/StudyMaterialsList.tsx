@@ -132,9 +132,6 @@ export default function StudyMaterialsList({
           {isAdmin && <span className="font-normal normal-case tracking-normal text-muted-foreground/70">(PDF, ảnh)</span>}
         </label>
         {thumbnails}
-        {isAdmin && list.length === 0 && (
-          <p className="text-xs text-muted-foreground/70">Chưa có tài liệu nào. Thêm tài liệu bên dưới.</p>
-        )}
         {isAdmin && (
           <StudyMaterialUploadForm lessonId={lessonId} defaultGrade={defaultGrade} />
         )}
