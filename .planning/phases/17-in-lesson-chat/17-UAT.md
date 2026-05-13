@@ -1,5 +1,5 @@
 ---
-status: testing
+status: complete
 phase: 17-in-lesson-chat
 source:
   - 17-01-SUMMARY.md
@@ -7,19 +7,12 @@ source:
   - 17-03-SUMMARY.md
   - 17-04-SUMMARY.md
 started: 2026-05-09T00:03:00+07:00
-updated: 2026-05-09T00:03:00+07:00
+updated: 2026-05-13T09:48:49+07:00
 ---
 
 ## Current Test
-<!-- OVERWRITE each test - shows where we are -->
 
-number: 9
-name: Bell Notification Shows Unread Chat Count (Teacher/Admin)
-expected: |
-  As a teacher or admin, when a student sends a message you haven't read,
-  the bell icon in the header should show a badge count that includes unread
-  chat messages (merged with graded-unviewed). Badge shows "9+" when total > 9.
-awaiting: user response
+[testing complete]
 
 ## Tests
 
