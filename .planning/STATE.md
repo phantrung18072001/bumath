@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-03 — v3.0 milestone started)
 
 **Core value:** Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ thể từ giảng viên trên từng bài làm
-**Current focus:** Phase 20 — COMPLETED; next phase TBD
+**Current focus:** Phase 18 (Mock Exam System)
 
 ## Current Position
 
-Phase: 20 (thay-i-ui-ux-landing-page — AI EdTech SaaS design) — COMPLETED
-Plan: 3 of 3
+Phase: 17 (in-lesson-chat) — COMPLETED
+Plan: 4 of 4
 
 ## Performance Metrics
 
@@ -169,6 +169,7 @@ Recent decisions affecting current work:
 - [Phase 17-03]: vi.hoisted() required for supabase channel spies in test files — vi.mock factory is hoisted before let/const declarations in test files
 - [Phase 17-03]: Don't mock both @/lib/supabase AND @/contexts/AuthContext in same vitest file — causes module-registry hang; use AuthProvider wrapper with mocked supabase instead
 - [Phase 17-03]: chatApi container object pattern for lesson-chat mocks — prevents vi.clearAllMocks() resetting implementations between tests
+- [RECURRING BUG — RESOLVED AT SOURCE]: Tooltip displays below content / clipped by overflow-hidden. Root cause: `src/components/ui/tooltip.tsx` `TooltipContent` was missing `TooltipPrimitive.Portal` wrapper — Radix Tooltip does NOT auto-portal (unlike Dialog/Dropdown). Without portal, tooltip renders inline in the DOM and any `overflow-hidden` ancestor clips it. Fix: wrap `TooltipPrimitive.Content` inside `TooltipPrimitive.Portal` in tooltip.tsx (done 2026-05-13). Do NOT fix at call sites — fix is permanent in the ui component. Do NOT use nested `TooltipProvider` — one global provider in App.tsx is sufficient.
 
 ### Pending Todos
 
@@ -183,6 +184,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-08T16:56:10.731Z
-Stopped at: Completed 17-03-PLAN.md
+Last session: 2026-05-09T01:25:00.000Z
+Stopped at: Phase 17 complete, ready to plan Phase 18
 Resume file: None
