@@ -107,25 +107,27 @@ export default function ChatInput({
           </span>
         )}
 
-        {/* Send button */}
-        <button
-          type="button"
-          aria-label={sendAriaLabel}
-          disabled={!canSend}
-          onClick={() => void submit()}
-          className={cn(
-            'shrink-0 flex items-center justify-center w-7 h-7 rounded-lg mb-0.5 transition-all duration-150 cursor-pointer',
-            canSend
-              ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-sm hover:shadow-orange-200 hover:shadow active:scale-95'
-              : 'bg-slate-100 text-slate-300 cursor-not-allowed',
-          )}
-        >
-          {sending ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          ) : (
-            <SendHorizontal className="h-3.5 w-3.5" />
-          )}
-        </button>
+        {/* Send button — min-44px touch target wrapper around 28px visual circle */}
+        <div className="shrink-0 flex items-center justify-center min-w-[44px] min-h-[44px]">
+          <button
+            type="button"
+            aria-label={sendAriaLabel}
+            disabled={!canSend}
+            onClick={() => void submit()}
+            className={cn(
+              'flex items-center justify-center w-7 h-7 rounded-lg transition-all duration-150 cursor-pointer',
+              canSend
+                ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-sm hover:shadow-orange-200 hover:shadow active:scale-95'
+                : 'bg-slate-100 text-slate-300 cursor-not-allowed',
+            )}
+          >
+            {sending ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <SendHorizontal className="h-3.5 w-3.5" />
+            )}
+          </button>
+        </div>
       </div>
 
       <p className="text-[10px] text-slate-400 mt-1 px-0.5 sm:hidden">

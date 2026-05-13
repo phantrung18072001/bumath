@@ -129,8 +129,8 @@ export default function ChatMessage({
           className={cn(
             'relative rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words transition-shadow duration-150',
             isStaffSender
-              ? 'bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200/60 text-slate-800 shadow-sm'
-              : 'bg-white border border-slate-100 text-slate-700 shadow-sm',
+              ? 'bg-white border border-orange-200/20 text-slate-800 shadow-sm'
+              : 'bg-muted text-slate-700',
             isStaffSender && 'rounded-tl-sm',
             !isStaffSender && 'rounded-tl-sm',
           )}

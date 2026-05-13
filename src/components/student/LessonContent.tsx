@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
+import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Lock, Pencil, Trash2, BookOpen, FileText } from 'lucide-react'
 import { getFileIcon } from '@/lib/file-icon'
@@ -40,9 +41,20 @@ export default function LessonContent({
   onDelete,
 }: LessonContentProps) {
   const [activeTab, setActiveTab] = useState('bai-giang')
+  const [chatUnreadCount, setChatUnreadCount] = useState(0)
+
+  const handleTabChange = useCallback((value: string) => {
+    setActiveTab(value)
+    if (value === 'thao-luan') setChatUnreadCount(0)
+  }, [])
+
+  const handleNewChatMessage = useCallback(() => {
+    if (activeTab !== 'thao-luan') setChatUnreadCount(c => c + 1)
+  }, [activeTab])
 
   useEffect(() => {
     setActiveTab('bai-giang')
+    setChatUnreadCount(0)
   }, [lesson?.id])
 
   if (!lesson) {
@@ -127,7 +139,7 @@ export default function LessonContent({
       </div>
 
       {/* 3-tab content */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="w-full border-b border-border rounded-none bg-white/80 backdrop-blur-sm px-4 md:px-8 h-auto pb-0 justify-start gap-1 sticky top-0 z-10">
           <TabsTrigger
             value="bai-giang"
@@ -145,9 +157,15 @@ export default function LessonContent({
           )}
           <TabsTrigger
             value="thao-luan"
+            aria-label={chatUnreadCount > 0 ? `Thảo luận, ${chatUnreadCount} tin nhắn chưa đọc` : 'Thảo luận'}
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none pb-3 font-medium text-sm text-muted-foreground"
           >
             Thảo luận
+            {chatUnreadCount > 0 && (
+              <Badge className="ml-1.5 bg-[#F97316] text-white text-[10px] px-1.5 min-w-[18px] h-[18px] rounded-full border-0">
+                {chatUnreadCount > 9 ? '9+' : chatUnreadCount}
+              </Badge>
+            )}
           </TabsTrigger>
         </TabsList>
 
@@ -229,7 +247,7 @@ export default function LessonContent({
 
         {/* Tab 3 — Thảo luận (all roles) */}
         <TabsContent value="thao-luan" className="flex flex-col flex-1 min-h-0 mt-0 p-0">
-          <ChatPanel lessonId={lesson.id} />
+          <ChatPanel lessonId={lesson.id} onNewMessage={handleNewChatMessage} />
         </TabsContent>
       </Tabs>
     </div>

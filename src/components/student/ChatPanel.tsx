@@ -17,9 +17,10 @@ import ChatInput from './ChatInput'
 
 interface ChatPanelProps {
   lessonId: string
+  onNewMessage?: () => void
 }
 
-export default function ChatPanel({ lessonId }: ChatPanelProps) {
+export default function ChatPanel({ lessonId, onNewMessage }: ChatPanelProps) {
   const { profile } = useAuth()
   const role: 'student' | 'teacher' | 'admin' = (profile?.role as any) ?? 'student'
   const isStaff = role === 'teacher' || role === 'admin'
@@ -65,6 +66,7 @@ export default function ChatPanel({ lessonId }: ChatPanelProps) {
           if (payload.eventType === 'INSERT') {
             const incoming = payload.new as ChatMessageType
             setMessages(prev => prev.some(m => m.id === incoming.id) ? prev : [...prev, incoming])
+            onNewMessage?.()
           }
           if (payload.eventType === 'UPDATE') {
             const updated = payload.new as ChatMessageType
