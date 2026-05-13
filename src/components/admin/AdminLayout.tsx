@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Users, BookOpen, ClipboardList, Package } from 'lucide-react'
+import { Users, BookOpen, ClipboardList, Package, FileText } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
 import type { ReactNode } from 'react'
@@ -17,6 +17,7 @@ const navItems: NavItem[] = [
   { label: 'Quản lý khóa học', to: '/quan-tri/khoa-hoc', icon: BookOpen, adminOnly: true },
   { label: 'Gói học', to: '/quan-tri/goi-hoc', icon: Package, adminOnly: true },
   { label: 'Chấm bài', to: '/quan-tri/bai-nop', icon: ClipboardList },
+  { label: 'Đề thi thử', to: '/quan-tri/de-thi', icon: FileText },
 ]
 
 export default function AdminLayout({ children, fullBleed = false }: { children: ReactNode; fullBleed?: boolean }) {

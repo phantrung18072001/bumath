@@ -20,6 +20,10 @@ import StudentCoursesPage from "./pages/student/CoursesPage";
 import StudentCourseDetailPage from "./pages/student/CourseDetailPage";
 import StudentCataloguePage from "./pages/student/CataloguePage";
 import ProfilePage from "./pages/student/ProfilePage";
+import ExamSessionsPage from './pages/admin/ExamSessionsPage';
+import ExamSessionDetailPage from './pages/admin/ExamSessionDetailPage';
+import MockExamsPage from './pages/student/MockExamsPage';
+import MockExamAttemptPage from './pages/student/MockExamAttemptPage';
 
 const queryClient = new QueryClient();
 
@@ -41,6 +45,11 @@ const App = () => (
             <Route path="/quan-tri/goi-hoc" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><PackagesPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
             <Route path="/quan-tri/bai-nop" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><StudentLayout><AdminLayout><SubmissionsPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
             <Route path="/quan-tri/bai-nop/:submissionId" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><StudentLayout><AdminLayout><GradingPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
+
+            <Route path="/quan-tri/de-thi" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><StudentLayout><AdminLayout><ExamSessionsPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
+            <Route path="/quan-tri/de-thi/:sessionId" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><StudentLayout><AdminLayout><ExamSessionDetailPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
+            <Route path="/de-thi" element={<ProtectedRoute><MockExamsPage /></ProtectedRoute>} />
+            <Route path="/de-thi/:sessionId" element={<ProtectedRoute><MockExamAttemptPage /></ProtectedRoute>} />
             <Route path="/khoa-hoc" element={<ProtectedRoute><StudentCoursesPage /></ProtectedRoute>} />
             <Route path="/khoa-hoc/:courseSlug" element={<StudentCourseDetailPage />} />
             <Route path="/danh-muc" element={<StudentCataloguePage />} />
