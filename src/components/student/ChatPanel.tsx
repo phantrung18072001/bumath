@@ -127,7 +127,7 @@ export default function ChatPanel({ lessonId, onNewMessage }: ChatPanelProps) {
               <p className="text-xs text-slate-400">Kiểm tra kết nối và thử lại</p>
             </div>
           ) : messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 gap-4 text-center select-none">
+            <div className="flex flex-col items-center justify-center py-8 gap-4 text-center select-none">
               <div className="relative">
                 <div className="w-16 h-16 rounded-2xl bg-orange-50 border-2 border-orange-100 flex items-center justify-center">
                   <MessageCircle className="h-8 w-8 text-orange-400" />
@@ -138,7 +138,7 @@ export default function ChatPanel({ lessonId, onNewMessage }: ChatPanelProps) {
               </div>
               <div>
                 <p className="text-sm font-semibold text-slate-700">Chưa có câu hỏi nào</p>
-                <p className="text-xs text-slate-400 mt-1 max-w-[200px] mx-auto leading-relaxed">
+                <p className="text-xs text-slate-400 mt-1 mx-auto leading-relaxed">
                   {isStaff
                     ? 'Học sinh chưa đặt câu hỏi nào cho bài học này.'
                     : 'Hãy đặt câu hỏi đầu tiên cho giảng viên về bài học này.'}

@@ -61,7 +61,7 @@ export default function ChatInput({
   }
 
   return (
-    <div className="shrink-0 border-t border-slate-100 bg-white/80 backdrop-blur-sm px-3 py-2 flex flex-col gap-1.5">
+    <div className="shrink-0 border-t border-slate-100 bg-white/80 backdrop-blur-sm px-3 pb-8 flex flex-col gap-1.5">
       {replyToName && (
         <div className="flex items-center gap-2 px-2 py-1 text-xs font-medium text-slate-600 bg-slate-100 w-fit rounded-md border border-slate-200">
           <span className="truncate max-w-[200px]">Đang trả lời: {replyToName}</span>

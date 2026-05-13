@@ -59,7 +59,7 @@ export default function LessonContent({
 
   if (!lesson) {
     return (
-      <div className="flex flex-col items-center justify-center h-full p-8 gap-4">
+      <div className="flex flex-col flex-1 items-center justify-center h-full p-8 gap-4">
         <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center">
           <BookOpen className="h-8 w-8 text-primary/40" />
         </div>
@@ -74,7 +74,7 @@ export default function LessonContent({
   const hasAssignment = lesson.assignment_path !== null
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col flex-1 h-full">
 
       {/* Title + admin actions — always visible above tab bar */}
       <div className="px-4 md:px-8 pt-4 md:pt-6 pb-0 flex items-start justify-between gap-3">
@@ -106,9 +106,9 @@ export default function LessonContent({
       </div>
 
       {/* Video + description — always visible above tabs */}
-      <div className="px-4 md:px-8 py-6 space-y-6">
         {/* Video: 3 states */}
         {lesson.video_url ? (
+        <div className="px-4 md:px-8 py-6 space-y-6">
           <div className="max-w-4xl">
             <AspectRatio ratio={16 / 9} className="rounded-2xl overflow-hidden bg-black shadow-sm">
               <iframe
@@ -120,7 +120,9 @@ export default function LessonContent({
               />
             </AspectRatio>
           </div>
+        </div>
         ) : lesson.has_video ? (
+        <div className="px-4 md:px-8 py-6 space-y-6">
           <div className="max-w-4xl">
             <AspectRatio ratio={16 / 9} className="rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
               <div className="w-full h-full flex flex-col items-center justify-center gap-4">
@@ -134,12 +136,12 @@ export default function LessonContent({
               </div>
             </AspectRatio>
           </div>
+        </div>
         ) : null}
 
-      </div>
 
       {/* 3-tab content */}
-      <Tabs value={activeTab} onValueChange={handleTabChange}>
+      <Tabs value={activeTab} onValueChange={handleTabChange} className='mt-4 bg-white/80 backdrop-blur-sm w-full flex-1 flex-col'>
         <TabsList className="w-full border-b border-border rounded-none bg-white/80 backdrop-blur-sm px-4 md:px-8 h-auto pb-0 justify-start gap-1 sticky top-0 z-10">
           <TabsTrigger
             value="bai-giang"

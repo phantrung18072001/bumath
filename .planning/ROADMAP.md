@@ -101,7 +101,12 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
   3. Admin có thể upload tài liệu PDF với category (giữa kỳ, cuối kỳ, vào 10, HSG, chuyên toán) và grade (7/8/9)
   4. Học sinh đã approved có thể filter tài liệu theo category và grade, click để download
   5. Tab "Tài liệu & Kiểm tra" trong bài học hiển thị materials liên quan đến grade của khóa học đó
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 18-01-PLAN.md — DB schema + RLS + RPC enforcement for sessions/questions/attempts/grading
+- [ ] 18-02-PLAN.md — API contracts + Wave 0 tests for admin/student exam flows
+- [ ] 18-03-PLAN.md — Admin exam session lifecycle + question authoring UI
+- [ ] 18-04-PLAN.md — Student open-exam list + timed attempt + immediate result UI
 **UI hint**: yes
 
 **⚠️ Storage:** Tạo bucket `study-materials` riêng biệt (không dùng bucket `assignments`). Signed URL 1 giờ, regenerate mỗi lần load trang.
@@ -183,5 +188,5 @@ Plans:
 | 15. Admin UX + Audit | 0/? | Not started | - |
 | 16. Lesson Tabs + Study Materials | 0/? | Not started | - |
 | 17. In-Lesson Chat | 4/4 | Complete   | 2026-05-08 |
-| 18. Mock Exam System | 0/? | Not started | - |
+| 18. Mock Exam System | 0/4 | Not started | - |
 | 19. Landing Page + Navigator + Video | 0/? | Not started | - |

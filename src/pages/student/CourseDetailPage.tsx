@@ -513,7 +513,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                   />
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto bg-white/60">
+              <div className="flex-1 overflow-y-auto bg-white backdrop-blur-sm">
                 {isAdmin && adminPanel && courseId && chapters ? (
                    <>
                     {(adminPanel.kind === 'chapter-create' || adminPanel.kind === 'chapter-edit') && (
@@ -592,7 +592,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                 </Button>
               </div>
 
-              <div className="flex-1 overflow-y-auto bg-white/60">
+              <div className="flex-1 overflow-y-auto bg-white/80">
                 {profile && (
                   <LessonContent
                     lesson={activeLesson}
