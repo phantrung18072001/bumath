@@ -3,6 +3,7 @@ import { Trash2, Check, X, Reply } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { deleteMessage, type ChatMessage as ChatMessageType } from '@/lib/api/lesson-chat'
 import { useQueryClient } from '@tanstack/react-query'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface ChatMessageProps {
   message: ChatMessageType
@@ -10,13 +11,6 @@ interface ChatMessageProps {
   isReply?: boolean
   lessonId: string
   onReply?: () => void
-}
-
-function getInitials(name?: string | null): string {
-  if (!name) return '?'
-  const parts = name.trim().split(' ')
-  if (parts.length === 1) return parts[0][0]?.toUpperCase() ?? '?'
-  return ((parts[0][0] ?? '') + (parts[parts.length - 1][0] ?? '')).toUpperCase()
 }
 
 function formatRoleLabel(role?: string | null): string | null {
@@ -50,7 +44,6 @@ export default function ChatMessage({
   const senderRole = message.profiles?.role ?? 'student'
   const isStaffSender = senderRole === 'teacher' || senderRole === 'admin'
   const roleLabel = formatRoleLabel(senderRole)
-  const initials = getInitials(message.profiles?.full_name)
 
   const [confirming, setConfirming] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -70,31 +63,19 @@ export default function ChatMessage({
   return (
     <div
       className={cn(
-        'group relative flex gap-3 animate-in fade-in-0 slide-in-from-bottom-1 duration-200',
-        isReply && 'ml-10 pl-3 border-l-2 border-orange-200',
+        'group relative flex gap-3 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-1 duration-200',
+        isReply && 'ml-6 pl-3 border-l-2 border-orange-200',
       )}
     >
-      {/* Avatar */}
-      <div
-        className={cn(
-          'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold select-none ring-2',
-          isStaffSender
-            ? 'bg-gradient-to-br from-orange-500 to-orange-600 text-white ring-orange-200'
-            : 'bg-gradient-to-br from-slate-200 to-slate-300 text-slate-600 ring-slate-100',
-        )}
-      >
-        {initials}
-      </div>
-
       {/* Bubble */}
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 max-w-[90%] sm:max-w-[80%] lg:max-w-[70%]">
         {/* Header row */}
         <div className="flex items-center gap-1.5 mb-1">
-          <span className="text-sm font-semibold text-slate-800 truncate">
+          <span className="text-xs font-semibold text-slate-800 truncate">
             {message.profiles?.full_name ?? 'Người dùng'}
           </span>
           {roleLabel && (
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-orange-100 text-orange-700 leading-none shrink-0">
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700 leading-none shrink-0">
               {roleLabel}
             </span>
           )}
@@ -113,13 +94,18 @@ export default function ChatMessage({
               </button>
             )}
             {canDelete && !confirming && (
-              <button
-                aria-label="Xoá tin nhắn"
-                onClick={() => setConfirming(true)}
-                className="p-1 rounded-md text-slate-300 hover:text-red-500 hover:bg-red-50 cursor-pointer"
-              >
-                <Trash2 className="h-3 w-3" />
-              </button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    aria-label="Xoá tin nhắn"
+                    onClick={() => setConfirming(true)}
+                    className="p-1 rounded-md text-slate-300 hover:text-red-500 hover:bg-red-50 cursor-pointer"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top">Xoá tin nhắn</TooltipContent>
+              </Tooltip>
             )}
           </div>
         </div>
@@ -149,7 +135,7 @@ export default function ChatMessage({
               <button
                 onClick={onDelete}
                 disabled={deleting}
-                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-red-500 text-white hover:bg-red-600 transition-colors duration-150 cursor-pointer disabled:opacity-50"
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-normal bg-red-500 text-white hover:bg-red-600 transition-colors duration-150 cursor-pointer disabled:opacity-50"
               >
                 <Check className="h-3 w-3" />
                 Xoá
@@ -157,10 +143,10 @@ export default function ChatMessage({
               <button
                 onClick={() => setConfirming(false)}
                 disabled={deleting}
-                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors duration-150 cursor-pointer disabled:opacity-50"
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-normal bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors duration-150 cursor-pointer disabled:opacity-50"
               >
                 <X className="h-3 w-3" />
-                Giữ
+                Giữ lại
               </button>
             </div>
           )}

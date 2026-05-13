@@ -106,33 +106,15 @@ export default function ChatPanel({ lessonId, onNewMessage }: ChatPanelProps) {
 
   return (
     <div className="flex flex-col flex-1 min-h-0 h-full bg-slate-50/50">
-      {/* Panel header */}
-      <div className="shrink-0 flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-white">
-        <div className="flex items-center gap-2">
-          <MessageCircle className="h-4 w-4 text-orange-500" />
-          <span className="text-sm font-semibold text-slate-800">Thảo luận bài học</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
-          </span>
-          <span className="text-[11px] text-slate-400">Trực tuyến</span>
-        </div>
-      </div>
-
       {/* Messages */}
       <ScrollArea className="flex-1 min-h-0">
         <div role="log" aria-live="polite" className="px-4 md:px-5 py-5 space-y-4">
           {isLoading ? (
             <div className="space-y-4" aria-label="Đang tải tin nhắn…">
               {[0.75, 0.6, 0.7].map((w, i) => (
-                <div key={i} className="flex gap-3">
-                  <Skeleton className="h-8 w-8 rounded-full shrink-0" />
-                  <div className="flex-1 space-y-1.5">
-                    <Skeleton className="h-3 w-24 rounded" />
-                    <Skeleton className={`h-10 rounded-2xl`} style={{ width: `${w * 100}%` }} />
-                  </div>
+                <div key={i} className="flex-1 space-y-2">
+                  <Skeleton className="h-3 w-24 rounded" />
+                  <Skeleton className="h-12 rounded-lg" style={{ width: `${w * 100}%` }} />
                 </div>
               ))}
             </div>
@@ -151,7 +133,7 @@ export default function ChatPanel({ lessonId, onNewMessage }: ChatPanelProps) {
                   <MessageCircle className="h-8 w-8 text-orange-400" />
                 </div>
                 <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center">
-                  <span className="text-white text-[10px] font-bold">?</span>
+                  <span className="text-white text-xs font-semibold">?</span>
                 </div>
               </div>
               <div>
