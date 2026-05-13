@@ -68,7 +68,7 @@ export default function ChatMessage({
       )}
     >
       {/* Bubble */}
-      <div className="flex-1 min-w-0 max-w-[90%] sm:max-w-[80%] lg:max-w-[70%]">
+      <div className="flex-1 min-w-0">
         {/* Header row */}
         <div className="flex items-center gap-1.5 mb-1">
           <span className="text-xs font-semibold text-slate-800 truncate">
