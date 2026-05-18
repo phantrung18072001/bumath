@@ -28,6 +28,7 @@ import GioiThieu from './pages/GioiThieu';
 import ThanhToan from './pages/ThanhToan';
 import HuongDan from './pages/HuongDan';
 import TaiLieuPage from './pages/TaiLieuPage';
+import TaiLieuAdminPage from './pages/admin/TaiLieuAdminPage';
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,7 @@ const App = () => (
             <Route path="/quan-tri/bai-nop" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><StudentLayout><AdminLayout><SubmissionsPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
             <Route path="/quan-tri/bai-nop/:submissionId" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><StudentLayout><AdminLayout><GradingPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
 
+            <Route path="/quan-tri/tai-lieu" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><StudentLayout><AdminLayout><TaiLieuAdminPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
             <Route path="/quan-tri/de-thi" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><StudentLayout><AdminLayout><ExamSessionsPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
             <Route path="/quan-tri/de-thi/:sessionId" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><StudentLayout><AdminLayout><ExamSessionDetailPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
             <Route path="/de-thi" element={<ProtectedRoute><MockExamsPage /></ProtectedRoute>} />
