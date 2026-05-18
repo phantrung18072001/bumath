@@ -68,15 +68,15 @@ const IntensiveSection = () => {
         >
           <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary">
             <Trophy className="h-3.5 w-3.5" />
-            Tứ trụ trường chuyên TPHCM
+            Tứ trụ trường chuyên
           </div>
           <p className="text-sm font-normal leading-relaxed text-muted-foreground">
             Lộ trình chuyên biệt cho học sinh nhắm đến{' '}
-            <span className="font-bold text-foreground">PTNK</span>,{' '}
-            <span className="font-bold text-foreground">CNN</span>,{' '}
-            <span className="font-bold text-foreground">CSP</span> và{' '}
-            <span className="font-bold text-foreground">KHTN</span>{' '}
-            — 4 trường chuyên Toán hàng đầu Thành phố Hồ Chí Minh.
+            <span className="font-bold text-foreground">Phổ thông năng khiếu</span>,{' '}
+            <span className="font-bold text-foreground">Chuyên ngoại ngữ</span>,{' '}
+            <span className="font-bold text-foreground">Chuyên sư phạm</span> và{' '}
+            <span className="font-bold text-foreground">Khoa học tự nhiên</span>{' '}
+            — 4 trường chuyên Toán hàng đầu Việt Nam.
           </p>
         </motion.div>
       </div>

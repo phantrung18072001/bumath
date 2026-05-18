@@ -312,6 +312,10 @@
     @apply bg-background text-foreground;
     font-family: 'Be Vietnam Pro', sans-serif;
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Baloo 2', sans-serif;
+  }
 }
 
 /* Accessibility: Disable dnd-kit drag animations for users who prefer reduced motion */

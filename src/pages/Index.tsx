@@ -2,7 +2,6 @@ import Header from "@/components/landing/Header";
 import HeroSection from "@/components/landing/HeroSection";
 import ClassGrid from "@/components/landing/ClassGrid";
 import IntensiveSection from "@/components/landing/IntensiveSection";
-import PricingSection from "@/components/landing/PricingSection";
 import TestimonialsSection from "@/components/landing/TestimonialsSection";
 import ConsultationForm from "@/components/landing/ConsultationForm";
 import Footer from "@/components/landing/Footer";
@@ -15,7 +14,6 @@ const Index = () => {
         <HeroSection />
         <ClassGrid />
         <IntensiveSection />
-        <PricingSection />
         <TestimonialsSection />
         <ConsultationForm />
       </main>

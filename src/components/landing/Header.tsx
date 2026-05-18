@@ -55,15 +55,12 @@ const Header = () => {
 
         {/* Row 1: Always 5 items — SĐT / Hướng dẫn / Auth / Thanh toán / (space) */}
         <div className="flex h-14 items-center justify-end gap-3 border-b border-border/50 pl-6">
-          <a
-            href="tel:0123456789"
-            className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
+          <span className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
             <Phone className="h-3.5 w-3.5" />
-            0123.456.789
-          </a>
+            0379 172 879
+          </span>
           <Link
-            to="/"
+            to="/huong-dan"
             className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           >
             <HelpCircle className="h-3.5 w-3.5" />
@@ -115,7 +112,7 @@ const Header = () => {
               </Link>
             </>
           )}
-          <Link to="/danh-muc" className="cursor-pointer">
+          <Link to="/thanh-toan" className="cursor-pointer">
             <Button variant="outline" className="h-9 px-4 text-sm gap-1.5 cursor-pointer">
               <CreditCard className="h-3.5 w-3.5" />
               Thanh toán
@@ -167,7 +164,7 @@ const Header = () => {
           </div>
           <div className="mt-3 flex items-center gap-1.5 text-sm text-muted-foreground">
             <Phone className="h-3.5 w-3.5" />
-            0123.456.789
+            0379 172 879
           </div>
           {loading ? (
             <div className="mt-3 h-10 rounded bg-muted animate-pulse" />
@@ -215,7 +212,7 @@ const Header = () => {
             </div>
           )}
           <div className="mt-2">
-            <Link to="/danh-muc" className="block cursor-pointer" onClick={() => setMobileOpen(false)}>
+            <Link to="/thanh-toan" className="block cursor-pointer" onClick={() => setMobileOpen(false)}>
               <Button variant="outline" className="w-full gap-1 cursor-pointer" size="sm">
                 <CreditCard className="h-3.5 w-3.5" />
                 Thanh toán
