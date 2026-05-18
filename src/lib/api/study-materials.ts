@@ -2,12 +2,12 @@ import { supabase } from '@/lib/supabase'
 
 export interface StudyMaterial {
   id: string
-  lesson_id: string
+  lesson_id: string | null
   title: string
   file_path: string
   file_type: 'pdf' | 'image'
-  category: 'giua_ky' | 'cuoi_ky' | 'vao_10' | 'hsg' | 'chuyen_toan'
-  grade: 'grade_7' | 'grade_8' | 'grade_9'
+  category: 'giua_ky' | 'cuoi_ky' | 'vao_10' | 'hsg' | 'chuyen_toan' | null
+  grade: 'grade_7' | 'grade_8' | 'grade_9' | 'advanced'
   created_by: string | null
   created_at: string
 }
@@ -27,6 +27,7 @@ export const GRADE_LABELS: Record<StudyMaterialGrade, string> = {
   grade_7: 'Lớp 7',
   grade_8: 'Lớp 8',
   grade_9: 'Lớp 9',
+  advanced: 'Ôn thi chuyên',
 }
 
 const BUCKET = 'study-materials'
@@ -132,4 +133,65 @@ export async function getStudyMaterialSignedUrls(
     }),
   )
   return Object.fromEntries(entries)
+}
+
+/**
+ * Fetch all standalone study materials (lesson_id IS NULL).
+ * Public — anon SELECT policy added in migration 28.
+ * Optionally filter by grade.
+ */
+export async function fetchStandaloneStudyMaterials(
+  grade?: StudyMaterialGrade,
+): Promise<StudyMaterial[]> {
+  let query = supabase
+    .from('study_materials')
+    .select('*')
+    .is('lesson_id', null)
+    .order('created_at', { ascending: false })
+
+  if (grade) {
+    query = query.eq('grade', grade)
+  }
+
+  const { data, error } = await query
+  if (error) throw error
+  return (data ?? []) as StudyMaterial[]
+}
+
+/**
+ * Upload a standalone study material (no lesson).
+ * Path: standalone/{timestamp}-{random}.{ext}
+ * Admin + teacher only (enforced by RLS + Storage policies in migration 28).
+ */
+export async function uploadStandaloneStudyMaterial(
+  file: File,
+  meta: { title: string; grade: StudyMaterialGrade },
+): Promise<StudyMaterial> {
+  const ext = file.name.split('.').pop() ?? 'bin'
+  const timestamp = Date.now()
+  const random = Math.random().toString(36).slice(2, 6)
+  const path = `standalone/${timestamp}-${random}.${ext}`
+
+  const { error: uploadError } = await supabase.storage
+    .from(BUCKET)
+    .upload(path, file, { contentType: file.type, upsert: false })
+  if (uploadError) throw uploadError
+
+  const { data, error } = await supabase
+    .from('study_materials')
+    .insert({
+      lesson_id: null,
+      title: meta.title,
+      file_path: path,
+      file_type: detectFileType(file),
+      category: null,
+      grade: meta.grade,
+    })
+    .select()
+    .single()
+  if (error) {
+    await supabase.storage.from(BUCKET).remove([path]).catch(() => {})
+    throw error
+  }
+  return data as StudyMaterial
 }
