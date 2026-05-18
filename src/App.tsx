@@ -24,6 +24,10 @@ import ExamSessionsPage from './pages/admin/ExamSessionsPage';
 import ExamSessionDetailPage from './pages/admin/ExamSessionDetailPage';
 import MockExamsPage from './pages/student/MockExamsPage';
 import MockExamAttemptPage from './pages/student/MockExamAttemptPage';
+import GioiThieu from './pages/GioiThieu';
+import ThanhToan from './pages/ThanhToan';
+import HuongDan from './pages/HuongDan';
+import TaiLieuPage from './pages/TaiLieuPage';
 
 const queryClient = new QueryClient();
 
@@ -38,6 +42,10 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/dang-nhap" element={<Login />} />
             <Route path="/dang-ky" element={<Register />} />
+            <Route path="/gioi-thieu" element={<GioiThieu />} />
+            <Route path="/thanh-toan" element={<ThanhToan />} />
+            <Route path="/huong-dan" element={<HuongDan />} />
+            <Route path="/tai-lieu" element={<TaiLieuPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="/quan-tri/nguoi-dung" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><UsersPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
             <Route path="/quan-tri/khoa-hoc" element={<ProtectedRoute requiredRole="admin"><StudentLayout><AdminLayout><CoursesPage /></AdminLayout></StudentLayout></ProtectedRoute>} />
