@@ -107,9 +107,10 @@ export default function TaiLieuPage() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1">
-        {/* Hero — compact */}
-        <section className="border-b border-border bg-muted/30 px-4 py-4">
-          <div className="container mx-auto max-w-5xl flex items-center justify-between gap-4 flex-wrap">
+        {/* Filter + Grid */}
+        <section className="container mx-auto max-w-5xl px-4 pt-6 pb-8">
+          {/* Title row */}
+          <div className="flex items-center justify-between gap-4 mb-4">
             <h1 className="text-xl font-bold leading-tight">Tài liệu học tập</h1>
             {!isLoading && !isError && materials.length > 0 && (
               <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary shrink-0">
@@ -118,14 +119,11 @@ export default function TaiLieuPage() {
               </div>
             )}
           </div>
-        </section>
 
-        {/* Filter + Grid */}
-        <section className="container mx-auto max-w-5xl px-4 py-8">
           {/* Controls row: grade pills + search */}
           <div className="flex flex-col sm:flex-row gap-3 mb-8">
             {/* Grade filter pills */}
-            <div className="flex flex-wrap gap-2 flex-1">
+            <div className="flex flex-wrap gap-2">
               {GRADE_FILTERS.map(f => (
                 <button
                   key={f.value}
@@ -141,14 +139,14 @@ export default function TaiLieuPage() {
                 </button>
               ))}
             </div>
-            {/* Search input */}
-            <div className="relative sm:w-56 shrink-0">
+            {/* Search input — fills remaining space */}
+            <div className="relative flex-1 min-w-0">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <Input
-                placeholder="Tìm tài liệu..."
+                placeholder="Tìm tài liệu theo tên..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="pl-9 bg-white"
+                className="pl-9 bg-white w-full"
               />
             </div>
           </div>
