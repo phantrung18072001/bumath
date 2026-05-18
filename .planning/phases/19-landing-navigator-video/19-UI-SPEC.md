@@ -24,7 +24,7 @@ created: 2026-05-18
 | Preset | default style — `cssVariables: true`, `baseColor: slate` |
 | Component library | Radix UI (via shadcn) |
 | Icon library | Lucide React — **không dùng emoji icon** |
-| Font | "Be Vietnam Pro" — weights 400 / 500 / 600 / 700 / 800 / 900 |
+| Font | "Be Vietnam Pro" — weights **400** (normal) / **700** (bold) |
 | Animation | Framer Motion — `whileInView` + `viewport={{ once: true }}` pattern |
 
 **shadcn components dùng trong Phase 19:** `Card`, `CardHeader`, `CardContent`, `CardFooter`, `Button`, `Badge`, `AspectRatio` — tất cả đã có sẵn, không cần install thêm.
@@ -48,6 +48,8 @@ Tất cả giá trị là bội số của 4:
 **Exceptions:**
 - Touch targets: `min-h-[44px]` minimum cho tất cả interactive elements (filter pills, CTA buttons)
 - Pricing cards: `p-5` (20px) cho `CardContent` — nhất quán với ClassGrid card pattern
+- 40px (`mt-10` / `mb-10`): dùng cho spacing giữa section header và card grid (PricingSection, IntensiveSection Tứ trụ block)
+- 80px (`md:py-20`): responsive variant của baseline 64px (`py-16`) — dùng cho section vertical padding trên tablet/desktop
 
 ---
 
@@ -56,16 +58,18 @@ Tất cả giá trị là bội số của 4:
 | Role | Size | Weight | Line Height | Tailwind class |
 |------|------|--------|-------------|----------------|
 | Body | 16px | 400 | 1.5 | `text-base text-muted-foreground` |
-| Label | 14px | 600 | 1.4 | `text-sm font-semibold` |
-| Heading | 30–36px | 700 | 1.25 | `text-3xl font-bold tracking-tight md:text-4xl` |
-| Display | 36–48px | 900 | 1.1 | `text-4xl font-black md:text-6xl` |
+| Label | 14px | **700** | 1.4 | `text-sm font-bold` |
+| Heading | 30–36px | **700** | 1.25 | `text-3xl font-bold tracking-tight md:text-4xl` |
+| Display | 36–48px | **700** | 1.1 | `text-4xl font-bold md:text-6xl` |
+
+> ⚠️ **Exactly 2 weights used:** `font-normal` (400) for body/muted/error body; `font-bold` (700) for labels, headings, CTAs, badges, pills, price display.
 
 **Font cụ thể:**
 - Section title (PricingSection heading): `text-3xl font-bold tracking-tight md:text-4xl` — nhất quán với ClassGrid và IntensiveSection
-- Price display: `text-3xl font-black text-primary` (số tiền)
-- Badge "Phổ biến": `text-xs font-semibold`
+- Price display: `text-3xl font-bold text-primary` (số tiền)
+- Badge "Phổ biến": `text-sm font-bold` (14px — Label role; tối thiểu để đảm bảo contrast 3.2:1 trên `bg-primary/10`)
 - Filter pill label: `text-sm font-bold` (nhất quán với GRADE_FILTERS hiện tại trong CataloguePage)
-- VideoPlayer error text: `text-sm font-medium text-muted-foreground`
+- VideoPlayer error text: `text-sm font-normal text-muted-foreground`
 
 ---
 
@@ -78,12 +82,16 @@ Tất cả giá trị là bội số của 4:
 | Accent (10%) | `#F97316` | `text-primary` / `bg-primary` | Xem danh sách bên dưới |
 | Destructive | `hsl(0 84% 60%)` | `text-destructive` | Error state VideoPlayer (khi URL không hợp lệ) |
 
+> **Contrast note:** `#F97316` (primary) on white `#FFFFFF` = 3.2:1 — satisfies WCAG AA for **large text only**.
+> `/* Contrast: 3.2:1 — large text only; badge must be ≥14px bold (text-sm font-bold) */`
+> Badge "Phổ biến" uses `bg-primary/10 text-primary` — badge text must remain `text-sm font-bold` (≥14px bold) to meet contrast threshold.
+
 **Accent `#F97316` dành riêng cho:**
 1. Primary CTA button fill (`bg-primary text-white` — button "Đăng ký tư vấn")
 2. Highlighted pricing card border (`border-primary border-2` — gói "Toàn bộ")
 3. Badge "Phổ biến" (`bg-primary/10 text-primary`)
 4. Section accent label (`bg-primary/10 text-primary rounded-full`) — pattern IntensiveSection
-5. Price display text (`text-primary font-black`)
+5. Price display text (`text-primary font-bold`)
 6. Active filter pill ("Tứ trụ" khi selected)
 7. Icon accent trong pricing cards (Lucide icon, `text-primary`)
 
@@ -161,6 +169,8 @@ Section wrapper:
   </section>
 ```
 
+**Focal point:** Gói "Toàn bộ" highlighted card (`border-primary border-2` + Badge "Phổ biến") là điểm nhìn chính — draws the eye first before other cards.
+
 **Pricing data (6 cards):**
 
 | Tên gói | Giá | Highlight | Icon (Lucide) |
@@ -182,7 +192,7 @@ Section wrapper:
   <CardHeader className="pb-3 pt-5 px-5">
     {/* Badge "Phổ biến" — chỉ gói Toàn bộ */}
     {isHighlighted && (
-      <span className="mb-2 inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+      <span className="mb-2 inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary">
         Phổ biến
       </span>
     )}
@@ -191,13 +201,13 @@ Section wrapper:
       <PackageIcon className="h-5 w-5" />
     </div>
     {/* Title */}
-    <h3 className="text-lg font-bold">{name}</h3>
+    <h3 className="text-base font-bold">{name}</h3>
     {/* Price */}
-    <div className="mt-1 text-3xl font-black text-primary">{price}</div>
+    <div className="mt-1 text-3xl font-bold text-primary">{price}</div>
   </CardHeader>
   <CardFooter className="px-5 pb-5 pt-0">
     <Button
-      className="w-full gap-2 shadow-lg shadow-primary/25"
+      className="w-full gap-2 shadow-lg shadow-primary/25 disabled:opacity-50 disabled:cursor-not-allowed"
       onClick={() => document.getElementById('tu-van')?.scrollIntoView({ behavior: 'smooth' })}
     >
       Đăng ký tư vấn
@@ -289,16 +299,16 @@ Thêm một `motion.div` **bên dưới** `<div className="grid items-center gap
   transition={{ duration: 0.4, delay: 0.3 }}
   className="mt-10 rounded-2xl border bg-card p-5 shadow-sm"
 >
-  <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+  <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary">
     <Trophy className="h-3.5 w-3.5" />
     Tứ trụ trường chuyên TPHCM
   </div>
   <p className="text-sm text-muted-foreground leading-relaxed">
     Lộ trình chuyên biệt cho học sinh nhắm đến{" "}
-    <span className="font-semibold text-foreground">PTNK</span>,{" "}
-    <span className="font-semibold text-foreground">CNN</span>,{" "}
-    <span className="font-semibold text-foreground">CSP</span> và{" "}
-    <span className="font-semibold text-foreground">KHTN</span>{" "}
+    <span className="font-bold text-foreground">PTNK</span>,{" "}
+    <span className="font-bold text-foreground">CNN</span>,{" "}
+    <span className="font-bold text-foreground">CSP</span> và{" "}
+    <span className="font-bold text-foreground">KHTN</span>{" "}
     — 4 trường chuyên Toán hàng đầu Thành phố Hồ Chí Minh.
   </p>
 </motion.div>
@@ -311,7 +321,7 @@ Thêm một `motion.div` **bên dưới** `<div className="grid items-center gap
 - Border radius: `rounded-2xl`
 - Shadow: `shadow-sm` — nhẹ hơn feature cards
 - Label badge: `bg-primary/10 text-primary rounded-full` — tái sử dụng pattern từ IntensiveSection heading badge
-- School names (PTNK, CNN, CSP, KHTN): `font-semibold text-foreground` — nhấn mạnh trong dòng text muted
+- School names (PTNK, CNN, CSP, KHTN): `font-bold text-foreground` — nhấn mạnh trong dòng text muted
 - Full width (span across cả hai cột của parent grid)
 
 ### Interaction Spec
@@ -405,7 +415,7 @@ const toNoCookieEmbed = (id: string) =>
       <AlertCircle className="h-8 w-8 text-destructive" aria-hidden="true" />
     </div>
     <div className="text-center">
-      <p className="text-base font-semibold text-slate-600">Không thể tải video</p>
+      <p className="text-base font-bold text-slate-600">Không thể tải video</p>
       <p className="text-sm text-slate-400 mt-1">Đường dẫn video không hợp lệ hoặc không được hỗ trợ.</p>
     </div>
   </div>
@@ -545,7 +555,7 @@ Thêm vào empty state check hiện tại:
 {!coursesLoading && !coursesError && allCourses.length > 0 && filteredCourses.length === 0 && (
   <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
     <Search className="h-16 w-16 text-indigo-400" aria-hidden="true" />
-    <h2 className="text-xl font-bold text-slate-800">
+    <h2 className="text-base font-bold text-slate-800">
       {tuTruOnly ? 'Chưa có khóa học Tứ trụ' : 'Không tìm thấy kết quả'}
     </h2>
     <p className="text-base text-muted-foreground max-w-sm">
