@@ -11,6 +11,7 @@ import LessonProgressButton from './LessonProgressButton'
 import SubmissionArea from './SubmissionArea'
 import StudyMaterialsList from './StudyMaterialsList'
 import ChatPanel from './ChatPanel'
+import VideoPlayer from '@/components/student/VideoPlayer'
 
 interface LessonContentProps {
   lesson: Lesson | null
@@ -110,15 +111,10 @@ export default function LessonContent({
         {lesson.video_url ? (
         <div className="px-4 md:px-8 py-6 space-y-6">
           <div className="max-w-4xl">
-            <AspectRatio ratio={16 / 9} className="rounded-2xl overflow-hidden bg-black shadow-sm">
-              <iframe
-                src={lesson.video_url}
-                title={`Video bài học: ${lesson.title}`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full border-0"
-              />
-            </AspectRatio>
+            <VideoPlayer
+              url={lesson.video_url}
+              title={`Video bài học: ${lesson.title}`}
+            />
           </div>
         </div>
         ) : lesson.has_video ? (
