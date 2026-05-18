@@ -192,11 +192,11 @@ export default function TaiLieuPage() {
             </div>
           )}
 
-          {/* Empty state — no materials */}
-          {!isLoading && !isError && filtered.length === 0 && selectedGrade === 'all' && (
+          {/* Empty state — no materials at all (no search/grade filter active) */}
+          {!isLoading && !isError && filtered.length === 0 && selectedGrade === 'all' && !search && (
             <div className="flex flex-col items-center justify-center py-20 gap-3">
               <div className="w-14 h-14 rounded-2xl bg-primary/8 flex items-center justify-center">
-                <BookOpen className="h-7 w-7 text-primary/60" />
+                <FileText className="h-7 w-7 text-primary/60" />
               </div>
               <p className="text-base font-bold text-foreground">Chưa có tài liệu nào</p>
               <p className="text-sm text-muted-foreground">Tài liệu đang được cập nhật. Vui lòng quay lại sau.</p>
