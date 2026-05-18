@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { BookOpen, Download, FileText, Loader2, SearchX } from 'lucide-react'
+import { Download, FileText, Loader2, Search, SearchX } from 'lucide-react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import Header from '@/components/landing/Header'
 import Footer from '@/components/landing/Footer'
@@ -76,6 +77,7 @@ function MaterialCard({ material, isDownloading, onDownload }: {
 
 export default function TaiLieuPage() {
   const [selectedGrade, setSelectedGrade] = useState<StudyMaterialGrade | 'all'>('all')
+  const [search, setSearch] = useState('')
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
 
   const { data: materials = [], isLoading, isError } = useQuery({
@@ -83,9 +85,11 @@ export default function TaiLieuPage() {
     queryFn: () => fetchStandaloneStudyMaterials(),
   })
 
-  const filtered = materials.filter(m =>
-    selectedGrade === 'all' || m.grade === selectedGrade
-  )
+  const filtered = materials.filter(m => {
+    const gradeMatch = selectedGrade === 'all' || m.grade === selectedGrade
+    const searchMatch = !search.trim() || m.title.toLowerCase().includes(search.trim().toLowerCase())
+    return gradeMatch && searchMatch
+  })
 
   const handleDownload = async (material: StudyMaterial) => {
     setDownloadingId(material.id)
@@ -104,14 +108,9 @@ export default function TaiLieuPage() {
       <Header />
       <main className="flex-1">
         {/* Hero — compact */}
-        <section className="border-b border-border bg-muted/30 px-4 py-6">
+        <section className="border-b border-border bg-muted/30 px-4 py-4">
           <div className="container mx-auto max-w-5xl flex items-center justify-between gap-4 flex-wrap">
-            <div>
-              <h1 className="text-xl font-bold leading-tight">Tài liệu học tập</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">
-                Tải miễn phí tài liệu PDF theo từng khối lớp
-              </p>
-            </div>
+            <h1 className="text-xl font-bold leading-tight">Tài liệu học tập</h1>
             {!isLoading && !isError && materials.length > 0 && (
               <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary shrink-0">
                 <FileText className="h-3.5 w-3.5" />
@@ -122,23 +121,36 @@ export default function TaiLieuPage() {
         </section>
 
         {/* Filter + Grid */}
-        <section className="container mx-auto max-w-5xl px-4 py-10">
-          {/* Grade filter pills */}
-          <div className="flex flex-wrap gap-2 mb-8">
-            {GRADE_FILTERS.map(f => (
-              <button
-                key={f.value}
-                onClick={() => setSelectedGrade(f.value)}
-                className={[
-                  'rounded-full px-4 py-2 text-sm font-bold transition-all duration-150 cursor-pointer min-h-[40px] border',
-                  selectedGrade === f.value
-                    ? 'bg-primary text-white border-primary shadow-md shadow-primary/25'
-                    : 'bg-white text-muted-foreground border-border hover:bg-muted hover:text-foreground hover:border-primary/30',
-                ].join(' ')}
-              >
-                {f.label}
-              </button>
-            ))}
+        <section className="container mx-auto max-w-5xl px-4 py-8">
+          {/* Controls row: grade pills + search */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-8">
+            {/* Grade filter pills */}
+            <div className="flex flex-wrap gap-2 flex-1">
+              {GRADE_FILTERS.map(f => (
+                <button
+                  key={f.value}
+                  onClick={() => setSelectedGrade(f.value)}
+                  className={[
+                    'rounded-full px-4 py-2 text-sm font-bold transition-all duration-150 cursor-pointer min-h-[40px] border',
+                    selectedGrade === f.value
+                      ? 'bg-primary text-white border-primary shadow-md shadow-primary/25'
+                      : 'bg-white text-muted-foreground border-border hover:bg-muted hover:text-foreground hover:border-primary/30',
+                  ].join(' ')}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+            {/* Search input */}
+            <div className="relative sm:w-56 shrink-0">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <Input
+                placeholder="Tìm tài liệu..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="pl-9 bg-white"
+              />
+            </div>
           </div>
 
           {/* Skeleton loading */}
@@ -163,16 +175,16 @@ export default function TaiLieuPage() {
             </div>
           )}
 
-          {/* Empty state — grade filter */}
-          {!isLoading && !isError && filtered.length === 0 && selectedGrade !== 'all' && (
+          {/* Empty state — filtered zero results */}
+          {!isLoading && !isError && filtered.length === 0 && (selectedGrade !== 'all' || search) && (
             <div className="flex flex-col items-center justify-center py-20 gap-3">
               <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center">
                 <SearchX className="h-7 w-7 text-muted-foreground" />
               </div>
-              <p className="text-base font-bold text-foreground">Không có tài liệu cho khối này</p>
-              <p className="text-sm text-muted-foreground">Thử chọn khối lớp khác hoặc xem Tất cả</p>
+              <p className="text-base font-bold text-foreground">Không tìm thấy tài liệu</p>
+              <p className="text-sm text-muted-foreground">Thử từ khóa khác hoặc chọn khối lớp khác</p>
               <button
-                onClick={() => setSelectedGrade('all')}
+                onClick={() => { setSelectedGrade('all'); setSearch('') }}
                 className="mt-1 text-sm font-bold text-primary hover:underline cursor-pointer"
               >
                 Xem tất cả →
