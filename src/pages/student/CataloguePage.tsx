@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { LogIn, Search, BookOpen, Loader2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 const GRADE_FILTERS: { value: Course['target_grade'] | 'all'; label: string }[] = [
   { value: 'all', label: 'Tất cả' },
@@ -31,7 +32,13 @@ export default function CataloguePage() {
   const setGrade = (g: string) => setSearchParams(g === 'all' ? {} : { lop: g })
 
   const [searchQuery, setSearchQuery] = useState('')
+  const [tuTruOnly, setTuTruOnly] = useState(false)
   const sentinelRef = useRef<HTMLDivElement>(null)
+
+  // Reset Tứ trụ filter when grade changes away from 'advanced' — Pitfall 3 guard
+  useEffect(() => {
+    if (activeGrade !== 'advanced') setTuTruOnly(false)
+  }, [activeGrade])
 
   // Infinite scroll pagination for all published courses
   const {
@@ -77,11 +84,12 @@ export default function CataloguePage() {
 
   const enrolledCourseIds = new Set(enrollments.map(e => e.course_id))
 
-  // Client-side filter: grade AND search query
+  // Client-side filter: grade AND search query AND Tứ trụ sub-filter
   const filteredCourses = allCourses.filter(c => {
     const matchesGrade = activeGrade === 'all' || c.target_grade === activeGrade
     const matchesSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase().trim())
-    return matchesGrade && matchesSearch
+    const matchesTuTru = !tuTruOnly || c.is_outstanding === true  // D-10
+    return matchesGrade && matchesSearch && matchesTuTru
   })
 
   const content = (
@@ -134,6 +142,29 @@ export default function CataloguePage() {
         ))}
       </div>
 
+      {/* Tứ trụ sub-filter — D-07, D-08: visible only when grade === advanced */}
+      {activeGrade === 'advanced' && (
+        <div className="flex items-center gap-2 flex-wrap mb-6" aria-label="Lọc khóa học Tứ trụ trường chuyên">
+          {[
+            { value: false, label: 'Tất cả' },
+            { value: true,  label: 'Tứ trụ' },
+          ].map(opt => (
+            <button
+              key={String(opt.value)}
+              onClick={() => setTuTruOnly(opt.value)}
+              className={cn(
+                'min-h-[44px] rounded-full px-4 text-sm font-bold transition-colors duration-150',
+                tuTruOnly === opt.value
+                  ? 'bg-primary text-white'
+                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+              )}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Error state */}
       {coursesError && (
         <p className="text-destructive text-center py-8">
@@ -150,13 +181,17 @@ export default function CataloguePage() {
         </div>
       )}
 
-      {/* Empty state — filtered zero results (D-18) */}
+      {/* Empty state — filtered zero results */}
       {!coursesLoading && !coursesError && allCourses.length > 0 && filteredCourses.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
           <Search className="h-16 w-16 text-indigo-400" aria-hidden="true" />
-          <h2 className="text-xl font-bold text-slate-800">Không tìm thấy kết quả</h2>
-          <p className="text-base text-muted-foreground max-w-sm">
-            Thử thay đổi từ khóa hoặc chọn lớp khác.
+          <p className="text-base font-bold">
+            {tuTruOnly ? 'Chưa có khóa học Tứ trụ' : 'Không tìm thấy kết quả'}
+          </p>
+          <p className="text-sm font-normal text-muted-foreground max-w-sm">
+            {tuTruOnly
+              ? 'Hãy liên hệ BuMath để được tư vấn lộ trình phù hợp.'
+              : 'Thử thay đổi từ khóa hoặc chọn lớp khác.'}
           </p>
         </div>
       )}
