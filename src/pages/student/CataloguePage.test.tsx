@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, MemoryRouter, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 // Mock data
@@ -134,4 +134,70 @@ describe('CataloguePage', () => {
 
   // Phase 13: Skeleton loading (DS-02)
   it.todo('renders Skeleton components during loading')
+
+  // Phase 19: Tứ trụ sub-filter (NAV-02)
+  describe('Tứ trụ sub-filter', () => {
+    const mockAdvancedCourses = [
+      { id: 'c3', title: 'Ôn chuyên Tứ trụ', slug: 'on-chuyen-tu-tru', target_grade: 'advanced', description: null, is_outstanding: true },
+      { id: 'c4', title: 'Ôn chuyên A-Z',    slug: 'on-chuyen-az',    target_grade: 'advanced', description: null, is_outstanding: false },
+    ]
+
+    it('does not show Tứ trụ filter pills when grade is not advanced', async () => {
+      const { fetchCoursesPaginated } = await import('@/lib/api/courses')
+      ;(fetchCoursesPaginated as ReturnType<typeof vi.fn>).mockResolvedValue({ data: mockAdvancedCourses, total: 2 })
+      await renderCataloguePage()
+      // Default grade is 'all' (via BrowserRouter, no ?lop= param) — sub-filter hidden
+      await waitFor(() => {
+        expect(screen.queryByRole('button', { name: 'Tứ trụ' })).not.toBeInTheDocument()
+      })
+    })
+
+    it('shows Tứ trụ filter pills when grade is advanced', async () => {
+      const { fetchCoursesPaginated } = await import('@/lib/api/courses')
+      ;(fetchCoursesPaginated as ReturnType<typeof vi.fn>).mockResolvedValue({ data: mockAdvancedCourses, total: 2 })
+
+      const { default: CataloguePage } = await import('./CataloguePage')
+      const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      render(
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter initialEntries={['/?lop=advanced']}>
+            <Routes>
+              <Route path="/" element={<CataloguePage />} />
+            </Routes>
+          </MemoryRouter>
+        </QueryClientProvider>
+      )
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: 'Tứ trụ' })).toBeInTheDocument()
+        expect(screen.getAllByRole('button', { name: 'Tất cả' }).length).toBeGreaterThan(0)
+      })
+    })
+
+    it('shows Tứ trụ-specific empty state when filter has no results', async () => {
+      const { fetchCoursesPaginated } = await import('@/lib/api/courses')
+      ;(fetchCoursesPaginated as ReturnType<typeof vi.fn>).mockResolvedValue({
+        data: [{ id: 'c4', title: 'Ôn chuyên A-Z', slug: 'on-chuyen-az', target_grade: 'advanced', description: null, is_outstanding: false }],
+        total: 1,
+      })
+      const userEvent = (await import('@testing-library/user-event')).default
+
+      const { default: CataloguePage } = await import('./CataloguePage')
+      const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      render(
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter initialEntries={['/?lop=advanced']}>
+            <Routes>
+              <Route path="/" element={<CataloguePage />} />
+            </Routes>
+          </MemoryRouter>
+        </QueryClientProvider>
+      )
+
+      await waitFor(() => expect(screen.getByRole('button', { name: 'Tứ trụ' })).toBeInTheDocument())
+      await userEvent.click(screen.getByRole('button', { name: 'Tứ trụ' }))
+      await waitFor(() => {
+        expect(screen.getByText('Chưa có khóa học Tứ trụ')).toBeInTheDocument()
+      })
+    })
+  })
 })
