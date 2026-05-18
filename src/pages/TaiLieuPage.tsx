@@ -103,32 +103,17 @@ export default function TaiLieuPage() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1">
-        {/* Hero */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-orange-50/60 py-14 md:py-20 px-4">
-          {/* Decorative blobs */}
-          <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-12 -left-16 h-56 w-56 rounded-full bg-orange-200/30 blur-3xl" />
-
-          <div className="container relative mx-auto max-w-5xl text-center">
-            {/* Icon chip */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/80 px-4 py-1.5 text-sm font-bold text-primary shadow-sm mb-5">
-              <BookOpen className="h-4 w-4" />
-              Tài liệu miễn phí
+        {/* Hero — compact */}
+        <section className="border-b border-border bg-muted/30 px-4 py-6">
+          <div className="container mx-auto max-w-5xl flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <h1 className="text-xl font-bold leading-tight">Tài liệu học tập</h1>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Tải miễn phí tài liệu PDF theo từng khối lớp
+              </p>
             </div>
-
-            <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4 leading-tight">
-              Tài liệu{' '}
-              <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                học tập
-              </span>
-            </h1>
-            <p className="text-base md:text-lg text-muted-foreground max-w-lg mx-auto">
-              Tải miễn phí tài liệu PDF được biên soạn theo từng khối lớp — lớp 7, 8, 9 và ôn thi chuyên Toán.
-            </p>
-
-            {/* Material count chip */}
             {!isLoading && !isError && materials.length > 0 && (
-              <div className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary shrink-0">
                 <FileText className="h-3.5 w-3.5" />
                 {materials.length} tài liệu
               </div>
