@@ -633,17 +633,17 @@ export default function TaiLieuPage() {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Exact CHECK constraint names in production DB**
    - What we know: Migration 25 uses inline `CHECK()` without explicit `CONSTRAINT name` clause
    - What's unclear: PostgreSQL auto-generates names — may be `study_materials_grade_check1` or similar
-   - Recommendation: Migration uses `IF EXISTS` guard; alternatively query `information_schema.table_constraints` first. Use `DO $$ BEGIN ... END $$` defensive pattern.
+   - RESOLVED: P01 migration uses `DROP CONSTRAINT IF EXISTS study_materials_grade_check` and `DROP CONSTRAINT IF EXISTS study_materials_category_check` with `IF EXISTS` guard — safe no-op if names differ. PostgreSQL auto-naming convention (`{table}_{column}_check`) is consistent for inline CHECK without explicit name. Risk mitigated.
 
 2. **Teacher upload: should DELETE also be allowed?**
    - What we know: D-05 says admin + teacher access admin page; admin page has delete button
    - What's unclear: Context is silent on whether teachers can delete (or only admins)
-   - Recommendation: Allow teacher DELETE on both table and storage for consistency with "manage materials" UX. If too permissive, add teacher-only-own-uploads check via `created_by = auth.uid()`.
+   - RESOLVED: P01 includes `teacher_delete_study_materials` storage policy and `teacher_all_study_materials` table policy — teachers can upload AND delete. Consistent with "manage materials" UX on admin page (D-05). If scope needs narrowing, a future phase can restrict to `created_by = auth.uid()`.
 
 ---
 
