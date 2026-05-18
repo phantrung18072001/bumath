@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Platform Expansion
-status: Phase 21 in progress — P01 complete
-stopped_at: Phase 21 P01 complete — DB migration applied + study-materials.ts extended
-last_updated: "2026-05-18T15:55:00Z"
+status: Phase 21 in progress — P02 complete
+stopped_at: Phase 21 P02 complete — TaiLieuPage public /tai-lieu page created
+last_updated: "2026-05-18T16:20:00Z"
 progress:
   total_phases: 8
   completed_phases: 8
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-05-03 — v3.0 milestone started)
 ## Current Position
 
 Phase: 21 (tai-lieu-page) — IN PROGRESS
-Plan: P01 complete (1 of 4)
+Plan: P02 complete (2 of 4)
 
 ## Performance Metrics
 
@@ -78,6 +78,8 @@ Recent decisions affecting current work: (see previous STATE.md content — all 
 - [Phase 20 P04]: Exam system pages (MockExamsPage, MockExamAttemptPage, ExamSessionsPage, ExamSessionDetailPage) added to Phase 20 scope — these were built in Phase 18 after original P01–P03 were planned.
 - [Phase 21 P01]: lesson_id nullable (not separate table) for standalone materials — simpler schema, single RLS boundary with IS NULL predicate
 - [Phase 21 P01]: standalone/ storage prefix separates lesson-linked vs standalone objects
+- [Phase 21 P02]: Fetch all grades once at mount, filter client-side — avoids N+1 queries on grade change
+- [Phase 21 P02]: Route /tai-lieu added without ProtectedRoute per D-01 (public access)
 
 ### Pending Todos
 
@@ -86,10 +88,9 @@ None.
 ### Blockers/Concerns
 
 - Node 18.20.8 in use: pin `@supabase/supabase-js` to 2.78.0 or upgrade Node to 20 LTS
-- Uncommitted: `src/App.tsx` (adds `/gioi-thieu` route), `src/pages/GioiThieu.tsx`, `yarn.lock` — review before Phase 21
 
 ## Session Continuity
 
-Last session: 2026-05-18T15:55:00Z
-Stopped at: Phase 21 P01 complete — DB migration applied + API extended
+Last session: 2026-05-18T16:20:00Z
+Stopped at: Phase 21 P02 complete — TaiLieuPage public /tai-lieu page created
 Resume file: .planning/phases/21-tai-lieu-page/
