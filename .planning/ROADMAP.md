@@ -185,12 +185,12 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 14. Pricing + Access Control | 6/6 | ✅ Complete | 8dbc495, 1b1eb04, e14c7e9, 14154f6, 86040f9 |
-| 15. Admin UX + Audit | 0/? | Not started | - |
-| 16. Lesson Tabs + Study Materials | 0/? | Not started | - |
-| 17. In-Lesson Chat | 4/4 | Complete   | 2026-05-08 |
-| 18. Mock Exam System | 0/4 | Not started | - |
-| 19. Landing Page + Navigator + Video | 0/? | Not started | - |
-| 20. Landing Page UI/UX Refresh | 0/? | Not started | - |
+| 15. Admin UX + Audit | 3/3 | ✅ Complete | - |
+| 16. Lesson Tabs + Study Materials | 4/4 | ✅ Complete | - |
+| 17. In-Lesson Chat | 4/4 | ✅ Complete | 2026-05-08 |
+| 18. Mock Exam System | 4/4 | ✅ Complete | - |
+| 19. Landing Page + Navigator + Video | 1/1 | ✅ Complete | 2026-05-18 |
+| 20. UI/UX Redesign (P01–P04) | 4/4 | ✅ Complete | 2026-05-18 |
 | 21. Tài liệu Page | 0/? | Not started | - |
 
 ---
