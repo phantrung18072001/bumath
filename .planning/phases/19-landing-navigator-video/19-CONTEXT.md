@@ -35,7 +35,7 @@ Ngoài phạm vi phase này:
 ### School Navigator / Catalog filter
 - **D-07:** Filter "Tứ trụ trường chuyên" nằm trong `/danh-muc` (catalog page), không phải landing page section riêng.
 - **D-08:** Filter chỉ hiển thị khi grade filter đang là `advanced` (ôn chuyên). Khi grade khác → filter Tứ trụ ẩn.
-- **D-09:** Static constants — không cần DB. Map đơn giản: tag `is_tu_tru` (boolean hoặc field trên course) hoặc slug-based filter. Không cần per-school detail.
+- **D-09:** Static constants — không cần DB. Map đơn giản: tag `is_outstanding` (boolean hoặc field trên course) hoặc slug-based filter. Không cần per-school detail.
 - **D-10:** Options filter: "Tất cả" (default) và "Tứ trụ". Khi chọn "Tứ trụ" → chỉ hiện course ôn chuyên có nhãn Tứ trụ.
 
 ### VideoPlayer abstraction

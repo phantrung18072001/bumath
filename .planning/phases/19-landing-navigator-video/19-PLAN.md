@@ -5,7 +5,7 @@ type: execute
 wave: 1
 depends_on: []
 files_modified:
-  - supabase/migrations/20260518_27_courses_is_tu_tru.sql
+  - supabase/migrations/20260518_27_courses_is_outstanding.sql
   - src/lib/api/courses.ts
   - src/components/student/VideoPlayer.tsx
   - src/components/student/LessonContent.tsx
@@ -33,15 +33,15 @@ must_haves:
     - "VideoPlayer có error state khi YouTube URL không parse được ID"
     - "LessonContent dùng <VideoPlayer> thay inline iframe"
     - "CataloguePage có filter pill 'Tứ trụ' chỉ hiện khi activeGrade === 'advanced'"
-    - "Chọn filter 'Tứ trụ' → chỉ hiện course có is_tu_tru = true"
+    - "Chọn filter 'Tứ trụ' → chỉ hiện course có is_outstanding = true"
     - "Chuyển sang grade khác → filter Tứ trụ tự reset về 'Tất cả'"
   artifacts:
-    - path: "supabase/migrations/20260518_27_courses_is_tu_tru.sql"
-      provides: "ALTER TABLE courses ADD COLUMN is_tu_tru boolean NOT NULL DEFAULT false"
-      contains: "ADD COLUMN IF NOT EXISTS is_tu_tru"
+    - path: "supabase/migrations/20260518_27_courses_is_outstanding.sql"
+      provides: "ALTER TABLE courses ADD COLUMN is_outstanding boolean NOT NULL DEFAULT false"
+      contains: "ADD COLUMN IF NOT EXISTS is_outstanding"
     - path: "src/lib/api/courses.ts"
-      provides: "Course interface with is_tu_tru?: boolean"
-      contains: "is_tu_tru"
+      provides: "Course interface with is_outstanding?: boolean"
+      contains: "is_outstanding"
     - path: "src/components/student/VideoPlayer.tsx"
       provides: "Provider-agnostic video component"
       exports: ["VideoPlayer (default)"]
@@ -78,8 +78,8 @@ must_haves:
       pattern: "VideoPlayer"
     - from: "src/pages/student/CataloguePage.tsx"
       to: "src/lib/api/courses.ts"
-      via: "Course.is_tu_tru boolean field"
-      pattern: "is_tu_tru"
+      via: "Course.is_outstanding boolean field"
+      pattern: "is_outstanding"
 ---
 
 # Phase 19 — Landing Page + School Navigator + Video Abstraction
@@ -95,7 +95,7 @@ Landing page có đủ nội dung Tứ trụ, bảng giá 6 gói, VideoPlayer pr
 
 <objective>
 Phase 19 delivers four surgical changes:
-1. **DB + Course type** — Add `is_tu_tru` boolean column to `courses` table; extend Course interface.
+1. **DB + Course type** — Add `is_outstanding` boolean column to `courses` table; extend Course interface.
 2. **VideoPlayer abstraction** — New component replacing inline iframe in LessonContent; auto-detects YouTube vs self-hosted from URL.
 3. **Landing page enhancements** — New PricingSection (6 cards), Tứ trụ text block in IntensiveSection, ConsultationForm anchor, Index.tsx integration.
 4. **CataloguePage Tứ trụ filter** — Conditional sub-filter row (visible only when grade=advanced), client-side `tuTruOnly` predicate, reset on grade change.
@@ -131,7 +131,7 @@ export interface Course {
   created_at: string
   updated_at: string
 }
-// fetchCoursesPaginated uses .select('*') — will auto-include is_tu_tru after migration
+// fetchCoursesPaginated uses .select('*') — will auto-include is_outstanding after migration
 ```
 
 From src/lib/youtube.ts (existing, MUST import — do NOT duplicate):
@@ -212,7 +212,7 @@ From src/components/landing/ConsultationForm.tsx (line 58, needs id):
 | 2 | T-07 + T-08 (CataloguePage filter + tests) | Sequential (T-07 first, T-08 second) |
 
 Wave 1 tasks (T-01 through T-06) may all execute in parallel — zero file overlap.
-Wave 2 tasks (T-07, T-08) depend on T-01's Course interface change (`is_tu_tru`).
+Wave 2 tasks (T-07, T-08) depend on T-01's Course interface change (`is_outstanding`).
 
 ---
 
@@ -223,40 +223,40 @@ Wave 2 tasks (T-07, T-08) depend on T-01's Course interface change (`is_tu_tru`)
 <!-- ═══════════════════════════════════════════════════════════ -->
 
 <task type="auto" id="T-01">
-  <name>T-01: DB migration — add is_tu_tru to courses</name>
-  <files>supabase/migrations/20260518_27_courses_is_tu_tru.sql</files>
+  <name>T-01: DB migration — add is_outstanding to courses</name>
+  <files>supabase/migrations/20260518_27_courses_is_outstanding.sql</files>
   <action>
 Create new migration file with exactly this content (no other changes):
 
 ```sql
--- Phase 19: Add is_tu_tru boolean to courses table
+-- Phase 19: Add is_outstanding boolean to courses table
 -- Required for Tứ trụ filter in CataloguePage (NAV-02)
 -- DEFAULT false is safe — all existing courses are non-Tứ trụ
 
 ALTER TABLE courses
-  ADD COLUMN IF NOT EXISTS is_tu_tru boolean NOT NULL DEFAULT false;
+  ADD COLUMN IF NOT EXISTS is_outstanding boolean NOT NULL DEFAULT false;
 ```
 
-File name MUST be exactly `20260518_27_courses_is_tu_tru.sql` to follow migration naming convention.
+File name MUST be exactly `20260518_27_courses_is_outstanding.sql` to follow migration naming convention.
 Do NOT modify any existing migration files.
 Do NOT add an UPDATE backfill — DEFAULT false handles all existing rows.
 </action>
   <verify>
-    <automated>grep -c "ADD COLUMN IF NOT EXISTS is_tu_tru" supabase/migrations/20260518_27_courses_is_tu_tru.sql</automated>
+    <automated>grep -c "ADD COLUMN IF NOT EXISTS is_outstanding" supabase/migrations/20260518_27_courses_is_outstanding.sql</automated>
   </verify>
   <done>Migration file exists with correct ALTER TABLE statement; no syntax errors; safe for supabase db push.</done>
 </task>
 
 <task type="auto" id="T-02" tdd="true">
-  <name>T-02: Course interface — add is_tu_tru field</name>
+  <name>T-02: Course interface — add is_outstanding field</name>
   <files>src/lib/api/courses.ts</files>
   <behavior>
-    - Course interface has `is_tu_tru?: boolean` (optional — backward compat with code that doesn't select all fields)
+    - Course interface has `is_outstanding?: boolean` (optional — backward compat with code that doesn't select all fields)
     - All existing Course properties remain unchanged
     - `fetchCoursesPaginated` uses `.select('*')` so no explicit column list change needed
   </behavior>
   <action>
-In `src/lib/api/courses.ts`, add `is_tu_tru?: boolean` to the `Course` interface AFTER `is_published: boolean` (line ~10):
+In `src/lib/api/courses.ts`, add `is_outstanding?: boolean` to the `Course` interface AFTER `is_published: boolean` (line ~10):
 
 ```typescript
 export interface Course {
@@ -266,7 +266,7 @@ export interface Course {
   description: string | null
   target_grade: 'grade_7' | 'grade_8' | 'grade_9' | 'advanced'
   is_published: boolean
-  is_tu_tru?: boolean   // Phase 19: Tứ trụ specialist course flag (NAV-02, D-09)
+  is_outstanding?: boolean   // Phase 19: Tứ trụ specialist course flag (NAV-02, D-09)
   created_at: string
   updated_at: string
 }
@@ -275,9 +275,9 @@ export interface Course {
 No other changes to courses.ts — `fetchCoursesPaginated` already uses `.select('*')` which will auto-include the new column after migration.
 </action>
   <verify>
-    <automated>grep -c "is_tu_tru" src/lib/api/courses.ts</automated>
+    <automated>grep -c "is_outstanding" src/lib/api/courses.ts</automated>
   </verify>
-  <done>Course interface has `is_tu_tru?: boolean`; TypeScript compilation passes; no other courses.ts lines changed.</done>
+  <done>Course interface has `is_outstanding?: boolean`; TypeScript compilation passes; no other courses.ts lines changed.</done>
 </task>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
@@ -683,7 +683,7 @@ import PricingSection from "@/components/landing/PricingSection";
 
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- WAVE 2: CataloguePage Tứ trụ Filter                        -->
-<!-- (depends on T-02 — Course interface with is_tu_tru)         -->
+<!-- (depends on T-02 — Course interface with is_outstanding)         -->
 <!-- ═══════════════════════════════════════════════════════════ -->
 
 <task type="auto" id="T-07" tdd="true">
@@ -693,7 +693,7 @@ import PricingSection from "@/components/landing/PricingSection";
     - `tuTruOnly` state initialized `false`, local (NOT in URL params per D-09)
     - Sub-filter row with 2 pills ("Tất cả" / "Tứ trụ") visible ONLY when `activeGrade === 'advanced'`
     - When `activeGrade` changes away from 'advanced' → `tuTruOnly` resets to `false` (useEffect)
-    - `filteredCourses` predicate: existing `matchesGrade && matchesSearch` PLUS `!tuTruOnly || c.is_tu_tru === true`
+    - `filteredCourses` predicate: existing `matchesGrade && matchesSearch` PLUS `!tuTruOnly || c.is_outstanding === true`
     - Empty state when Tứ trụ filter returns 0 courses: heading "Chưa có khóa học Tứ trụ", body "Hãy liên hệ BuMath để được tư vấn lộ trình phù hợp."
     - Active "Tứ trụ" pill: `bg-primary text-white` (orange, distinct from indigo GRADE_FILTERS pills)
     - Inactive pill: `bg-secondary text-secondary-foreground`
@@ -725,7 +725,7 @@ useEffect(() => {
 const filteredCourses = allCourses.filter(c => {
   const matchesGrade  = activeGrade === 'all' || c.target_grade === activeGrade
   const matchesSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase().trim())
-  const matchesTuTru  = !tuTruOnly || c.is_tu_tru === true  // D-10
+  const matchesTuTru  = !tuTruOnly || c.is_outstanding === true  // D-10
   return matchesGrade && matchesSearch && matchesTuTru
 })
 ```
@@ -789,12 +789,12 @@ Ensure `cn` is already imported (it should be). If not, add import from `@/lib/u
   <action>
 Add new test cases to the existing `describe('CataloguePage')` block in `CataloguePage.test.tsx`. Do NOT modify existing tests.
 
-**Extend mock courses** to include is_tu_tru variants (add at top of file, alongside existing mockCourses):
+**Extend mock courses** to include is_outstanding variants (add at top of file, alongside existing mockCourses):
 
 ```typescript
 const mockAdvancedCourses = [
-  { id: 'c3', title: 'Ôn chuyên Tứ trụ', slug: 'on-chuyen-tu-tru', target_grade: 'advanced', description: null, is_tu_tru: true },
-  { id: 'c4', title: 'Ôn chuyên A-Z',    slug: 'on-chuyen-az',    target_grade: 'advanced', description: null, is_tu_tru: false },
+  { id: 'c3', title: 'Ôn chuyên Tứ trụ', slug: 'on-chuyen-tu-tru', target_grade: 'advanced', description: null, is_outstanding: true },
+  { id: 'c4', title: 'Ôn chuyên A-Z',    slug: 'on-chuyen-az',    target_grade: 'advanced', description: null, is_outstanding: false },
 ]
 ```
 
@@ -836,7 +836,7 @@ describe('Tứ trụ sub-filter', () => {
     const { fetchCoursesPaginated } = await import('@/lib/api/courses')
     // Only non-Tứ trụ advanced course
     vi.mocked(fetchCoursesPaginated).mockResolvedValue({
-      data: [{ id: 'c4', title: 'Ôn chuyên A-Z', slug: 'on-chuyen-az', target_grade: 'advanced', description: null, is_tu_tru: false }],
+      data: [{ id: 'c4', title: 'Ôn chuyên A-Z', slug: 'on-chuyen-az', target_grade: 'advanced', description: null, is_outstanding: false }],
       total: 1
     })
 
@@ -895,7 +895,7 @@ Note: If existing tests use `BrowserRouter`, the new tests use `MemoryRouter` to
 | T-19-01 | Information Disclosure | `VideoPlayer` iframe — `video_url` visible in HTML source | accept | `video_url` already behind RLS (Phase 14 P06). YouTube-nocookie.com + unlisted videos reduce direct discoverability. No additional action needed. |
 | T-19-02 | Tampering | `tuTruOnly` client-side state in CataloguePage | accept | Filter is UX-only; no access control. Course data is already filtered by RLS (`is_published = true`). Manipulating filter via DevTools only changes visible subset — no security boundary crossed. |
 | T-19-03 | Spoofing | PricingSection CTA anchor scroll | accept | `scrollIntoView` on static element. No auth, no form submission at CTA level. ConsultationForm handles its own data handling unchanged. |
-| T-19-04 | Elevation of Privilege | `is_tu_tru` column in courses table | accept | Column is read-only to students (RLS: `SELECT` only). Only admins can set `is_tu_tru = true` (via Supabase dashboard or future admin UI). Phase 19 adds no write path for students. |
+| T-19-04 | Elevation of Privilege | `is_outstanding` column in courses table | accept | Column is read-only to students (RLS: `SELECT` only). Only admins can set `is_outstanding = true` (via Supabase dashboard or future admin UI). Phase 19 adds no write path for students. |
 
 **No new attack surfaces introduced.** Phase 19 adds read-only UI and a boolean DB column with restrictive default.
 </threat_model>
@@ -919,7 +919,7 @@ npx vitest run src/components/student/VideoPlayer.test.tsx
 npx vitest run src/pages/student/CataloguePage.test.tsx
 
 # 4. Migration file exists
-ls supabase/migrations/20260518_27_courses_is_tu_tru.sql
+ls supabase/migrations/20260518_27_courses_is_outstanding.sql
 
 # 5. Anchor wiring — ConsultationForm has id, PricingSection targets it
 grep -c "id=\"tu-van\"" src/components/landing/ConsultationForm.tsx
@@ -955,9 +955,9 @@ Phase 19 is complete when ALL of the following are TRUE:
 2. **LAND-03 ✓** — IntensiveSection contains ôn chuyên 9→10 Tứ trụ lộ trình description (same block as NAV-01)
 3. **PRICE-04 ✓** — PricingSection renders 6 cards with correct prices (1,5M / 1,5M / 2M / 3M / 2,5M / 4M đ); "Toàn bộ" has orange border + "Phổ biến" badge; CTA scrolls to #tu-van
 4. **VIDEO-02 ✓** — VideoPlayer accepts url prop; YouTube URL → youtube-nocookie.com iframe; non-YouTube URL → `<video>`; LessonContent uses VideoPlayer; tests pass
-5. **NAV-02 ✓** — CataloguePage shows Tứ trụ filter pills only when grade=advanced; filter applies is_tu_tru predicate; resets on grade change; tests pass
+5. **NAV-02 ✓** — CataloguePage shows Tứ trụ filter pills only when grade=advanced; filter applies is_outstanding predicate; resets on grade change; tests pass
 6. **No regressions** — `npx tsc --noEmit` passes; all existing tests pass
-7. **Migration ready** — `supabase/migrations/20260518_27_courses_is_tu_tru.sql` exists and contains correct ALTER TABLE statement
+7. **Migration ready** — `supabase/migrations/20260518_27_courses_is_outstanding.sql` exists and contains correct ALTER TABLE statement
 
 </success_criteria>
 
@@ -1006,8 +1006,8 @@ After completion, create `.planning/phases/19-landing-navigator-video/19-PLAN-SU
 
 | ID | Description | Wave | Files |
 |----|-------------|------|-------|
-| T-01 | DB migration — is_tu_tru column | 1 | supabase/migrations/... |
-| T-02 | Course interface — is_tu_tru field | 1 | src/lib/api/courses.ts |
+| T-01 | DB migration — is_outstanding column | 1 | supabase/migrations/... |
+| T-02 | Course interface — is_outstanding field | 1 | src/lib/api/courses.ts |
 | T-03 | VideoPlayer component + tests | 1 | VideoPlayer.tsx, VideoPlayer.test.tsx |
 | T-04 | LessonContent — swap iframe with VideoPlayer | 1 | LessonContent.tsx |
 | T-05 | IntensiveSection Tứ trụ block + ConsultationForm anchor | 1 | IntensiveSection.tsx, ConsultationForm.tsx |

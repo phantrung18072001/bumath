@@ -517,7 +517,7 @@ useEffect(() => {
 const filteredCourses = allCourses.filter(c => {
   const matchesGrade  = activeGrade === 'all' || c.target_grade === activeGrade;
   const matchesSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase().trim());
-  const matchesTuTru  = !tuTruOnly || c.is_tu_tru === true;  // ← thêm condition
+  const matchesTuTru  = !tuTruOnly || c.is_outstanding === true;  // ← thêm condition
   return matchesGrade && matchesSearch && matchesTuTru;
 });
 ```
@@ -528,7 +528,7 @@ const filteredCourses = allCourses.filter(c => {
 // Trong src/lib/api/courses.ts — thêm field
 export interface Course {
   // ... existing fields
-  is_tu_tru?: boolean;   // boolean field từ DB; optional cho backward compat
+  is_outstanding?: boolean;   // boolean field từ DB; optional cho backward compat
 }
 ```
 
@@ -598,7 +598,7 @@ Thêm vào empty state check hiện tại:
 | `src/components/student/VideoPlayer.tsx` | **Create new** |
 | `src/components/student/LessonContent.tsx` | Replace inline `<iframe>` with `<VideoPlayer>` |
 | `src/pages/student/CataloguePage.tsx` | Add Tứ trụ sub-filter state + UI + filter logic |
-| `src/lib/api/courses.ts` | Add `is_tu_tru?: boolean` to `Course` interface |
+| `src/lib/api/courses.ts` | Add `is_outstanding?: boolean` to `Course` interface |
 
 ---
 

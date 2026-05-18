@@ -47,7 +47,7 @@
 |----|-------------|------------------|
 | PRICE-04 | Landing page hiển thị bảng giá 6 gói (Lớp 7: 1.5M, Lớp 8: 1.5M, Cấp tốc: 2M, Ôn chuyên: 3M, Tứ trụ: 2.5M, Toàn bộ: 4M) | PricingSection component, shadcn Card available |
 | NAV-01 | Landing page có section Tứ trụ với PTNK/CNN/CSP/KHTN | D-01 text block in IntensiveSection |
-| NAV-02 | Học sinh chọn trường mục tiêu → điều hướng đến khóa học phù hợp | Tứ trụ filter in CataloguePage, needs `is_tu_tru` DB field |
+| NAV-02 | Học sinh chọn trường mục tiêu → điều hướng đến khóa học phù hợp | Tứ trụ filter in CataloguePage, needs `is_outstanding` DB field |
 | LAND-03 | Landing page giới thiệu ôn chuyên 9→10: A→Z chuyên đề, cấp tốc, Tứ trụ | D-01 covers this via IntensiveSection Tứ trụ text |
 | VIDEO-02 | VideoPlayer abstract hoá provider — YouTube + self-hosted | Reuse existing `src/lib/youtube.ts`; `LessonContent.tsx` inline iframe to replace |
 | LAND-01 | (Bỏ qua theo user — không cần làm) | — |
@@ -60,7 +60,7 @@
 
 Phase 19 delivers four surgical changes across the codebase: (1) a new `PricingSection` landing component, (2) a Tứ trụ text block appended to `IntensiveSection`, (3) a conditional "Tứ trụ" sub-filter in `CataloguePage`, and (4) a `VideoPlayer` component that replaces the inline iframe in `LessonContent`. The scope is narrow and well-defined by the CONTEXT.md decisions.
 
-The only DB change required is adding `is_tu_tru boolean DEFAULT false` to the `courses` table. All other work is pure TypeScript/React. No new shadcn components need to be installed — Card, Button, Badge, and AspectRatio are already in `src/components/ui/`. Framer Motion stagger animations already pattern-established in ClassGrid and IntensiveSection.
+The only DB change required is adding `is_outstanding boolean DEFAULT false` to the `courses` table. All other work is pure TypeScript/React. No new shadcn components need to be installed — Card, Button, Badge, and AspectRatio are already in `src/components/ui/`. Framer Motion stagger animations already pattern-established in ClassGrid and IntensiveSection.
 
 **Primary recommendation:** Execute in 4 focused plans: (P1) DB migration + Course type extension, (P2) PricingSection + IntensiveSection update + Index.tsx integration + ConsultationForm anchor, (P3) VideoPlayer component + LessonContent swap, (P4) CataloguePage Tứ trụ filter + tests.
 
@@ -72,8 +72,8 @@ The only DB change required is adding `is_tu_tru boolean DEFAULT false` to the `
 |------------|-------------|----------------|-----------|
 | PricingSection display | Browser/Client | — | Static data, no server state needed |
 | Tứ trụ text in IntensiveSection | Browser/Client | — | Static copywriting |
-| Tứ trụ filter (CataloguePage) | Browser/Client | Database/Storage | Client-side filter on already-loaded data; DB needs `is_tu_tru` field |
-| `is_tu_tru` schema | Database/Storage | — | New boolean column on `courses` table |
+| Tứ trụ filter (CataloguePage) | Browser/Client | Database/Storage | Client-side filter on already-loaded data; DB needs `is_outstanding` field |
+| `is_outstanding` schema | Database/Storage | — | New boolean column on `courses` table |
 | VideoPlayer provider detection | Browser/Client | — | Pure URL parsing, no server calls |
 | ConsultationForm anchor | Browser/Client | — | `id` attribute + `scrollIntoView` |
 
@@ -89,7 +89,7 @@ The only DB change required is adding `is_tu_tru boolean DEFAULT false` to the `
 | React Router DOM v6 | current | routing in landing page CTAs | No change needed [VERIFIED: codebase] |
 | Lucide React | current | Icons for pricing cards (BookOpen, Zap, Target, Trophy, Star) | All icons available [VERIFIED: codebase] |
 | TanStack React Query | current | CataloguePage data fetching | No change to query logic [VERIFIED: CataloguePage.tsx] |
-| Supabase JS | current | DB migration for `is_tu_tru` | ALTER TABLE via migration file [VERIFIED: migrations/] |
+| Supabase JS | current | DB migration for `is_outstanding` | ALTER TABLE via migration file [VERIFIED: migrations/] |
 
 **Installation:** No new packages needed. [VERIFIED: all required shadcn components present in src/components/ui/]
 
@@ -113,11 +113,11 @@ src/
 │       └── CataloguePage.tsx         # UPDATED — Tứ trụ sub-filter
 ├── lib/
 │   ├── api/
-│   │   └── courses.ts                # UPDATED — add is_tu_tru?: boolean to Course interface
+│   │   └── courses.ts                # UPDATED — add is_outstanding?: boolean to Course interface
 │   └── youtube.ts                    # UNCHANGED — VideoPlayer reuses extractYouTubeID
 supabase/
 └── migrations/
-    └── 20260518_27_courses_is_tu_tru.sql   # NEW — ALTER TABLE courses ADD COLUMN
+    └── 20260518_27_courses_is_outstanding.sql   # NEW — ALTER TABLE courses ADD COLUMN
 ```
 
 ### Pattern 1: Landing Section Structure
@@ -165,7 +165,7 @@ supabase/
 const filteredCourses = allCourses.filter(c => {
   const matchesGrade  = activeGrade === 'all' || c.target_grade === activeGrade;
   const matchesSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase().trim());
-  const matchesTuTru  = !tuTruOnly || c.is_tu_tru === true;  // NEW condition
+  const matchesTuTru  = !tuTruOnly || c.is_outstanding === true;  // NEW condition
   return matchesGrade && matchesSearch && matchesTuTru;
 });
 ```
@@ -208,18 +208,18 @@ const embedSrc = videoId ? `https://www.youtube-nocookie.com/embed/${videoId}` :
 
 ## Critical Findings (Answers to Architectural Questions)
 
-### Q1: Does `courses` table have `is_tu_tru`?
-**No.** [VERIFIED: `src/lib/api/courses.ts` Course interface — field absent. All migration files checked — no `is_tu_tru` column.]
+### Q1: Does `courses` table have `is_outstanding`?
+**No.** [VERIFIED: `src/lib/api/courses.ts` Course interface — field absent. All migration files checked — no `is_outstanding` column.]
 
-**Required action:** Create migration `20260518_27_courses_is_tu_tru.sql`:
+**Required action:** Create migration `20260518_27_courses_is_outstanding.sql`:
 ```sql
 ALTER TABLE courses
-  ADD COLUMN IF NOT EXISTS is_tu_tru boolean NOT NULL DEFAULT false;
+  ADD COLUMN IF NOT EXISTS is_outstanding boolean NOT NULL DEFAULT false;
 ```
 No data migration needed — `DEFAULT false` is safe for all existing rows.
-Also add `is_tu_tru?: boolean` to the `Course` interface in `courses.ts` (optional for backward compat with any code that doesn't select `*`).
+Also add `is_outstanding?: boolean` to the `Course` interface in `courses.ts` (optional for backward compat with any code that doesn't select `*`).
 
-### Q2: Does `fetchCoursesPaginated` support `is_tu_tru` filter?
+### Q2: Does `fetchCoursesPaginated` support `is_outstanding` filter?
 **No server-side filter needed.** [VERIFIED: CataloguePage.tsx L47 — `grade: 'all'` is hardcoded; all courses are fetched, filtering is purely client-side on `filteredCourses`.] The Tứ trụ filter will be an additional client-side predicate on `allCourses`.
 
 ### Q3: Does ConsultationForm have `id="tu-van"`?
@@ -233,7 +233,7 @@ Also add `is_tu_tru?: boolean` to the `Course` interface in `courses.ts` (option
 **Impact for VideoPlayer:** The URL detection regex correctly matches `youtube.com` → YouTube path. The `extractYouTubeID` in `src/lib/youtube.ts` handles `youtube.com/embed/{id}` format (pattern 2 in the file). Then VideoPlayer converts to `youtube-nocookie.com/embed/{id}` for the actual iframe src. ✓
 
 ### Q5: Will adding Tứ trụ filter break existing CataloguePage tests?
-**No.** [VERIFIED: `CataloguePage.test.tsx` — tests mock `fetchCoursesPaginated` returning `{ data: [], total: 0 }` or mock courses without `is_tu_tru`. Adding optional `is_tu_tru?: boolean` to Course interface is backward compatible. The filter logic addition does not break any asserted text content.]
+**No.** [VERIFIED: `CataloguePage.test.tsx` — tests mock `fetchCoursesPaginated` returning `{ data: [], total: 0 }` or mock courses without `is_outstanding`. Adding optional `is_outstanding?: boolean` to Course interface is backward compatible. The filter logic addition does not break any asserted text content.]
 
 **Required action:** Add new test cases for the Tứ trụ sub-filter behavior.
 
@@ -255,7 +255,7 @@ Also add `is_tu_tru?: boolean` to the `Course` interface in `courses.ts` (option
 **Why it happens:** Not normalising to nocookie domain.
 **How to avoid:** VideoPlayer extracts the ID with `extractYouTubeID`, then builds `youtube-nocookie.com/embed/{id}` embed URL.
 
-### Pitfall 3: `is_tu_tru` filter applied when not in 'advanced' grade
+### Pitfall 3: `is_outstanding` filter applied when not in 'advanced' grade
 **What goes wrong:** `tuTruOnly === true` persists when user switches from 'advanced' to 'grade_7' — results appear to be filtered with no UI indication.
 **Why it happens:** Not resetting local state on grade change.
 **How to avoid:** `useEffect(() => { if (activeGrade !== 'advanced') setTuTruOnly(false) }, [activeGrade])` — required per UI-SPEC.
@@ -374,7 +374,7 @@ export interface Course {
   description: string | null
   target_grade: 'grade_7' | 'grade_8' | 'grade_9' | 'advanced'
   is_published: boolean
-  is_tu_tru?: boolean   // NEW — optional for backward compat
+  is_outstanding?: boolean   // NEW — optional for backward compat
   created_at: string
   updated_at: string
 }
@@ -409,8 +409,8 @@ export interface Course {
    - What's unclear: Whether normalising on read is sufficient vs. fixing at write time.
    - Recommendation: Out of scope for Phase 19 — VideoPlayer normalises correctly on read. Leave LessonInlineForm unchanged.
 
-2. **Should `is_tu_tru` be admin-settable in UI (admin course edit form)?**
-   - What we know: D-09 says static constants, no DB needed for school mapping. But the filter uses `c.is_tu_tru` from DB.
+2. **Should `is_outstanding` be admin-settable in UI (admin course edit form)?**
+   - What we know: D-09 says static constants, no DB needed for school mapping. But the filter uses `c.is_outstanding` from DB.
    - What's unclear: How admin will tag courses as Tứ trụ — Phase 19 only adds the DB field.
    - Recommendation: Phase 19 only adds the DB column and filter UI. Admin can set the field directly via Supabase dashboard or via a future admin form. Include a note in the plan.
 
@@ -482,7 +482,7 @@ Step 2.6: SKIPPED — Phase 19 is purely frontend React + one ALTER TABLE Supaba
 | iframe src injection (XSS) | Tampering | VideoPlayer constructs src from known-good template (`youtube-nocookie.com/embed/${videoId}`); videoId extracted by regex (alphanumeric only) |
 | Open redirect from pricing CTA | Spoofing | CTA only calls `scrollIntoView` — no redirect, no user-controlled URL |
 
-**Note:** `is_tu_tru` is a read-only field from Supabase RLS-protected table — no write path exposed in Phase 19.
+**Note:** `is_outstanding` is a read-only field from Supabase RLS-protected table — no write path exposed in Phase 19.
 
 ---
 
@@ -504,7 +504,7 @@ Step 2.6: SKIPPED — Phase 19 is purely frontend React + one ALTER TABLE Supaba
 ## Sources
 
 ### Primary (HIGH confidence — verified from codebase)
-- `src/lib/api/courses.ts` — Course interface (no `is_tu_tru`); `fetchCoursesPaginated` (client-side filter only)
+- `src/lib/api/courses.ts` — Course interface (no `is_outstanding`); `fetchCoursesPaginated` (client-side filter only)
 - `src/pages/student/CataloguePage.tsx` — Grade filter pattern; client-side filteredCourses; no `tuTruOnly` state
 - `src/components/landing/ConsultationForm.tsx` — No `id="tu-van"` on section
 - `src/components/landing/IntensiveSection.tsx` — Current structure for Tứ trụ block insertion point
@@ -514,7 +514,7 @@ Step 2.6: SKIPPED — Phase 19 is purely frontend React + one ALTER TABLE Supaba
 - `src/components/admin/LessonInlineForm.tsx` — video_url stored as `youtube.com/embed/{id}` format
 - `src/lib/youtube.ts` — `extractYouTubeID` handles 5 formats including embed/
 - `src/pages/student/CataloguePage.test.tsx` — Existing test structure; won't break from Phase 19 changes
-- `supabase/migrations/` (all files) — No `is_tu_tru` column found
+- `supabase/migrations/` (all files) — No `is_outstanding` column found
 - `.planning/phases/19-landing-navigator-video/19-UI-SPEC.md` — Approved UI contract
 - `.planning/phases/19-landing-navigator-video/19-CONTEXT.md` — Locked decisions
 - `CLAUDE.md` — Project conventions
