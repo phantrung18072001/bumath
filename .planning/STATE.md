@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Platform Expansion
-status: Executing Phase 18
-stopped_at: Phase 18 context gathered
-last_updated: "2026-05-13T05:06:54.462Z"
+status: Starting Phase 19
+stopped_at: Resuming session — advancing to Phase 19 discussion
+last_updated: "2026-05-18T18:24:00.000Z"
 progress:
   total_phases: 7
-  completed_phases: 5
-  total_plans: 21
-  completed_plans: 17
+  completed_phases: 6
+  total_plans: 25
+  completed_plans: 21
 ---
 
 # Project State
@@ -19,65 +19,27 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-03 — v3.0 milestone started)
 
 **Core value:** Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ thể từ giảng viên trên từng bài làm
-**Current focus:** Phase 18 — mock-exam-system
+**Current focus:** Phase 19 — Landing Page + Navigator + Video Abstraction
 
 ## Current Position
 
-Phase: 18 (mock-exam-system) — EXECUTING
-Plan: 1 of 4
+Phase: 19 (landing-page-navigator-video) — STARTING
+Plan: 0 of TBD
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 0
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed: 21
+- Average duration: ~7min
+- Total execution time: ~2.5 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
-
-**Recent Trend:**
-
-- Last 5 plans: -
-- Trend: -
-
-*Updated after each plan completion*
-| Phase 01-foundation P01 | 2 | 3 tasks | 7 files |
-| Phase 02-auth-access-control P01 | 4min | 3 tasks | 9 files |
-| Phase 02-auth-access-control P02 | 15 | 3 tasks | 4 files |
-| Phase 02-auth-access-control P03 | 4min | 2 tasks | 2 files |
-| Phase 03-course-management P01 | 2min | 4 tasks | 4 files |
-| Phase 03-course-management P02 | 5min | 4 tasks | 4 files |
-| Phase 03-course-management P03 | 15min | 5 tasks | 4 files |
-| Phase 03-course-management P04 | 20min | 5 tasks | 6 files |
-| Phase 03-course-management P05 | 2min | 4 tasks | 3 files |
-| Phase 04-student-learning-submission P01 | 2min | 2 tasks | 7 files |
-| Phase 04-student-learning-submission PP02 | 8min | 2 tasks | 4 files |
-| Phase 04-student-learning-submission P03 | 4min | 3 tasks | 4 files |
-| Phase 04-student-learning-submission P04 | 8min | 2 tasks | 2 files |
-| Phase 04-student-learning-submission P05 | 1min | 1 tasks | 0 files |
-| Phase 05-grading-notification P01 | 1min | 2 tasks | 2 files |
-| Phase 05-grading-notification P00 | 4 | 2 tasks | 4 files |
-| Phase 05-grading-notification P03 | 4min | 2 tasks | 5 files |
-| Phase 05-grading-notification P02 | 11min | 3 tasks | 6 files |
-| Phase 06-ux-polish P01 | 5 | 3 tasks | 5 files |
-| Phase 06-ux-polish P02 | 8min | 3 tasks | 3 files |
-| Phase 06-ux-polish P00 | 7min | 5 tasks | 4 files |
-| Phase 06-ux-polish P03 | 7min | 3 tasks | 3 files |
-| Phase 06-ux-polish PP04 | 5min | 2 tasks | 3 files |
-| Phase 06 P05 | 8min | 2 tasks | 1 files |
-| Phase 13 P00 | 5 | 3 tasks | 3 files |
-| Phase 13-student-pages P01 | 5 | 2 tasks | 2 files |
-| Phase 13 P03 | 8min | 2 tasks | 2 files |
-| Phase 13-student-pages P02 | 251 | 2 tasks | 2 files |
-| Phase 17-in-lesson-chat P01 | 2m 23s | 3 tasks | 1 files |
-| Phase 17 P02 | 3min | 3 tasks | 8 files |
-| Phase 17-in-lesson-chat P04 | 2 | 1 tasks | 2 files |
-| Phase 17-in-lesson-chat P03 | 22 | 4 tasks | 7 files |
+| Phase 18 | 4/4 | complete | - |
+| Phase 20 | 3/? | in progress | - |
 
 ## Accumulated Context
 
@@ -87,103 +49,42 @@ Plan: 1 of 4
 - Phase 12.1 inserted after Phase 12: UI fix - error states typography touch targets (URGENT)
 - v3.0 Phases 14–19 created 2026-05-03: 31 requirements mapped across 6 phases
 - Phase 20 added: Thay đổi UI/UX: Landing page hiện đại theo phong cách AI EdTech SaaS
+- Phase 20 executed out-of-order (before Phase 19) — P01-P03 complete, validation draft
 
 ### v3.0 Phase Map
 
 | Phase | Name | Requirements | Key Risk |
 |-------|------|--------------|----------|
-| 14 | Pricing + Access Control | PRICE-01–03, PRICE-05, VIDEO-01 | Backfill migration order — never combine backfill + RLS change |
-| 15 | Admin UX + Audit | AUDIT-01, ADMIN-01–03 | Route ordering: literal before param in App.tsx |
-| 16 | Lesson Tabs + Study Materials | LESSON-01–03, MAT-01–03 | Separate `study-materials` bucket; signed URL expiry |
-| 17 | In-Lesson Chat | CHAT-01–03 | Realtime channel cleanup — removeChannel on every unmount |
-| 18 | Mock Exam System | EXAM-01–06 | Answer separation; server-side timing; UNIQUE constraint |
-| 19 | Landing + Navigator + Video | NAV-01–02, LAND-01–03, VIDEO-02, PRICE-04 | Static constants for navigator; VideoPlayer wraps, not replaces |
+| 14 | Pricing + Access Control | PRICE-01–03, PRICE-05, VIDEO-01 | ✅ Complete |
+| 15 | Admin UX + Audit | AUDIT-01, ADMIN-01–03 | ✅ Complete |
+| 16 | Lesson Tabs + Study Materials | LESSON-01–03, MAT-01–03 | ✅ Complete |
+| 17 | In-Lesson Chat | CHAT-01–03 | ✅ Complete |
+| 18 | Mock Exam System | EXAM-01–06 | ✅ Complete (4/4 plans) |
+| 19 | Landing + Navigator + Video | NAV-01–02, LAND-01–03, VIDEO-02, PRICE-04 | Not started |
+| 20 | UI/UX Redesign | TBD | 3/? plans done, validation draft |
 
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
+Recent decisions affecting current work: (see previous STATE.md content — all Phase 17–18 decisions preserved)
 
-- Supabase as backend (Auth + DB + Storage + RLS, no server to maintain)
-- YouTube embed only for video MVP (no direct upload in v1)
-- Admin approval gate before students access any content
-- Vercel deployment required before auth work (GitHub Pages breaks SPA deep links)
-- [Phase 01-foundation]: Pin @supabase/supabase-js to 2.78.0 — v2.79+ dropped Node 18 support (project runs Node 18.20.8)
-- [Phase 01-foundation]: Vercel SPA routing via vercel.json rewrites (not redirects) — rewrites preserve URL visible to user
-- [Phase 01-foundation]: Delete deploy.yml permanently — GitHub Pages superseded by Vercel, no value in archiving
-- [Phase 02-auth-access-control]: React Context (not TanStack Query) for auth state — session is event-driven via onAuthStateChange
-- [Phase 02-auth-access-control]: setTimeout(0) for profile fetch in onAuthStateChange to avoid Supabase callback deadlock
-- [Phase 02-auth-access-control]: ProtectedRoute redirects pending/rejected users to /pending; /pending page must not itself use ProtectedRoute (infinite redirect loop)
-- [Phase 02-auth-access-control]: Used controlled state for Login (2 fields) and RHF+Zod for Register (6 fields)
-- [Phase 02-auth-access-control]: Pending page uses inline auth checks (no ProtectedRoute) to prevent infinite redirect loop
-- [Phase 02-auth-access-control]: userEvent.setup() required for Radix Tabs interaction in jsdom — fireEvent.click does not trigger pointer events
-- [Phase 02-auth-access-control]: vi.mock hoisting requires all mock functions defined inside factory; named exports (__order, __updateEq) used for per-test data override
-- [Phase 03-course-management]: is_admin() and is_approved_user() as SECURITY DEFINER helpers — avoids repeating profiles JOIN in every RLS policy
-- [Phase 03-course-management]: Storage read policy permissive for authenticated users — file path discovery blocked by lesson RLS; student upload enforces user_id in path
-- [Phase 03-course-management]: target_grade enum values: grade_7/grade_8/grade_9/advanced map to UI labels Lớp 7/8/9/Ôn chuyên
-- [Phase 03-course-management]: CourseFormDialog resets via useEffect watching open/course props for clean controlled state
-- [Phase 03-course-management]: reorderChapters uses two sequential Supabase updates (no transaction support in JS client) — acceptable for low-concurrency admin UI
-- [Phase 03-course-management]: nextOrderIndex (chapters.length) passed from ChaptersPage to ChapterFormDialog for append-to-end ordering on create
-- [Phase 03-course-management]: extractYouTubeID normalises any YouTube URL to video ID; video_url stored as embed URL
-- [Phase 03-course-management]: Assignment storage path uses tmp/{chapterId} prefix on create — lesson ID not yet known at upload time
-- [Phase 03-course-management]: deleteAssignment called before removeLesson — storage failure prevents DB delete (consistent failure state)
-- [Phase 04-student-learning-submission]: browser-image-compression with heic2any dynamic import for HEIC fallback — avoids bundle cost
-- [Phase 04-student-learning-submission]: getCourseProgress is pure function — progress computed at render, never stored in DB
-- [Phase 04-student-learning-submission]: Unique constraint (user_id, lesson_id) on lesson_progress and submissions — one completion/submission per lesson
-- [Phase 04-student-learning-submission]: StudentLayout uses sticky 48px header (bg-card/border-b) with min-h-[48px] logout button — meets UX-02 tap target
-- [Phase 04-student-learning-submission]: CourseDetailPage created as placeholder stub for Plan 03; progress query enabled only when enrollments.length > 0
-- [Phase 04-student-learning-submission]: activeLessonId in local component state — URL stable on lesson switch (D-07)
-- [Phase 04-student-learning-submission]: lessonsByChapter Map<string, Lesson[]> for sidebar tree — avoids re-fetch and enables efficient rendering
-- [Phase 04-student-learning-submission]: Submission area is a placeholder in Plan 03 — Plan 04 will integrate SubmissionArea component
-- [Phase 04-student-learning-submission]: No resubmit UI after first submit (D-15) — once submission exists, show read-only view only
-- [Phase 04-student-learning-submission]: queryClient.invalidateQueries(['submissions', courseId]) on upload success — parent CourseDetailPage auto-refetches submission map
-- [Phase 04-student-learning-submission]: Phase 04 verification human-approved 2026-04-07 — all 20 items (11 desktop, 6 mobile, 3 edge cases) confirmed passed; Phase 05 is now unblocked
-- [Phase 05-grading-notification]: require() lazy import in Wave 0 test stubs — component does not need to exist when test file loads, enabling stubs as verify targets before implementation
-- [Phase 05-grading-notification]: SECURITY DEFINER RPC for student_viewed_at update — prevents students from blanket UPDATE policy exposing score/comment fields
-- [Phase 05-grading-notification]: mark_submission_viewed RPC triple-checks user_id=auth.uid(), status=graded, student_viewed_at IS NULL — prevents unauthorized access and double-marking
-- [Phase 05-grading-notification]: queryKey ['student', 'unviewed-grades'] namespaced to avoid collision with admin queries
-- [Phase 05-grading-notification]: refetchInterval 60_000 for bell badge — free-tier safe polling, avoids Realtime subscription overhead
-- [Phase 05-grading-notification]: Dynamic import() replaces require() in vitest ESM test stubs — CJS require() fails in Vitest v3 ESM mode even when module exists
-- [Phase 05-grading-notification]: useEffect cancellation flag pattern for async signed URL loading in GradingDialog — prevents state updates after unmount
-- [Phase 06-ux-polish]: bg-muted className override on Progress — CLAUDE.md prohibits editing src/components/ui/ components directly
-- [Phase 06-ux-polish]: Role-aware 404 redirect: students → /courses, others → / for better nav flow
-- [Phase 06-ux-polish]: Radix UI SelectItem requires non-empty value: use 'all' sentinel instead of '' for default Select option
-- [Phase 06-ux-polish]: CataloguePage.tsx placeholder created — Vite resolves dynamic imports at transform time; stub needed for Wave 0 test loading
-- [Phase 06-ux-polish]: fetchAllCourses() separate from fetchCourses() — different ordering allows future divergence
-- [Phase 06-ux-polish]: approved_user_read_all_* replaces enrolled-only RLS — enrollment lock enforced by UI not RLS
-- [Phase 06-ux-polish]: Replaced CataloguePage placeholder stub with full dual-query implementation (fetchAllCourses + getUserEnrollments)
-- [Phase 06-ux-polish]: Fixed test mock leak: empty state test explicitly resets fetchAllCourses to [] since vi.clearAllMocks() does not reset implementations
-- [Phase 06]: enrollmentsLoading in composite isLoading prevents mode flash before enrollment query resolves
-- [Phase 13]: Student pages use teal card variant (.bm-clay-card-student) on mint background (#F0FDFA)
-- [Phase 13-student-pages]: CoursesPage: bm-clay-card-student CSS class with border-0 shadow-none overrides for card styling
-- [Phase 13]: Sheet drawer replaces Tabs for enrolled mobile — cleaner UX, lg: breakpoints, preview card
-- [Phase 13-student-pages]: useInfiniteQuery replaces useQuery for paginated course loading in CataloguePage
-- [Phase 13-student-pages]: Client-side search+grade filter operates on all loaded pages (no re-fetch on type)
 - [Phase 17-in-lesson-chat]: No UPDATE/DELETE RLS policies on lesson_chat_messages — soft-delete exclusively via SECURITY DEFINER RPC delete_chat_message
 - [Phase 17-in-lesson-chat]: REPLICA IDENTITY FULL on lesson_chat_messages — required for Supabase Realtime UPDATE/DELETE to deliver full old row for client state reconciliation
-- [Phase 17-in-lesson-chat]: get_teacher_unread_chat_count uses per-lesson read_at from lesson_chat_reads with epoch fallback — avoids NULL edge case for never-read lessons
-- [Phase 17-02]: Placeholder component stubs (ChatPanel/ChatMessage/ChatInput.tsx) required — Vite resolves dynamic imports at transform time even inside it.skip; stubs prevent ReferenceError (Phase 05 precedent: CataloguePage.tsx stub)
-- [Phase 17-02]: it.skip used (not it.todo) for Wave 0 stubs — allows dynamic import() pattern with concrete expect(Component).toBeDefined() assertions; Plan 03 switches to it + fills render
-- [Phase 17-in-lesson-chat]: queryKey 'teacher-chat-unread' exact string — matches ChatPanel invalidateQueries in Plan 03
 - [Phase 17-04]: enabled: isTeacherOrAdmin gates chat unread poll — students never trigger get_teacher_unread_chat_count RPC
-- [Phase 17-03]: vi.hoisted() required for supabase channel spies in test files — vi.mock factory is hoisted before let/const declarations in test files
-- [Phase 17-03]: Don't mock both @/lib/supabase AND @/contexts/AuthContext in same vitest file — causes module-registry hang; use AuthProvider wrapper with mocked supabase instead
-- [Phase 17-03]: chatApi container object pattern for lesson-chat mocks — prevents vi.clearAllMocks() resetting implementations between tests
-- [RECURRING BUG — RESOLVED AT SOURCE]: Tooltip displays below content / clipped by overflow-hidden. Root cause: `src/components/ui/tooltip.tsx` `TooltipContent` was missing `TooltipPrimitive.Portal` wrapper — Radix Tooltip does NOT auto-portal (unlike Dialog/Dropdown). Without portal, tooltip renders inline in the DOM and any `overflow-hidden` ancestor clips it. Fix: wrap `TooltipPrimitive.Content` inside `TooltipPrimitive.Portal` in tooltip.tsx (done 2026-05-13). Do NOT fix at call sites — fix is permanent in the ui component. Do NOT use nested `TooltipProvider` — one global provider in App.tsx is sufficient.
+- [Phase 20 context]: Phase 20 CONTEXT: out of scope = landing page. UI-only overhaul. bm-glass-card, glassmorphism, indigo #4F46E5.
+- [RECURRING BUG — RESOLVED AT SOURCE]: Tooltip displays below content / clipped by overflow-hidden. Fix: wrap TooltipPrimitive.Content inside TooltipPrimitive.Portal in tooltip.tsx (done 2026-05-13).
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-- Node 18.20.8 in use: pin `@supabase/supabase-js` to 2.78.0 or upgrade Node to 20 LTS before Phase 2
-- Supabase free-tier pauses after 7 days inactivity — decide on Pro upgrade or heartbeat before inviting real students (address end of Phase 1 or Phase 2)
-- Phase 4: research client-side image compression library (`browser-image-compression` vs alternatives) and HEIC handling before implementation
-- Phase 5: research email delivery provider for Supabase Edge Function (Resend vs SendGrid vs built-in SMTP) before implementation
+- Node 18.20.8 in use: pin `@supabase/supabase-js` to 2.78.0 or upgrade Node to 20 LTS
+- Phase 20 VALIDATION still draft — needs verification after Phase 19
 
 ## Session Continuity
 
-Last session: 2026-05-13T04:03:07.719Z
-Stopped at: Phase 18 context gathered
-Resume file: .planning/phases/18-mock-exam-system/18-CONTEXT.md
+Last session: 2026-05-18T18:24:00.000Z
+Stopped at: Resuming — proceeding to /gsd-discuss-phase 19
+Resume file: .planning/phases/19-landing-navigator-video/ (to be created)
