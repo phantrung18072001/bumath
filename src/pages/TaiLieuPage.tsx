@@ -108,7 +108,7 @@ export default function TaiLieuPage() {
       <Header />
       <main className="flex-1">
         {/* Filter + Grid */}
-        <section className="container mx-auto max-w-screen-xl px-4 pt-6 pb-8">
+        <section className="container px-4 pt-6 pb-8 mx-auto">
           {/* Title row */}
           <div className="flex items-center justify-between gap-4 mb-4">
             <h1 className="text-xl font-bold leading-tight">Tài liệu học tập</h1>
@@ -140,7 +140,7 @@ export default function TaiLieuPage() {
               ))}
             </div>
             {/* Search input — fixed width, right side */}
-            <div className="relative w-64 shrink-0">
+            <div className="relative w-80 shrink-0">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <Input
                 placeholder="Tìm tài liệu theo tên..."
