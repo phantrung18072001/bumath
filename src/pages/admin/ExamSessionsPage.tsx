@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Link } from 'react-router-dom'
 import { createExamSession, deleteExamSession, fetchExamSessionsForAdmin, publishExamSession, updateExamSession, type ExamSession } from '@/lib/api/exams'
 import ExamSessionFormDialog from '@/components/admin/ExamSessionFormDialog'
@@ -55,28 +54,35 @@ export default function ExamSessionsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">Quản lý đề thi thử</h1>
-        <Button onClick={() => { setEditing(null); setOpen(true) }}>Tạo đề thi</Button>
+        <h1 className="text-2xl font-bold tracking-tight">
+          <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            Quản lý đề thi thử
+          </span>
+        </h1>
+        <Button
+          className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white border-0"
+          onClick={() => { setEditing(null); setOpen(true) }}
+        >
+          Tạo đề thi
+        </Button>
       </div>
 
       <div className="grid gap-3">
         {sessions.map((session) => (
-          <Card key={session.id}>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between text-base">
-                <span>{session.title}</span>
-                <Badge variant={session.status === 'published' ? 'default' : 'outline'}>{session.status}</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-wrap gap-2">
+          <div key={session.id} className="bm-glass-card p-5">
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-semibold text-slate-800">{session.title}</span>
+              <Badge variant={session.status === 'published' ? 'default' : 'outline'}>{session.status}</Badge>
+            </div>
+            <div className="flex flex-wrap gap-2">
               <Button variant="outline" asChild>
                 <Link to={`/quan-tri/de-thi/${session.id}`}>Soạn câu hỏi</Link>
               </Button>
               <Button variant="outline" onClick={() => { setEditing(session); setOpen(true) }}>Sửa</Button>
               <Button onClick={() => publishMutation.mutate(session.id)} disabled={session.status !== 'draft'}>Phát hành</Button>
               <Button variant="destructive" onClick={() => deleteMutation.mutate(session.id)}>Xóa</Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ))}
       </div>
 

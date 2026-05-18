@@ -78,7 +78,11 @@ export default function MockExamAttemptPage() {
   return (
     <StudentLayout>
       <div className="p-8 space-y-4">
-        <h1 className="text-xl font-bold">Làm đề thi</h1>
+        <h1 className="text-2xl font-bold tracking-tight">
+          <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            Làm đề thi
+          </span>
+        </h1>
         <ExamCountdown endsAt={endsAt} onExpired={handleSubmit} />
 
         {errorMessage ? (
@@ -98,9 +102,10 @@ export default function MockExamAttemptPage() {
         </div>
 
         {result ? (
-          <div className="rounded-lg border p-4 space-y-1">
-            <p className="font-semibold">Điểm thô: {result.raw_score}</p>
-            <p className="font-semibold">Điểm hệ 10: {result.score_10}</p>
+          <div className="bm-glass-card p-5 space-y-2">
+            <p className="text-sm text-muted-foreground">Kết quả của bạn</p>
+            <p className="font-bold text-indigo-600">Điểm thô: {result.raw_score}</p>
+            <p className="font-bold text-indigo-600">Điểm hệ 10: {result.score_10}</p>
           </div>
         ) : (
           <ExamSubmitPanel onSubmit={handleSubmit} isSubmitting={submitMutation.isPending} disabled={!attemptId} />
