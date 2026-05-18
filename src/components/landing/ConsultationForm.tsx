@@ -55,7 +55,7 @@ const ConsultationForm = () => {
   };
 
   return (
-    <section className="bg-gradient-to-br from-primary/10 via-primary/5 to-background py-16 md:py-20">
+    <section id="tu-van" className="bg-gradient-to-br from-primary/10 via-primary/5 to-background py-16 md:py-20">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

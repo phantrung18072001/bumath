@@ -57,6 +57,28 @@ const IntensiveSection = () => {
             ))}
           </div>
         </div>
+
+        {/* Tứ trụ text block — D-01, LAND-03, NAV-01 */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="mt-10 rounded-2xl border bg-card p-5 shadow-sm"
+        >
+          <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary">
+            <Trophy className="h-3.5 w-3.5" />
+            Tứ trụ trường chuyên TPHCM
+          </div>
+          <p className="text-sm font-normal leading-relaxed text-muted-foreground">
+            Lộ trình chuyên biệt cho học sinh nhắm đến{' '}
+            <span className="font-bold text-foreground">PTNK</span>,{' '}
+            <span className="font-bold text-foreground">CNN</span>,{' '}
+            <span className="font-bold text-foreground">CSP</span> và{' '}
+            <span className="font-bold text-foreground">KHTN</span>{' '}
+            — 4 trường chuyên Toán hàng đầu Thành phố Hồ Chí Minh.
+          </p>
+        </motion.div>
       </div>
     </section>
   );
