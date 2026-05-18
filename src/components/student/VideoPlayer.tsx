@@ -57,6 +57,8 @@ export default function VideoPlayer({ url, title, className }: VideoPlayerProps)
           title={title ?? 'Video bài học'}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
+          sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
+          referrerPolicy="strict-origin"
           className="h-full w-full border-0"
         />
       </AspectRatio>
