@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Platform Expansion
-status: Phase 21 in progress — P02 complete
-stopped_at: Phase 21 P02 complete — TaiLieuPage public /tai-lieu page created
-last_updated: "2026-05-18T16:20:00Z"
+status: Phase 21 complete — P04 done (all 4 plans)
+stopped_at: Phase 21 P04 complete — Route wiring + AdminLayout nav item, Phase 21 fully integrated
+last_updated: "2026-05-18T16:07:04Z"
 progress:
-  total_phases: 8
-  completed_phases: 8
-  total_plans: 31
-  completed_plans: 31
+  total_phases: 9
+  completed_phases: 9
+  total_plans: 35
+  completed_plans: 35
 ---
 
 # Project State
@@ -23,8 +23,8 @@ See: .planning/PROJECT.md (updated 2026-05-03 — v3.0 milestone started)
 
 ## Current Position
 
-Phase: 21 (tai-lieu-page) — IN PROGRESS
-Plan: P02 complete (2 of 4)
+Phase: 21 (tai-lieu-page) — COMPLETE
+Plan: P04 complete (4 of 4)
 
 ## Performance Metrics
 
@@ -64,7 +64,7 @@ Plan: P02 complete (2 of 4)
 | 18 | Mock Exam System | EXAM-01–06 | ✅ Complete (4/4 plans) |
 | 19 | Landing + Navigator + Video | NAV-01–02, LAND-03, VIDEO-02, PRICE-04 | ✅ Complete (1 plan) |
 | 20 | UI/UX Redesign | TBD | ✅ Complete (4/4 plans — P01–P04) |
-| Phase 21 | 1/4 | 1 plan | - |
+| Phase 21 | 4/4 | complete | - |
 
 ### Decisions
 
@@ -80,6 +80,7 @@ Recent decisions affecting current work: (see previous STATE.md content — all 
 - [Phase 21 P01]: standalone/ storage prefix separates lesson-linked vs standalone objects
 - [Phase 21 P02]: Fetch all grades once at mount, filter client-side — avoids N+1 queries on grade change
 - [Phase 21 P02]: Route /tai-lieu added without ProtectedRoute per D-01 (public access)
+- [Phase 21 P04]: Nav item 'Tài liệu' added to AdminLayout without adminOnly — teachers see it per D-05, D-10
 
 ### Pending Todos
 
@@ -91,6 +92,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-05-18T16:20:00Z
-Stopped at: Phase 21 P02 complete — TaiLieuPage public /tai-lieu page created
-Resume file: .planning/phases/21-tai-lieu-page/
+Last session: 2026-05-18T16:07:04Z
+Stopped at: Phase 21 P04 complete — Route wiring + AdminLayout nav item, Phase 21 fully integrated
+Resume file: None — Phase 21 complete
