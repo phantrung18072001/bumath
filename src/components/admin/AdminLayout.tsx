@@ -18,6 +18,7 @@ const navItems: NavItem[] = [
   { label: 'Gói học', to: '/quan-tri/goi-hoc', icon: Package, adminOnly: true },
   { label: 'Chấm bài', to: '/quan-tri/bai-nop', icon: ClipboardList },
   { label: 'Đề thi thử', to: '/quan-tri/de-thi', icon: FileText },
+  { label: 'Tài liệu', to: '/quan-tri/tai-lieu', icon: FileText },
 ]
 
 export default function AdminLayout({ children, fullBleed = false }: { children: ReactNode; fullBleed?: boolean }) {
