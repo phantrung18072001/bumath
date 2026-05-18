@@ -30,4 +30,10 @@ describe('VideoPlayer', () => {
     render(<VideoPlayer url="https://www.youtube.com/embed/abc12345678" title="Bài 1: Phương trình" />)
     expect(screen.getByTitle('Bài 1: Phương trình')).toBeInTheDocument()
   })
+
+  it('renders nocookie iframe for youtube.com/live URL', () => {
+    render(<VideoPlayer url="https://www.youtube.com/live/aU5Vd6k0LXs?si=eS7zWYyskt-Bs4_3" />)
+    const iframe = screen.getByTitle('Video bài học')
+    expect(iframe).toHaveAttribute('src', 'https://www.youtube-nocookie.com/embed/aU5Vd6k0LXs')
+  })
 })
