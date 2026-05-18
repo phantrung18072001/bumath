@@ -48,7 +48,7 @@ const Footer = () => {
             <h4 className="mb-3 font-bold">Liên hệ</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-primary" /> 0123.456.789
+                <Phone className="h-4 w-4 text-primary" /> 0379 172 879
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-primary" /> contact@bumath-x.vn
@@ -60,9 +60,6 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-8 border-t pt-6 text-center text-sm text-muted-foreground">
-          © 2026 BuMath-X. Tất cả quyền được bảo lưu.
-        </div>
       </div>
     </footer>
   );
