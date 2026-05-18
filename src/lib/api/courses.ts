@@ -8,6 +8,7 @@ export interface Course {
   description: string | null
   target_grade: 'grade_7' | 'grade_8' | 'grade_9' | 'advanced'
   is_published: boolean
+  is_outstanding?: boolean   // Phase 19: Tứ trụ specialist course flag (NAV-02, D-09)
   created_at: string
   updated_at: string
 }
