@@ -108,7 +108,7 @@ export default function TaiLieuPage() {
       <Header />
       <main className="flex-1">
         {/* Filter + Grid */}
-        <section className="container mx-auto max-w-5xl px-4 pt-6 pb-8">
+        <section className="container mx-auto max-w-screen-xl px-4 pt-6 pb-8">
           {/* Title row */}
           <div className="flex items-center justify-between gap-4 mb-4">
             <h1 className="text-xl font-bold leading-tight">Tài liệu học tập</h1>
@@ -120,8 +120,8 @@ export default function TaiLieuPage() {
             )}
           </div>
 
-          {/* Controls row: grade pills + search */}
-          <div className="flex flex-col sm:flex-row gap-3 mb-8">
+          {/* Controls row: grade pills left — search right */}
+          <div className="flex items-center justify-between gap-4 mb-8">
             {/* Grade filter pills */}
             <div className="flex flex-wrap gap-2">
               {GRADE_FILTERS.map(f => (
@@ -139,8 +139,8 @@ export default function TaiLieuPage() {
                 </button>
               ))}
             </div>
-            {/* Search input — fills remaining space */}
-            <div className="relative flex-1 min-w-0">
+            {/* Search input — fixed width, right side */}
+            <div className="relative w-64 shrink-0">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <Input
                 placeholder="Tìm tài liệu theo tên..."
