@@ -190,3 +190,20 @@ Plans:
 | 17. In-Lesson Chat | 4/4 | Complete   | 2026-05-08 |
 | 18. Mock Exam System | 0/4 | Not started | - |
 | 19. Landing Page + Navigator + Video | 0/? | Not started | - |
+| 20. Landing Page UI/UX Refresh | 0/? | Not started | - |
+| 21. Tài liệu Page | 0/? | Not started | - |
+
+---
+
+### Phase 21: Tài liệu Page
+
+**Goal:** Trang `/tai-lieu` công khai — browse và download tài liệu PDF theo grade. Trang admin `/quan-tri/tai-lieu` cho giáo viên upload.
+
+**Scope:**
+1. Migration: `lesson_id` nullable, thêm grade `advanced`, category optional
+2. API: thêm `fetchStandaloneStudyMaterials(grade?)` vào `study-materials.ts`
+3. Trang `/tai-lieu` (public) — grid cards, filter theo grade
+4. Trang `/quan-tri/tai-lieu` (admin + teacher) — upload form + danh sách quản lý
+5. Routes + AdminLayout nav link
+
+**Depends on:** Phase 16 (study_materials table + API exists)
