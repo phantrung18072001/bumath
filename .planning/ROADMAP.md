@@ -44,7 +44,7 @@ Full details: [.planning/milestones/v2.0-ROADMAP.md](.planning/milestones/v2.0-R
 - [x] **Phase 16: Lesson Tabs + Study Materials Library** — 3-tab lesson layout, PDF library with category × grade filter (completed 2026-05-07)
 - [x] **Phase 17: In-Lesson Chat** — Realtime student↔teacher messaging scoped per lesson, unread badge (completed 2026-05-08)
 - [x] **Phase 18: Mock Exam System** — Timed exam sessions, KaTeX questions, server-side enforcement, one-attempt rule (completed 2026-05-24)
-- [ ] **Phase 19: Landing Page + Navigator + Video Abstraction** — School navigator, course content sections, VideoPlayer abstraction, pricing display
+- [x] **Phase 19: Landing Page + Navigator + Video Abstraction** — School navigator, course content sections, VideoPlayer abstraction, pricing display
 
 ## Phase Details
 
