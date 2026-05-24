@@ -7,13 +7,13 @@ vi.mock('@/lib/api/exams', () => ({
     {
       id: 's1',
       title: 'Đề quý 2',
+      grade: 'grade_9',
       session_type: 'quarterly',
-      status: 'published',
+      status: 'open',
+      duration_minutes: 60,
       starts_at: '2026-05-01T00:00:00Z',
       ends_at: '2026-05-01T02:00:00Z',
-      created_by: 'admin',
-      created_at: '2026-05-01T00:00:00Z',
-      updated_at: '2026-05-01T00:00:00Z',
+      score_10: null,
     },
   ]),
 }))
@@ -23,7 +23,7 @@ vi.mock('@/components/student/StudentLayout', () => ({
 }))
 
 describe('MockExamsPage', () => {
-  it('renders open exam sessions with start CTA', async () => {
+  it('renders open exam sessions in table format', async () => {
     const { default: MockExamsPage } = await import('./MockExamsPage')
     const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } })
 
@@ -36,8 +36,9 @@ describe('MockExamsPage', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByText('Đề thi thử')).toBeInTheDocument()
+      expect(screen.getByText('Đề thi')).toBeInTheDocument()
       expect(screen.getByText('Đề quý 2')).toBeInTheDocument()
+      expect(screen.getByText('Lớp 9')).toBeInTheDocument()
       expect(screen.getByRole('link', { name: 'Vào thi' })).toBeInTheDocument()
     })
   })

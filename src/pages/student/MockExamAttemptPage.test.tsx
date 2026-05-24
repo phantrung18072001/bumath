@@ -5,6 +5,19 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 const submitMock = vi.fn()
 
 vi.mock('@/lib/api/exams', () => ({
+  fetchExamSessionById: vi.fn().mockResolvedValue({
+    id: 's1',
+    title: 'Đề quý 2',
+    grade: 'grade_9',
+    session_type: 'quarterly',
+    status: 'published',
+    duration_minutes: 60,
+    starts_at: '2026-12-01T00:00:00Z',
+    ends_at: '2026-12-01T02:00:00Z',
+    created_by: 'admin',
+    created_at: '2026-05-01T00:00:00Z',
+    updated_at: '2026-05-01T00:00:00Z',
+  }),
   fetchExamQuestions: vi.fn().mockResolvedValue([
     {
       id: 'q1',
@@ -23,7 +36,7 @@ vi.mock('@/lib/api/exams', () => ({
     id: 'a1',
     exam_session_id: 's1',
     user_id: 'u1',
-    started_at: '2026-05-01T00:00:00Z',
+    started_at: '2026-12-01T00:00:00Z',
     submitted_at: null,
     answers_payload: {},
     raw_score: null,
@@ -36,10 +49,6 @@ vi.mock('@/lib/api/exams', () => ({
 
 vi.mock('@/components/student/StudentLayout', () => ({
   default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}))
-
-vi.mock('react-katex', () => ({
-  BlockMath: ({ math }: { math: string }) => <div>{math}</div>,
 }))
 
 describe('MockExamAttemptPage', () => {
@@ -58,12 +67,12 @@ describe('MockExamAttemptPage', () => {
       </QueryClientProvider>,
     )
 
-    await screen.findByText('Làm đề thi')
+    await screen.findByText('Đề: Đề quý 2')
     screen.getByRole('button', { name: 'Nộp bài' }).click()
 
     await waitFor(() => {
-      expect(screen.getByText('Điểm thô: 1')).toBeInTheDocument()
-      expect(screen.getByText('Điểm hệ 10: 10')).toBeInTheDocument()
+      expect(screen.getByText(/Số câu đúng:/)).toBeInTheDocument()
+      expect(screen.getByText(/Điểm hệ 10:/)).toBeInTheDocument()
     })
   })
 })

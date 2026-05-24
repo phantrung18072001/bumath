@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 export default function ExamCountdown({ endsAt, onExpired }: { endsAt: string; onExpired?: () => void }) {
   const endsAtMs = useMemo(() => new Date(endsAt).getTime(), [endsAt])
   const [now, setNow] = useState(Date.now())
+  const expiredCalledRef = useRef(false)
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 1000)
@@ -10,7 +11,15 @@ export default function ExamCountdown({ endsAt, onExpired }: { endsAt: string; o
   }, [])
 
   useEffect(() => {
-    if (now >= endsAtMs) onExpired?.()
+    expiredCalledRef.current = false
+  }, [endsAtMs])
+
+  useEffect(() => {
+    if (expiredCalledRef.current) return
+    if (now >= endsAtMs) {
+      expiredCalledRef.current = true
+      onExpired?.()
+    }
   }, [now, endsAtMs, onExpired])
 
   const remain = Math.max(0, Math.floor((endsAtMs - now) / 1000))

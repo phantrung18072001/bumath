@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import {
-  Menu, X, Phone, CreditCard, LogOut, LayoutDashboard, BookOpen, UserCircle, ChevronDown, HelpCircle
+  Menu, X, Phone, CreditCard, LogOut, LayoutDashboard, UserCircle, ChevronDown, HelpCircle
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -92,6 +92,13 @@ const Header = () => {
                     </Link>
                   </DropdownMenuItem>
                 )}
+                {profile?.role === 'teacher' && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/quan-tri/bai-nop" className="cursor-pointer flex items-center gap-2">
+                      <LayoutDashboard className="h-4 w-4" /> Trang quản lý
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer flex items-center gap-2 text-destructive">
                   <LogOut className="h-4 w-4" /> Đăng xuất
@@ -176,15 +183,23 @@ const Header = () => {
                 </span>
               </div>
               {profile?.role === 'student' && (
-                <Link to="/khoa-hoc" onClick={() => setMobileOpen(false)}>
+                <Link to="/ho-so" onClick={() => setMobileOpen(false)}>
                   <Button variant="ghost" className="w-full min-h-[48px] gap-1 mb-1 justify-start" size="sm">
-                    <BookOpen className="h-4 w-4" />
-                    Vào học
+                    <UserCircle className="h-4 w-4" />
+                    Hồ sơ
                   </Button>
                 </Link>
               )}
               {profile?.role === 'admin' && (
                 <Link to="/quan-tri/nguoi-dung" onClick={() => setMobileOpen(false)} >
+                  <Button variant="outline" className="w-full min-h-[48px] gap-1 mb-1 flex-1" size="sm">
+                    <LayoutDashboard className="h-4 w-4" />
+                    Trang quản lý
+                  </Button>
+                </Link>
+              )}
+              {profile?.role === 'teacher' && (
+                <Link to="/quan-tri/bai-nop" onClick={() => setMobileOpen(false)} >
                   <Button variant="outline" className="w-full min-h-[48px] gap-1 mb-1 flex-1" size="sm">
                     <LayoutDashboard className="h-4 w-4" />
                     Trang quản lý

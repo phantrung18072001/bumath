@@ -17,7 +17,7 @@ const navItems: NavItem[] = [
   { label: 'Quản lý khóa học', to: '/quan-tri/khoa-hoc', icon: BookOpen, adminOnly: true },
   { label: 'Gói học', to: '/quan-tri/goi-hoc', icon: Package, adminOnly: true },
   { label: 'Chấm bài', to: '/quan-tri/bai-nop', icon: ClipboardList },
-  { label: 'Đề thi thử', to: '/quan-tri/de-thi', icon: FileText },
+  { label: 'Đề thi', to: '/quan-tri/de-thi', icon: FileText },
   { label: 'Tài liệu', to: '/quan-tri/tai-lieu', icon: FileText },
 ]
 

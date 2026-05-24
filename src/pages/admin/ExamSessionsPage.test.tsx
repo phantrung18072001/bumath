@@ -7,8 +7,10 @@ vi.mock('@/lib/api/exams', () => ({
     {
       id: 's1',
       title: 'Đề tháng 5',
+      grade: 'grade_8',
       session_type: 'monthly',
       status: 'draft',
+      duration_minutes: 45,
       starts_at: '2026-05-01T00:00:00Z',
       ends_at: '2026-05-01T02:00:00Z',
       created_by: 'admin',
@@ -19,6 +21,7 @@ vi.mock('@/lib/api/exams', () => ({
   createExamSession: vi.fn(),
   updateExamSession: vi.fn(),
   publishExamSession: vi.fn(),
+  closeExamSession: vi.fn(),
   deleteExamSession: vi.fn(),
 }))
 
@@ -40,9 +43,9 @@ describe('ExamSessionsPage', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByText('Quản lý đề thi thử')).toBeInTheDocument()
+      expect(screen.getByText('Quản lý đề thi')).toBeInTheDocument()
       expect(screen.getByText('Đề tháng 5')).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: 'Soạn câu hỏi' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Soạn' })).toBeInTheDocument()
     })
   })
 })

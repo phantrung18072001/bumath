@@ -19,10 +19,14 @@ vi.mock('@/lib/api/exams', () => ({
   ]),
   fetchMyExamAttempt: vi.fn().mockResolvedValue(null),
   upsertExamQuestion: vi.fn(),
+  uploadExamQuestionImage: vi.fn(),
+  updateExamQuestionOrder: vi.fn(),
+  deleteExamQuestion: vi.fn(),
 }))
 
 vi.mock('react-katex', () => ({
   BlockMath: ({ math }: { math: string }) => <div>{math}</div>,
+  InlineMath: ({ math }: { math: string }) => <span>{math}</span>,
 }))
 
 describe('ExamSessionDetailPage', () => {
@@ -42,7 +46,8 @@ describe('ExamSessionDetailPage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Soạn câu hỏi đề thi')).toBeInTheDocument()
-      expect(screen.getByText('Câu 1: 2 + 2 = ?')).toBeInTheDocument()
+      expect(screen.getByText('Câu 1')).toBeInTheDocument()
+      expect(screen.getByDisplayValue('2 + 2 = ?')).toBeInTheDocument()
     })
   })
 })

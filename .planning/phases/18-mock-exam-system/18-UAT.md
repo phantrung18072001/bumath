@@ -1,5 +1,5 @@
 ---
-status: partial
+status: complete
 phase: 18-mock-exam-system
 source:
   - 18-01-SUMMARY.md
@@ -7,12 +7,12 @@ source:
   - 18-03-SUMMARY.md
   - 18-04-SUMMARY.md
 started: 2026-05-13T11:12:00Z
-updated: 2026-05-24T11:30:19Z
+updated: 2026-05-24T22:53:35Z
 ---
 
 ## Current Test
 
-[testing paused — 5 items outstanding]
+[testing complete]
 
 ## Tests
 
@@ -39,34 +39,33 @@ severity: blocker
 
 ### 4. Author Exam Questions
 expected: On /quan-tri/de-thi/:sessionId, admin can add/edit/reorder multiple-choice questions and answers with persistence after save.
-result: blocked
-blocked_by: prior-phase
-reason: "bị block rồi nên tôi không test được nữa, fix các issue trước đó đã"
+result: pass
 
 ### 5. Publish/Start Controls Enforcement
 expected: Publishing and starting sessions follow defined workflow rules, and editing question content is blocked once attempts exist.
-result: pending
+result: pass
 
 ### 6. Student Exam List
 expected: Opening /de-thi shows available mock exams with correct availability/status information for the student.
-result: pending
+result: pass
+note: "Button layout trên trang /quan-tri/de-thi cần chỉnh lại cho đẹp hơn (cosmetic)"
 
 ### 7. Start and Complete Attempt
 expected: Student can start one attempt, answer questions, and submit successfully with attempt state persisted.
-result: pending
+result: pass
 
 ### 8. Timer and Deadline Handling
 expected: Countdown is visible during attempt, deadline behavior is enforced, and late save/submit actions are rejected with clear feedback.
-result: pending
+result: pass
 
 ## Summary
 
 total: 8
-passed: 1
+passed: 6
 issues: 2
-pending: 4
+pending: 0
 skipped: 0
-blocked: 1
+blocked: 0
 
 ## Gaps
 

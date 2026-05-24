@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase'
 export type ExamSessionStatus = 'draft' | 'published' | 'closed'
 export type ExamSessionType = 'monthly' | 'quarterly'
 export type ExamChoice = 'A' | 'B' | 'C' | 'D'
+export type ExamGrade = 'grade_7' | 'grade_8' | 'grade_9' | 'advanced'
 
 export class ExamApiError extends Error {
   code: string
@@ -16,8 +17,10 @@ export class ExamApiError extends Error {
 export interface ExamSession {
   id: string
   title: string
+  grade: ExamGrade
   session_type: ExamSessionType
   status: ExamSessionStatus
+  duration_minutes: number
   starts_at: string
   ends_at: string
   created_by: string
@@ -45,7 +48,7 @@ export interface ExamAttempt {
   user_id: string
   started_at: string
   submitted_at: string | null
-  answers_payload: Record<string, string>
+  answers_payload: Record<string, unknown>
   raw_score: number | null
   score_10: number | null
 }
@@ -53,24 +56,83 @@ export interface ExamAttempt {
 export interface ExamSubmitResult {
   raw_score: number
   score_10: number
-  per_question: Array<{ question_id: string; is_correct: boolean }>
+  per_question: Array<{
+    question_id: string
+    is_correct: boolean
+    correct_choice?: ExamChoice
+    selected_choice?: string
+  }>
 }
+
+export interface StudentExamSession {
+  id: string
+  title: string
+  grade: ExamGrade
+  session_type: ExamSessionType
+  status: 'open' | 'done'
+  duration_minutes: number
+  starts_at: string
+  ends_at: string
+  score_10: number | null
+}
+
+export interface SaveExamQuestionBatchItem {
+  id?: string
+  prompt: string
+  prompt_latex?: string | null
+  image_url?: string | null
+  option_a: string
+  option_b: string
+  option_c: string
+  option_d: string
+  order_index: number
+  correct_choice: ExamChoice
+}
+
+const EXAM_IMAGE_BUCKET = 'assignments'
 
 function mapExamError(error: unknown): never {
   const message = (error as { message?: string } | null)?.message ?? 'Unknown exam error'
 
-  if (message.includes('already started this exam session')) {
+  if (message.includes('already started this exam session') || message.includes('You already started')) {
     throw new ExamApiError('EXAM_ATTEMPT_ALREADY_EXISTS', 'Bạn đã bắt đầu đề thi này rồi.')
   }
 
-  if (message.includes('deadline has passed')) {
+  if (message.includes('deadline has passed') || message.includes('Exam submission deadline')) {
     throw new ExamApiError('EXAM_DEADLINE_PASSED', 'Đã quá thời gian nộp bài cho đề thi này.')
   }
 
-  throw new ExamApiError('EXAM_UNKNOWN', message)
+  if (message.includes('Exam session is unavailable')) {
+    throw new ExamApiError('EXAM_SESSION_UNAVAILABLE', 'Đề thi chưa mở hoặc đã đóng.')
+  }
+
+  if (message.includes('outside active window')) {
+    throw new ExamApiError('EXAM_OUTSIDE_WINDOW', 'Đề thi chưa đến giờ hoặc đã kết thúc.')
+  }
+
+  if (message.includes('Exam session not found')) {
+    throw new ExamApiError('EXAM_SESSION_NOT_FOUND', 'Không tìm thấy đề thi.')
+  }
+
+  if (message.includes('Attempt not found or already submitted') || message.includes('Attempt not found')) {
+    throw new ExamApiError('EXAM_ATTEMPT_NOT_FOUND', 'Không tìm thấy bài thi hoặc bài đã được nộp.')
+  }
+
+  if (message.includes('Authentication required')) {
+    throw new ExamApiError('EXAM_UNAUTHORIZED', 'Bạn cần đăng nhập để thực hiện thao tác này.')
+  }
+
+  if (message.includes('no gradable questions')) {
+    throw new ExamApiError('EXAM_NO_QUESTIONS', 'Đề thi chưa có câu hỏi nào để chấm điểm.')
+  }
+
+  throw new ExamApiError('EXAM_UNKNOWN', 'Đã xảy ra lỗi. Vui lòng thử lại.')
 }
 
 export async function fetchExamSessionsForAdmin(): Promise<ExamSession[]> {
+  // Lazily close any expired sessions before fetching
+  await supabase.rpc('close_expired_exam_sessions')
+
   const { data, error } = await supabase
     .from('exam_sessions')
     .select('*')
@@ -80,10 +142,19 @@ export async function fetchExamSessionsForAdmin(): Promise<ExamSession[]> {
   return (data ?? []) as ExamSession[]
 }
 
-export async function createExamSession(payload: Pick<ExamSession, 'title' | 'session_type' | 'starts_at' | 'ends_at'>): Promise<ExamSession> {
+export async function createExamSession(payload: Pick<ExamSession, 'title' | 'grade' | 'session_type' | 'duration_minutes' | 'starts_at' | 'ends_at'>): Promise<ExamSession> {
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
+
+  if (authError || !user) {
+    throw new ExamApiError('EXAM_UNAUTHORIZED', 'Bạn cần đăng nhập để tạo đề thi.')
+  }
+
   const { data, error } = await supabase
     .from('exam_sessions')
-    .insert(payload)
+    .insert({ ...payload, created_by: user.id })
     .select('*')
     .single()
 
@@ -91,7 +162,7 @@ export async function createExamSession(payload: Pick<ExamSession, 'title' | 'se
   return data as ExamSession
 }
 
-export async function updateExamSession(id: string, payload: Partial<Pick<ExamSession, 'title' | 'session_type' | 'starts_at' | 'ends_at'>>): Promise<ExamSession> {
+export async function updateExamSession(id: string, payload: Partial<Pick<ExamSession, 'title' | 'grade' | 'session_type' | 'duration_minutes' | 'starts_at' | 'ends_at'>>): Promise<ExamSession> {
   const { data, error } = await supabase
     .from('exam_sessions')
     .update(payload)
@@ -105,6 +176,18 @@ export async function updateExamSession(id: string, payload: Partial<Pick<ExamSe
 
 export async function publishExamSession(sessionId: string): Promise<ExamSession> {
   const { data, error } = await supabase.rpc('publish_exam_session', { p_session_id: sessionId })
+  if (error) mapExamError(error)
+  return data as ExamSession
+}
+
+export async function closeExamSession(sessionId: string): Promise<ExamSession> {
+  const { data, error } = await supabase
+    .from('exam_sessions')
+    .update({ status: 'closed' })
+    .eq('id', sessionId)
+    .select('*')
+    .single()
+
   if (error) mapExamError(error)
   return data as ExamSession
 }
@@ -157,15 +240,61 @@ export async function upsertExamQuestion(question: Partial<ExamQuestion> & { exa
   return data as ExamQuestion
 }
 
-export async function fetchOpenExamSessionsForStudent(): Promise<ExamSession[]> {
-  const { data, error } = await supabase
-    .from('exam_sessions')
-    .select('*')
-    .eq('status', 'published')
-    .order('starts_at', { ascending: true })
+export async function updateExamQuestionOrder(questionId: string, orderIndex: number): Promise<void> {
+  const { error } = await supabase
+    .from('exam_questions')
+    .update({ order_index: orderIndex })
+    .eq('id', questionId)
+  if (error) mapExamError(error)
+}
+
+export async function deleteExamQuestion(questionId: string): Promise<void> {
+  const { error } = await supabase.from('exam_questions').delete().eq('id', questionId)
+  if (error) mapExamError(error)
+}
+
+export async function uploadExamQuestionImage(sessionId: string, file: File): Promise<string> {
+  const ext = file.name.split('.').pop() ?? 'bin'
+  const random = Math.random().toString(36).slice(2, 8)
+  const path = `exam-questions/${sessionId}/${Date.now()}-${random}.${ext}`
+  const { error: uploadError } = await supabase.storage
+    .from(EXAM_IMAGE_BUCKET)
+    .upload(path, file, { contentType: file.type, upsert: false })
+  if (uploadError) mapExamError(uploadError)
+  const { data } = supabase.storage.from(EXAM_IMAGE_BUCKET).getPublicUrl(path)
+  return data.publicUrl
+}
+
+export async function saveExamQuestionsBatch(sessionId: string, questions: SaveExamQuestionBatchItem[]): Promise<void> {
+  const { error } = await supabase.rpc('save_exam_questions_batch', {
+    p_session_id: sessionId,
+    p_questions: questions,
+  })
+  if (error) mapExamError(error)
+}
+
+export async function fetchOpenExamSessionsForStudent(): Promise<StudentExamSession[]> {
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
+
+  if (authError || !user) {
+    throw new ExamApiError('EXAM_UNAUTHORIZED', 'Bạn cần đăng nhập để xem đề thi.')
+  }
+
+  const { data, error } = await supabase.rpc('fetch_student_exam_sessions', {
+    p_user_id: user.id,
+  })
 
   if (error) mapExamError(error)
-  return (data ?? []) as ExamSession[]
+  return (data ?? []) as StudentExamSession[]
+}
+
+export async function fetchExamSessionById(sessionId: string): Promise<ExamSession> {
+  const { data, error } = await supabase.from('exam_sessions').select('*').eq('id', sessionId).single()
+  if (error) mapExamError(error)
+  return data as ExamSession
 }
 
 export async function startExamAttempt(sessionId: string): Promise<ExamAttempt> {
