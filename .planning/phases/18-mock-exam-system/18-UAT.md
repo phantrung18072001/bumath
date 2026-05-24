@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 18-mock-exam-system
 source:
   - 18-01-SUMMARY.md
@@ -70,21 +70,29 @@ blocked: 0
 ## Gaps
 
 - truth: "Opening /quan-tri/de-thi shows exam sessions list with key fields and usable entry points to create or manage sessions."
-  status: failed
-  reason: "User reported: 1, \"null value in column \"created_by\" of relation \"exam_sessions\" violates not-null constraint\" khi tạo đề thi; 2, Sửa text Đề thi thử thành Đề thi; 3, Phần button tài khoản mất button dẫn đến phần quản trị (đối với admin, giáo viên) và hồ sơ đối với học sinh rồi."
+  status: fixed
+  reason: "User reported: null value in column \"created_by\" of relation \"exam_sessions\" violates not-null constraint khi tạo đề thi; Text rename Đề thi thử → Đề thi; Account button missing admin/profile links"
   severity: blocker
   test: 2
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "createExamSession in src/lib/api/exams.ts never included created_by in the insert payload; fixed in commit 27d88ed by calling supabase.auth.getUser() and spreading created_by: user.id"
+  artifacts:
+    - path: "src/lib/api/exams.ts"
+      issue: "createExamSession insert payload omitted created_by (fixed in HEAD)"
+  missing:
+    - "created_by field in insert payload — resolved"
+  debug_session: ".planning/debug/exam-session-create-bugs.md"
 
 - truth: "Using the admin create flow opens the dialog, validates required fields, and creates a new draft session that appears in the list."
-  status: failed
-  reason: "User reported: 1, UI xấu, sử dụng taste UI để thiết kế lại modern hơn; 2, Không báo error khi không nhập các trường bắt buộc; 3, Bấm Lưu thì got error: null value in column \"created_by\" of relation \"exam_sessions\" violates not-null constraint; 4, Sử dụng time từ 0h-23h, không sử dụng AM, PM, thêm text ở mỗi dòng để biết cần nhập thông tin gì"
+  status: fixed
+  reason: "User reported: UI xấu; Không báo error khi không nhập các trường bắt buộc; null value in column \"created_by\" constraint error; AM/PM time format instead of 24h"
   severity: blocker
   test: 3
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "(1) created_by omitted from insert — fixed via auth.getUser(); (2) handleSubmit had silent guard with no errors state/display — fixed with errors state + inline messages; (3) datetime-local input renders AM/PM on Vietnamese locale — fixed with custom 24h Select dropdowns"
+  artifacts:
+    - path: "src/lib/api/exams.ts"
+      issue: "createExamSession missing created_by (fixed in HEAD)"
+    - path: "src/components/admin/ExamSessionFormDialog.tsx"
+      issue: "No validation error display; AM/PM datetime-local input (both fixed in HEAD)"
+  missing:
+    - "All functional bugs resolved in commit 27d88ed"
+  debug_session: ".planning/debug/exam-session-create-bugs.md"
