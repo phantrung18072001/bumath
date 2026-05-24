@@ -79,7 +79,16 @@ describe('AuthProvider', () => {
         <div data-testid="child">Hello</div>
       </AuthProvider>
     )
-    expect(screen.getByTestId('child')).toBeInTheDocument()
+
+    expect(screen.getByAltText('BuMath')).toBeInTheDocument()
+
+    await act(async () => {
+      getCallback()('INITIAL_SESSION', null)
+    })
+
+    await waitFor(() => {
+      expect(screen.getByTestId('child')).toBeInTheDocument()
+    })
   })
 
   it('starts with loading true, becomes false after INITIAL_SESSION with null session', async () => {
@@ -88,7 +97,7 @@ describe('AuthProvider', () => {
         <TestConsumer />
       </AuthProvider>
     )
-    expect(screen.getByTestId('loading').textContent).toBe('true')
+    expect(screen.getByAltText('BuMath')).toBeInTheDocument()
 
     await act(async () => {
       getCallback()('INITIAL_SESSION', null)
@@ -174,6 +183,12 @@ describe('AuthProvider', () => {
     )
 
     await act(async () => {
+      getCallback()('INITIAL_SESSION', null)
+    })
+
+    await screen.findByText('Sign Out')
+
+    await act(async () => {
       screen.getByText('Sign Out').click()
     })
 
@@ -202,7 +217,7 @@ describe('AuthProvider', () => {
       </AuthProvider>
     )
 
-    expect(screen.getByTestId('loading').textContent).toBe('true')
+    expect(screen.getByAltText('BuMath')).toBeInTheDocument()
 
     await act(async () => {
       getCallback()('INITIAL_SESSION', mockSession)

@@ -64,6 +64,26 @@ export interface ExamSubmitResult {
   }>
 }
 
+export interface ExamSessionAnalytics {
+  participant_count: number
+  score_distribution: Array<{
+    label: string
+    min: number
+    max: number
+    count: number
+    percentage: number
+  }>
+  question_stats: Array<{
+    question_id: string
+    order_index: number
+    prompt: string
+    correct_choice: ExamChoice | null
+    answered_count: number
+    wrong_count: number
+    wrong_rate: number
+  }>
+}
+
 export interface StudentExamSession {
   id: string
   title: string
@@ -103,6 +123,10 @@ function mapExamError(error: unknown): never {
   }
 
   if (message.includes('Exam session is unavailable')) {
+    throw new ExamApiError('EXAM_SESSION_UNAVAILABLE', 'Đề thi chưa mở hoặc đã đóng.')
+  }
+
+  if (message.includes('Exam session is not published')) {
     throw new ExamApiError('EXAM_SESSION_UNAVAILABLE', 'Đề thi chưa mở hoặc đã đóng.')
   }
 
@@ -336,4 +360,91 @@ export async function fetchMyExamAttempt(sessionId: string): Promise<ExamAttempt
 
   if (error) mapExamError(error)
   return (data as ExamAttempt | null) ?? null
+}
+
+export async function fetchExamSessionAnalytics(sessionId: string): Promise<ExamSessionAnalytics> {
+  const { data: attempts, error: attemptError } = await supabase
+    .from('exam_attempts')
+    .select('raw_score, score_10, answers_payload, submitted_at')
+    .eq('exam_session_id', sessionId)
+    .not('submitted_at', 'is', null)
+
+  if (attemptError) mapExamError(attemptError)
+
+  const { data: questions, error: questionError } = await supabase
+    .from('exam_questions')
+    .select('id, order_index, prompt, exam_question_answers(correct_choice)')
+    .eq('exam_session_id', sessionId)
+    .order('order_index', { ascending: true })
+
+  if (questionError) mapExamError(questionError)
+
+  const submittedAttempts = (attempts ?? []) as Array<{
+    raw_score: number | null
+    score_10: number | null
+    submitted_at: string | null
+    answers_payload: Record<string, unknown>
+  }>
+
+  const participantCount = submittedAttempts.length
+  const bands = [
+    { label: '0-2', min: 0, max: 2, count: 0 },
+    { label: '2-4', min: 2, max: 4, count: 0 },
+    { label: '4-6', min: 4, max: 6, count: 0 },
+    { label: '6-8', min: 6, max: 8, count: 0 },
+    { label: '8-10', min: 8, max: 10, count: 0 },
+  ]
+
+  for (const attempt of submittedAttempts) {
+    const score = typeof attempt.score_10 === 'number' ? attempt.score_10 : null
+    if (score == null) continue
+    if (score < 2) bands[0].count += 1
+    else if (score < 4) bands[1].count += 1
+    else if (score < 6) bands[2].count += 1
+    else if (score < 8) bands[3].count += 1
+    else bands[4].count += 1
+  }
+
+  const scoreDistribution = bands.map((band) => ({
+    ...band,
+    percentage: participantCount > 0 ? Number(((band.count / participantCount) * 100).toFixed(1)) : 0,
+  }))
+
+  const questionStats = ((questions ?? []) as Array<{
+    id: string
+    order_index: number
+    prompt: string
+    exam_question_answers: { correct_choice: ExamChoice } | Array<{ correct_choice: ExamChoice }> | null
+  }>).map((question) => {
+    const answerObj = Array.isArray(question.exam_question_answers)
+      ? question.exam_question_answers[0]
+      : question.exam_question_answers
+    const correctChoice = answerObj?.correct_choice ?? null
+
+    let answeredCount = 0
+    let wrongCount = 0
+
+    for (const attempt of submittedAttempts) {
+      const selected = attempt.answers_payload?.[question.id]
+      if (typeof selected !== 'string' || selected.length === 0) continue
+      answeredCount += 1
+      if (!correctChoice || selected !== correctChoice) wrongCount += 1
+    }
+
+    return {
+      question_id: question.id,
+      order_index: question.order_index,
+      prompt: question.prompt,
+      correct_choice: correctChoice,
+      answered_count: answeredCount,
+      wrong_count: wrongCount,
+      wrong_rate: answeredCount > 0 ? Number(((wrongCount / answeredCount) * 100).toFixed(1)) : 0,
+    }
+  })
+
+  return {
+    participant_count: participantCount,
+    score_distribution: scoreDistribution,
+    question_stats: questionStats,
+  }
 }

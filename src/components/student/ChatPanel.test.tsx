@@ -3,6 +3,7 @@ import { render, screen, waitFor, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 // ---- Hoisted vars (before vi.mock hoisting) -----------------------------------
 const { removeChannelSpy, channelNamesSpy, capturedCallbacksRef, mockProfileRef } = vi.hoisted(() => {
@@ -94,7 +95,9 @@ function makeWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   return ({ children }: { children: React.ReactNode }) => (
     <AuthProvider>
-      <QueryClientProvider client={qc}>{children}</QueryClientProvider>
+      <QueryClientProvider client={qc}>
+        <TooltipProvider>{children}</TooltipProvider>
+      </QueryClientProvider>
     </AuthProvider>
   )
 }

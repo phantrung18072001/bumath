@@ -15,8 +15,11 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import {
   deleteExamQuestion,
+  fetchExamSessionAnalytics,
+  fetchExamSessionById,
   fetchExamQuestions,
   fetchMyExamAttempt,
   saveExamQuestionsBatch,
@@ -89,6 +92,21 @@ export default function ExamSessionDetailPage() {
     queryKey: ['admin', 'exam-questions', sessionId],
     queryFn: () => fetchExamQuestions(sessionId),
     enabled: !!sessionId,
+  })
+
+  const { data: session } = useQuery({
+    queryKey: ['admin', 'exam-session', sessionId],
+    queryFn: () => fetchExamSessionById(sessionId),
+    enabled: !!sessionId,
+  })
+
+  const {
+    data: analytics,
+    isLoading: isAnalyticsLoading,
+  } = useQuery({
+    queryKey: ['admin', 'exam-analytics', sessionId],
+    queryFn: () => fetchExamSessionAnalytics(sessionId),
+    enabled: !!sessionId && session?.status === 'closed',
   })
 
   const { data: existingAttempt } = useQuery({
@@ -223,6 +241,25 @@ export default function ExamSessionDetailPage() {
     }
   }
 
+  const wrongRateChartData = useMemo(() => {
+    if (!analytics) return []
+    return analytics.question_stats.map((q) => ({
+      name: `C${q.order_index}`,
+      wrongRate: q.wrong_rate,
+      answeredCount: q.answered_count,
+      wrongCount: q.wrong_count,
+    }))
+  }, [analytics])
+
+  const topWrongQuestions = useMemo(() => {
+    if (!analytics) return []
+    return [...analytics.question_stats]
+      .sort((a, b) => b.wrong_rate - a.wrong_rate)
+      .slice(0, 5)
+  }, [analytics])
+
+  const canShowSaveButton = !previewMode && session?.status === 'draft'
+
   return (
     <div className="space-y-5">
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_24px_48px_-34px_rgba(15,23,42,0.35)]">
@@ -236,7 +273,7 @@ export default function ExamSessionDetailPage() {
               {previewMode ? <EyeOff className="mr-2 h-4 w-4" /> : <Eye className="mr-2 h-4 w-4" />}
               {previewMode ? 'Tắt preview' : 'Preview dạng học sinh'}
             </Button>
-            {!previewMode ? (
+            {canShowSaveButton ? (
               <Button onClick={handleSaveAll} disabled={isLocked || isSavingAll}>
                 <Save className="mr-2 h-4 w-4" /> {isSavingAll ? 'Đang lưu...' : 'Lưu toàn bộ đề'}
               </Button>
@@ -248,6 +285,99 @@ export default function ExamSessionDetailPage() {
       {isLocked ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           Đề đã có học sinh bắt đầu làm. Hệ thống khóa chỉnh sửa nội dung câu hỏi.
+        </div>
+      ) : null}
+
+      {session?.status === 'closed' ? (
+        <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-emerald-50/50 p-6 shadow-[0_24px_60px_-38px_rgba(15,23,42,0.45)]">
+          <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-emerald-200/30 blur-3xl" />
+          <div className="mb-5 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Phân tích đề thi đã đóng</h2>
+              <p className="text-sm text-slate-600">Tổng hợp số người làm, phân bố điểm và tỉ lệ sai theo từng câu.</p>
+            </div>
+          </div>
+
+          {isAnalyticsLoading ? (
+            <div className="space-y-3">
+              <Skeleton className="h-20 w-full rounded-2xl" />
+              <Skeleton className="h-40 w-full rounded-2xl" />
+            </div>
+          ) : analytics ? (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-[1.2fr_1fr]">
+                <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-5 shadow-[0_18px_32px_-28px_rgba(15,23,42,0.35)] backdrop-blur">
+                  <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Số người đã nộp bài</p>
+                  <p className="mt-2 text-4xl font-semibold tracking-tight text-slate-900">{analytics.participant_count}</p>
+                  <p className="mt-2 text-sm text-slate-600">Tính trên các lượt nộp bài hợp lệ của đề này.</p>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-5 shadow-[0_18px_32px_-28px_rgba(15,23,42,0.35)] backdrop-blur">
+                  <p className="mb-3 text-xs uppercase tracking-[0.14em] text-slate-500">Dải điểm (thang 10)</p>
+                  <div className="space-y-2">
+                    {analytics.score_distribution.map((band) => (
+                      <div key={band.label} className="space-y-1">
+                        <div className="flex items-center justify-between text-xs text-slate-600">
+                          <span>{band.label}</span>
+                          <span>{band.count} ({band.percentage}%)</span>
+                        </div>
+                        <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                          <div className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 transition-all" style={{ width: `${band.percentage}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-5 shadow-[0_18px_32px_-28px_rgba(15,23,42,0.35)] backdrop-blur">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-sm font-semibold text-slate-900">Tỉ lệ sai theo từng câu</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {topWrongQuestions.map((q) => (
+                      <span key={`top-${q.question_id}`} className="rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-[11px] font-medium text-rose-700">
+                        C{q.order_index}: {q.wrong_rate}%
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                {analytics.question_stats.length === 0 ? (
+                  <p className="text-sm text-slate-600">Đề chưa có dữ liệu câu hỏi để phân tích.</p>
+                ) : (
+                  <div className="rounded-xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-3">
+                    <div className="h-[340px] w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={wrongRateChartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }} barCategoryGap="34%">
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                          <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false} />
+                          <YAxis
+                            domain={[0, 100]}
+                            tickFormatter={(value) => `${value}%`}
+                            tick={{ fontSize: 12, fill: '#64748b' }}
+                            tickLine={false}
+                            axisLine={false}
+                            width={40}
+                          />
+                          <Tooltip
+                            cursor={{ fill: 'transparent' }}
+                            formatter={(value: number) => [`${value}%`, 'Tỉ lệ sai']}
+                            labelFormatter={(label) => `Câu ${String(label).replace('C', '')}`}
+                            contentStyle={{ borderRadius: 14, borderColor: '#cbd5e1', boxShadow: '0 14px 30px -20px rgba(15,23,42,0.5)' }}
+                          />
+                          <Bar dataKey="wrongRate" radius={[10, 10, 0, 0]} fill="#f43f5e" maxBarSize={56} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <p className="mt-2 text-xs text-slate-500">
+                      Hover vào từng cột để xem chi tiết số lượt sai/trả lời theo câu.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-slate-600">Không tải được thống kê đề thi.</p>
+          )}
         </div>
       ) : null}
 

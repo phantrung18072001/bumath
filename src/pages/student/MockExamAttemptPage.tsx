@@ -97,7 +97,10 @@ export default function MockExamAttemptPage() {
   }, [result])
 
   useEffect(() => {
-    if (!sessionId || existingAttempt || startRequestedRef.current) return
+    if (!sessionId || isAttemptLoading || !session || existingAttempt || startRequestedRef.current) return
+    if (existingAttempt?.submitted_at) return
+    if (session.status !== 'published') return
+
     startRequestedRef.current = true
     startMutation.mutate(sessionId, {
       onError: (error) => {
@@ -106,7 +109,7 @@ export default function MockExamAttemptPage() {
         setErrorMessage(message)
       },
     })
-  }, [sessionId, existingAttempt, startMutation])
+  }, [sessionId, isAttemptLoading, session, existingAttempt, startMutation])
 
   useEffect(() => {
     if (existingAttempt?.answers_payload) {
