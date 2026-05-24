@@ -8,7 +8,7 @@
 .bm-clay-card {
   background: var(--bm-card);
   border: 3px solid var(--bm-border);
-  border-radius: 24px;
+  border-radius: 14px;
   box-shadow:
     0 8px 0 var(--bm-border),
     0 12px 24px rgba(249, 115, 22, 0.10);
@@ -20,7 +20,7 @@
 .bm-clay-card-student {
   background: #FFFFFF;
   border: 1px solid rgba(249, 115, 22, 0.25);
-  border-radius: 16px;
+  border-radius: 10px;
   box-shadow:
     0 2px 8px rgba(249, 115, 22, 0.08),
     0 1px 3px rgba(0, 0, 0, 0.06);
@@ -41,7 +41,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.30);
-  border-radius: 24px;
+  border-radius: 14px;
   box-shadow:
     0 10px 15px rgba(0, 0, 0, 0.08),
     0 4px 6px rgba(0, 0, 0, 0.04);
@@ -219,7 +219,7 @@
     --input: 30 15% 88%;
     --ring: 24 95% 53%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -314,7 +314,8 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Baloo 2', sans-serif;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    letter-spacing: -0.01em;
   }
 }
 

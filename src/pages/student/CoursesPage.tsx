@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { BookOpen } from 'lucide-react'
+import { BookOpen, ArrowUpRight } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { getUserEnrollments } from '@/lib/api/enrollments'
 import { fetchChapters } from '@/lib/api/chapters'
@@ -13,6 +13,7 @@ import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 export default function CoursesPage() {
   const { profile } = useAuth()
@@ -64,11 +65,12 @@ export default function CoursesPage() {
   })
 
   const isLoading = enrollmentsLoading || progressLoading
+  const getThumbnail = (slug: string) => `https://picsum.photos/seed/${slug}/800/500`
 
   return (
     <StudentLayout>
-      <div className="p-8 md:p-10">
-        <h1 className="text-2xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Khóa học của tôi</h1>
+      <div className="mx-auto w-full max-w-[1240px] p-4 md:p-8">
+        <h1 className="mb-4 text-3xl font-semibold tracking-tight text-slate-950">Khóa học của tôi</h1>
 
         {/* Error state */}
         {enrollmentsError && (
@@ -79,9 +81,9 @@ export default function CoursesPage() {
 
         {/* Loading state — skeleton cards */}
         {isLoading && (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-[200px] rounded-2xl" />
+              <Skeleton key={i} className="h-[280px] rounded-xl" />
             ))}
           </div>
         )}
@@ -104,22 +106,26 @@ export default function CoursesPage() {
 
         {/* Course grid */}
         {!isLoading && !enrollmentsError && enrollments && enrollments.length > 0 && (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {enrollments.map((enrollment) => {
               const course = enrollment.course
               const courseId = enrollment.course_id
               const progressData = progressMap?.get(courseId)
               const progress = progressData?.progress ?? 0
               const gradeBadge = GRADE_BADGE[course.target_grade]
+              const thumbnail = getThumbnail(course.slug)
 
               return (
                 <Link
                   key={enrollment.id}
                   to={`/khoa-hoc/${course.slug}`}
-                  className="block"
+                  className="group block"
                 >
-                  <Card className="bm-glass-card border-0 shadow-none p-0 overflow-hidden h-full min-h-[200px] flex flex-col">
-                    <CardHeader className="p-5 pb-3">
+                  <Card className="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white p-0 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-slate-300">
+                    <div className="h-36 w-full overflow-hidden border-b border-slate-100 bg-slate-100">
+                      <img src={thumbnail} alt={course.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+                    </div>
+                    <CardHeader className="p-4 pb-2">
                       <CardTitle className="text-base font-bold leading-snug text-slate-800 mb-2">
                         {course.title}
                       </CardTitle>
@@ -127,7 +133,7 @@ export default function CoursesPage() {
                         {gradeBadge.label}
                       </Badge>
                     </CardHeader>
-                    <CardContent className="p-5 pt-0 flex flex-col flex-1 justify-between gap-3">
+                    <CardContent className="flex flex-1 flex-col justify-between gap-3 p-4 pt-0">
                       {course.description ? (
                         <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed mt-2">
                           {course.description}
@@ -135,14 +141,18 @@ export default function CoursesPage() {
                       ) : (
                         <div />
                       )}
-                      <div>
+                      <div className="mt-auto">
                         <Progress
                           value={progress}
-                          className="h-1.5 bg-indigo-100 bm-progress-indigo"
+                          className={cn('h-1.5 bg-slate-100')}
                           aria-label={`Tiến độ hoàn thành: ${progress}%`}
                         />
                         <span className="text-xs text-muted-foreground mt-1.5 block">
                           {progress}% hoàn thành
+                        </span>
+                        <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-slate-700 transition-colors group-hover:text-slate-950">
+                          Vào học
+                          <ArrowUpRight className="h-4 w-4" />
                         </span>
                       </div>
                     </CardContent>

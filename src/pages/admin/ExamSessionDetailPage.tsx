@@ -262,7 +262,7 @@ export default function ExamSessionDetailPage() {
 
   return (
     <div className="space-y-5">
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_24px_48px_-34px_rgba(15,23,42,0.35)]">
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-none">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight text-slate-900">Soạn câu hỏi đề thi</h1>
@@ -289,7 +289,7 @@ export default function ExamSessionDetailPage() {
       ) : null}
 
       {session?.status === 'closed' ? (
-        <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-emerald-50/50 p-6 shadow-[0_24px_60px_-38px_rgba(15,23,42,0.45)]">
+        <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-emerald-50/50 p-6 shadow-[0_24px_60px_-38px_rgba(15,23,42,0.45)]">
           <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-emerald-200/30 blur-3xl" />
           <div className="mb-5 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>
@@ -300,19 +300,19 @@ export default function ExamSessionDetailPage() {
 
           {isAnalyticsLoading ? (
             <div className="space-y-3">
-              <Skeleton className="h-20 w-full rounded-2xl" />
-              <Skeleton className="h-40 w-full rounded-2xl" />
+              <Skeleton className="h-20 w-full rounded-xl" />
+              <Skeleton className="h-40 w-full rounded-xl" />
             </div>
           ) : analytics ? (
             <div className="space-y-6">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-[1.2fr_1fr]">
-                <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-5 shadow-[0_18px_32px_-28px_rgba(15,23,42,0.35)] backdrop-blur">
+                <div className="rounded-xl border border-slate-200/90 bg-white/95 p-5 shadow-[0_18px_32px_-28px_rgba(15,23,42,0.35)] backdrop-blur">
                   <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Số người đã nộp bài</p>
                   <p className="mt-2 text-4xl font-semibold tracking-tight text-slate-900">{analytics.participant_count}</p>
                   <p className="mt-2 text-sm text-slate-600">Tính trên các lượt nộp bài hợp lệ của đề này.</p>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-5 shadow-[0_18px_32px_-28px_rgba(15,23,42,0.35)] backdrop-blur">
+                <div className="rounded-xl border border-slate-200/90 bg-white/95 p-5 shadow-[0_18px_32px_-28px_rgba(15,23,42,0.35)] backdrop-blur">
                   <p className="mb-3 text-xs uppercase tracking-[0.14em] text-slate-500">Dải điểm (thang 10)</p>
                   <div className="space-y-2">
                     {analytics.score_distribution.map((band) => (
@@ -330,12 +330,12 @@ export default function ExamSessionDetailPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-5 shadow-[0_18px_32px_-28px_rgba(15,23,42,0.35)] backdrop-blur">
+              <div className="rounded-xl border border-slate-200/90 bg-white/95 p-5 shadow-[0_18px_32px_-28px_rgba(15,23,42,0.35)] backdrop-blur">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                   <p className="text-sm font-semibold text-slate-900">Tỉ lệ sai theo từng câu</p>
                   <div className="flex flex-wrap gap-1.5">
                     {topWrongQuestions.map((q) => (
-                      <span key={`top-${q.question_id}`} className="rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-[11px] font-medium text-rose-700">
+                      <span key={`top-${q.question_id}`} className="rounded-md border border-rose-200 bg-rose-50 px-2.5 py-1 text-[11px] font-medium text-rose-700">
                         C{q.order_index}: {q.wrong_rate}%
                       </span>
                     ))}
@@ -384,7 +384,7 @@ export default function ExamSessionDetailPage() {
       {isQuestionsLoading ? (
         <div className="space-y-4">
           {Array.from({ length: 3 }).map((_, idx) => (
-            <div key={idx} className="rounded-2xl border border-slate-200 bg-white p-5">
+            <div key={idx} className="rounded-xl border border-slate-200 bg-white p-5">
               <div className="mb-3 flex items-center justify-between">
                 <Skeleton className="h-5 w-28" />
                 <Skeleton className="h-8 w-8 rounded-md" />
@@ -401,7 +401,7 @@ export default function ExamSessionDetailPage() {
       ) : null}
 
       {!isQuestionsLoading && previewMode ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_14px_30px_-24px_rgba(15,23,42,0.25)]">
+        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_14px_30px_-24px_rgba(15,23,42,0.25)]">
           <p className="mb-3 text-base font-semibold text-slate-900">Preview bài thi học sinh</p>
           <div className="space-y-4">
             {orderedIds.map((id, idx) => {
@@ -442,7 +442,7 @@ export default function ExamSessionDetailPage() {
       ) : !isQuestionsLoading ? (
         <div className="space-y-4">
           {!isLocked && orderedIds.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-5">
+            <div className="rounded-xl border border-dashed border-slate-300 bg-white p-5">
               <p className="mb-3 text-sm text-slate-600">Chưa có câu hỏi nào. Bấm để tạo card câu hỏi đầu tiên.</p>
               <Button type="button" onClick={() => insertEmptyCard(-1)}>
                 <Plus className="mr-2 h-4 w-4" /> Thêm câu hỏi đầu tiên
@@ -458,7 +458,7 @@ export default function ExamSessionDetailPage() {
                 return (
                   <SortableCard key={id} id={id}>
                     {({ attributes, listeners }: { attributes: Record<string, unknown>; listeners: Record<string, unknown> }) => (
-                      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_14px_30px_-24px_rgba(15,23,42,0.25)]">
+                      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_14px_30px_-24px_rgba(15,23,42,0.25)]">
                         <div className="mb-3 flex items-center justify-between">
                           <p className="text-sm font-semibold text-slate-700">Câu hỏi {index + 1}</p>
                           <button

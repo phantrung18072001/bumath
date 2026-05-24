@@ -176,7 +176,7 @@ export default function MockExamAttemptPage() {
         {isQuestionsLoading ? (
           <div className="space-y-4">
             {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="rounded-2xl border border-slate-200 bg-white p-5">
+              <div key={index} className="rounded-xl border border-slate-200 bg-white p-5">
                 <div className="mb-3 h-6 w-28 animate-pulse rounded bg-slate-100" />
                 <div className="mb-3 h-16 w-full animate-pulse rounded bg-slate-100" />
                 <div className="space-y-2">
@@ -191,7 +191,7 @@ export default function MockExamAttemptPage() {
 
         {!isQuestionsLoading ? (
           <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_14px_30px_-24px_rgba(15,23,42,0.25)] md:p-5">
+            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-none md:p-5">
               <div className="space-y-4">
                 {questions.map((question, index) => {
                   const questionResult = resultMap.get(question.id)
@@ -200,7 +200,7 @@ export default function MockExamAttemptPage() {
                     <div
                       key={question.id}
                       ref={(node) => { questionRefs.current[question.id] = node }}
-                      className="rounded-2xl border border-slate-200 bg-white p-5"
+                      className="rounded-xl border border-slate-200 bg-white p-5"
                     >
                     <div className="mb-2 font-medium text-slate-900">Câu {index + 1}.</div>
                     <div className="prose prose-sm max-w-none whitespace-pre-wrap text-slate-800 leading-7">
@@ -208,7 +208,7 @@ export default function MockExamAttemptPage() {
                         {question.prompt}
                       </ReactMarkdown>
                     </div>
-                    {question.image_url ? <img src={question.image_url} alt="question" className="mx-auto my-4 max-h-[24rem] rounded-xl border border-slate-200" /> : null}
+                    {question.image_url ? <img src={question.image_url} alt="question" className="mx-auto my-4 max-h-[24rem] rounded-lg border border-slate-200" /> : null}
                     <div className="mt-4 space-y-2 text-sm">
                       {([
                         ['A', question.option_a],
@@ -247,7 +247,7 @@ export default function MockExamAttemptPage() {
             </div>
 
             <div className="xl:sticky xl:top-4 xl:self-start">
-              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_14px_30px_-24px_rgba(15,23,42,0.25)]">
+              <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-none">
                 <h1 className="mb-2 text-2xl font-semibold tracking-tight text-slate-900">
                   {session ? `Đề: ${session.title}` : 'Đề thi'}
                 </h1>

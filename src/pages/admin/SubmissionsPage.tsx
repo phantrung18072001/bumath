@@ -148,7 +148,7 @@ export default function SubmissionsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center gap-3 mb-6">
-        <h1 className="text-xl font-bold leading-[1.3] bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Chấm bài</h1>
+        <h1 className="text-xl font-bold leading-[1.3] text-slate-950">Chấm bài</h1>
         {totalCount > 0 && (
           <Badge className="bg-muted text-muted-foreground hover:bg-muted">
             {totalCount} bài nộp
@@ -157,7 +157,7 @@ export default function SubmissionsPage() {
       </div>
 
       {/* Filter bar — always visible */}
-      <div className="flex flex-wrap gap-2 mb-6 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-white/30">
+      <div className="flex flex-wrap gap-2 mb-6 p-4 bg-white rounded-xl border border-slate-200">
         {/* Status filter — FIRST per UI-SPEC */}
         <Select value={statusFilter} onValueChange={handleStatusChange}>
           <SelectTrigger className="w-[180px]" aria-label="Lọc theo trạng thái">
@@ -226,7 +226,7 @@ export default function SubmissionsPage() {
           {hasActiveFilter ? 'Không có kết quả cho bộ lọc này.' : 'Không có bài nộp nào.'}
         </div>
       ) : (
-        <div className="bm-glass-card p-6 overflow-x-auto">
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-none overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>

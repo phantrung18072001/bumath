@@ -121,7 +121,7 @@ export default function ExamSessionsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-[0_24px_60px_-44px_rgba(15,23,42,0.45)] backdrop-blur">
+      <div className="rounded-xl border border-slate-200 bg-white/90 p-6 shadow-none">
         <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
             <h1 className="text-3xl font-semibold tracking-tight text-slate-900">Quản lý đề thi</h1>
@@ -138,7 +138,7 @@ export default function ExamSessionsPage() {
       </div>
 
       {isLoading ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-5">
+        <div className="rounded-xl border border-slate-200 bg-white p-5">
           <Skeleton className="mb-4 h-10 w-full" />
           {Array.from({ length: 5 }).map((_, index) => (
             <Skeleton key={index} className="mb-2 h-12 w-full" />
@@ -147,14 +147,14 @@ export default function ExamSessionsPage() {
       ) : null}
 
       {isError ? (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-5 text-sm text-rose-700">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-5 text-sm text-rose-700">
           Không thể tải danh sách đề thi. Vui lòng tải lại trang.
         </div>
       ) : null}
 
       {!isLoading && !isError && sessions.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100">
+        <div className="rounded-xl border border-slate-200 bg-white p-10 text-center">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100">
             <FileText className="h-6 w-6 text-slate-500" />
           </div>
           <p className="text-base font-semibold text-slate-800">Chưa có đề thi nào</p>
@@ -163,7 +163,7 @@ export default function ExamSessionsPage() {
       ) : null}
 
       {!isLoading && !isError && sessions.length > 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_14px_30px_-24px_rgba(15,23,42,0.35)] md:p-5">
+        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-none md:p-5">
           <div className="mb-4 grid grid-cols-1 gap-2 md:grid-cols-5">
             <Input
               value={keyword}
@@ -237,7 +237,7 @@ export default function ExamSessionsPage() {
                       <TableCell>{new Date(session.starts_at).toLocaleString('vi-VN')}</TableCell>
                       <TableCell>{new Date(session.ends_at).toLocaleString('vi-VN')}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className={cn('whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-semibold', statusClass(session.status))}>
+                        <Badge variant="outline" className={cn('whitespace-nowrap rounded-md border px-2.5 py-0.5 text-xs font-semibold', statusClass(session.status))}>
                           {statusLabel(session.status)}
                         </Badge>
                       </TableCell>

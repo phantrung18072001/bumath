@@ -3,6 +3,11 @@
 **Gathered:** 2026-05-08
 **Status:** Ready for planning
 
+> **Addendum 2026-05-25 (User Directive Override):**
+> Use `/danh-muc` as the canonical UI model for a system-wide redesign pass.
+> Previous background lock decisions (D-05/D-06) are superseded for authenticated screens.
+> New target: white-first minimal surfaces instead of mint/gradient shell backgrounds.
+
 <domain>
 ## Phase Boundary
 
@@ -29,9 +34,9 @@ Apply a modern AI EdTech SaaS visual language across all student-facing and admi
 - **D-03:** Primary color: **#4F46E5** (indigo). Secondary: **#7C3AED** (purple). Accent: **#06B6D4** (cyan). These replace the previous teal `#0D9488` in UI components (buttons, badges, active states, focus rings).
 - **D-04:** Text: **#0F172A** (near-black). Muted text: **#64748B** (slate-500). Consistent across all screens.
 
-### Background — CRITICAL RULE
-- **D-05:** Keep all **existing background colors unchanged**. Student screens stay on `#F0FDFA` (mint). Admin screens keep their current background. Do NOT modify background CSS on any layout wrapper or page root.
-- **D-06:** Rule: "background consistency lock" — any plan/task that touches visual styling MUST NOT modify `bg-[#F0FDFA]`, `bg-background`, or any page-level background class. Only modify card, button, badge, and interactive component styles.
+### Background — UPDATED RULE (2026-05-25)
+- **D-05 (updated):** Authenticated shells (`.app-student`, `.app-admin`) move to white-first backgrounds by default; remove decorative gradient/math backgrounds unless page-specific justification exists.
+- **D-06 (updated):** Visual tasks may modify page-level backgrounds to align with `/danh-muc` minimal model. Priority is consistency, readability, and modern minimal aesthetics.
 
 ### Card Components
 - **D-07:** Student page cards: replace `.bm-clay-card-student` (thick teal border, double outer shadow) with glassmorphism variant — `backdrop-blur-sm bg-white/80 border border-white/30 shadow-lg rounded-[24px]`.

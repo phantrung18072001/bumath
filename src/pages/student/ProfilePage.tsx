@@ -57,46 +57,20 @@ export default function ProfilePage() {
 
   return (
     <StudentLayout>
-      {/* ── Hero Banner ────────────────────────────────────────── */}
-      <div className="relative h-44 overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1400&q=70"
-          alt=""
-          aria-hidden="true"
-          loading="eager"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/85 via-indigo-500/60 to-purple-500/50" />
-        {/* Decorative math symbols */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden select-none" aria-hidden="true">
-          <span className="absolute text-white/20 text-5xl font-light top-3 left-10">∑</span>
-          <span className="absolute text-white/15 text-4xl top-8 left-[22%]">π</span>
-          <span className="absolute text-white/20 text-6xl top-4 right-[30%]">∞</span>
-          <span className="absolute text-white/15 text-3xl bottom-5 right-16">√</span>
-          <span className="absolute text-white/10 text-5xl bottom-3 left-[55%]">∫</span>
-          <span className="absolute text-white/10 text-4xl top-2 right-10">φ</span>
+      <div className="mx-auto max-w-4xl px-4 pb-12 pt-6 sm:px-6">
+        <div className="mb-5">
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">Hồ sơ học sinh</p>
+          <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Xin chào, {profile?.full_name ?? 'bạn'}!</p>
         </div>
-        <div className="relative z-10 h-full flex items-end px-6 pb-5">
-          <div>
-            <p className="text-white/80 text-xs font-medium uppercase tracking-widest mb-1">Hồ sơ học sinh</p>
-            <p className="text-white text-xl font-bold drop-shadow-sm">
-              Xin chào, {profile?.full_name ?? 'bạn'}!
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Main Content ─────────────────────────────────────────── */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 -mt-8 pb-12 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 pt-12">
 
           {/* ── Left: Profile Card ────────────────────── */}
           <div className="lg:col-span-1 flex flex-col gap-4">
-            <Card className="bm-glass-card">
+            <Card className="rounded-xl border border-slate-200 bg-white shadow-none">
               <CardContent className="p-5 flex flex-col items-center text-center gap-3">
                 {/* Avatar */}
-                <div className="w-20 h-20 rounded-full bg-indigo-50 border-4 border-white shadow-md flex items-center justify-center shrink-0">
-                  <span className="text-2xl font-bold text-indigo-600">{initials || '?'}</span>
+                <div className="w-20 h-20 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
+                  <span className="text-2xl font-bold text-slate-800">{initials || '?'}</span>
                 </div>
                 <div className="w-full text-left">
                   <p className="text-base font-bold text-foreground text-center leading-snug mb-3">
@@ -122,8 +96,8 @@ export default function ProfilePage() {
                 <Separator />
                 {/* Stats */}
                 <div className="w-full">
-                  <div className="flex flex-col items-center gap-0.5 p-2 bg-indigo-50/50 rounded-xl">
-                    <span className="text-xl font-bold text-indigo-600">{isLoading ? '—' : userPackages.length}</span>
+                  <div className="flex flex-col items-center gap-0.5 p-2 bg-slate-50 rounded-lg">
+                    <span className="text-xl font-bold text-slate-900">{isLoading ? '—' : userPackages.length}</span>
                     <span className="text-xs text-muted-foreground">Gói học đang sở hữu</span>
                   </div>
                 </div>
@@ -156,7 +130,7 @@ export default function ProfilePage() {
                 <Skeleton className="h-24 w-full rounded-xl" />
               </div>
             ) : userPackages.length === 0 ? (
-              <Card className="bm-glass-card">
+              <Card className="rounded-xl border border-slate-200 bg-white shadow-none">
                 <CardContent className="py-14 flex flex-col items-center text-center gap-3">
                   <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center">
                     <Package className="h-7 w-7 text-muted-foreground" aria-hidden="true" />

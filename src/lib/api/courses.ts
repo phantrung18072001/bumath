@@ -6,6 +6,7 @@ export interface Course {
   title: string
   slug: string
   description: string | null
+  thumbnail_url?: string | null
   target_grade: 'grade_7' | 'grade_8' | 'grade_9' | 'advanced'
   is_published: boolean
   is_outstanding?: boolean   // Phase 19: Tứ trụ specialist course flag (NAV-02, D-09)
@@ -13,8 +14,10 @@ export interface Course {
   updated_at: string
 }
 
-export type CourseInsert = Pick<Course, 'title' | 'description' | 'target_grade'>
+export type CourseInsert = Pick<Course, 'title' | 'description' | 'target_grade' | 'thumbnail_url'>
 export type CourseUpdate = Partial<CourseInsert>
+
+const COURSE_THUMBNAIL_BUCKET = 'assignments'
 
 export async function fetchCourses(): Promise<Course[]> {
   const { data, error } = await supabase
@@ -76,6 +79,18 @@ export async function updateCourse(id: string, payload: CourseUpdate): Promise<C
     .single()
   if (error) throw error
   return data as Course
+}
+
+export async function uploadCourseThumbnail(file: File): Promise<string> {
+  const ext = file.name.split('.').pop() ?? 'bin'
+  const random = Math.random().toString(36).slice(2, 8)
+  const path = `course-thumbnails/${Date.now()}-${random}.${ext}`
+  const { error: uploadError } = await supabase.storage
+    .from(COURSE_THUMBNAIL_BUCKET)
+    .upload(path, file, { contentType: file.type, upsert: false })
+  if (uploadError) throw uploadError
+  const { data } = supabase.storage.from(COURSE_THUMBNAIL_BUCKET).getPublicUrl(path)
+  return data.publicUrl
 }
 
 export async function deleteCourse(id: string): Promise<void> {

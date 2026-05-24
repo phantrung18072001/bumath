@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Dialog,
@@ -30,11 +30,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Course, insertCourse, updateCourse } from '@/lib/api/courses'
+import { Course, insertCourse, updateCourse, uploadCourseThumbnail } from '@/lib/api/courses'
 
 const courseSchema = z.object({
   title: z.string().min(1, 'Tên khóa học không được để trống.'),
   description: z.string().optional(),
+  thumbnail_url: z.string().optional(),
   target_grade: z.enum(['grade_7', 'grade_8', 'grade_9', 'advanced'], {
     required_error: 'Vui lòng chọn lớp mục tiêu.',
   }),
@@ -69,6 +70,7 @@ export default function CourseFormDialog({
     defaultValues: {
       title: '',
       description: '',
+      thumbnail_url: '',
       target_grade: 'grade_7',
     },
   })
@@ -80,12 +82,14 @@ export default function CourseFormDialog({
         form.reset({
           title: course.title,
           description: course.description ?? '',
+          thumbnail_url: course.thumbnail_url ?? '',
           target_grade: course.target_grade,
         })
       } else {
         form.reset({
           title: '',
           description: '',
+          thumbnail_url: '',
           target_grade: 'grade_7',
         })
       }
@@ -97,6 +101,7 @@ export default function CourseFormDialog({
       const payload = {
         title: values.title,
         description: values.description ?? null,
+        thumbnail_url: values.thumbnail_url?.trim() || null,
         target_grade: values.target_grade,
       }
       if (isEditing) {
@@ -162,6 +167,49 @@ export default function CourseFormDialog({
 
             <FormField
               control={form.control}
+              name="thumbnail_url"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Thumbnail khóa học</FormLabel>
+                  <FormControl>
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="https://... hoặc upload ảnh"
+                        value={field.value ?? ''}
+                        onChange={field.onChange}
+                      />
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        disabled={mutation.isPending}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0]
+                          if (!file) return
+                          try {
+                            const url = await uploadCourseThumbnail(file)
+                            form.setValue('thumbnail_url', url, { shouldDirty: true })
+                            toast.success('Đã upload thumbnail.')
+                          } catch {
+                            toast.error('Upload thumbnail thất bại.')
+                          } finally {
+                            e.currentTarget.value = ''
+                          }
+                        }}
+                      />
+                      {field.value ? (
+                        <div className="overflow-hidden rounded-lg border">
+                          <img src={field.value} alt="thumbnail preview" className="h-32 w-full object-cover" />
+                        </div>
+                      ) : null}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="target_grade"
               render={({ field }) => (
                 <FormItem>
@@ -192,7 +240,9 @@ export default function CourseFormDialog({
               <Button type="submit" disabled={mutation.isPending} className="min-h-[48px]">
                 {mutation.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-1" />
-                ) : null}
+                ) : (
+                  <Upload className="h-4 w-4 mr-1" />
+                )}
                 {isEditing ? 'Lưu khóa học' : 'Tạo khóa học'}
               </Button>
             </DialogFooter>

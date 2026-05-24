@@ -76,18 +76,16 @@ export default function MockExamsPage() {
 
   return (
     <StudentLayout>
-      <div className="p-8 space-y-6">
+      <div className="mx-auto w-full max-w-[1240px] p-4 md:p-8 space-y-6">
         <h1 className="text-2xl font-bold tracking-tight">
-          <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            Đề thi
-          </span>
+          <span className="text-slate-950">Đề thi</span>
         </h1>
 
         {isError ? (
           <div className="bm-glass-card p-5 text-sm text-destructive">Không thể tải danh sách đề thi.</div>
         ) : null}
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_14px_30px_-24px_rgba(15,23,42,0.35)] md:p-5">
+        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-none md:p-5">
           <div className="mb-4 flex flex-nowrap gap-2 overflow-x-auto pb-1">
             <Input
               value={keyword}
@@ -180,7 +178,7 @@ export default function MockExamsPage() {
                     <TableCell>{new Date(session.ends_at).toLocaleString('vi-VN')}</TableCell>
                     <TableCell>{session.duration_minutes} phút</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={cn('rounded-full border px-2.5 py-0.5 text-xs font-semibold', statusClass(session.status))}>
+                      <Badge variant="outline" className={cn('rounded-md border px-2.5 py-0.5 text-xs font-semibold', statusClass(session.status))}>
                         {statusLabel(session.status)}
                       </Badge>
                     </TableCell>

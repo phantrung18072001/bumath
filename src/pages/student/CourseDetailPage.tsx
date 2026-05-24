@@ -475,7 +475,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
         <div className="px-4 lg:px-8 pb-4 space-y-3 pt-4">
           <Skeleton className="h-6 w-40 rounded-xl" />
           <Skeleton className="h-4 w-24 rounded-xl" />
-          <Skeleton className="h-[360px] w-full rounded-3xl" />
+          <Skeleton className="h-[360px] w-full rounded-xl" />
           <Skeleton className="h-4 w-3/4 rounded-xl" />
           <Skeleton className="h-4 w-1/2 rounded-xl" />
         </div>
@@ -505,7 +505,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
         isEnrolled ? (
           <>
             <div className="hidden lg:flex h-[calc(100vh-80px)] border-t border-border overflow-hidden">
-              <div className="w-[420px] shrink-0 bg-white/80 backdrop-blur-sm border-r border-indigo-200/60 flex flex-col h-full">
+              <div className="w-[420px] shrink-0 bg-white border-r border-slate-200 flex flex-col h-full">
                 <div className="flex-1 min-h-0 flex flex-col">
                   <LessonSidebar
                     {...sidebarShared}
@@ -513,7 +513,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                   />
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto bg-white backdrop-blur-sm">
+              <div className="flex-1 overflow-y-auto bg-white">
                 {isAdmin && adminPanel && courseId && chapters ? (
                    <>
                     {(adminPanel.kind === 'chapter-create' || adminPanel.kind === 'chapter-edit') && (
@@ -592,7 +592,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                 </Button>
               </div>
 
-              <div className="flex-1 overflow-y-auto bg-white/80">
+              <div className="flex-1 overflow-y-auto bg-white">
                 {profile && (
                   <LessonContent
                     lesson={activeLesson}
@@ -630,7 +630,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
         ) : (
           <>
             <div className="hidden lg:flex h-[calc(100vh-80px)] border-t border-border">
-              <div className="w-[340px] shrink-0 bg-card/50 border-r border-indigo-200/60">
+              <div className="w-[340px] shrink-0 bg-white border-r border-slate-200">
                 <LessonSidebar
                   chapters={chapters}
                   lessonsByChapter={lessonsByChapter}
@@ -642,10 +642,10 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
               </div>
               <div className="flex-1 overflow-y-auto bg-transparent flex flex-col">
                 <div className="flex-1 flex items-start justify-center px-8 pt-12 pb-8">
-                  <Card className="bm-glass-card border-0 shadow-none w-full max-w-sm p-0">
+                  <Card className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-0 shadow-none">
                     <CardContent className="pt-8 pb-8 flex flex-col items-center text-center gap-4">
-                      <div className="w-16 h-16 rounded-full bg-indigo-50 border-2 border-indigo-400 flex items-center justify-center">
-                        <Lock className="h-7 w-7 text-indigo-500" aria-hidden="true" />
+                      <div className="w-16 h-16 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center">
+                        <Lock className="h-7 w-7 text-slate-600" aria-hidden="true" />
                       </div>
                       <div className="space-y-2">
                         <h2 className="text-xl font-bold leading-snug text-[#0F172A]">{course?.title}</h2>
@@ -683,21 +683,21 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                 <TabsList className="w-full h-12 rounded-none border-b bg-transparent p-0 gap-0">
                   <TabsTrigger
                     value="content"
-                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-bold cursor-pointer"
+                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-slate-900 data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-bold cursor-pointer"
                   >
                     Nội dung
                   </TabsTrigger>
                   <TabsTrigger
                     value="outline"
-                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-bold cursor-pointer"
+                    className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-slate-900 data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-bold cursor-pointer"
                   >
                     Mục lục
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="content" className="mt-0 bg-transparent">
                   <div className="flex flex-col items-center text-center px-6 pt-12 pb-8 gap-4">
-                    <div className="w-14 h-14 rounded-full bg-indigo-50 border-2 border-indigo-400 flex items-center justify-center">
-                      <Lock className="h-6 w-6 text-indigo-500" aria-hidden="true" />
+                    <div className="w-14 h-14 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center">
+                      <Lock className="h-6 w-6 text-slate-600" aria-hidden="true" />
                     </div>
                     {isAuthenticated ? (
                       <div className="text-sm text-muted-foreground leading-relaxed max-w-xs space-y-1">
@@ -839,7 +839,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
   }
 
   return (
-    <div className="min-h-screen app-student bg-gradient-to-br from-primary/5 via-background to-secondary/20">
+    <div className="min-h-screen app-student bg-white">
       <Header />
       <main>{pageContent}</main>
     </div>

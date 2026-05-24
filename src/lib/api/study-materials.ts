@@ -5,6 +5,7 @@ export interface StudyMaterial {
   lesson_id: string | null
   title: string
   file_path: string
+  thumbnail_path: string | null
   file_type: 'pdf' | 'image'
   category: 'giua_ky' | 'cuoi_ky' | 'vao_10' | 'hsg' | 'chuyen_toan' | null
   grade: 'grade_7' | 'grade_8' | 'grade_9' | 'advanced'
@@ -110,6 +111,21 @@ export async function deleteStudyMaterial(id: string, filePath: string): Promise
 }
 
 /**
+ * Delete a study material row and its storage file + optional thumbnail.
+ */
+export async function deleteStandaloneStudyMaterial(
+  id: string,
+  filePath: string,
+  thumbnailPath?: string | null,
+): Promise<void> {
+  const { error } = await supabase.from('study_materials').delete().eq('id', id)
+  if (error) throw error
+  const paths = [filePath]
+  if (thumbnailPath) paths.push(thumbnailPath)
+  await supabase.storage.from(BUCKET).remove(paths).catch(() => {})
+}
+
+/**
  * Generate a signed URL for a study material file. TTL: 1 hour.
  */
 export async function getStudyMaterialSignedUrl(filePath: string): Promise<string> {
@@ -166,16 +182,30 @@ export async function fetchStandaloneStudyMaterials(
 export async function uploadStandaloneStudyMaterial(
   file: File,
   meta: { title: string; grade: StudyMaterialGrade },
+  thumbnailFile?: File | null,
 ): Promise<StudyMaterial> {
   const ext = file.name.split('.').pop() ?? 'bin'
   const timestamp = Date.now()
   const random = Math.random().toString(36).slice(2, 6)
   const path = `standalone/${timestamp}-${random}.${ext}`
+  let thumbnailPath: string | null = null
 
   const { error: uploadError } = await supabase.storage
     .from(BUCKET)
     .upload(path, file, { contentType: file.type, upsert: false })
   if (uploadError) throw uploadError
+
+  if (thumbnailFile) {
+    const thumbExt = thumbnailFile.name.split('.').pop() ?? 'jpg'
+    thumbnailPath = `standalone/thumbnails/${timestamp}-${random}.${thumbExt}`
+    const { error: uploadThumbError } = await supabase.storage
+      .from(BUCKET)
+      .upload(thumbnailPath, thumbnailFile, { contentType: thumbnailFile.type, upsert: false })
+    if (uploadThumbError) {
+      await supabase.storage.from(BUCKET).remove([path]).catch(() => {})
+      throw uploadThumbError
+    }
+  }
 
   const { data, error } = await supabase
     .from('study_materials')
@@ -183,6 +213,7 @@ export async function uploadStandaloneStudyMaterial(
       lesson_id: null,
       title: meta.title,
       file_path: path,
+      thumbnail_path: thumbnailPath,
       file_type: detectFileType(file),
       category: null,
       grade: meta.grade,
@@ -190,7 +221,9 @@ export async function uploadStandaloneStudyMaterial(
     .select()
     .single()
   if (error) {
-    await supabase.storage.from(BUCKET).remove([path]).catch(() => {})
+    const cleanupPaths = [path]
+    if (thumbnailPath) cleanupPaths.push(thumbnailPath)
+    await supabase.storage.from(BUCKET).remove(cleanupPaths).catch(() => {})
     throw error
   }
   return data as StudyMaterial
