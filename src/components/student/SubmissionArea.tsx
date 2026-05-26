@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { compressImage, uploadSubmission, resubmitSubmission, getSubmissionSignedUrls, markGradeViewed } from '@/lib/api/submissions'
+import { openExternalUrl } from '@/lib/open-external-url'
 import type { Submission } from '@/lib/api/submissions'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -183,7 +184,7 @@ export default function SubmissionArea({
                   src={url}
                   alt={`Bài làm ${i + 1}`}
                   className="w-[200px] h-[200px] rounded-md border object-cover cursor-pointer shrink-0"
-                  onClick={() => window.open(url, '_blank', 'noopener')}
+                  onClick={() => openExternalUrl(url)}
                 />
               ))}
             </div>
@@ -258,7 +259,7 @@ function TeacherImages({ paths }: { paths: string[] }) {
           src={u}
           alt={`Phản hồi ${i + 1}`}
           className="w-[200px] h-[200px] rounded-md border object-cover cursor-pointer shrink-0"
-          onClick={() => window.open(u, '_blank', 'noopener')}
+          onClick={() => openExternalUrl(u)}
         />
       ))}
     </div>

@@ -35,7 +35,6 @@ function materialThumbnail(material: StudyMaterial, thumbnailUrl?: string): stri
 export default function TaiLieuPage() {
   const [selectedGrade, setSelectedGrade] = useState<StudyMaterialGrade | 'all'>('all')
   const [searchInput, setSearchInput] = useState('')
-  const [previewingId, setPreviewingId] = useState<string | null>(null)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
   const debouncedSearch = useDebouncedValue(searchInput, 450)
@@ -105,17 +104,19 @@ export default function TaiLieuPage() {
     },
   })
 
-  async function handlePreview(material: StudyMaterial) {
-    try {
-      setPreviewingId(material.id)
-      const url = await getStudyMaterialSignedUrl(material.file_path)
-      window.open(url, '_blank', 'noopener')
-    } catch {
-      toast.error('Không thể xem trước tài liệu. Vui lòng thử lại.')
-    } finally {
-      setPreviewingId(null)
-    }
-  }
+  const { data: previewUrls = {} } = useQuery({
+    queryKey: ['standalone-study-material-preview-urls', materials.map((m) => m.id).join('|')],
+    enabled: materials.length > 0,
+    queryFn: async () => {
+      const entries = await Promise.all(
+        materials.map(async (m) => {
+          const url = await getStudyMaterialSignedUrl(m.file_path)
+          return [m.id, url] as const
+        }),
+      )
+      return Object.fromEntries(entries) as Record<string, string>
+    },
+  })
 
   async function handleDownload(material: StudyMaterial) {
     try {
@@ -236,8 +237,8 @@ export default function TaiLieuPage() {
             <section className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {materials.map((material) => {
                 const badge = GRADE_BADGE[material.grade] ?? GRADE_BADGE.grade_7
-                const isPreviewing = previewingId === material.id
                 const isDownloading = downloadingId === material.id
+                const previewUrl = previewUrls[material.id]
 
                 return (
                   <article key={material.id} className="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white">
@@ -259,21 +260,24 @@ export default function TaiLieuPage() {
                       </h3>
 
                       <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="min-h-[42px] rounded-lg"
-                          onClick={() => handlePreview(material)}
-                          disabled={isPreviewing || isDownloading}
-                        >
-                          {isPreviewing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />}
-                          <span className="ml-1">Xem trước</span>
-                        </Button>
+                        {previewUrl ? (
+                          <Button asChild type="button" variant="outline" className="min-h-[42px] rounded-lg">
+                            <a href={previewUrl} target="_blank" rel="noopener noreferrer">
+                              <Eye className="h-4 w-4" />
+                              <span className="ml-1">Xem trước</span>
+                            </a>
+                          </Button>
+                        ) : (
+                          <Button type="button" variant="outline" className="min-h-[42px] rounded-lg" disabled>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span className="ml-1">Xem trước</span>
+                          </Button>
+                        )}
                         <Button
                           type="button"
                           className="min-h-[42px] rounded-lg bg-primary text-primary-foreground hover:bg-primary/90"
                           onClick={() => handleDownload(material)}
-                          disabled={isPreviewing || isDownloading}
+                          disabled={isDownloading}
                         >
                           {isDownloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
                           <span className="ml-1">Tải xuống</span>

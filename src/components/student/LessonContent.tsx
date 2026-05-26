@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Lock, Pencil, Trash2, BookOpen, FileText } from 'lucide-react'
 import { getFileIcon } from '@/lib/file-icon'
+import { openExternalUrl } from '@/lib/open-external-url'
 import { getAssignmentPublicUrls, parseAssignmentPaths, type Lesson } from '@/lib/api/lessons'
 import type { Submission } from '@/lib/api/submissions'
 import type { StudyMaterialGrade } from '@/lib/api/study-materials'
@@ -212,7 +213,7 @@ export default function LessonContent({
                           <div key={url} className="flex flex-col gap-1 shrink-0">
                             <div
                               className="w-40 h-40 sm:w-[200px] sm:h-[200px] rounded-md border bg-muted/40 overflow-hidden cursor-pointer"
-                              onClick={() => window.open(url, '_blank', 'noopener')}
+                              onClick={() => openExternalUrl(url)}
                             >
                               {isImage ? (
                                 <img src={url} alt={name} className="w-full h-full object-cover" />

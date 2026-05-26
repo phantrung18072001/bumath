@@ -18,6 +18,7 @@ import {
   getStudyMaterialSignedUrls,
   deleteStudyMaterial,
 } from '@/lib/api/study-materials'
+import { openExternalUrl } from '@/lib/open-external-url'
 import StudyMaterialUploadForm from './StudyMaterialUploadForm'
 import type { StudyMaterialGrade } from '@/lib/api/study-materials'
 
@@ -87,7 +88,7 @@ export default function StudyMaterialsList({
           <div key={material.id} className="flex flex-col gap-1 shrink-0">
             <div
               className={THUMB_CLASS}
-              onClick={() => signedUrl && window.open(signedUrl, '_blank', 'noopener')}
+              onClick={() => signedUrl && openExternalUrl(signedUrl)}
             >
               {isImage && signedUrl ? (
                 <img src={signedUrl} alt={material.title} className="w-full h-full object-cover" />

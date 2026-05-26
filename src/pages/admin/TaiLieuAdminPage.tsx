@@ -82,8 +82,6 @@ export default function TaiLieuAdminPage() {
     filterGrade: 'all' as StudyMaterialGrade | 'all',
     search: '',
   })
-  const [openingId, setOpeningId] = useState<string | null>(null)
-
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
 
@@ -153,18 +151,19 @@ export default function TaiLieuAdminPage() {
     })
   }
 
-  async function handleOpenMaterial(material: StudyMaterial) {
-    try {
-      setOpeningId(material.id)
-      const signedUrl = await getStudyMaterialSignedUrl(material.file_path)
-      window.open(signedUrl, '_blank', 'noopener')
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Không thể mở tài liệu'
-      toast.error(message)
-    } finally {
-      setOpeningId(null)
-    }
-  }
+  const { data: openUrls = {} } = useQuery({
+    queryKey: ['admin-standalone-material-open-urls', materials.map((m) => m.id).join('|')],
+    enabled: materials.length > 0,
+    queryFn: async () => {
+      const entries = await Promise.all(
+        materials.map(async (m) => {
+          const url = await getStudyMaterialSignedUrl(m.file_path)
+          return [m.id, url] as const
+        }),
+      )
+      return Object.fromEntries(entries) as Record<string, string>
+    },
+  })
 
   const isPending = uploadMutation.isPending
 
@@ -344,14 +343,18 @@ export default function TaiLieuAdminPage() {
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <FileText className="h-4 w-4 text-primary/60 shrink-0" />
-                              <button
-                                type="button"
-                                className="font-bold text-sm text-left text-indigo-700 hover:text-indigo-800 hover:underline disabled:opacity-60 disabled:cursor-not-allowed"
-                                onClick={() => handleOpenMaterial(material)}
-                                disabled={openingId === material.id}
-                              >
-                                {openingId === material.id ? 'Đang mở...' : material.title}
-                              </button>
+                              {openUrls[material.id] ? (
+                                <a
+                                  href={openUrls[material.id]}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="font-bold text-sm text-left text-indigo-700 hover:text-indigo-800 hover:underline"
+                                >
+                                  {material.title}
+                                </a>
+                              ) : (
+                                <span className="font-bold text-sm text-muted-foreground">Đang tải link...</span>
+                              )}
                             </div>
                           </TableCell>
                           <TableCell>
