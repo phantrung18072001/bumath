@@ -132,7 +132,7 @@ export default function CoursesPage() {
         )}
 
         {isLoading && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 py-8">
             {Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className="h-[280px] rounded-xl" />
             ))}
