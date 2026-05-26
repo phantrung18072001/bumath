@@ -11,7 +11,7 @@
   border-radius: 14px;
   box-shadow:
     0 8px 0 var(--bm-border),
-    0 12px 24px rgba(249, 115, 22, 0.10);
+    0 12px 24px rgba(64, 47, 249, 0.10);
   padding: 32px;
   transition: box-shadow 200ms ease, transform 200ms ease;
 }
@@ -19,10 +19,10 @@
 /* === BuMath Student Card (Orange accent) === */
 .bm-clay-card-student {
   background: #FFFFFF;
-  border: 1px solid rgba(249, 115, 22, 0.25);
+  border: 1px solid rgba(64, 47, 249, 0.25);
   border-radius: 10px;
   box-shadow:
-    0 2px 8px rgba(249, 115, 22, 0.08),
+    0 2px 8px rgba(64, 47, 249, 0.08),
     0 1px 3px rgba(0, 0, 0, 0.06);
   transition: box-shadow 200ms ease, transform 200ms ease;
   cursor: pointer;
@@ -31,7 +31,7 @@
 .bm-clay-card-student:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 6px 16px rgba(249, 115, 22, 0.15),
+    0 6px 16px rgba(64, 47, 249, 0.15),
     0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
@@ -73,13 +73,7 @@
 /* === BuMath Orange Progress Bar Override === */
 .bm-progress-teal [data-slot="progress-indicator"],
 .bm-progress-teal > div {
-  background-color: #F97316 !important;
-}
-
-/* === BuMath Indigo Progress Bar Override (Phase 20) === */
-.bm-progress-indigo [data-slot="progress-indicator"],
-.bm-progress-indigo > div {
-  background-color: #4F46E5 !important;
+  background-color: #402FF9 !important;
 }
 
 /* === BuMath Float Animation (math symbols) === */
@@ -108,7 +102,7 @@
 .bm-float-symbol-light {
   position: absolute;
   font-weight: 700;
-  color: #4F46E5;
+  color: #402FF9;
   opacity: 0.20;
   pointer-events: none;
   user-select: none;
@@ -200,7 +194,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 20 30% 12%;
 
-    --primary: 24 95% 53%;
+    --primary: 245 94.4% 58%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 200 80% 50%;
@@ -209,36 +203,36 @@
     --muted: 30 20% 94%;
     --muted-foreground: 20 10% 45%;
 
-    --accent: 45 100% 55%;
-    --accent-foreground: 20 30% 12%;
+    --accent: 245 100% 97%;
+    --accent-foreground: 245 70% 42%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 30 15% 88%;
     --input: 30 15% 88%;
-    --ring: 24 95% 53%;
+    --ring: 245 94.4% 58%;
 
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 24 95% 53%;
+    --sidebar-primary: 245 94.4% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 30 30% 95%;
     --sidebar-accent-foreground: 20 30% 12%;
     --sidebar-border: 30 15% 90%;
-    --sidebar-ring: 24 95% 53%;
+    --sidebar-ring: 245 94.4% 58%;
 
     /* === BuMath Design System v2 === */
-    --bm-primary: #F97316;
-    --bm-secondary: #FB923C;
-    --bm-cta: #F97316;
+    --bm-primary: #402FF9;
+    --bm-secondary: #402FF9;
+    --bm-cta: #402FF9;
     --bm-bg: #1e3a5f;
     --bm-text: #1e3a5f;
     --bm-card: #FFFFFF;
-    --bm-border: #F97316;
-    --bm-muted: #FED7AA;
+    --bm-border: #402FF9;
+    --bm-muted: #E4E0FF;
   }
 
   .dark {
@@ -251,7 +245,7 @@
     --popover: 20 20% 12%;
     --popover-foreground: 30 20% 95%;
 
-    --primary: 24 95% 53%;
+    --primary: 245 94.4% 58%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 200 80% 45%;
@@ -260,47 +254,45 @@
     --muted: 20 15% 18%;
     --muted-foreground: 30 10% 60%;
 
-    --accent: 45 100% 55%;
-    --accent-foreground: 20 30% 12%;
+    --accent: 245 30% 22%;
+    --accent-foreground: 245 95% 92%;
 
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 20 15% 20%;
     --input: 20 15% 20%;
-    --ring: 24 95% 53%;
+    --ring: 245 94.4% 58%;
 
     --sidebar-background: 20 20% 10%;
     --sidebar-foreground: 30 20% 90%;
-    --sidebar-primary: 24 95% 53%;
+    --sidebar-primary: 245 94.4% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 20 15% 15%;
     --sidebar-accent-foreground: 30 20% 90%;
     --sidebar-border: 20 15% 18%;
-    --sidebar-ring: 24 95% 53%;
+    --sidebar-ring: 245 94.4% 58%;
   }
 }
 
-/* === Phase 20: Indigo theme scoped to authenticated app shells === */
-/* Landing page (/) keeps orange primary because it has no .app-student/.app-admin wrapper. */
+/* === Unified primary color across app shells === */
 .app-student,
 .app-admin {
-  --primary: 245 94% 58%;           /* #4F46E5 indigo */
+  --primary: 245 94.4% 58%;         /* #402FF9 */
   --primary-foreground: 0 0% 100%;
-  --ring: 245 94% 58%;
-  --secondary: 270 67% 47%;         /* #7C3AED purple */
-  --sidebar-primary: 245 94% 58%;
-  --sidebar-ring: 245 94% 58%;
-  --bm-primary: #4F46E5;
-  --bm-secondary: #7C3AED;
-  --bm-cta: #4F46E5;
-  --bm-border: #4F46E5;
+  --ring: 245 94.4% 58%;
+  --sidebar-primary: 245 94.4% 58%;
+  --sidebar-ring: 245 94.4% 58%;
+  --bm-primary: #402FF9;
+  --bm-secondary: #402FF9;
+  --bm-cta: #402FF9;
+  --bm-border: #402FF9;
 }
 
-/* Override bm-btn-cta to use indigo→purple gradient inside authenticated app */
+/* Override bm-btn-cta to use unified primary inside authenticated app */
 .app-student .bm-btn-cta,
 .app-admin .bm-btn-cta {
-  background: linear-gradient(to right, #4F46E5, #7C3AED) !important;
+  background: #402FF9 !important;
 }
 
 @layer base {
@@ -314,7 +306,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Be Vietnam Pro', sans-serif;
+    font-family: 'Baloo 2', 'Be Vietnam Pro', sans-serif;
     letter-spacing: -0.01em;
   }
 }

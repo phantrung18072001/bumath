@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
-import { Package } from 'lucide-react'
+import { BookOpen, CalendarClock, MapPin, Package, Phone, UserCircle2 } from 'lucide-react'
 import StudentLayout from '@/components/student/StudentLayout'
 import { getMyPackages, UserPackageWithDetails } from '@/lib/api/user-packages'
 import { useAuth } from '@/contexts/AuthContext'
@@ -23,24 +22,27 @@ function PackageCard({ up }: { up: UserPackageWithDetails }) {
     day: '2-digit', month: '2-digit', year: 'numeric',
   })
   return (
-    <div className="bm-glass-card p-4 flex flex-col gap-2">
-      <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-semibold text-foreground leading-snug">{up.package.name}</p>
+    <article className="rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-primary/[0.03] p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_10px_24px_-16px_hsl(var(--primary)/0.45)]">
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="text-base font-semibold leading-snug text-slate-900">{up.package.name}</h3>
         {up.package.price_vnd > 0 && (
-          <span className="text-xs text-muted-foreground whitespace-nowrap shrink-0">
+          <span className="shrink-0 whitespace-nowrap text-sm font-medium text-slate-700">
             {formatVND(up.package.price_vnd)}
           </span>
         )}
       </div>
-      <div className="flex flex-wrap gap-1">
+      <div className="mt-3 flex flex-wrap gap-1.5">
         {up.package.package_grades.map(pg => (
           <Badge key={pg.grade} variant="secondary" className={GRADE_BADGE[pg.grade]?.className}>
             {GRADE_BADGE[pg.grade]?.label}
           </Badge>
         ))}
       </div>
-      <p className="text-xs text-muted-foreground">Gán ngày {assignedDate}</p>
-    </div>
+      <div className="mt-4 flex items-center gap-2 text-xs text-slate-500">
+        <CalendarClock className="h-3.5 w-3.5" />
+        Gán ngày {assignedDate}
+      </div>
+    </article>
   )
 }
 
@@ -57,100 +59,131 @@ export default function ProfilePage() {
 
   return (
     <StudentLayout>
-      <div className="mx-auto max-w-4xl px-4 pb-12 pt-6 sm:px-6">
-        <div className="mb-5">
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">Hồ sơ học sinh</p>
-          <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Xin chào, {profile?.full_name ?? 'bạn'}!</p>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 pt-12">
-
-          {/* ── Left: Profile Card ────────────────────── */}
-          <div className="lg:col-span-1 flex flex-col gap-4">
-            <Card className="rounded-xl border border-slate-200 bg-white shadow-none">
-              <CardContent className="p-5 flex flex-col items-center text-center gap-3">
-                {/* Avatar */}
-                <div className="w-20 h-20 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
-                  <span className="text-2xl font-bold text-slate-800">{initials || '?'}</span>
-                </div>
-                <div className="w-full text-left">
-                  <p className="text-base font-bold text-foreground text-center leading-snug mb-3">
-                    {profile?.full_name ?? '—'}
-                  </p>
-                  <Separator className="mb-3" />
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                    Thông tin cá nhân
-                  </p>
-                  <div className="space-y-2">
-                    {[
-                      { label: 'Số điện thoại', value: profile?.phone },
-                      { label: 'Năm sinh', value: profile?.year_of_birth ? String(profile.year_of_birth) : null },
-                      { label: 'Địa chỉ', value: profile?.address },
-                    ].filter(({ value }) => !!value).map(({ label, value }) => (
-                      <div key={label}>
-                        <p className="text-xs text-muted-foreground">{label}</p>
-                        <p className="text-sm font-medium text-foreground break-all">{value}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <Separator />
-                {/* Stats */}
-                <div className="w-full">
-                  <div className="flex flex-col items-center gap-0.5 p-2 bg-slate-50 rounded-lg">
-                    <span className="text-xl font-bold text-slate-900">{isLoading ? '—' : userPackages.length}</span>
-                    <span className="text-xs text-muted-foreground">Gói học đang sở hữu</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Study illustration */}
-            <div className="relative rounded-2xl overflow-hidden h-36 hidden lg:block">
-              <img
-                src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=70"
-                alt="Học sinh đang học tập"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-indigo-600/60 to-transparent" />
-              <p className="absolute bottom-3 left-3 right-3 text-white text-xs font-semibold leading-snug drop-shadow">
-                Học giỏi mỗi ngày, tiến xa hơn mỗi bước!
+      <div className="mx-auto w-full max-w-[1180px] px-4 pb-12 pt-6 sm:px-6 lg:px-8">
+        <section className="rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-white to-primary/[0.08] p-6 sm:p-8">
+          <div className="grid gap-5 md:grid-cols-[1fr_260px] md:items-center">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Hồ sơ học sinh</p>
+              <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+                Xin chào, {profile?.full_name ?? 'bạn'}
+              </h1>
+              <p className="mt-2 text-sm text-slate-600">
+                Theo dõi thông tin cá nhân và toàn bộ gói học bạn đang sở hữu trong một không gian gọn gàng, dễ đọc.
               </p>
             </div>
+            <div className="hidden overflow-hidden rounded-2xl border border-slate-200 md:block">
+              <img
+                src="https://images.pexels.com/photos/5905559/pexels-photo-5905559.jpeg?auto=compress&cs=tinysrgb&w=900"
+                alt="Học sinh đang học bài"
+                className="h-32 w-full object-cover"
+                loading="lazy"
+              />
+            </div>
           </div>
+        </section>
 
-          {/* ── Right: Packages ──────────────────────── */}
-          <div className="lg:col-span-2">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 mt-6 lg:mt-0">
-              Gói học đang sở hữu
-            </h2>
+        <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-[340px_1fr]">
+          <aside className="space-y-5">
+            <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_14px_36px_-28px_hsl(var(--primary)/0.5)]">
+              <div className="mb-4 overflow-hidden rounded-2xl border border-slate-200">
+                <img
+                  src="https://picsum.photos/seed/bumath-study-corner/900/420"
+                  alt="Góc học tập của học sinh"
+                  className="h-28 w-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
+                  <span className="text-xl font-bold text-primary">{initials || '?'}</span>
+                </div>
+                <div>
+                  <p className="text-lg font-semibold text-slate-900 leading-tight">{profile?.full_name ?? '—'}</p>
+                  <p className="mt-1 text-xs uppercase tracking-wider text-slate-500">Tài khoản học sinh</p>
+                </div>
+              </div>
+              <Separator className="my-4" />
+              <div className="space-y-3">
+                {profile?.phone ? (
+                  <div className="flex items-start gap-2.5">
+                    <Phone className="mt-0.5 h-4 w-4 text-slate-500" />
+                    <div>
+                      <p className="text-xs text-slate-500">Số điện thoại</p>
+                      <p className="text-sm font-medium text-slate-800">{profile.phone}</p>
+                    </div>
+                  </div>
+                ) : null}
+                {profile?.year_of_birth ? (
+                  <div className="flex items-start gap-2.5">
+                    <UserCircle2 className="mt-0.5 h-4 w-4 text-slate-500" />
+                    <div>
+                      <p className="text-xs text-slate-500">Năm sinh</p>
+                      <p className="text-sm font-medium text-slate-800">{String(profile.year_of_birth)}</p>
+                    </div>
+                  </div>
+                ) : null}
+                {profile?.address ? (
+                  <div className="flex items-start gap-2.5">
+                    <MapPin className="mt-0.5 h-4 w-4 text-slate-500" />
+                    <div>
+                      <p className="text-xs text-slate-500">Địa chỉ</p>
+                      <p className="text-sm font-medium text-slate-800">{profile.address}</p>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            </section>
+
+            <section className="rounded-3xl border border-slate-200 bg-white p-5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Thống kê học tập</p>
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                <div className="rounded-2xl border border-primary/20 bg-primary/[0.06] p-3">
+                  <p className="text-xs text-slate-500">Gói học</p>
+                  <p className="mt-1 text-2xl font-semibold text-slate-900">{isLoading ? '—' : userPackages.length}</p>
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                  <p className="text-xs text-slate-500">Trạng thái</p>
+                  <p className="mt-1 text-sm font-semibold text-primary">Đang học</p>
+                </div>
+              </div>
+            </section>
+          </aside>
+
+          <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_20px_44px_-34px_hsl(var(--primary)/0.55)] sm:p-6">
+            <div className="mb-4 flex items-center gap-2">
+              <BookOpen className="h-4 w-4 text-primary" />
+              <h2 className="text-lg font-semibold text-slate-900">Gói học đang sở hữu</h2>
+            </div>
 
             {isLoading ? (
               <div className="grid gap-3">
-                <Skeleton className="h-24 w-full rounded-xl" />
-                <Skeleton className="h-24 w-full rounded-xl" />
+                <Skeleton className="h-32 w-full rounded-2xl" />
+                <Skeleton className="h-32 w-full rounded-2xl" />
               </div>
             ) : userPackages.length === 0 ? (
-              <Card className="rounded-xl border border-slate-200 bg-white shadow-none">
-                <CardContent className="py-14 flex flex-col items-center text-center gap-3">
-                  <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center">
-                    <Package className="h-7 w-7 text-muted-foreground" aria-hidden="true" />
-                  </div>
-                  <div>
-                    <p className="text-base font-semibold">Bạn chưa có gói học nào</p>
-                    <p className="text-sm text-muted-foreground mt-1 max-w-xs mx-auto">
-                      Liên hệ giảng viên để được gán gói học phù hợp với lớp của bạn.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="flex min-h-[260px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 text-center">
+                <img
+                  src="https://images.pexels.com/photos/8471856/pexels-photo-8471856.jpeg?auto=compress&cs=tinysrgb&w=700"
+                  alt="Học sinh ôn tập"
+                  className="mb-4 h-28 w-44 rounded-xl object-cover"
+                  loading="lazy"
+                />
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white">
+                  <Package className="h-7 w-7 text-slate-500" aria-hidden="true" />
+                </div>
+                <p className="mt-4 text-base font-semibold text-slate-900">Bạn chưa có gói học nào</p>
+                <p className="mt-1 max-w-md text-sm text-slate-600">
+                  Liên hệ giảng viên để được gán gói học phù hợp với mục tiêu và khối lớp hiện tại.
+                </p>
+              </div>
             ) : (
               <div className="grid gap-3">
-                {userPackages.map(up => (
+                {userPackages.map((up) => (
                   <PackageCard key={up.id} up={up} />
                 ))}
               </div>
             )}
-          </div>
+          </section>
         </div>
       </div>
     </StudentLayout>

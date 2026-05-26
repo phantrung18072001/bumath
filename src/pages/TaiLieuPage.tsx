@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { Download, Eye, FileText, Loader2, Search, SearchX, SlidersHorizontal } from 'lucide-react'
 import { toast } from 'sonner'
 import Header from '@/components/landing/Header'
@@ -10,12 +10,14 @@ import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { GRADE_BADGE } from '@/lib/constants/grades'
 import {
-  fetchStandaloneStudyMaterials,
+  fetchStandaloneStudyMaterialsPaginated,
   getStudyMaterialSignedUrl,
   type StudyMaterial,
   type StudyMaterialGrade,
 } from '@/lib/api/study-materials'
 import { cn } from '@/lib/utils'
+import { useDebouncedValue } from '@/hooks/use-debounced-value'
+import MathBackground from '@/components/shared/MathBackground'
 
 const GRADE_FILTERS: { value: StudyMaterialGrade | 'all'; label: string }[] = [
   { value: 'all', label: 'Tất cả' },
@@ -32,18 +34,60 @@ function materialThumbnail(material: StudyMaterial, thumbnailUrl?: string): stri
 
 export default function TaiLieuPage() {
   const [selectedGrade, setSelectedGrade] = useState<StudyMaterialGrade | 'all'>('all')
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchInput, setSearchInput] = useState('')
   const [previewingId, setPreviewingId] = useState<string | null>(null)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
+  const loadMoreRef = useRef<HTMLDivElement | null>(null)
+  const debouncedSearch = useDebouncedValue(searchInput, 450)
+  const pageSize = 12
 
   const {
-    data: materials = [],
+    data,
     isLoading,
     isError,
-  } = useQuery({
-    queryKey: ['standalone-study-materials'],
-    queryFn: () => fetchStandaloneStudyMaterials(),
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['standalone-study-materials', selectedGrade, debouncedSearch],
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) =>
+      fetchStandaloneStudyMaterialsPaginated({
+        page: pageParam,
+        pageSize,
+        grade: selectedGrade,
+        search: debouncedSearch,
+      }),
+    getNextPageParam: (lastPage, allPages) => {
+      const loaded = allPages.reduce((total, page) => total + page.data.length, 0)
+      if (loaded >= lastPage.total) return undefined
+      return allPages.length + 1
+    },
   })
+
+  const materials = useMemo(
+    () => data?.pages.flatMap((page) => page.data) ?? [],
+    [data],
+  )
+  const totalMaterials = data?.pages[0]?.total ?? 0
+  const hasActiveFilter = selectedGrade !== 'all' || debouncedSearch.trim().length > 0
+
+  useEffect(() => {
+    if (!hasNextPage || isFetchingNextPage) return
+    const target = loadMoreRef.current
+    if (!target) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          fetchNextPage()
+        }
+      },
+      { rootMargin: '180px 0px' },
+    )
+    observer.observe(target)
+    return () => observer.disconnect()
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, materials.length])
 
   const { data: thumbnailUrls = {} } = useQuery({
     queryKey: ['standalone-study-material-thumbnails', materials.map((m) => m.id).join('|')],
@@ -60,14 +104,6 @@ export default function TaiLieuPage() {
       return Object.fromEntries(entries) as Record<string, string>
     },
   })
-
-  const filteredMaterials = useMemo(() => {
-    return materials.filter((m) => {
-      const gradeMatch = selectedGrade === 'all' || m.grade === selectedGrade
-      const searchMatch = m.title.toLowerCase().includes(searchQuery.toLowerCase().trim())
-      return gradeMatch && searchMatch
-    })
-  }, [materials, searchQuery, selectedGrade])
 
   async function handlePreview(material: StudyMaterial) {
     try {
@@ -110,7 +146,8 @@ export default function TaiLieuPage() {
   }
 
   return (
-    <div className="app-student min-h-[100dvh] bg-white flex flex-col">
+    <div className="app-student min-h-[100dvh] bg-white flex flex-col relative isolate">
+      <MathBackground />
       <Header />
       <main className="flex-1">
         <div className="relative mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-6 md:py-8">
@@ -132,8 +169,8 @@ export default function TaiLieuPage() {
                   <Input
                     type="search"
                     placeholder="Tìm kiếm tài liệu..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                     className="h-11 rounded-xl border-slate-200 bg-white pl-9 text-slate-900 focus-visible:border-sky-500 focus-visible:ring-sky-500"
                     aria-label="Tìm kiếm tài liệu"
                   />
@@ -153,7 +190,7 @@ export default function TaiLieuPage() {
                       className={cn(
                         'min-h-[38px] rounded-full border px-4 text-sm font-medium transition-colors',
                         selectedGrade === f.value
-                          ? 'border-slate-900 bg-slate-900 text-white'
+                          ? 'border-primary bg-primary text-primary-foreground'
                           : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50',
                       )}
                     >
@@ -179,7 +216,7 @@ export default function TaiLieuPage() {
             </div>
           )}
 
-          {!isLoading && !isError && materials.length === 0 && (
+          {!isLoading && !isError && totalMaterials === 0 && !hasActiveFilter && (
             <div className="mt-10 flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white py-16 text-center">
               <FileText className="h-10 w-10 text-slate-400" aria-hidden="true" />
               <h2 className="mt-4 text-xl font-semibold tracking-tight text-slate-900">Chưa có tài liệu nào</h2>
@@ -187,7 +224,7 @@ export default function TaiLieuPage() {
             </div>
           )}
 
-          {!isLoading && !isError && materials.length > 0 && filteredMaterials.length === 0 && (
+          {!isLoading && !isError && totalMaterials === 0 && hasActiveFilter && (
             <div className="mt-10 flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white py-16 text-center">
               <SearchX className="h-10 w-10 text-slate-400" aria-hidden="true" />
               <p className="mt-4 text-lg font-medium text-slate-900">Không tìm thấy kết quả</p>
@@ -195,9 +232,9 @@ export default function TaiLieuPage() {
             </div>
           )}
 
-          {!isLoading && !isError && filteredMaterials.length > 0 && (
+          {!isLoading && !isError && materials.length > 0 && (
             <section className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredMaterials.map((material) => {
+              {materials.map((material) => {
                 const badge = GRADE_BADGE[material.grade] ?? GRADE_BADGE.grade_7
                 const isPreviewing = previewingId === material.id
                 const isDownloading = downloadingId === material.id
@@ -234,7 +271,7 @@ export default function TaiLieuPage() {
                         </Button>
                         <Button
                           type="button"
-                          className="min-h-[42px] rounded-lg bg-slate-900 hover:bg-slate-800"
+                          className="min-h-[42px] rounded-lg bg-primary text-primary-foreground hover:bg-primary/90"
                           onClick={() => handleDownload(material)}
                           disabled={isPreviewing || isDownloading}
                         >
@@ -246,8 +283,13 @@ export default function TaiLieuPage() {
                   </article>
                 )
               })}
+              {isFetchingNextPage &&
+                Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={`next-page-skeleton-${i}`} className="h-80 rounded-xl" />
+                ))}
             </section>
           )}
+          {!isLoading && !isError && hasNextPage && <div ref={loadMoreRef} className="h-8 w-full" aria-hidden="true" />}
         </div>
       </main>
       <Footer />

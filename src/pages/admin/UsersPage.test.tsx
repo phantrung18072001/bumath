@@ -104,7 +104,7 @@ describe('UsersPage', () => {
   it('renders RoleBadge for student role', async () => {
     renderUsersPage()
     await waitFor(() => {
-      expect(screen.getByText('Học sinh')).toBeInTheDocument()
+      expect(screen.getAllByText('Học sinh').length).toBeGreaterThan(0)
     })
   })
 
@@ -256,13 +256,14 @@ describe('UsersPage - Pagination', () => {
     expect(screen.queryByText('User 21')).not.toBeInTheDocument()
   })
 
-  it('hides pagination when 25 or fewer users', async () => {
+  it('shows disabled pagination when 25 or fewer users', async () => {
     renderUsersPage()
     await waitFor(() => {
       expect(screen.getByText('Nguyen Van A')).toBeInTheDocument()
     })
 
-    expect(screen.queryByLabelText('Trang trước')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Trang trước')).toBeInTheDocument()
+    expect(screen.getByLabelText('Trang trước')).toHaveAttribute('aria-disabled', 'true')
   })
 })
 
@@ -277,4 +278,3 @@ describe('UsersPage - Skeleton Loading', () => {
     expect(skeleton).toHaveAttribute('aria-busy', 'true')
   })
 })
-

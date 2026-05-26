@@ -13,16 +13,19 @@ import {
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination'
+  AdminListCard,
+  AdminListFilterRow,
+  AdminListPaginationFooter,
+} from '@/components/admin/AdminListCard'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,6 +43,8 @@ import {
   deletePackage,
 } from '@/lib/api/packages'
 import PackageFormDialog from '@/components/admin/PackageFormDialog'
+import AdminPageHeader, { ADMIN_PAGE_HEADER_ACTION_BUTTON_CLASS } from '@/components/admin/AdminPageHeader'
+import { ADMIN_MODAL_FOOTER_BUTTON_CLASS } from '@/components/admin/adminModalStyles'
 
 const GRADE_BADGE: Record<GradeValue, { label: string; className: string }> = {
   grade_7: { label: 'Lớp 7', className: 'bg-blue-100 text-blue-700 hover:bg-blue-100' },
@@ -48,15 +53,8 @@ const GRADE_BADGE: Record<GradeValue, { label: string; className: string }> = {
   advanced: { label: 'Ôn chuyên', className: 'bg-indigo-100 text-indigo-700 hover:bg-indigo-100' },
 }
 
-function buildPageNumbers(current: number, total: number): (number | 'ellipsis')[] {
-  if (total <= 4) return Array.from({ length: total }, (_, i) => i + 1)
-  return [1, 2, 'ellipsis', total - 1, total]
-}
-
 const formatVND = (amount: number) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount)
-
-const PAGE_SIZE = 20
 
 export default function PackagesPage() {
   const queryClient = useQueryClient()
@@ -64,16 +62,18 @@ export default function PackagesPage() {
   const [editingPackage, setEditingPackage] = useState<PackageWithGrades | null>(null)
   const [deletingPackage, setDeletingPackage] = useState<PackageWithGrades | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [appliedSearchQuery, setAppliedSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(20)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['admin', 'packages', { page: currentPage, pageSize: PAGE_SIZE, search: searchQuery }],
-    queryFn: () => fetchPackagesPaginated({ page: currentPage, pageSize: PAGE_SIZE, search: searchQuery }),
+    queryKey: ['admin', 'packages', { page: currentPage, pageSize, search: appliedSearchQuery }],
+    queryFn: () => fetchPackagesPaginated({ page: currentPage, pageSize, search: appliedSearchQuery }),
   })
 
   const packages = data?.data ?? []
   const totalCount = data?.total ?? 0
-  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
+  const totalPages = Math.ceil(totalCount / pageSize)
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deletePackage(id),
@@ -105,70 +105,64 @@ export default function PackagesPage() {
 
   function handleSearch(value: string) {
     setSearchQuery(value)
+  }
+  function handlePageSizeChange(value: string) {
+    setPageSize(Number(value))
+    setCurrentPage(1)
+  }
+
+  function applyFilters() {
+    setAppliedSearchQuery(searchQuery)
     setCurrentPage(1)
   }
 
   const countCopy = isLoading ? '' : `${totalCount} gói học`
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold leading-[1.3] text-slate-950">Quản lý gói học</h1>
-        <Button className="min-h-[48px] bg-slate-900 hover:bg-slate-800 text-white border-0" onClick={handleOpenCreate}>
-          <Plus className="h-4 w-4 mr-1" />
-          Tạo gói học
-        </Button>
-      </div>
-
-      {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row gap-2 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
-          <Input
-            className="pl-9"
-            placeholder="Tìm theo tên gói học…"
-            aria-label="Tìm kiếm gói học"
-            value={searchQuery}
-            onChange={(e) => handleSearch(e.target.value)}
-          />
-        </div>
-        {!isLoading && (
-          <span className="text-sm text-muted-foreground self-center whitespace-nowrap">
-            {countCopy}
-          </span>
+    <div className="space-y-6">
+      <AdminPageHeader
+        title="Quản lý gói học"
+        description="Danh sách gói học, tìm kiếm theo tên và quản lý lớp phủ của từng gói."
+        action={(
+          <Button className={ADMIN_PAGE_HEADER_ACTION_BUTTON_CLASS} onClick={handleOpenCreate}>
+            <Plus className="h-4 w-4 mr-1" />
+            Tạo gói học
+          </Button>
         )}
-      </div>
+      />
 
-      {/* Content: Loading / Empty / Table + Pagination */}
-      {isLoading ? (
-        <div aria-busy="true" aria-label="Đang tải...">
-          <div className="space-y-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-10 w-full rounded-md" />
-            ))}
-          </div>
-        </div>
-      ) : packages.length === 0 ? (
-        <div className="text-center py-16">
-          {!searchQuery ? (
-            <>
-              <p className="text-sm font-semibold text-foreground mb-1">Chưa có gói học nào</p>
-              <p className="text-sm text-muted-foreground mb-4">Nhấn 'Tạo gói học' để bắt đầu.</p>
-              <Button onClick={handleOpenCreate}>
-                <Plus className="h-4 w-4 mr-1" />
-                Tạo gói học
-              </Button>
-            </>
-          ) : (
-            <>
-              <p className="text-sm font-semibold text-foreground mb-1">Không tìm thấy kết quả</p>
-              <p className="text-sm text-muted-foreground">Thử thay đổi từ khóa.</p>
-            </>
-          )}
-        </div>
-      ) : (
-        <>
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-none overflow-x-auto">
+      <AdminListCard
+            filters={(
+              <AdminListFilterRow>
+                <div className="relative flex-1 min-w-[260px]">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                  <Input
+                    className="pl-9 h-10 rounded-lg"
+                    placeholder="Tìm theo tên gói học…"
+                    aria-label="Tìm kiếm gói học"
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
+                  />
+                </div>
+                <Button className="h-10 shrink-0 rounded-lg" onClick={applyFilters}>
+                  Tìm kiếm
+                </Button>
+              </AdminListFilterRow>
+            )}
+            totalLabel={countCopy}
+            footer={(
+              <AdminListPaginationFooter
+                pageSize={pageSize}
+                onPageSizeChange={handlePageSizeChange}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPrev={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                onNext={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                onGoPage={setCurrentPage}
+              />
+            )}
+          >
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -180,10 +174,28 @@ export default function PackagesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {packages.map((pkg, index) => (
+                {isLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={`skeleton-${i}`}>
+                      <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-40" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-28" /></TableCell>
+                      <TableCell><Skeleton className="h-6 w-32" /></TableCell>
+                      <TableCell className="text-right"><Skeleton className="ml-auto h-10 w-24" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : packages.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center text-sm text-muted-foreground">
+                      {!appliedSearchQuery
+                        ? 'Chưa có gói học nào. Nhấn "Tạo gói học" để bắt đầu.'
+                        : 'Không tìm thấy kết quả phù hợp với bộ lọc hiện tại.'}
+                    </TableCell>
+                  </TableRow>
+                ) : packages.map((pkg, index) => (
                   <TableRow key={pkg.id}>
                     <TableCell className="w-12 text-muted-foreground">
-                      {(currentPage - 1) * PAGE_SIZE + index + 1}
+                      {(currentPage - 1) * pageSize + index + 1}
                     </TableCell>
                     <TableCell className="font-normal">{pkg.name}</TableCell>
                     <TableCell className="text-sm">
@@ -228,49 +240,8 @@ export default function PackagesPage() {
                 ))}
               </TableBody>
             </Table>
-          </div>
-
-          {totalPages > 1 && (
-            <div className="mt-6 flex items-center justify-end gap-3">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      aria-disabled={currentPage === 1}
-                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                    />
-                  </PaginationItem>
-                  {buildPageNumbers(currentPage, totalPages).map((page, idx) =>
-                    page === 'ellipsis' ? (
-                      <PaginationItem key={`ellipsis-${idx}`}>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    ) : (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          isActive={page === currentPage}
-                          onClick={() => setCurrentPage(page)}
-                          className="cursor-pointer"
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    )
-                  )}
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                      aria-disabled={currentPage === totalPages}
-                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
             </div>
-          )}
-        </>
-      )}
+          </AdminListCard>
 
       <PackageFormDialog
         open={dialogOpen}
@@ -291,9 +262,9 @@ export default function PackagesPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogCancel className={ADMIN_MODAL_FOOTER_BUTTON_CLASS}>Hủy</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className={`${ADMIN_MODAL_FOOTER_BUTTON_CLASS} bg-destructive text-destructive-foreground hover:bg-destructive/90`}
               onClick={() => deletingPackage && deleteMutation.mutate(deletingPackage.id)}
               disabled={deleteMutation.isPending}
             >

@@ -160,7 +160,7 @@ export default function LessonContent({
           >
             Thảo luận
             {chatUnreadCount > 0 && (
-              <Badge className="ml-1.5 bg-[#F97316] text-white text-[10px] px-1.5 min-w-[18px] h-[18px] rounded-full border-0">
+              <Badge className="ml-1.5 bg-primary text-primary-foreground text-[10px] px-1.5 min-w-[18px] h-[18px] rounded-full border-0">
                 {chatUnreadCount > 9 ? '9+' : chatUnreadCount}
               </Badge>
             )}

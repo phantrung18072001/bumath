@@ -52,7 +52,7 @@ export default function LessonProgressButton({
     <Button
       onClick={() => mutation.mutate()}
       disabled={mutation.isPending}
-      className="min-h-[48px] w-full md:w-auto bg-[#F97316] hover:bg-[#ea6c0c] text-white border-0 shadow-[0_4px_0_0_#c2540a] active:shadow-none active:translate-y-px transition-all duration-150 cursor-pointer font-semibold"
+      className="min-h-[48px] w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground border-0 shadow-[0_4px_0_0_hsl(var(--primary)/0.45)] active:shadow-none active:translate-y-px transition-all duration-150 cursor-pointer font-semibold"
     >
       {mutation.isPending
         ? <Loader2 className="h-4 w-4 mr-2 animate-spin" />

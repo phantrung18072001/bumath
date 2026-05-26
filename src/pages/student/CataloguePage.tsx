@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { LogIn, Search, BookOpen, Loader2, SlidersHorizontal, Sparkles, ArrowUpRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useDebouncedValue } from '@/hooks/use-debounced-value'
 
 const GRADE_FILTERS: { value: Course['target_grade'] | 'all'; label: string }[] = [
   { value: 'all', label: 'Tất cả' },
@@ -38,6 +39,7 @@ export default function CataloguePage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [tuTruOnly, setTuTruOnly] = useState(false)
   const sentinelRef = useRef<HTMLDivElement>(null)
+  const debouncedSearch = useDebouncedValue(searchQuery, 450)
 
   useEffect(() => {
     if (activeGrade !== 'advanced') setTuTruOnly(false)
@@ -51,16 +53,26 @@ export default function CataloguePage() {
     isLoading: coursesLoading,
     isError: coursesError,
   } = useInfiniteQuery({
-    queryKey: ['catalogue-courses'],
+    queryKey: ['catalogue-courses', activeGrade, debouncedSearch, tuTruOnly],
     queryFn: ({ pageParam = 1 }) =>
-      fetchCoursesPaginated({ page: pageParam as number, pageSize: 12, grade: 'all', search: '' }),
-    getNextPageParam: (lastPage, allPages) =>
-      lastPage.data.length === 12 ? allPages.length + 1 : undefined,
+      fetchCoursesPaginated({
+        page: pageParam as number,
+        pageSize: 12,
+        grade: activeGrade as 'all' | Course['target_grade'],
+        search: debouncedSearch.trim(),
+        isOutstanding: tuTruOnly,
+      }),
+    getNextPageParam: (lastPage, allPages) => {
+      const loaded = allPages.reduce((sum, page) => sum + page.data.length, 0)
+      if (loaded >= lastPage.total) return undefined
+      return allPages.length + 1
+    },
     initialPageParam: 1,
     enabled: !authLoading,
   })
 
   const allCourses = data?.pages.flatMap(p => p.data) ?? []
+  const totalCount = data?.pages[0]?.total ?? 0
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -83,13 +95,6 @@ export default function CataloguePage() {
 
   const enrolledCourseIds = useMemo(() => new Set(enrollments.map(e => e.course_id)), [enrollments])
 
-  const filteredCourses = allCourses.filter(c => {
-    const matchesGrade = activeGrade === 'all' || c.target_grade === activeGrade
-    const matchesSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase().trim())
-    const matchesTuTru = !tuTruOnly || c.is_outstanding === true
-    return matchesGrade && matchesSearch && matchesTuTru
-  })
-
   const content = (
     <div className="relative mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-6 md:py-8">
       <section className="border-b border-slate-200 pb-5">
@@ -99,7 +104,7 @@ export default function CataloguePage() {
         {!isAuthenticated && !authLoading && (
           <div className="mt-5">
             <Link to="/dang-nhap">
-              <Button className="h-10 rounded-xl bg-slate-900 px-4 text-sm text-white hover:bg-slate-800">
+              <Button className="h-10 rounded-xl bg-primary px-4 text-sm text-primary-foreground hover:bg-primary/90">
                 <LogIn className="mr-2 h-4 w-4" />
                 Đăng nhập để học
               </Button>
@@ -141,7 +146,7 @@ export default function CataloguePage() {
                   className={cn(
                     'min-h-[38px] rounded-full border px-4 text-sm font-medium transition-colors',
                     activeGrade === f.value
-                      ? 'border-slate-900 bg-slate-900 text-white'
+                      ? 'border-primary bg-primary text-primary-foreground'
                       : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
                   )}
                 >
@@ -165,7 +170,7 @@ export default function CataloguePage() {
                   onClick={() => setTuTruOnly(opt.value)}
                   className={cn(
                     'min-h-[36px] rounded-full px-4 text-sm font-medium transition-colors',
-                    tuTruOnly === opt.value ? 'bg-slate-900 text-white' : 'bg-white text-slate-800 hover:bg-slate-100'
+                    tuTruOnly === opt.value ? 'bg-primary text-primary-foreground' : 'bg-white text-slate-800 hover:bg-slate-100'
                   )}
                 >
                   {opt.label}
@@ -180,13 +185,13 @@ export default function CataloguePage() {
 
       {coursesLoading && (
         <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
+          {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className="h-72 rounded-xl" />
           ))}
         </div>
       )}
 
-      {!coursesLoading && !coursesError && allCourses.length > 0 && filteredCourses.length === 0 && (
+      {!coursesLoading && !coursesError && totalCount === 0 && (searchQuery.trim() !== '' || activeGrade !== 'all' || tuTruOnly) && (
         <div className="mt-10 flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white py-16 text-center">
           <Search className="h-10 w-10 text-slate-400" aria-hidden="true" />
           <p className="mt-4 text-lg font-medium text-slate-900">{tuTruOnly ? 'Chưa có khóa học Tứ trụ' : 'Không tìm thấy kết quả'}</p>
@@ -194,7 +199,7 @@ export default function CataloguePage() {
         </div>
       )}
 
-      {!coursesLoading && !coursesError && allCourses.length === 0 && (
+      {!coursesLoading && !coursesError && totalCount === 0 && !searchQuery.trim() && activeGrade === 'all' && !tuTruOnly && (
         <div className="mt-10 flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white py-16 text-center">
           <BookOpen className="h-10 w-10 text-slate-400" aria-hidden="true" />
           <h2 className="mt-4 text-xl font-semibold tracking-tight text-slate-900">Chưa có khóa học nào</h2>
@@ -202,9 +207,9 @@ export default function CataloguePage() {
         </div>
       )}
 
-      {!coursesLoading && !coursesError && filteredCourses.length > 0 && (
+      {!coursesLoading && !coursesError && allCourses.length > 0 && (
         <section className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredCourses.map((course) => {
+          {allCourses.map((course) => {
             const isEnrolled = isAuthenticated && enrolledCourseIds.has(course.id)
             const gradeBadge = GRADE_BADGE[course.target_grade]
             const thumbnail = getCourseThumbnail(course)

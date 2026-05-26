@@ -38,7 +38,7 @@ describe('StudentLayout', () => {
 
   it('renders logo image with correct src and alt', async () => {
     await renderStudentLayout()
-    const logoImg = screen.getByAltText('BuMath')
+    const logoImg = screen.getByAltText('BuMath-X')
     expect(logoImg).toBeInTheDocument()
     expect(logoImg).toHaveAttribute('src', expect.stringContaining('bumathx.png'))
   })

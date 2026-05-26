@@ -20,10 +20,10 @@ export default function StudentLayout({ children, plainBackground = true }: Stud
   }
 
   return (
-    <div className={plainBackground ? 'h-screen overflow-hidden flex flex-col app-student bg-white relative isolate' : 'h-screen overflow-hidden flex flex-col app-student bg-gradient-to-br from-primary/5 via-background to-secondary/20 relative isolate'}>
-      {!plainBackground && <MathBackground />}
+    <div className={plainBackground ? 'h-screen overflow-hidden flex flex-col app-student bg-white relative isolate' : 'h-screen overflow-hidden flex flex-col app-student bg-white relative isolate'}>
+      <MathBackground />
       {/* Header — h-20 (80px) */}
-      <header className="h-20 bg-white/80 backdrop-blur-sm border-b border-indigo-200/60 flex items-center px-6 sticky top-0 z-10">
+      <header className="h-20 bg-white border-b border-slate-200 flex items-center px-6 sticky top-0 z-10">
         <Link
           to="/"
           className="flex items-center gap-3"
@@ -31,10 +31,12 @@ export default function StudentLayout({ children, plainBackground = true }: Stud
         >
           <img
             src={`${import.meta.env.BASE_URL}bumathx.png`}
-            alt="BuMath"
-            className="h-11 w-11 rounded-xl object-cover"
+            alt="BuMath-X"
+            className="h-14 w-14 rounded-xl object-cover"
           />
-          <span className="font-bold text-primary text-lg">BuMath</span>
+          <span className="text-xl font-extrabold tracking-tight text-slate-900">
+            Bu<span className="text-primary">Math</span>-X
+          </span>
         </Link>
         <nav className="ml-6 hidden sm:flex items-center gap-1">
           <NavLink

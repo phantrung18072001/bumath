@@ -23,14 +23,10 @@ import {
 } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination'
+  AdminListCard,
+  AdminListFilterRow,
+  AdminListPaginationFooter,
+} from '@/components/admin/AdminListCard'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,6 +40,8 @@ import {
 import { fetchCourses, fetchCoursesPaginated, deleteCourse, publishCourse, Course } from '@/lib/api/courses'
 import CourseFormDialog from '@/components/admin/CourseFormDialog'
 import { GRADE_BADGE } from '@/lib/constants/grades'
+import AdminPageHeader, { ADMIN_PAGE_HEADER_ACTION_BUTTON_CLASS } from '@/components/admin/AdminPageHeader'
+import { ADMIN_MODAL_FOOTER_BUTTON_CLASS } from '@/components/admin/adminModalStyles'
 
 function GradeBadge({ grade }: { grade: Course['target_grade'] }) {
   const { label, className } = GRADE_BADGE[grade] ?? GRADE_BADGE.grade_7
@@ -54,11 +52,6 @@ function GradeBadge({ grade }: { grade: Course['target_grade'] }) {
   )
 }
 
-function buildPageNumbers(current: number, total: number): (number | 'ellipsis')[] {
-  if (total <= 4) return Array.from({ length: total }, (_, i) => i + 1)
-  return [1, 2, 'ellipsis', total - 1, total]
-}
-
 export default function CoursesPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -67,12 +60,21 @@ export default function CoursesPage() {
   const [deletingCourse, setDeletingCourse] = useState<Course | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [gradeFilter, setGradeFilter] = useState<'all' | Course['target_grade']>('all')
+  const [appliedFilters, setAppliedFilters] = useState({
+    searchQuery: '',
+    gradeFilter: 'all' as 'all' | Course['target_grade'],
+  })
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['admin', 'courses', { page: currentPage, pageSize, grade: gradeFilter, search: searchQuery }],
-    queryFn: () => fetchCoursesPaginated({ page: currentPage, pageSize, grade: gradeFilter, search: searchQuery }),
+    queryKey: ['admin', 'courses', { page: currentPage, pageSize, ...appliedFilters }],
+    queryFn: () => fetchCoursesPaginated({
+      page: currentPage,
+      pageSize,
+      grade: appliedFilters.gradeFilter,
+      search: appliedFilters.searchQuery
+    }),
   })
 
   const courses = data?.data ?? []
@@ -121,12 +123,10 @@ export default function CoursesPage() {
 
   function handleSearch(value: string) {
     setSearchQuery(value)
-    setCurrentPage(1)
   }
 
   function handleGradeFilter(value: string) {
     setGradeFilter(value as 'all' | Course['target_grade'])
-    setCurrentPage(1)
   }
 
   function handlePageSizeChange(value: string) {
@@ -134,79 +134,70 @@ export default function CoursesPage() {
     setCurrentPage(1)
   }
 
+  function applyFilters() {
+    setAppliedFilters({ searchQuery, gradeFilter })
+    setCurrentPage(1)
+  }
+
   const countCopy = isLoading ? '' : `${totalCount} khóa học`
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold leading-[1.3] text-slate-950">Quản lý khóa học</h1>
-        <Button className="min-h-[48px] bg-slate-900 hover:bg-slate-800 text-white border-0" onClick={handleOpenCreate}>
-          <Plus className="h-4 w-4 mr-1" />
-          Tạo khóa học
-        </Button>
-      </div>
-
-      {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row gap-2 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
-          <Input
-            className="pl-9"
-            placeholder="Tìm theo tên khóa học…"
-            aria-label="Tìm kiếm khóa học"
-            value={searchQuery}
-            onChange={(e) => handleSearch(e.target.value)}
-          />
-        </div>
-        <Select value={gradeFilter} onValueChange={handleGradeFilter}>
-          <SelectTrigger className="w-full sm:w-[160px]" aria-label="Lọc theo lớp">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tất cả lớp</SelectItem>
-            <SelectItem value="grade_7">Lớp 7</SelectItem>
-            <SelectItem value="grade_8">Lớp 8</SelectItem>
-            <SelectItem value="grade_9">Lớp 9</SelectItem>
-            <SelectItem value="advanced">Ôn chuyên</SelectItem>
-          </SelectContent>
-        </Select>
-        {!isLoading && (
-          <span className="text-sm text-muted-foreground self-center whitespace-nowrap">
-            {countCopy}
-          </span>
+    <div className="space-y-6">
+      <AdminPageHeader
+        title="Quản lý khóa học"
+        description="Danh sách khóa học với bộ lọc lớp, tìm kiếm và quản lý trạng thái công khai."
+        action={(
+          <Button className={ADMIN_PAGE_HEADER_ACTION_BUTTON_CLASS} onClick={handleOpenCreate}>
+            <Plus className="h-4 w-4 mr-1" />
+            Tạo khóa học
+          </Button>
         )}
-      </div>
+      />
 
-      {/* Content: Loading / Empty / Table + Pagination */}
-      {isLoading ? (
-        <div aria-busy="true" aria-label="Đang tải...">
-          <div className="space-y-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-10 w-full rounded-md" />
-            ))}
-          </div>
-        </div>
-      ) : courses.length === 0 ? (
-        <div className="text-center py-16">
-          {!searchQuery && gradeFilter === 'all' ? (
-            <>
-              <p className="text-sm font-semibold text-foreground mb-1">Chưa có khóa học nào</p>
-              <p className="text-sm text-muted-foreground mb-4">Nhấn "Tạo khóa học" để bắt đầu.</p>
-              <Button onClick={handleOpenCreate}>
-                <Plus className="h-4 w-4 mr-1" />
-                Tạo khóa học
-              </Button>
-            </>
-          ) : (
-            <>
-              <p className="text-sm font-semibold text-foreground mb-1">Không tìm thấy kết quả</p>
-              <p className="text-sm text-muted-foreground">Thử thay đổi từ khóa hoặc bộ lọc.</p>
-            </>
-          )}
-        </div>
-      ) : (
-        <>
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-none overflow-x-auto">
+      <AdminListCard
+            filters={(
+              <AdminListFilterRow>
+                <div className="relative flex-1 min-w-[260px]">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                  <Input
+                    className="h-10 rounded-lg pl-9"
+                    placeholder="Tìm theo tên khóa học…"
+                    aria-label="Tìm kiếm khóa học"
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
+                  />
+                </div>
+                <Select value={gradeFilter} onValueChange={handleGradeFilter}>
+                  <SelectTrigger className="h-10 w-[170px] shrink-0 rounded-lg" aria-label="Lọc theo lớp">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tất cả lớp</SelectItem>
+                    <SelectItem value="grade_7">Lớp 7</SelectItem>
+                    <SelectItem value="grade_8">Lớp 8</SelectItem>
+                    <SelectItem value="grade_9">Lớp 9</SelectItem>
+                    <SelectItem value="advanced">Ôn chuyên</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button className="h-10 shrink-0 rounded-lg" onClick={applyFilters}>
+                  Tìm kiếm
+                </Button>
+              </AdminListFilterRow>
+            )}
+            totalLabel={countCopy}
+            footer={(
+              <AdminListPaginationFooter
+                pageSize={pageSize}
+                onPageSizeChange={handlePageSizeChange}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPrev={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                onNext={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                onGoPage={setCurrentPage}
+              />
+            )}
+          >
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -219,7 +210,26 @@ export default function CoursesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {courses.map((course, index) => (
+                {isLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={`skeleton-${i}`}>
+                      <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-44" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-52" /></TableCell>
+                      <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
+                      <TableCell><Skeleton className="h-6 w-24 rounded-full" /></TableCell>
+                      <TableCell className="text-right"><Skeleton className="ml-auto h-10 w-44" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : courses.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-24 text-center text-sm text-muted-foreground">
+                      {!appliedFilters.searchQuery && appliedFilters.gradeFilter === 'all'
+                        ? 'Chưa có khóa học nào. Nhấn "Tạo khóa học" để bắt đầu.'
+                        : 'Không tìm thấy kết quả phù hợp với bộ lọc hiện tại.'}
+                    </TableCell>
+                  </TableRow>
+                ) : courses.map((course, index) => (
                   <TableRow key={course.id}>
                     <TableCell className="w-12 text-muted-foreground">{(currentPage - 1) * pageSize + index + 1}</TableCell>
                     <TableCell className="font-normal">{course.title}</TableCell>
@@ -292,62 +302,8 @@ export default function CoursesPage() {
                 ))}
               </TableBody>
             </Table>
-          </div>
-
-          {totalPages > 1 && (
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground whitespace-nowrap">Số hàng:</span>
-                <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
-                  <SelectTrigger className="w-[80px] h-9">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      aria-disabled={currentPage === 1}
-                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                    />
-                  </PaginationItem>
-                  {buildPageNumbers(currentPage, totalPages).map((page, idx) =>
-                    page === 'ellipsis' ? (
-                      <PaginationItem key={`ellipsis-${idx}`}>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    ) : (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          isActive={page === currentPage}
-                          onClick={() => setCurrentPage(page)}
-                          className="cursor-pointer"
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    )
-                  )}
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                      aria-disabled={currentPage === totalPages}
-                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
             </div>
-          )}
-        </>
-      )}
+          </AdminListCard>
 
       <CourseFormDialog
         open={dialogOpen}
@@ -369,9 +325,9 @@ export default function CoursesPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogCancel className={ADMIN_MODAL_FOOTER_BUTTON_CLASS}>Hủy</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className={`${ADMIN_MODAL_FOOTER_BUTTON_CLASS} bg-destructive text-destructive-foreground hover:bg-destructive/90`}
               onClick={() => deletingCourse && deleteMutation.mutate(deletingCourse.id)}
               disabled={deleteMutation.isPending}
             >
@@ -386,4 +342,3 @@ export default function CoursesPage() {
     </div>
   )
 }
-

@@ -24,15 +24,12 @@ import {
 } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination'
+  AdminListCard,
+  AdminListFilterRow,
+  AdminListPaginationFooter,
+} from '@/components/admin/AdminListCard'
 import UserPackageDialog from '@/components/admin/UserPackageDialog'
+import AdminPageHeader from '@/components/admin/AdminPageHeader'
 
 function normalizePhone(phone: string): string {
   return phone.replace(/^\+84|^84/, '0')
@@ -48,21 +45,20 @@ function RoleBadge({ role }: { role: Profile['role'] }) {
   return <Badge variant="secondary">Học sinh</Badge>
 }
 
-function buildPageNumbers(current: number, total: number): (number | 'ellipsis')[] {
-  if (total <= 4) return Array.from({ length: total }, (_, i) => i + 1)
-  return [1, 2, 'ellipsis', total - 1, total]
-}
-
 function UsersTable({
   users,
+  isLoading,
   currentPage,
   pageSize,
   onManageEnrollments,
+  emptyMessage,
 }: {
   users: Profile[]
+  isLoading: boolean
   currentPage: number
   pageSize: number
   onManageEnrollments: (user: Profile) => void
+  emptyMessage: string
 }) {
   return (
     <div className="overflow-x-auto">
@@ -79,29 +75,49 @@ function UsersTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map((user, index) => (
-            <TableRow key={user.id}>
-              <TableCell className="w-12 text-muted-foreground">{(currentPage - 1) * pageSize + index + 1}</TableCell>
-              <TableCell>{user.full_name}</TableCell>
-              <TableCell>{user.phone}</TableCell>
-              <TableCell>{user.year_of_birth}</TableCell>
-              <TableCell>{user.address}</TableCell>
-              <TableCell>
-                <RoleBadge role={user.role} />
-              </TableCell>
-              <TableCell className="text-right">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="min-h-[48px]"
-                  onClick={() => onManageEnrollments(user)}
-                >
-                  <BookOpen className="h-4 w-4 mr-1" />
-                  Quản lý gói học
-                </Button>
+          {isLoading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <TableRow key={`skeleton-${i}`}>
+                <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-36" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-28" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-40" /></TableCell>
+                <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
+                <TableCell className="text-right"><Skeleton className="ml-auto h-10 w-40" /></TableCell>
+              </TableRow>
+            ))
+          ) : users.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={7} className="h-24 text-center text-sm text-muted-foreground">
+                {emptyMessage}
               </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            users.map((user, index) => (
+              <TableRow key={user.id}>
+                <TableCell className="w-12 text-muted-foreground">{(currentPage - 1) * pageSize + index + 1}</TableCell>
+                <TableCell>{user.full_name}</TableCell>
+                <TableCell>{user.phone}</TableCell>
+                <TableCell>{user.year_of_birth}</TableCell>
+                <TableCell>{user.address}</TableCell>
+                <TableCell>
+                  <RoleBadge role={user.role} />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="min-h-[48px]"
+                    onClick={() => onManageEnrollments(user)}
+                  >
+                    <BookOpen className="h-4 w-4 mr-1" />
+                    Quản lý gói học
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>
@@ -114,6 +130,12 @@ export default function UsersPage() {
   const [roleFilter, setRoleFilter] = useState<'all' | Profile['role']>('student')
   const [packageFilter, setPackageFilter] = useState<string>('')
   const [packageStatus, setPackageStatus] = useState<'' | 'has_package' | 'no_package'>('')
+  const [appliedFilters, setAppliedFilters] = useState({
+    searchQuery: '',
+    roleFilter: 'student' as 'all' | Profile['role'],
+    packageFilter: '',
+    packageStatus: '' as '' | 'has_package' | 'no_package',
+  })
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
 
@@ -124,34 +146,35 @@ export default function UsersPage() {
   const allPackages = packagesData ?? []
 
   const { data, isLoading } = useQuery({
-    queryKey: ['admin', 'profiles', { page: currentPage, pageSize, role: roleFilter, search: searchQuery, packageId: packageFilter, packageStatus }],
-    queryFn: () => fetchProfilesPaginated({ page: currentPage, pageSize, role: roleFilter, search: searchQuery, packageId: packageFilter || undefined, packageStatus: packageStatus || undefined }),
+    queryKey: ['admin', 'profiles', { page: currentPage, pageSize, ...appliedFilters }],
+    queryFn: () => fetchProfilesPaginated({
+      page: currentPage,
+      pageSize,
+      role: appliedFilters.roleFilter,
+      search: appliedFilters.searchQuery,
+      packageId: appliedFilters.packageFilter || undefined,
+      packageStatus: appliedFilters.packageStatus || undefined
+    }),
   })
 
   const users = data?.data ?? []
   const totalCount = data?.total ?? 0
   const totalPages = Math.ceil(totalCount / pageSize)
 
-  function handleSearch(value: string) {
-    setSearchQuery(value)
-    setCurrentPage(1)
-  }
+  function handleSearch(value: string) { setSearchQuery(value) }
 
   function handleRoleFilter(value: string) {
     setRoleFilter(value as 'all' | Profile['role'])
-    setCurrentPage(1)
   }
 
   function handlePackageFilter(value: string) {
     setPackageFilter(value === 'all' ? '' : value)
     setPackageStatus('')
-    setCurrentPage(1)
   }
 
   function handlePackageStatus(value: string) {
     setPackageStatus(value === 'all' ? '' : value as 'has_package' | 'no_package')
     setPackageFilter('')
-    setCurrentPage(1)
   }
 
   function handlePageSizeChange(value: string) {
@@ -159,154 +182,98 @@ export default function UsersPage() {
     setCurrentPage(1)
   }
 
+  function applyFilters() {
+    setAppliedFilters({ searchQuery, roleFilter, packageFilter, packageStatus })
+    setCurrentPage(1)
+  }
+
   const countCopy = isLoading ? '' : `${totalCount} người dùng`
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-xl font-bold leading-[1.3] mb-6 text-slate-950">Quản lý tài khoản</h1>
+    <div className="space-y-6">
+      <AdminPageHeader
+        title="Quản lý tài khoản"
+        description="Danh sách tài khoản học sinh, giảng viên, admin với bộ lọc vai trò và gói học."
+      />
 
-      {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row gap-2 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
-          <Input
-            className="pl-9"
-            placeholder="Tìm theo tên hoặc số điện thoại…"
-            aria-label="Tìm kiếm người dùng"
-            value={searchQuery}
-            onChange={(e) => handleSearch(e.target.value)}
-          />
-        </div>
-        <Select value={roleFilter} onValueChange={handleRoleFilter}>
-          <SelectTrigger className="w-full sm:w-[160px]" aria-label="Lọc theo vai trò">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tất cả vai trò</SelectItem>
-            <SelectItem value="student">Học sinh</SelectItem>
-            <SelectItem value="teacher">Giảng viên</SelectItem>
-            <SelectItem value="admin">Admin</SelectItem>
-          </SelectContent>
-        </Select>
-        {allPackages.length > 0 && (
-          <Select value={packageFilter || 'all'} onValueChange={handlePackageFilter}>
-            <SelectTrigger className="w-full sm:w-[200px]" aria-label="Lọc theo gói học">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tất cả gói học</SelectItem>
-              {allPackages.map((p) => (
-                <SelectItem key={p.id} value={p.id}>
-                  {p.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-        <Select value={packageStatus || 'all'} onValueChange={handlePackageStatus}>
-          <SelectTrigger className="w-full sm:w-[180px]" aria-label="Lọc theo trạng thái gói">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tất cả trạng thái</SelectItem>
-            <SelectItem value="has_package">Đã có gói học</SelectItem>
-            <SelectItem value="no_package">Chưa có gói học</SelectItem>
-          </SelectContent>
-        </Select>
-        {!isLoading && (
-          <span className="text-sm text-muted-foreground self-center whitespace-nowrap">
-            {countCopy}
-          </span>
-        )}
-      </div>
-
-      {/* Content: Loading / Empty / Table */}
-      {isLoading ? (
-        <div aria-busy="true" aria-label="Đang tải...">
-          <div className="space-y-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-10 w-full rounded-md" />
-            ))}
-          </div>
-        </div>
-      ) : users.length === 0 ? (
-        <div className="text-center py-16">
-          {!searchQuery && roleFilter === 'student' && !packageFilter && !packageStatus ? (
-            <>
-              <p className="text-sm font-semibold text-foreground mb-1">Chưa có tài khoản nào</p>
-              <p className="text-sm text-muted-foreground">Hệ thống chưa có người dùng nào đăng ký.</p>
-            </>
-          ) : (
-            <>
-              <p className="text-sm font-semibold text-foreground mb-1">Không tìm thấy kết quả</p>
-              <p className="text-sm text-muted-foreground">Thử thay đổi từ khóa hoặc bộ lọc.</p>
-            </>
-          )}
-        </div>
-      ) : (
-        <>
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-none">
-          <UsersTable
-            users={users}
-            currentPage={currentPage}
-            pageSize={pageSize}
-            onManageEnrollments={(user) => setEnrollmentUser(user)}
-          />
-          {totalPages > 1 && (
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground whitespace-nowrap">Số hàng:</span>
-                <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
-                  <SelectTrigger className="w-[80px] h-9">
+      <AdminListCard
+            filters={(
+              <AdminListFilterRow>
+                <div className="relative flex-1 min-w-[260px]">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                  <Input
+                    className="h-10 rounded-lg pl-9"
+                    placeholder="Tìm theo tên hoặc số điện thoại…"
+                    aria-label="Tìm kiếm người dùng"
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
+                  />
+                </div>
+                <Select value={roleFilter} onValueChange={handleRoleFilter}>
+                  <SelectTrigger className="h-10 w-[170px] shrink-0 rounded-lg" aria-label="Lọc theo vai trò">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="all">Tất cả vai trò</SelectItem>
+                    <SelectItem value="student">Học sinh</SelectItem>
+                    <SelectItem value="teacher">Giảng viên</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      aria-disabled={currentPage === 1}
-                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                    />
-                  </PaginationItem>
-                  {buildPageNumbers(currentPage, totalPages).map((page, idx) =>
-                    page === 'ellipsis' ? (
-                      <PaginationItem key={`ellipsis-${idx}`}>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    ) : (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          isActive={page === currentPage}
-                          onClick={() => setCurrentPage(page)}
-                          className="cursor-pointer"
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    )
-                  )}
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                      aria-disabled={currentPage === totalPages}
-                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </div>
-          )}
-          </div>
-        </>
-      )}
+                {allPackages.length > 0 && (
+                  <Select value={packageFilter || 'all'} onValueChange={handlePackageFilter}>
+                    <SelectTrigger className="h-10 w-[210px] shrink-0 rounded-lg" aria-label="Lọc theo gói học">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tất cả gói học</SelectItem>
+                      {allPackages.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+                <Select value={packageStatus || 'all'} onValueChange={handlePackageStatus}>
+                  <SelectTrigger className="h-10 w-[190px] shrink-0 rounded-lg" aria-label="Lọc theo trạng thái gói">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tất cả trạng thái</SelectItem>
+                    <SelectItem value="has_package">Đã có gói học</SelectItem>
+                    <SelectItem value="no_package">Chưa có gói học</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button className="h-10 shrink-0 rounded-lg" onClick={applyFilters}>
+                  Tìm kiếm
+                </Button>
+              </AdminListFilterRow>
+            )}
+            totalLabel={countCopy}
+            footer={(
+              <AdminListPaginationFooter
+                pageSize={pageSize}
+                onPageSizeChange={handlePageSizeChange}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPrev={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                onNext={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                onGoPage={setCurrentPage}
+              />
+            )}
+          >
+          <UsersTable
+            users={users}
+            isLoading={isLoading}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            onManageEnrollments={(user) => setEnrollmentUser(user)}
+            emptyMessage={!appliedFilters.searchQuery && appliedFilters.roleFilter === 'student' && !appliedFilters.packageFilter && !appliedFilters.packageStatus
+              ? 'Chưa có tài khoản nào.'
+              : 'Không tìm thấy kết quả phù hợp với bộ lọc hiện tại.'}
+          />
+      </AdminListCard>
 
       <UserPackageDialog
         open={!!enrollmentUser}

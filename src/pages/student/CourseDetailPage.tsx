@@ -609,7 +609,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
               <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
                 <SheetContent side="left" className="w-[85vw] max-w-[320px] p-0 flex flex-col">
                   <SheetHeader className="px-4 pt-4 pb-2 border-b border-border shrink-0">
-                    <SheetTitle className="text-base font-bold text-[#0F172A]">
+                    <SheetTitle className="text-base font-bold text-foreground">
                       Danh sách bài học
                     </SheetTitle>
                   </SheetHeader>
@@ -648,7 +648,7 @@ export default function CourseDetailPage({ isAdmin = false }: { isAdmin?: boolea
                         <Lock className="h-7 w-7 text-slate-600" aria-hidden="true" />
                       </div>
                       <div className="space-y-2">
-                        <h2 className="text-xl font-bold leading-snug text-[#0F172A]">{course?.title}</h2>
+                        <h2 className="text-xl font-bold leading-snug text-foreground">{course?.title}</h2>
                         {course && (
                           <Badge className={GRADE_BADGE[course.target_grade].className}>
                             {GRADE_BADGE[course.target_grade].label}

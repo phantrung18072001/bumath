@@ -32,7 +32,7 @@ export default function AdminLayout({ children, fullBleed = false }: { children:
     <div className={cn('flex app-admin bg-white relative isolate', fullBleed ? 'h-[calc(100vh-80px)] overflow-hidden' : 'min-h-[calc(100vh-80px)]')}>
       {/* Sidebar — hidden on full-bleed pages (e.g. course detail) */}
       {!fullBleed && (
-        <aside className="w-60 shrink-0 border-r border-indigo-200/60 bg-white/80 backdrop-blur-sm overflow-y-auto">
+        <aside className="w-60 shrink-0 border-r border-slate-200 bg-white overflow-y-auto">
           <nav className="p-3 space-y-1">
             {visibleItems.map(({ label, to, icon: Icon }) => {
               const active = location.pathname.startsWith(to)

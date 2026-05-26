@@ -61,7 +61,7 @@ export default function BellNotification() {
       {open && (
         <div className="absolute right-0 top-full mt-1 w-72 bg-background border rounded-lg shadow-lg z-50 overflow-hidden">
           {isTeacherOrAdmin && chatUnread > 0 && (
-            <div className="px-3 py-2 border-b bg-[#F97316]/5">
+            <div className="px-3 py-2 border-b bg-primary/5">
               <p className="text-sm font-semibold">Câu hỏi chưa trả lời</p>
               <p className="text-xs text-muted-foreground mt-0.5">
                 {chatUnread > 9 ? '9+' : chatUnread} tin nhắn chờ trả lời. Mở bài học để xem chi tiết.

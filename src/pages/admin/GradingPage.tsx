@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, X } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, X, Images, MessageSquareText, Star } from 'lucide-react'
 import { toast } from 'sonner'
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
@@ -19,32 +19,23 @@ export default function GradingPage() {
   const { submissionId } = useParams<{ submissionId: string }>()
   const navigate = useNavigate()
 
-  // Carousel state
   const [carouselIndex, setCarouselIndex] = useState(0)
-
-  // Form state
   const [score, setScore] = useState<string>('')
   const [comment, setComment] = useState('')
-
-  // Teacher image upload state
   const [teacherImageFiles, setTeacherImageFiles] = useState<File[]>([])
   const [teacherImagePreviews, setTeacherImagePreviews] = useState<string[]>([])
   const [teacherImagePaths, setTeacherImagePaths] = useState<string[]>([])
   const [uploadingImages, setUploadingImages] = useState(false)
   const teacherFileInputRef = useRef<HTMLInputElement>(null)
-
-  // Double-confirm state
   const [pendingConfirm, setPendingConfirm] = useState(false)
   const [saving, setSaving] = useState(false)
 
-  // Fetch submission
   const { data: submission, isLoading: submissionLoading, isError: submissionError } = useQuery({
     queryKey: ['submission', submissionId],
     queryFn: () => getSubmissionById(submissionId!),
     enabled: !!submissionId,
   })
 
-  // Fetch signed URLs for student images
   const { data: signedUrls = [], isLoading: urlsLoading } = useQuery({
     queryKey: ['submission-urls', submission?.file_path],
     queryFn: () => getSubmissionSignedUrls(submission!.file_path),
@@ -118,7 +109,7 @@ export default function GradingPage() {
 
   if (submissionLoading || urlsLoading) {
     return (
-      <div className="container mx-auto py-8 max-w-5xl flex justify-center items-center min-h-64" aria-label="Đang tải...">
+      <div className="mx-auto flex min-h-64 max-w-6xl items-center justify-center py-8" aria-label="Đang tải...">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
@@ -126,63 +117,80 @@ export default function GradingPage() {
 
   if (submissionError || !submission) {
     return (
-      <div className="container mx-auto py-8 max-w-5xl">
+      <div className="mx-auto max-w-6xl px-4 py-8">
         <Link
           to="/quan-tri/bai-nop"
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6"
+          className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
           Quay lại
         </Link>
-        <p className="text-destructive leading-relaxed">Không thể tải bài nộp. Vui lòng thử lại.</p>
+        <p className="leading-relaxed text-destructive">Không thể tải bài nộp. Vui lòng thử lại.</p>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto py-8 max-w-6xl px-4">
-      {/* Back link */}
+    <div className="mx-auto max-w-7xl px-4 py-6 md:py-8">
       <Link
         to="/quan-tri/bai-nop"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 leading-relaxed"
+        className="mb-5 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        Quay lại
+        Quay lại danh sách chấm bài
       </Link>
 
-      <h1 className="text-xl font-bold mb-6 leading-relaxed text-slate-950">Chấm bài nộp</h1>
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+        <div className="p-5 md:p-6">
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">Chấm bài</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Đánh giá bài nộp học sinh</h1>
+            <p className="mt-2 text-sm text-slate-600">
+              Xem ảnh bài làm, nhập điểm và ghi nhận xét chi tiết trước khi lưu.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-700">
+                <Images className="h-3.5 w-3.5" /> {totalImages} ảnh bài làm
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-700">
+                <MessageSquareText className="h-3.5 w-3.5" /> Nhận xét chi tiết
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-700">
+                <Star className="h-3.5 w-3.5" /> Chấm theo thang 10
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      {/* Two-column layout: image left, form right */}
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
-
-        {/* Left: Image carousel */}
-        <div className="flex-1 min-w-0 overflow-y-auto pb-24 lg:pb-0">
+      <div className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_360px]">
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 md:p-5">
           {totalImages === 0 ? (
-            <div className="rounded-lg border bg-muted flex items-center justify-center h-80">
-              <p className="text-sm text-muted-foreground leading-relaxed">Không có ảnh bài làm.</p>
+            <div className="flex h-96 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 text-sm text-muted-foreground">
+              Không có ảnh bài làm.
             </div>
           ) : (
-            <div className="space-y-2">
-              <div className="relative rounded-lg border overflow-hidden bg-muted">
+            <>
+              <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
                 <Zoom zoomMargin={24}>
                   <img
                     src={signedUrls[carouselIndex]}
                     alt={`Bài làm ${carouselIndex + 1}`}
-                    className="w-full object-contain cursor-zoom-in"
+                    className="max-h-[72dvh] w-full cursor-zoom-in object-contain"
                   />
                 </Zoom>
                 {totalImages > 1 && (
                   <>
                     <button
                       onClick={prevImage}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-1 transition-colors"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-slate-900/70 p-1.5 text-white transition-colors hover:bg-slate-900"
                       aria-label="Ảnh trước"
                     >
                       <ChevronLeft className="h-5 w-5" />
                     </button>
                     <button
                       onClick={nextImage}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-1 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-slate-900/70 p-1.5 text-white transition-colors hover:bg-slate-900"
                       aria-label="Ảnh tiếp"
                     >
                       <ChevronRight className="h-5 w-5" />
@@ -191,184 +199,114 @@ export default function GradingPage() {
                 )}
               </div>
               {totalImages > 1 && (
-                <p className="text-center text-sm text-muted-foreground leading-relaxed">
-                  {carouselIndex + 1} / {totalImages}
-                </p>
+                <div className="mt-3 text-center text-sm text-muted-foreground">Ảnh {carouselIndex + 1} / {totalImages}</div>
               )}
-            </div>
+            </>
           )}
-        </div>
+        </section>
 
-        {/* Right: Grading form — sticky sidebar (desktop only) */}
-        <div className="hidden lg:block w-80 shrink-0 lg:sticky lg:top-8 space-y-5">
-          {/* Score */}
-          <div>
-            <label className="block text-sm font-semibold mb-1.5 leading-relaxed" htmlFor="grade-score">
-              Điểm số
-            </label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="grade-score"
-                type="number"
-                min={0}
-                max={10}
-                step={0.5}
-                className="w-24"
-                value={score}
-                onChange={(e) => setScore(e.target.value)}
-                placeholder="0–10"
+        <aside className="rounded-2xl border border-slate-200 bg-white p-4 md:p-5 lg:sticky lg:top-6">
+          <div className="space-y-4">
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold" htmlFor="grade-score">
+                Điểm số
+              </label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="grade-score"
+                  type="number"
+                  min={0}
+                  max={10}
+                  step={0.5}
+                  className="w-28"
+                  value={score}
+                  onChange={(e) => setScore(e.target.value)}
+                  placeholder="0-10"
+                />
+                <span className="text-sm text-muted-foreground">/10</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold" htmlFor="grade-comment">
+                Nhận xét
+              </label>
+              <Textarea
+                id="grade-comment"
+                placeholder="Nêu rõ điểm mạnh, lỗi sai và hướng cải thiện"
+                rows={6}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                className="w-full"
               />
-              <span className="text-sm text-muted-foreground leading-relaxed">/10</span>
             </div>
-          </div>
 
-          {/* Comment */}
-          <div>
-            <label className="block text-sm font-semibold mb-1.5 leading-relaxed" htmlFor="grade-comment">
-              Nhận xét
-            </label>
-            <Textarea
-              id="grade-comment"
-              placeholder="Ví dụ: Làm đúng bước 1, cần kiểm tra lại dấu..."
-              rows={6}
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              className="leading-relaxed w-full"
-            />
-          </div>
-
-          {/* Teacher image upload */}
-          <div>
-            <p className="text-sm font-semibold mb-1.5 leading-relaxed">Ảnh phản hồi (tùy chọn)</p>
-            <input
-              ref={teacherFileInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleTeacherFileSelect}
-              className="hidden"
-              aria-label="Ảnh phản hồi của giáo viên"
-            />
-            {teacherImagePreviews.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-2">
-                {teacherImagePreviews.map((src, i) => (
-                  <div key={i} className="relative">
-                    <img
-                      src={src}
-                      alt={`Phản hồi ${i + 1}`}
-                      className="h-16 w-16 rounded-md object-cover border"
-                    />
-                    <button
-                      onClick={() => removeTeacherImage(i)}
-                      className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full w-5 h-5 flex items-center justify-center"
-                      aria-label={`Xóa ảnh phản hồi ${i + 1}`}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => teacherFileInputRef.current?.click()}
-              className="min-h-[48px]"
-            >
-              Thêm ảnh phản hồi
-            </Button>
-          </div>
-
-          {/* Save / confirm */}
-          {!pendingConfirm ? (
-            <Button
-              className="w-full min-h-[48px] leading-relaxed"
-              onClick={handleSave}
-              disabled={score === '' || uploadingImages}
-            >
-              Lưu điểm
-            </Button>
-          ) : (
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-none space-y-3">
-              <p className="text-sm font-semibold leading-relaxed">
-                Bạn chắc chắn muốn lưu điểm {score}/10?
-              </p>
-              <div className="flex gap-2">
-                <Button
-                  className="flex-1 min-h-[48px]"
-                  onClick={handleConfirm}
-                  disabled={saving}
-                >
-                  {saving && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
-                  Xác nhận
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1 min-h-[48px]"
-                  onClick={handleCancel}
-                  disabled={saving}
-                >
-                  Hủy
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Mobile: sticky bottom bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 bg-background border-t p-4 lg:hidden space-y-3">
-        <div className="flex items-center gap-2">
-          <Input
-            type="number"
-            min={0}
-            max={10}
-            step={0.5}
-            className="w-24"
-            value={score}
-            onChange={(e) => setScore(e.target.value)}
-            placeholder="0–10"
-            aria-label="Điểm số (mobile)"
-          />
-          <span className="text-sm text-muted-foreground">/10</span>
-        </div>
-        {!pendingConfirm ? (
-          <Button
-            className="w-full min-h-[48px]"
-            onClick={handleSave}
-            disabled={score === '' || uploadingImages}
-          >
-            Lưu điểm
-          </Button>
-        ) : (
-          <div className="space-y-2">
-            <p className="text-sm font-semibold leading-relaxed">
-              Bạn chắc chắn muốn lưu điểm {score}/10?
-            </p>
-            <div className="flex gap-2">
-              <Button
-                className="flex-1 min-h-[48px]"
-                onClick={handleConfirm}
-                disabled={saving}
-              >
-                {saving && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
-                Xác nhận
-              </Button>
+            <div>
+              <p className="mb-1.5 text-sm font-semibold">Ảnh phản hồi (tùy chọn)</p>
+              <input
+                ref={teacherFileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleTeacherFileSelect}
+                className="hidden"
+                aria-label="Ảnh phản hồi của giáo viên"
+              />
+              {teacherImagePreviews.length > 0 && (
+                <div className="mb-3 flex flex-wrap gap-2">
+                  {teacherImagePreviews.map((src, i) => (
+                    <div key={i} className="relative">
+                      <img
+                        src={src}
+                        alt={`Phản hồi ${i + 1}`}
+                        className="h-16 w-16 rounded-lg border border-slate-200 object-cover"
+                      />
+                      <button
+                        onClick={() => removeTeacherImage(i)}
+                        className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground"
+                        aria-label={`Xóa ảnh phản hồi ${i + 1}`}
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
               <Button
                 variant="outline"
-                className="flex-1 min-h-[48px]"
-                onClick={handleCancel}
-                disabled={saving}
+                size="sm"
+                onClick={() => teacherFileInputRef.current?.click()}
+                className="min-h-[44px]"
               >
-                Hủy
+                Thêm ảnh phản hồi
               </Button>
             </div>
-          </div>
-        )}
-      </div>
 
-      {/* Spacer to prevent content from being hidden behind mobile sticky bar */}
-      <div className="h-32 lg:hidden" />
+            {!pendingConfirm ? (
+              <Button
+                className="w-full min-h-[48px]"
+                onClick={handleSave}
+                disabled={score === '' || uploadingImages}
+              >
+                Lưu điểm
+              </Button>
+            ) : (
+              <div className="space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <p className="text-sm font-semibold">Bạn chắc chắn muốn lưu điểm {score}/10?</p>
+                <div className="flex gap-2">
+                  <Button className="flex-1 min-h-[44px]" onClick={handleConfirm} disabled={saving}>
+                    {saving && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
+                    Xác nhận
+                  </Button>
+                  <Button variant="outline" className="flex-1 min-h-[44px]" onClick={handleCancel} disabled={saving}>
+                    Hủy
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </aside>
+      </div>
     </div>
   )
 }

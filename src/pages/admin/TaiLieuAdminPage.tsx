@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Upload, FileText, Trash2, Loader2, Plus, Search } from 'lucide-react'
 import { toast } from 'sonner'
@@ -23,15 +23,6 @@ import {
 } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination'
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -51,13 +42,20 @@ import {
 } from '@/components/ui/dialog'
 import {
   deleteStandaloneStudyMaterial,
-  fetchStandaloneStudyMaterials,
+  fetchStandaloneStudyMaterialsPaginated,
   getStudyMaterialSignedUrl,
   StudyMaterial,
   StudyMaterialGrade,
   uploadStandaloneStudyMaterial,
 } from '@/lib/api/study-materials'
 import { GRADE_BADGE } from '@/lib/constants/grades'
+import AdminPageHeader, { ADMIN_PAGE_HEADER_ACTION_BUTTON_CLASS } from '@/components/admin/AdminPageHeader'
+import { ADMIN_MODAL_FOOTER_BUTTON_CLASS } from '@/components/admin/adminModalStyles'
+import {
+  AdminListCard,
+  AdminListFilterRow,
+  AdminListPaginationFooter,
+} from '@/components/admin/AdminListCard'
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr)
@@ -65,11 +63,6 @@ function formatDate(dateStr: string): string {
   const month = String(d.getMonth() + 1).padStart(2, '0')
   const year = d.getFullYear()
   return `${day}/${month}/${year}`
-}
-
-function buildPageNumbers(current: number, total: number): (number | 'ellipsis')[] {
-  if (total <= 4) return Array.from({ length: total }, (_, i) => i + 1)
-  return [1, 2, 'ellipsis', total - 1, total]
 }
 
 export default function TaiLieuAdminPage() {
@@ -85,6 +78,10 @@ export default function TaiLieuAdminPage() {
 
   const [filterGrade, setFilterGrade] = useState<StudyMaterialGrade | 'all'>('all')
   const [search, setSearch] = useState('')
+  const [appliedFilters, setAppliedFilters] = useState({
+    filterGrade: 'all' as StudyMaterialGrade | 'all',
+    search: '',
+  })
   const [openingId, setOpeningId] = useState<string | null>(null)
 
   const [currentPage, setCurrentPage] = useState(1)
@@ -92,10 +89,18 @@ export default function TaiLieuAdminPage() {
 
   const [deletingMaterial, setDeletingMaterial] = useState<StudyMaterial | null>(null)
 
-  const { data: materials = [], isLoading } = useQuery({
-    queryKey: ['standalone-materials', 'all'],
-    queryFn: () => fetchStandaloneStudyMaterials(),
+  const { data, isLoading } = useQuery({
+    queryKey: ['standalone-materials', { page: currentPage, pageSize, ...appliedFilters }],
+    queryFn: () => fetchStandaloneStudyMaterialsPaginated({
+      page: currentPage,
+      pageSize,
+      grade: appliedFilters.filterGrade,
+      search: appliedFilters.search,
+    }),
   })
+  const materials = data?.data ?? []
+  const totalCount = data?.total ?? 0
+  const totalPages = Math.ceil(totalCount / pageSize)
 
   const uploadMutation = useMutation({
     mutationFn: () =>
@@ -113,7 +118,7 @@ export default function TaiLieuAdminPage() {
       setUploadOpen(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
       if (thumbnailInputRef.current) thumbnailInputRef.current.value = ''
-      queryClient.invalidateQueries({ queryKey: ['standalone-materials', 'all'] })
+      queryClient.invalidateQueries({ queryKey: ['standalone-materials'] })
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Tải lên thất bại')
@@ -126,7 +131,7 @@ export default function TaiLieuAdminPage() {
     onSuccess: () => {
       toast.success('Đã xóa tài liệu.')
       setDeletingMaterial(null)
-      queryClient.invalidateQueries({ queryKey: ['standalone-materials', 'all'] })
+      queryClient.invalidateQueries({ queryKey: ['standalone-materials'] })
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Xóa tài liệu thất bại')
@@ -163,46 +168,20 @@ export default function TaiLieuAdminPage() {
 
   const isPending = uploadMutation.isPending
 
-  const filteredMaterials = useMemo(() => {
-    const keyword = search.trim().toLowerCase()
-    return materials.filter((material) => {
-      const matchGrade = filterGrade === 'all' || material.grade === filterGrade
-      const matchTitle = keyword.length === 0 || material.title.toLowerCase().includes(keyword)
-      return matchGrade && matchTitle
-    })
-  }, [materials, filterGrade, search])
-
-  const totalCount = filteredMaterials.length
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize))
-
-  const pagedMaterials = useMemo(() => {
-    const start = (currentPage - 1) * pageSize
-    return filteredMaterials.slice(start, start + pageSize)
-  }, [filteredMaterials, currentPage, pageSize])
-
-  useEffect(() => {
+  function applyFilters() {
+    setAppliedFilters({ filterGrade, search })
     setCurrentPage(1)
-  }, [search, filterGrade, pageSize])
-
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages)
-    }
-  }, [currentPage, totalPages])
+  }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6 gap-3">
-        <div>
-          <h1 className="text-xl font-bold leading-[1.3] text-slate-950">
-            Quản lý tài liệu
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">Tải lên và quản lý tài liệu PDF theo khối lớp</p>
-        </div>
-
-        <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+    <div className="space-y-6">
+      <AdminPageHeader
+        title="Quản lý tài liệu"
+        description="Tải lên và quản lý tài liệu PDF theo khối lớp."
+        action={(
+          <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
           <DialogTrigger asChild>
-            <Button className="min-h-[48px] bg-slate-900 hover:bg-slate-800 text-white border-0 gap-2">
+            <Button className={`${ADMIN_PAGE_HEADER_ACTION_BUTTON_CLASS} gap-2`}>
               <Plus className="h-4 w-4" />
               Tải lên tài liệu
             </Button>
@@ -266,7 +245,7 @@ export default function TaiLieuAdminPage() {
               </div>
 
               <div className="flex justify-end">
-                <Button type="submit" className="gap-2" disabled={!title || !grade || !file || isPending}>
+                <Button type="submit" className={`${ADMIN_MODAL_FOOTER_BUTTON_CLASS} gap-2`} disabled={!title || !grade || !file || isPending}>
                   {isPending ? (
                     <>
                       <Loader2 className="animate-spin h-4 w-4" />
@@ -282,203 +261,124 @@ export default function TaiLieuAdminPage() {
               </div>
             </form>
           </DialogContent>
-        </Dialog>
-      </div>
+          </Dialog>
+        )}
+      />
 
       <div>
-        <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-base font-semibold text-foreground">Danh sách tài liệu</h2>
-        </div>
-
-        {!isLoading && (
-          <div className="flex flex-col sm:flex-row gap-2 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
-              <Input
-                className="pl-9"
-                placeholder="Tìm theo tiêu đề…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+        <AdminListCard
+            filters={(
+              <AdminListFilterRow>
+                <div className="relative flex-1 min-w-[280px]">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                  <Input
+                    className="h-10 rounded-lg pl-9"
+                    placeholder="Tìm theo tiêu đề…"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>
+                <Select value={filterGrade} onValueChange={(v) => setFilterGrade(v as StudyMaterialGrade | 'all')}>
+                  <SelectTrigger className="h-10 w-[180px] shrink-0 rounded-lg">
+                    <SelectValue placeholder="Lọc theo khối lớp" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tất cả khối</SelectItem>
+                    <SelectItem value="grade_7">Lớp 7</SelectItem>
+                    <SelectItem value="grade_8">Lớp 8</SelectItem>
+                    <SelectItem value="grade_9">Lớp 9</SelectItem>
+                    <SelectItem value="advanced">Ôn thi chuyên</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button className="h-10 shrink-0 rounded-lg" onClick={applyFilters}>
+                  Tìm kiếm
+                </Button>
+              </AdminListFilterRow>
+            )}
+            totalLabel={`${totalCount} tài liệu`}
+            footer={(
+              <AdminListPaginationFooter
+                pageSize={pageSize}
+                onPageSizeChange={(v) => { setPageSize(v); setCurrentPage(1) }}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPrev={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                onNext={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                onGoPage={setCurrentPage}
               />
-            </div>
-            <div className="w-full sm:w-[180px]">
-              <Select value={filterGrade} onValueChange={(v) => setFilterGrade(v as StudyMaterialGrade | 'all')}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Lọc theo khối lớp" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả khối</SelectItem>
-                  <SelectItem value="grade_7">Lớp 7</SelectItem>
-                  <SelectItem value="grade_8">Lớp 8</SelectItem>
-                  <SelectItem value="grade_9">Lớp 9</SelectItem>
-                  <SelectItem value="advanced">Ôn thi chuyên</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <span className="text-sm text-muted-foreground self-center whitespace-nowrap">
-              {totalCount}/{materials.length} tài liệu
-            </span>
-          </div>
-        )}
-
-        {isLoading ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-none overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead className="font-bold">Tiêu đề</TableHead>
-                  <TableHead className="font-bold">Khối lớp</TableHead>
-                  <TableHead className="font-bold">Ngày tải</TableHead>
-                  <TableHead className="font-bold">Hành động</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell><Skeleton className="h-4 w-48" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                    <TableCell><Skeleton className="h-8 w-16" /></TableCell>
+            )}
+          >
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="font-bold">Tiêu đề</TableHead>
+                    <TableHead className="font-bold">Khối lớp</TableHead>
+                    <TableHead className="font-bold">Ngày tải</TableHead>
+                    <TableHead className="font-bold">Hành động</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        ) : materials.length === 0 ? (
-          <div className="bm-glass-card p-10 text-center">
-            <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mx-auto">
-              <FileText className="h-6 w-6 text-muted-foreground" />
-            </div>
-            <p className="text-sm font-bold text-foreground mt-3">Chưa có tài liệu nào</p>
-            <p className="text-sm text-muted-foreground mt-1">Tải lên tài liệu đầu tiên để bắt đầu.</p>
-          </div>
-        ) : totalCount === 0 ? (
-          <div className="bm-glass-card p-10 text-center">
-            <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mx-auto">
-              <FileText className="h-6 w-6 text-muted-foreground" />
-            </div>
-            <p className="text-sm font-bold text-foreground mt-3">Không có kết quả phù hợp</p>
-            <p className="text-sm text-muted-foreground mt-1">Thử đổi từ khóa hoặc bộ lọc khối lớp.</p>
-          </div>
-        ) : (
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-none overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="font-bold">Tiêu đề</TableHead>
-                  <TableHead className="font-bold">Khối lớp</TableHead>
-                  <TableHead className="font-bold">Ngày tải</TableHead>
-                  <TableHead className="font-bold">Hành động</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pagedMaterials.map((material) => {
-                  const badge = GRADE_BADGE[material.grade] ?? GRADE_BADGE.grade_7
-                  return (
-                    <TableRow key={material.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <FileText className="h-4 w-4 text-primary/60 shrink-0" />
-                          <button
-                            type="button"
-                            className="font-bold text-sm text-left text-indigo-700 hover:text-indigo-800 hover:underline disabled:opacity-60 disabled:cursor-not-allowed"
-                            onClick={() => handleOpenMaterial(material)}
-                            disabled={openingId === material.id}
-                          >
-                            {openingId === material.id ? 'Đang mở...' : material.title}
-                          </button>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className={badge.className}>
-                          {badge.label}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{formatDate(material.created_at)}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          className="gap-1.5 cursor-pointer"
-                          onClick={() => setDeletingMaterial(material)}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                          Xóa
-                        </Button>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    Array.from({ length: 5 }).map((_, i) => (
+                      <TableRow key={`skeleton-${i}`}>
+                        <TableCell><Skeleton className="h-4 w-48" /></TableCell>
+                        <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                        <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                        <TableCell><Skeleton className="h-8 w-16" /></TableCell>
+                      </TableRow>
+                    ))
+                  ) : materials.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={4} className="h-24 text-center text-sm text-muted-foreground">
+                        {totalCount === 0 && appliedFilters.search === '' && appliedFilters.filterGrade === 'all'
+                          ? 'Chưa có tài liệu nào. Tải lên tài liệu đầu tiên để bắt đầu.'
+                          : 'Không có kết quả phù hợp với bộ lọc hiện tại.'}
                       </TableCell>
                     </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </div>
-        )}
-
-        {!isLoading && totalCount > 0 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Hiển thị</span>
-              <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v))}>
-                <SelectTrigger className="w-[92px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                </SelectContent>
-              </Select>
-              <span className="text-sm text-muted-foreground">/ trang</span>
+                  ) : (
+                    materials.map((material) => {
+                      const badge = GRADE_BADGE[material.grade] ?? GRADE_BADGE.grade_7
+                      return (
+                        <TableRow key={material.id}>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <FileText className="h-4 w-4 text-primary/60 shrink-0" />
+                              <button
+                                type="button"
+                                className="font-bold text-sm text-left text-indigo-700 hover:text-indigo-800 hover:underline disabled:opacity-60 disabled:cursor-not-allowed"
+                                onClick={() => handleOpenMaterial(material)}
+                                disabled={openingId === material.id}
+                              >
+                                {openingId === material.id ? 'Đang mở...' : material.title}
+                              </button>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="secondary" className={badge.className}>
+                              {badge.label}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">{formatDate(material.created_at)}</TableCell>
+                          <TableCell>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              className="gap-1.5 cursor-pointer"
+                              onClick={() => setDeletingMaterial(material)}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                              Xóa
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })
+                  )}
+                </TableBody>
+              </Table>
             </div>
-
-            {totalPages > 1 && (
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        if (currentPage > 1) setCurrentPage((p) => p - 1)
-                      }}
-                      aria-disabled={currentPage === 1}
-                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
-                    />
-                  </PaginationItem>
-                  {buildPageNumbers(currentPage, totalPages).map((item, idx) => (
-                    <PaginationItem key={`${item}-${idx}`}>
-                      {item === 'ellipsis' ? (
-                        <PaginationEllipsis />
-                      ) : (
-                        <PaginationLink
-                          href="#"
-                          isActive={item === currentPage}
-                          onClick={(e) => {
-                            e.preventDefault()
-                            setCurrentPage(item)
-                          }}
-                        >
-                          {item}
-                        </PaginationLink>
-                      )}
-                    </PaginationItem>
-                  ))}
-                  <PaginationItem>
-                    <PaginationNext
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        if (currentPage < totalPages) setCurrentPage((p) => p + 1)
-                      }}
-                      aria-disabled={currentPage === totalPages}
-                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            )}
-          </div>
-        )}
+        </AdminListCard>
       </div>
 
       <AlertDialog open={!!deletingMaterial} onOpenChange={(open) => { if (!open) setDeletingMaterial(null) }}>
@@ -490,9 +390,9 @@ export default function TaiLieuAdminPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogCancel className={ADMIN_MODAL_FOOTER_BUTTON_CLASS}>Hủy</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive hover:bg-destructive/90"
+              className={`${ADMIN_MODAL_FOOTER_BUTTON_CLASS} bg-destructive hover:bg-destructive/90`}
               onClick={handleConfirmDelete}
             >
               Xóa

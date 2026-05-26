@@ -16,10 +16,10 @@ function ErrorState({ className }: { className?: string }) {
   return (
     <AspectRatio
       ratio={16 / 9}
-      className={cn('rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200', className)}
+      className={cn('rounded-xl overflow-hidden border border-slate-200 bg-slate-50', className)}
     >
       <div className="flex h-full w-full flex-col items-center justify-center gap-4">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/80 shadow-sm">
+        <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-white border border-slate-200">
           <AlertCircle className="h-8 w-8 text-destructive" aria-hidden="true" />
         </div>
         <div className="text-center">
@@ -50,7 +50,7 @@ export default function VideoPlayer({ url, title, className }: VideoPlayerProps)
     return (
       <AspectRatio
         ratio={16 / 9}
-        className={cn('rounded-2xl overflow-hidden bg-black shadow-sm', className)}
+        className={cn('rounded-xl overflow-hidden bg-black', className)}
       >
         <iframe
           src={embedSrc}
@@ -69,7 +69,7 @@ export default function VideoPlayer({ url, title, className }: VideoPlayerProps)
   return (
     <AspectRatio
       ratio={16 / 9}
-      className={cn('rounded-2xl overflow-hidden bg-black shadow-sm', className)}
+      className={cn('rounded-xl overflow-hidden bg-black', className)}
     >
       <video
         src={url}

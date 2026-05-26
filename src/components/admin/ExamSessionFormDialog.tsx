@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
+import { ADMIN_MODAL_FOOTER_BUTTON_CLASS } from '@/components/admin/adminModalStyles'
 import { cn } from '@/lib/utils'
 import type { ExamGrade, ExamSession, ExamSessionType } from '@/lib/api/exams'
 
@@ -259,8 +260,8 @@ export default function ExamSessionFormDialog({ open, onOpenChange, initialData,
           {formError ? <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">{formError}</p> : null}
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Hủy</Button>
-          <Button onClick={handleSubmit} disabled={saving}>{saving ? 'Đang lưu...' : 'Lưu'}</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)} className={ADMIN_MODAL_FOOTER_BUTTON_CLASS}>Hủy</Button>
+          <Button onClick={handleSubmit} disabled={saving} className={ADMIN_MODAL_FOOTER_BUTTON_CLASS}>{saving ? 'Đang lưu...' : 'Lưu'}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

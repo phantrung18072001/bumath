@@ -29,6 +29,7 @@ import ThanhToan from './pages/ThanhToan';
 import HuongDan from './pages/HuongDan';
 import TaiLieuPage from './pages/TaiLieuPage';
 import TaiLieuAdminPage from './pages/admin/TaiLieuAdminPage';
+import ScrollToTop from "./components/shared/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <ScrollToTop />
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />

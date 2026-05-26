@@ -171,12 +171,12 @@ Plans:
 **Goal:** Áp dụng design language hiện đại (glassmorphism, indigo/purple palette, premium SaaS aesthetic) lên toàn bộ màn hình học sinh và quản trị — giữ nguyên backgrounds hiện tại, chỉ nâng cấp cards, buttons, badges và interactive elements
 **Requirements**: TBD
 **Depends on:** Phase 19
-**Plans:** 4/4 plans complete
+**Plans:** 5/5 plans complete
 
 **Background lock rule:** Mọi plan trong phase này phải giữ nguyên background colors (`#F0FDFA` mint cho student, current bg cho admin). Chỉ sửa card/button/badge styles.
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 20 to break down)
+- [x] TBD (run /gsd:plan-phase 20 to break down) (completed 2026-05-26)
 
 ---
 
@@ -190,8 +190,18 @@ Plans:
 | 17. In-Lesson Chat | 4/4 | ✅ Complete | 2026-05-08 |
 | 18. Mock Exam System | 4/4 | ✅ Complete | - |
 | 19. Landing Page + Navigator + Video | 1/1 | ✅ Complete | 2026-05-18 |
-| 20. UI/UX Redesign (P01–P04) | 4/4 | ✅ Complete | 2026-05-18 |
-| 21. Tài liệu Page | 0/? | Not started | - |
+| 20. UI/UX Redesign (P01–P05) | 5/5 | Complete    | 2026-05-26 |
+| 21. Tài liệu Page | 0/? | Complete    | 2026-05-26 |
+
+### Phase 22: Monitor, backup data daily, CI/CD workflow - git workflow; Public pages need strong SEO optimization for the system; Scan logic bugs, slow APIs, and security issues.
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 21
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 22 to break down)
 
 ---
 

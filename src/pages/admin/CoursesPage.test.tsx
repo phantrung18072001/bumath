@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom'
@@ -132,17 +132,18 @@ describe('CoursesPage', () => {
 
 describe('CoursesPage - Search', () => {
   it('filters courses by title search (case-insensitive)', async () => {
-    const user = userEvent.setup()
     renderCoursesPage()
     await waitFor(() => {
       expect(screen.getByText('Toán lớp 7 nâng cao')).toBeInTheDocument()
     })
 
     const searchInput = screen.getByPlaceholderText('Tìm theo tên khóa học…')
-    await user.type(searchInput, 'chuyên')
+    fireEvent.change(searchInput, { target: { value: 'chuyên' } })
 
-    expect(screen.queryByText('Toán lớp 7 nâng cao')).not.toBeInTheDocument()
-    expect(screen.getByText('Ôn thi chuyên toán')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.queryByText('Toán lớp 7 nâng cao')).not.toBeInTheDocument()
+      expect(screen.getByText('Ôn thi chuyên toán')).toBeInTheDocument()
+    })
   })
 
   it('shows filtered empty state when search matches nothing', async () => {
@@ -221,13 +222,14 @@ describe('CoursesPage - Pagination', () => {
     expect(screen.queryByText('Khóa học 21')).not.toBeInTheDocument()
   })
 
-  it('hides pagination when 20 or fewer courses', async () => {
+  it('shows disabled pagination when 20 or fewer courses', async () => {
     renderCoursesPage()
     await waitFor(() => {
       expect(screen.getByText('Toán lớp 7 nâng cao')).toBeInTheDocument()
     })
 
-    expect(screen.queryByLabelText('Trang trước')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Trang trước')).toBeInTheDocument()
+    expect(screen.getByLabelText('Trang trước')).toHaveAttribute('aria-disabled', 'true')
   })
 })
 
@@ -245,14 +247,13 @@ describe('CoursesPage - Empty States', () => {
   })
 
   it('shows filtered empty state without CTA', async () => {
-    const user = userEvent.setup()
     renderCoursesPage()
     await waitFor(() => {
       expect(screen.getByText('Toán lớp 7 nâng cao')).toBeInTheDocument()
     })
 
     const searchInput = screen.getByPlaceholderText('Tìm theo tên khóa học…')
-    await user.type(searchInput, 'nonexistent')
+    fireEvent.change(searchInput, { target: { value: 'nonexistent' } })
 
     await waitFor(() => {
       expect(screen.getByText('Không tìm thấy kết quả')).toBeInTheDocument()

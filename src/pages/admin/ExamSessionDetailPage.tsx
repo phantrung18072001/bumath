@@ -289,8 +289,7 @@ export default function ExamSessionDetailPage() {
       ) : null}
 
       {session?.status === 'closed' ? (
-        <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-emerald-50/50 p-6 shadow-[0_24px_60px_-38px_rgba(15,23,42,0.45)]">
-          <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-emerald-200/30 blur-3xl" />
+        <div className="rounded-xl border border-slate-200 bg-white p-6">
           <div className="mb-5 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>
               <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Phân tích đề thi đã đóng</h2>
@@ -306,13 +305,13 @@ export default function ExamSessionDetailPage() {
           ) : analytics ? (
             <div className="space-y-6">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-[1.2fr_1fr]">
-                <div className="rounded-xl border border-slate-200/90 bg-white/95 p-5 shadow-[0_18px_32px_-28px_rgba(15,23,42,0.35)] backdrop-blur">
+                <div className="rounded-xl border border-slate-200 bg-white p-5">
                   <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Số người đã nộp bài</p>
                   <p className="mt-2 text-4xl font-semibold tracking-tight text-slate-900">{analytics.participant_count}</p>
                   <p className="mt-2 text-sm text-slate-600">Tính trên các lượt nộp bài hợp lệ của đề này.</p>
                 </div>
 
-                <div className="rounded-xl border border-slate-200/90 bg-white/95 p-5 shadow-[0_18px_32px_-28px_rgba(15,23,42,0.35)] backdrop-blur">
+                <div className="rounded-xl border border-slate-200 bg-white p-5">
                   <p className="mb-3 text-xs uppercase tracking-[0.14em] text-slate-500">Dải điểm (thang 10)</p>
                   <div className="space-y-2">
                     {analytics.score_distribution.map((band) => (
@@ -322,7 +321,7 @@ export default function ExamSessionDetailPage() {
                           <span>{band.count} ({band.percentage}%)</span>
                         </div>
                         <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-                          <div className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 transition-all" style={{ width: `${band.percentage}%` }} />
+                          <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${band.percentage}%` }} />
                         </div>
                       </div>
                     ))}
@@ -330,7 +329,7 @@ export default function ExamSessionDetailPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-200/90 bg-white/95 p-5 shadow-[0_18px_32px_-28px_rgba(15,23,42,0.35)] backdrop-blur">
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                   <p className="text-sm font-semibold text-slate-900">Tỉ lệ sai theo từng câu</p>
                   <div className="flex flex-wrap gap-1.5">
@@ -344,7 +343,7 @@ export default function ExamSessionDetailPage() {
                 {analytics.question_stats.length === 0 ? (
                   <p className="text-sm text-slate-600">Đề chưa có dữ liệu câu hỏi để phân tích.</p>
                 ) : (
-                  <div className="rounded-xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-3">
+                  <div className="rounded-xl border border-slate-200 bg-white p-3">
                     <div className="h-[340px] w-full">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={wrongRateChartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }} barCategoryGap="34%">

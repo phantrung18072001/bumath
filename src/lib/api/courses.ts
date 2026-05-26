@@ -128,6 +128,7 @@ export interface CoursesFilter {
   pageSize: number
   grade: 'all' | Course['target_grade']
   search: string
+  isOutstanding?: boolean
 }
 
 export interface PaginatedCourses {
@@ -143,7 +144,7 @@ export interface PaginatedCourses {
 export async function fetchCoursesPaginated(
   params: CoursesFilter
 ): Promise<PaginatedCourses> {
-  const { page, pageSize, grade, search } = params
+  const { page, pageSize, grade, search, isOutstanding } = params
   const from = (page - 1) * pageSize
   const to = from + pageSize - 1
 
@@ -159,6 +160,9 @@ export async function fetchCoursesPaginated(
 
   if (search) {
     query = query.ilike('title', `%${search}%`)
+  }
+  if (isOutstanding === true) {
+    query = query.eq('is_outstanding', true)
   }
 
   const { data, error, count } = await query

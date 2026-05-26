@@ -174,6 +174,35 @@ export async function fetchStandaloneStudyMaterials(
   return (data ?? []) as StudyMaterial[]
 }
 
+export async function fetchStandaloneStudyMaterialsPaginated(params: {
+  page: number
+  pageSize: number
+  grade?: StudyMaterialGrade | 'all'
+  search?: string
+}): Promise<{ data: StudyMaterial[]; total: number }> {
+  const { page, pageSize, grade = 'all', search = '' } = params
+  const from = (page - 1) * pageSize
+  const to = from + pageSize - 1
+
+  let query = supabase
+    .from('study_materials')
+    .select('*', { count: 'exact' })
+    .is('lesson_id', null)
+    .order('created_at', { ascending: false })
+    .range(from, to)
+
+  if (grade !== 'all') {
+    query = query.eq('grade', grade)
+  }
+  if (search.trim()) {
+    query = query.ilike('title', `%${search.trim()}%`)
+  }
+
+  const { data, error, count } = await query
+  if (error) throw error
+  return { data: (data ?? []) as StudyMaterial[], total: count ?? 0 }
+}
+
 /**
  * Upload a standalone study material (no lesson).
  * Path: standalone/{timestamp}-{random}.{ext}

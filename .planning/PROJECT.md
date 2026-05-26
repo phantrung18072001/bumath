@@ -129,7 +129,7 @@ Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ t
 
 This document evolves at phase transitions and milestone boundaries.
 
-Last updated: Phase 12.1 complete — UI gap closure: touch targets, typography, error states, copywriting, prefers-reduced-motion fixed across admin pages (GradingPage, CoursesPage, UsersPage, SubmissionsPage, ChaptersPage, LessonsPage).
+Last updated: Phase 20 complete — UI/UX redesign rollout finalized with P05 white-first normalization on authenticated surfaces.
 
 **After each phase transition** (via `/gsd:transition`):
 1. Requirements invalidated? → Move to Out of Scope with reason
@@ -145,4 +145,4 @@ Last updated: Phase 12.1 complete — UI gap closure: touch targets, typography,
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-03 — Milestone v3.0 Platform Expansion started*
+*Last updated: 2026-05-26 — after Phase 20 transition*

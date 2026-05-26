@@ -1,9 +1,9 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { CalendarDays } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import StudentLayout from '@/components/student/StudentLayout'
-import { fetchOpenExamSessionsForStudent } from '@/lib/api/exams'
+import { fetchStudentExamSessionsPaginated } from '@/lib/api/exams'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
+import { AdminListPaginationFooter } from '@/components/admin/AdminListCard'
 
 function gradeLabel(grade: 'grade_7' | 'grade_8' | 'grade_9' | 'advanced') {
   if (grade === 'grade_7') return 'Lớp 7'
@@ -36,15 +37,32 @@ function typeLabel(type: 'monthly' | 'quarterly') {
 }
 
 export default function MockExamsPage() {
-  const [keyword, setKeyword] = useState('')
-  const [statusFilter, setStatusFilter] = useState<'all' | 'open' | 'done'>('open')
-  const [typeFilter, setTypeFilter] = useState<'all' | 'monthly' | 'quarterly'>('all')
-  const [gradeFilter, setGradeFilter] = useState<'all' | 'grade_7' | 'grade_8' | 'grade_9' | 'advanced'>('all')
-  const queryClient = useQueryClient()
-  const { data: sessions = [], isLoading, isError } = useQuery({
-    queryKey: ['student', 'open-exam-sessions'],
-    queryFn: fetchOpenExamSessionsForStudent,
+  const [draftKeyword, setDraftKeyword] = useState('')
+  const [draftStatusFilter, setDraftStatusFilter] = useState<'all' | 'open' | 'done'>('open')
+  const [draftTypeFilter, setDraftTypeFilter] = useState<'all' | 'monthly' | 'quarterly'>('all')
+  const [draftGradeFilter, setDraftGradeFilter] = useState<'all' | 'grade_7' | 'grade_8' | 'grade_9' | 'advanced'>('all')
+  const [filters, setFilters] = useState({
+    keyword: '',
+    status: 'open' as 'all' | 'open' | 'done',
+    type: 'all' as 'all' | 'monthly' | 'quarterly',
+    grade: 'all' as 'all' | 'grade_7' | 'grade_8' | 'grade_9' | 'advanced',
   })
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const queryClient = useQueryClient()
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['student', 'open-exam-sessions', filters, currentPage, pageSize],
+    queryFn: () => fetchStudentExamSessionsPaginated({
+      page: currentPage,
+      pageSize,
+      keyword: filters.keyword,
+      status: filters.status,
+      sessionType: filters.type,
+      grade: filters.grade,
+    }),
+  })
+  const sessions = data?.data ?? []
+  const totalCount = data?.total ?? 0
 
   // Auto-refetch when any open session's ends_at passes
   useEffect(() => {
@@ -63,16 +81,22 @@ export default function MockExamsPage() {
     return () => window.clearTimeout(timer)
   }, [sessions, queryClient])
 
-  const filteredSessions = useMemo(() => {
-    const q = keyword.trim().toLowerCase()
-    return sessions.filter((session) => {
-      const matchKeyword = q.length === 0 || session.title.toLowerCase().includes(q)
-      const matchStatus = statusFilter === 'all' || session.status === statusFilter
-      const matchType = typeFilter === 'all' || session.session_type === typeFilter
-      const matchGrade = gradeFilter === 'all' || session.grade === gradeFilter
-      return matchKeyword && matchStatus && matchType && matchGrade
+  const totalPages = Math.ceil(totalCount / pageSize)
+
+  function applyFilters() {
+    setFilters({
+      keyword: draftKeyword,
+      status: draftStatusFilter,
+      type: draftTypeFilter,
+      grade: draftGradeFilter,
     })
-  }, [sessions, keyword, statusFilter, typeFilter, gradeFilter])
+    setCurrentPage(1)
+  }
+
+  function handlePageSizeChange(nextPageSize: number) {
+    setPageSize(nextPageSize)
+    setCurrentPage(1)
+  }
 
   return (
     <StudentLayout>
@@ -82,18 +106,21 @@ export default function MockExamsPage() {
         </h1>
 
         {isError ? (
-          <div className="bm-glass-card p-5 text-sm text-destructive">Không thể tải danh sách đề thi.</div>
+          <div className="rounded-xl border border-rose-200 bg-rose-50 p-5 text-sm text-destructive">Không thể tải danh sách đề thi.</div>
         ) : null}
 
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-none md:p-5">
           <div className="mb-4 flex flex-nowrap gap-2 overflow-x-auto pb-1">
             <Input
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
+              value={draftKeyword}
+              onChange={(e) => setDraftKeyword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') applyFilters()
+              }}
               placeholder="Tìm theo tên đề thi"
               className="h-10 min-w-[280px] rounded-lg border-slate-300 focus-visible:border-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0"
             />
-            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as typeof statusFilter)}>
+            <Select value={draftStatusFilter} onValueChange={(value) => setDraftStatusFilter(value as typeof draftStatusFilter)}>
               <SelectTrigger className="h-10 w-[170px] shrink-0 rounded-lg border-slate-300 focus:ring-0 focus:ring-offset-0 focus:border-slate-300">
                 <SelectValue placeholder="Trạng thái" />
               </SelectTrigger>
@@ -103,7 +130,7 @@ export default function MockExamsPage() {
                 <SelectItem value="done">Đã làm</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={typeFilter} onValueChange={(value) => setTypeFilter(value as typeof typeFilter)}>
+            <Select value={draftTypeFilter} onValueChange={(value) => setDraftTypeFilter(value as typeof draftTypeFilter)}>
               <SelectTrigger className="h-10 w-[170px] shrink-0 rounded-lg border-slate-300 focus:ring-0 focus:ring-offset-0 focus:border-slate-300">
                 <SelectValue placeholder="Loại đề" />
               </SelectTrigger>
@@ -113,7 +140,7 @@ export default function MockExamsPage() {
                 <SelectItem value="quarterly">Đề quý</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={gradeFilter} onValueChange={(value) => setGradeFilter(value as typeof gradeFilter)}>
+            <Select value={draftGradeFilter} onValueChange={(value) => setDraftGradeFilter(value as typeof draftGradeFilter)}>
               <SelectTrigger className="h-10 w-[170px] shrink-0 rounded-lg border-slate-300 focus:ring-0 focus:ring-offset-0 focus:border-slate-300">
                 <SelectValue placeholder="Khối" />
               </SelectTrigger>
@@ -125,6 +152,12 @@ export default function MockExamsPage() {
                 <SelectItem value="advanced">Nâng cao</SelectItem>
               </SelectContent>
             </Select>
+            <Button type="button" onClick={applyFilters} className="h-10 shrink-0 rounded-lg px-4">
+              Tìm kiếm
+            </Button>
+          </div>
+          <div className="mb-4 pl-1 text-sm text-muted-foreground whitespace-nowrap">
+            Tổng số bản ghi: {totalCount} đề thi
           </div>
           <div className="overflow-x-auto">
             <Table>
@@ -143,26 +176,20 @@ export default function MockExamsPage() {
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  Array.from({ length: 6 }).map((_, index) => (
+                  Array.from({ length: 3 }).map((_, index) => (
                     <TableRow key={`skeleton-row-${index}`}>
-                      <TableCell><Skeleton className="h-5 w-[220px]" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-[70px]" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-[90px]" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-[150px]" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-[150px]" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-[90px]" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-[70px]" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="ml-auto h-5 w-[70px]" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="ml-auto h-8 w-[80px]" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-[120px]" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-[120px]" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-[120px]" /></TableCell>
                     </TableRow>
                   ))
-                ) : filteredSessions.length === 0 ? (
+                ) : sessions.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={9} className="h-24 text-center text-sm text-muted-foreground">
                       Không có kết quả phù hợp với bộ lọc hiện tại.
                     </TableCell>
                   </TableRow>
-                ) : filteredSessions.map((session) => (
+                ) : sessions.map((session) => (
                   <TableRow key={session.id}>
                     <TableCell className="font-medium text-slate-900">
                       {session.title}
@@ -199,6 +226,15 @@ export default function MockExamsPage() {
               </TableBody>
             </Table>
           </div>
+          <AdminListPaginationFooter
+            pageSize={pageSize}
+            onPageSizeChange={handlePageSizeChange}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPrev={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            onNext={() => setCurrentPage((p) => Math.min(Math.max(1, totalPages), p + 1))}
+            onGoPage={(page) => setCurrentPage(page)}
+          />
         </div>
       </div>
     </StudentLayout>

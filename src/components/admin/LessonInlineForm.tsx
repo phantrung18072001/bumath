@@ -216,7 +216,7 @@ export default function LessonInlineForm({
               type="submit"
               size="sm"
               disabled={mutation.isPending || !!fileError}
-              className="cursor-pointer h-9 bg-[#F97316] hover:bg-[#ea6c0c] text-white border-0 shadow-[0_3px_0_0_#c2540a] active:shadow-none active:translate-y-px transition-all duration-150"
+              className="cursor-pointer h-9 bg-primary hover:bg-primary/90 text-primary-foreground border-0 shadow-[0_3px_0_0_hsl(var(--primary)/0.45)] active:shadow-none active:translate-y-px transition-all duration-150"
             >
               {mutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
               {isEditing ? 'Lưu bài học' : 'Thêm bài học'}

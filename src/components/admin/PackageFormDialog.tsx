@@ -20,6 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { ADMIN_MODAL_FOOTER_BUTTON_CLASS } from '@/components/admin/adminModalStyles'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -223,10 +224,10 @@ export default function PackageFormDialog({
             />
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={onClose}>
+              <Button type="button" variant="outline" onClick={onClose} className={ADMIN_MODAL_FOOTER_BUTTON_CLASS}>
                 Hủy
               </Button>
-              <Button type="submit" disabled={mutation.isPending} className="min-h-[48px]">
+              <Button type="submit" disabled={mutation.isPending} className={ADMIN_MODAL_FOOTER_BUTTON_CLASS}>
                 {mutation.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-1" />
                 ) : null}

@@ -14,7 +14,8 @@ const HeroSection = () => {
       <div className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-secondary/10 blur-3xl" />
 
       <div className="container relative">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:text-left">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -53,7 +54,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
+            className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start"
           >
             <Link to={isAuthenticated ? "/khoa-hoc" : "/danh-muc"}>
               <Button size="lg" className="gap-2 text-base font-semibold shadow-lg shadow-primary/25">
@@ -70,7 +71,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="mx-auto mt-12 grid max-w-lg grid-cols-3 gap-6"
+            className="mx-auto mt-12 grid max-w-lg grid-cols-3 gap-6 lg:mx-0"
           >
             {[
               { value: "500+", label: "Bài giảng" },
@@ -82,6 +83,41 @@ const HeroSection = () => {
                 <div className="text-sm text-muted-foreground">{stat.label}</div>
               </div>
             ))}
+          </motion.div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="hidden lg:grid grid-cols-2 gap-4"
+          >
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+              <img
+                src="https://images.pexels.com/photos/5905709/pexels-photo-5905709.jpeg?auto=compress&cs=tinysrgb&w=900"
+                alt="Học sinh đang học toán"
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+            </div>
+            <div className="space-y-4">
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                <img
+                  src="https://images.pexels.com/photos/8471835/pexels-photo-8471835.jpeg?auto=compress&cs=tinysrgb&w=900"
+                  alt="Học sinh trao đổi bài tập"
+                  className="h-40 w-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                <img
+                  src="https://images.pexels.com/photos/8926555/pexels-photo-8926555.jpeg?auto=compress&cs=tinysrgb&w=900"
+                  alt="Luyện đề và ghi chú"
+                  className="h-40 w-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>

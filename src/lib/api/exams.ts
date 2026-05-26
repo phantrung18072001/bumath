@@ -89,11 +89,34 @@ export interface StudentExamSession {
   title: string
   grade: ExamGrade
   session_type: ExamSessionType
-  status: 'open' | 'done'
+  status: 'open' | 'done' | 'closed'
   duration_minutes: number
   starts_at: string
   ends_at: string
   score_10: number | null
+}
+
+export interface StudentExamSessionsFilter {
+  page: number
+  pageSize: number
+  keyword?: string
+  status?: 'all' | 'open' | 'done' | 'closed'
+  sessionType?: 'all' | ExamSessionType
+  grade?: 'all' | ExamGrade
+}
+
+export interface AdminExamSessionsFilter {
+  page: number
+  pageSize: number
+  keyword?: string
+  status?: 'all' | ExamSessionStatus
+  sessionType?: 'all' | ExamSessionType
+  grade?: 'all' | ExamGrade
+}
+
+export interface PaginatedAdminExamSessions {
+  data: ExamSession[]
+  total: number
 }
 
 export interface SaveExamQuestionBatchItem {
@@ -164,6 +187,39 @@ export async function fetchExamSessionsForAdmin(): Promise<ExamSession[]> {
 
   if (error) mapExamError(error)
   return (data ?? []) as ExamSession[]
+}
+
+export async function fetchExamSessionsForAdminPaginated(
+  params: AdminExamSessionsFilter
+): Promise<PaginatedAdminExamSessions> {
+  const { page, pageSize, keyword, status = 'all', sessionType = 'all', grade = 'all' } = params
+  const from = (page - 1) * pageSize
+  const to = from + pageSize - 1
+
+  await supabase.rpc('close_expired_exam_sessions')
+
+  let query = supabase
+    .from('exam_sessions')
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .range(from, to)
+
+  if (keyword && keyword.trim()) {
+    query = query.ilike('title', `%${keyword.trim()}%`)
+  }
+  if (status !== 'all') {
+    query = query.eq('status', status)
+  }
+  if (sessionType !== 'all') {
+    query = query.eq('session_type', sessionType)
+  }
+  if (grade !== 'all') {
+    query = query.eq('grade', grade)
+  }
+
+  const { data, error, count } = await query
+  if (error) mapExamError(error)
+  return { data: (data ?? []) as ExamSession[], total: count ?? 0 }
 }
 
 export async function createExamSession(payload: Pick<ExamSession, 'title' | 'grade' | 'session_type' | 'duration_minutes' | 'starts_at' | 'ends_at'>): Promise<ExamSession> {
@@ -313,6 +369,88 @@ export async function fetchOpenExamSessionsForStudent(): Promise<StudentExamSess
 
   if (error) mapExamError(error)
   return (data ?? []) as StudentExamSession[]
+}
+
+export async function fetchStudentExamSessionsPaginated(
+  params: StudentExamSessionsFilter
+): Promise<{ data: StudentExamSession[]; total: number }> {
+  const {
+    page,
+    pageSize,
+    keyword = '',
+    status = 'all',
+    sessionType = 'all',
+    grade = 'all',
+  } = params
+  const from = (page - 1) * pageSize
+  const to = from + pageSize - 1
+  const nowIso = new Date().toISOString()
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
+  if (authError || !user) {
+    throw new ExamApiError('EXAM_UNAUTHORIZED', 'Bạn cần đăng nhập để xem đề thi.')
+  }
+
+  const { data: attemptRows, error: attemptsError } = await supabase
+    .from('exam_attempts')
+    .select('exam_session_id, score_10, submitted_at')
+    .eq('user_id', user.id)
+    .not('submitted_at', 'is', null)
+  if (attemptsError) mapExamError(attemptsError)
+
+  const attemptMap = new Map<string, number | null>()
+  for (const row of (attemptRows ?? []) as Array<{ exam_session_id: string; score_10: number | null }>) {
+    attemptMap.set(row.exam_session_id, row.score_10)
+  }
+  const attemptedIds = Array.from(attemptMap.keys())
+  const attemptedIdsIn = attemptedIds.map((id) => `"${id}"`).join(',')
+
+  let query = supabase
+    .from('exam_sessions')
+    .select('id, title, grade, session_type, duration_minutes, starts_at, ends_at', { count: 'exact' })
+    .eq('status', 'published')
+    .lte('starts_at', nowIso)
+    .order('starts_at', { ascending: false })
+
+  if (keyword.trim()) query = query.ilike('title', `%${keyword.trim()}%`)
+  if (sessionType !== 'all') query = query.eq('session_type', sessionType)
+  if (grade !== 'all') query = query.eq('grade', grade)
+  if (status === 'open') {
+    query = query.gte('ends_at', nowIso)
+    if (attemptedIds.length > 0) query = query.not('id', 'in', `(${attemptedIdsIn})`)
+  } else if (status === 'done') {
+    if (attemptedIds.length === 0) return { data: [], total: 0 }
+    query = query.in('id', attemptedIds)
+  } else if (status === 'closed') {
+    query = query.lt('ends_at', nowIso)
+    if (attemptedIds.length > 0) query = query.not('id', 'in', `(${attemptedIdsIn})`)
+  }
+
+  const { data, error, count } = await query.range(from, to)
+  if (error) mapExamError(error)
+
+  const mapped = ((data ?? []) as Array<{
+    id: string
+    title: string
+    grade: ExamGrade
+    session_type: ExamSessionType
+    duration_minutes: number
+    starts_at: string
+    ends_at: string
+  }>).map((row) => {
+    const didAttempt = attemptMap.has(row.id)
+    const isClosed = new Date(row.ends_at).getTime() < Date.now()
+    return {
+      ...row,
+      status: didAttempt ? 'done' : (isClosed ? 'closed' : 'open'),
+      score_10: didAttempt ? (attemptMap.get(row.id) ?? null) : null,
+    }
+  }) as StudentExamSession[]
+
+  return { data: mapped, total: count ?? 0 }
 }
 
 export async function fetchExamSessionById(sessionId: string): Promise<ExamSession> {

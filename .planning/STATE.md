@@ -2,29 +2,29 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Platform Expansion
-status: Phase 20 reopened — P05 added (system-wide redesign from /danh-muc model)
-stopped_at: Phase 20 P05 created and foundation rollout started (white shells)
-last_updated: "2026-05-25T00:50:00Z"
+status: Milestone complete
+stopped_at: Phase 20 complete, ready to plan Phase 21
+last_updated: "2026-05-26T09:25:51.136Z"
 progress:
-  total_phases: 9
-  completed_phases: 9
-  total_plans: 36
-  completed_plans: 35
+  total_phases: 8
+  completed_phases: 8
+  total_plans: 28
+  completed_plans: 29
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-03 — v3.0 milestone started)
+See: .planning/PROJECT.md (updated 2026-05-26 — after Phase 20 transition)
 
 **Core value:** Học sinh có thể tự học theo tiến độ và nhận phản hồi cụ thể từ giảng viên trên từng bài làm
-**Current focus:** Phase 20 P05 — system-wide redesign using `/danh-muc` as baseline
+**Current focus:** Transition-ready — Phase 21 planning/execution
 
 ## Current Position
 
-Phase: 20 (ui/ux redesign) — REOPENED
-Plan: P05 ready (0 of 1 for reopened scope)
+Phase: 21
+Plan: Not started
 
 ## Performance Metrics
 
@@ -40,7 +40,7 @@ Plan: P05 ready (0 of 1 for reopened scope)
 |-------|-------|-------|----------|
 | Phase 18 | 4/4 | complete | - |
 | Phase 19 | 1/1 | complete | - |
-| Phase 20 | 4/5 | in progress | P05 |
+| Phase 20 | 5/5 | complete | - |
 
 ## Accumulated Context
 
@@ -53,6 +53,7 @@ Plan: P05 ready (0 of 1 for reopened scope)
 - Phase 20 completed P04 (2026-05-18): exam pages glassmorphism — covers all student/admin screens
 - Phase 20 reopened (2026-05-25): P05 added — redesign toàn hệ thống theo model `/danh-muc` (white-first, image-first, minimal)
 - Phase 21 added: Tài liệu Page public browse + admin upload
+- Phase 22 added: Monitor daily backup + CI/CD & git workflow; optimize SEO for public pages; scan logic bugs, slow APIs, and security issues
 
 ### v3.0 Phase Map
 
@@ -64,8 +65,8 @@ Plan: P05 ready (0 of 1 for reopened scope)
 | 17 | In-Lesson Chat | CHAT-01–03 | ✅ Complete |
 | 18 | Mock Exam System | EXAM-01–06 | ✅ Complete (4/4 plans) |
 | 19 | Landing + Navigator + Video | NAV-01–02, LAND-03, VIDEO-02, PRICE-04 | ✅ Complete (1 plan) |
-| 20 | UI/UX Redesign | TBD | 🔄 In progress (4/5 plans — P01–P04 complete, P05 active) |
-| Phase 21 | 4/4 | complete | - |
+| 20 | UI/UX Redesign | TBD | ✅ Complete (5/5 plans) |
+| 21 | Tài liệu Page | D-01–D-10 | ⏳ Ready to plan |
 
 ### Decisions
 
@@ -93,6 +94,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-05-25T00:50:00Z
-Stopped at: Phase 20 P05 created and shell backgrounds switched to white
-Resume file: `.planning/phases/20-thay-i-ui-ux-landing-page-hi-n-i-theo-phong-c-ch-ai-edtech-saas/20-P05-PLAN.md`
+Last session: 2026-05-26T07:27:00Z
+Stopped at: Phase 20 complete, ready to plan Phase 21
+Resume file: None

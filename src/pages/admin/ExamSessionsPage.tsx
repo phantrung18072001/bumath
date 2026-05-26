@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
-import { FileText, Plus, Sparkles } from 'lucide-react'
+import { Plus, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -10,8 +10,14 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
-import { closeExamSession, createExamSession, deleteExamSession, fetchExamSessionsForAdmin, publishExamSession, updateExamSession, type ExamSession } from '@/lib/api/exams'
+import {
+  AdminListCard,
+  AdminListFilterRow,
+  AdminListPaginationFooter,
+} from '@/components/admin/AdminListCard'
+import { closeExamSession, createExamSession, deleteExamSession, fetchExamSessionsForAdminPaginated, publishExamSession, updateExamSession, type ExamSession } from '@/lib/api/exams'
 import ExamSessionFormDialog from '@/components/admin/ExamSessionFormDialog'
+import AdminPageHeader, { ADMIN_PAGE_HEADER_ACTION_BUTTON_CLASS } from '@/components/admin/AdminPageHeader'
 
 function statusLabel(status: ExamSession['status']) {
   if (status === 'published') return 'Đang mở'
@@ -36,6 +42,14 @@ function gradeLabel(grade: ExamSession['grade']) {
   return 'Nâng cao'
 }
 
+function formatDateParts(dateString: string) {
+  const date = new Date(dateString)
+  return {
+    day: date.toLocaleDateString('vi-VN'),
+    time: date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+  }
+}
+
 export default function ExamSessionsPage() {
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<ExamSession | null>(null)
@@ -43,12 +57,30 @@ export default function ExamSessionsPage() {
   const [statusFilter, setStatusFilter] = useState<'all' | ExamSession['status']>('all')
   const [typeFilter, setTypeFilter] = useState<'all' | ExamSession['session_type']>('all')
   const [gradeFilter, setGradeFilter] = useState<'all' | ExamSession['grade']>('all')
+  const [appliedFilters, setAppliedFilters] = useState({
+    keyword: '',
+    statusFilter: 'all' as 'all' | ExamSession['status'],
+    typeFilter: 'all' as 'all' | ExamSession['session_type'],
+    gradeFilter: 'all' as 'all' | ExamSession['grade'],
+  })
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
   const queryClient = useQueryClient()
 
-  const { data: sessions = [], isLoading, isError } = useQuery({
-    queryKey: ['admin', 'exam-sessions'],
-    queryFn: fetchExamSessionsForAdmin,
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['admin', 'exam-sessions', { page: currentPage, pageSize, ...appliedFilters }],
+    queryFn: () => fetchExamSessionsForAdminPaginated({
+      page: currentPage,
+      pageSize,
+      keyword: appliedFilters.keyword,
+      status: appliedFilters.statusFilter,
+      sessionType: appliedFilters.typeFilter,
+      grade: appliedFilters.gradeFilter,
+    }),
   })
+  const sessions = data?.data ?? []
+  const totalCount = data?.total ?? 0
+  const totalPages = Math.ceil(totalCount / pageSize)
 
   // Auto-refetch when any published session's ends_at passes
   useEffect(() => {
@@ -67,17 +99,11 @@ export default function ExamSessionsPage() {
     return () => window.clearTimeout(timer)
   }, [sessions, queryClient])
 
-  const filteredSessions = useMemo(() => {
-    return sessions.filter((session) => {
-      const matchKeyword = session.title.toLowerCase().includes(keyword.trim().toLowerCase())
-      const matchStatus = statusFilter === 'all' ? true : session.status === statusFilter
-      const matchType = typeFilter === 'all' ? true : session.session_type === typeFilter
-      const matchGrade = gradeFilter === 'all' ? true : session.grade === gradeFilter
-      return matchKeyword && matchStatus && matchType && matchGrade
-    })
-  }, [sessions, keyword, statusFilter, typeFilter, gradeFilter])
-
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['admin', 'exam-sessions'] })
+  const applyFilters = () => {
+    setAppliedFilters({ keyword, statusFilter, typeFilter, gradeFilter })
+    setCurrentPage(1)
+  }
 
   const createMutation = useMutation({
     mutationFn: createExamSession,
@@ -121,30 +147,19 @@ export default function ExamSessionsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-slate-200 bg-white/90 p-6 shadow-none">
-        <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-semibold tracking-tight text-slate-900">Quản lý đề thi</h1>
-            <p className="text-sm text-slate-600">Lọc theo tên, trạng thái, loại đề và thao tác trực tiếp trên từng dòng.</p>
-          </div>
+      <AdminPageHeader
+        title="Quản lý đề thi"
+        description="Lọc theo tên, trạng thái, loại đề và thao tác trực tiếp trên từng dòng."
+        action={(
           <Button
-            className="h-11 rounded-xl bg-slate-900 px-5 text-white hover:bg-slate-800"
+            className={ADMIN_PAGE_HEADER_ACTION_BUTTON_CLASS}
             onClick={() => { setEditing(null); setOpen(true) }}
           >
             <Plus className="mr-2 h-4 w-4" />
             Tạo đề thi
           </Button>
-        </div>
-      </div>
-
-      {isLoading ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <Skeleton className="mb-4 h-10 w-full" />
-          {Array.from({ length: 5 }).map((_, index) => (
-            <Skeleton key={index} className="mb-2 h-12 w-full" />
-          ))}
-        </div>
-      ) : null}
+        )}
+      />
 
       {isError ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 p-5 text-sm text-rose-700">
@@ -152,27 +167,18 @@ export default function ExamSessionsPage() {
         </div>
       ) : null}
 
-      {!isLoading && !isError && sessions.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-10 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100">
-            <FileText className="h-6 w-6 text-slate-500" />
-          </div>
-          <p className="text-base font-semibold text-slate-800">Chưa có đề thi nào</p>
-          <p className="mt-1 text-sm text-slate-600">Hãy tạo đề thi đầu tiên để bắt đầu cấu hình phiên thi.</p>
-        </div>
-      ) : null}
-
-      {!isLoading && !isError && sessions.length > 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-none md:p-5">
-          <div className="mb-4 grid grid-cols-1 gap-2 md:grid-cols-5">
+      {!isError ? (
+        <AdminListCard
+          filters={(
+            <AdminListFilterRow>
             <Input
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               placeholder="Tìm theo tên đề thi"
-              className="h-10 rounded-lg md:col-span-2"
+              className="h-10 min-w-[280px] rounded-lg"
             />
             <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as typeof statusFilter)}>
-              <SelectTrigger className="h-10 rounded-lg">
+              <SelectTrigger className="h-10 w-[180px] shrink-0 rounded-lg">
                 <SelectValue placeholder="Trạng thái" />
               </SelectTrigger>
               <SelectContent>
@@ -183,7 +189,7 @@ export default function ExamSessionsPage() {
               </SelectContent>
             </Select>
             <Select value={typeFilter} onValueChange={(value) => setTypeFilter(value as typeof typeFilter)}>
-              <SelectTrigger className="h-10 rounded-lg">
+              <SelectTrigger className="h-10 w-[170px] shrink-0 rounded-lg">
                 <SelectValue placeholder="Loại đề" />
               </SelectTrigger>
               <SelectContent>
@@ -193,7 +199,7 @@ export default function ExamSessionsPage() {
               </SelectContent>
             </Select>
             <Select value={gradeFilter} onValueChange={(value) => setGradeFilter(value as typeof gradeFilter)}>
-              <SelectTrigger className="h-10 rounded-lg">
+              <SelectTrigger className="h-10 w-[170px] shrink-0 rounded-lg">
                 <SelectValue placeholder="Khối" />
               </SelectTrigger>
               <SelectContent>
@@ -204,16 +210,33 @@ export default function ExamSessionsPage() {
                 <SelectItem value="advanced">Nâng cao</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+            <Button className="h-10 shrink-0 rounded-lg" onClick={applyFilters}>
+              Tìm kiếm
+            </Button>
+            </AdminListFilterRow>
+          )}
+          totalLabel={`${totalCount} đề thi`}
+          footer={(
+            <AdminListPaginationFooter
+              pageSize={pageSize}
+              onPageSizeChange={setPageSize}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPrev={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              onNext={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              onGoPage={setCurrentPage}
+            />
+          )}
+        >
 
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="min-w-[220px]">Tên đề</TableHead>
-                  <TableHead>Loại đề</TableHead>
-                  <TableHead>Khối</TableHead>
-                  <TableHead>Thời gian làm bài</TableHead>
+                  <TableHead className="min-w-[96px] whitespace-nowrap">Loại đề</TableHead>
+                  <TableHead className="min-w-[88px] whitespace-nowrap">Khối</TableHead>
+                  <TableHead className="min-w-[96px] whitespace-nowrap">Thời gian</TableHead>
                   <TableHead>Bắt đầu</TableHead>
                   <TableHead>Kết thúc</TableHead>
                   <TableHead>Trạng thái</TableHead>
@@ -221,56 +244,85 @@ export default function ExamSessionsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredSessions.length === 0 ? (
+                {isLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={`skeleton-${i}`}>
+                      <TableCell><Skeleton className="h-4 w-40" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-14" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                      <TableCell><Skeleton className="h-8 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-8 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
+                      <TableCell className="text-right"><Skeleton className="ml-auto h-8 w-48" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : sessions.length === 0 ? (
                   <TableRow>
                   <TableCell colSpan={8} className="h-24 text-center text-sm text-muted-foreground">
-                      Không có kết quả phù hợp với bộ lọc hiện tại.
+                      {totalCount === 0 && appliedFilters.keyword === '' && appliedFilters.statusFilter === 'all' && appliedFilters.typeFilter === 'all' && appliedFilters.gradeFilter === 'all'
+                        ? 'Chưa có đề thi nào. Hãy tạo đề thi đầu tiên để bắt đầu.'
+                        : 'Không có kết quả phù hợp với bộ lọc hiện tại.'}
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredSessions.map((session) => (
-                    <TableRow key={session.id}>
-                      <TableCell className="font-medium text-slate-900">{session.title}</TableCell>
-                      <TableCell>{typeLabel(session.session_type)}</TableCell>
-                      <TableCell>{gradeLabel(session.grade)}</TableCell>
-                      <TableCell>{session.duration_minutes} phút</TableCell>
-                      <TableCell>{new Date(session.starts_at).toLocaleString('vi-VN')}</TableCell>
-                      <TableCell>{new Date(session.ends_at).toLocaleString('vi-VN')}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={cn('whitespace-nowrap rounded-md border px-2.5 py-0.5 text-xs font-semibold', statusClass(session.status))}>
-                          {statusLabel(session.status)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center justify-end gap-1.5">
-                          <Button variant="outline" size="sm" className="h-8 rounded-md px-3" asChild>
-                            <Link to={`/quan-tri/de-thi/${session.id}`}>Soạn</Link>
-                          </Button>
-                          <Button variant="outline" size="sm" className="h-8 rounded-md px-3" onClick={() => { setEditing(session); setOpen(true) }}>
-                            Sửa
-                          </Button>
-                          {session.status === 'draft' ? (
-                            <Button size="sm" className="h-8 rounded-md bg-slate-900 px-3 hover:bg-slate-800" onClick={() => publishMutation.mutate(session.id)}>
-                              Phát hành
+                  sessions.map((session) => {
+                    const startsAt = formatDateParts(session.starts_at)
+                    const endsAt = formatDateParts(session.ends_at)
+                    return (
+                      <TableRow key={session.id}>
+                        <TableCell className="font-medium text-slate-900">{session.title}</TableCell>
+                        <TableCell className="whitespace-nowrap">{typeLabel(session.session_type)}</TableCell>
+                        <TableCell className="whitespace-nowrap">{gradeLabel(session.grade)}</TableCell>
+                        <TableCell className="whitespace-nowrap">{session.duration_minutes} phút</TableCell>
+                        <TableCell>
+                          <div className="leading-tight">
+                            <div>{startsAt.day}</div>
+                            <div className="text-xs text-muted-foreground">{startsAt.time}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="leading-tight">
+                            <div>{endsAt.day}</div>
+                            <div className="text-xs text-muted-foreground">{endsAt.time}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={cn('whitespace-nowrap rounded-md border px-2.5 py-0.5 text-xs font-semibold', statusClass(session.status))}>
+                            {statusLabel(session.status)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Button variant="outline" size="sm" className="h-8 rounded-md px-3" asChild>
+                              <Link to={`/quan-tri/de-thi/${session.id}`}>Soạn</Link>
                             </Button>
-                          ) : null}
-                          {session.status === 'published' ? (
-                            <Button size="sm" variant="secondary" className="h-8 rounded-md px-3" onClick={() => closeMutation.mutate(session.id)}>
-                              Đóng
+                            <Button variant="outline" size="sm" className="h-8 rounded-md px-3" onClick={() => { setEditing(session); setOpen(true) }}>
+                              Sửa
                             </Button>
-                          ) : null}
-                          <Button variant="destructive" size="sm" className="h-8 rounded-md px-3" onClick={() => deleteMutation.mutate(session.id)}>
-                            Xóa
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                            {session.status === 'draft' ? (
+                              <Button size="sm" className="h-8 rounded-md bg-primary px-3 text-primary-foreground hover:bg-primary/90" onClick={() => publishMutation.mutate(session.id)}>
+                                Phát hành
+                              </Button>
+                            ) : null}
+                            {session.status === 'published' ? (
+                              <Button size="sm" variant="secondary" className="h-8 rounded-md px-3" onClick={() => closeMutation.mutate(session.id)}>
+                                Đóng
+                              </Button>
+                            ) : null}
+                            <Button variant="destructive" size="sm" className="h-8 rounded-md px-3" onClick={() => deleteMutation.mutate(session.id)}>
+                              Xóa
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })
                 )}
               </TableBody>
             </Table>
           </div>
-        </div>
+        </AdminListCard>
       ) : null}
 
       <ExamSessionFormDialog

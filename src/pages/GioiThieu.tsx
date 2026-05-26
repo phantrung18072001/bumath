@@ -18,7 +18,6 @@ import {
   TrendingUp,
   MapPin,
   Calendar,
-  Mail,
 } from "lucide-react";
 
 const STATS = [
@@ -137,10 +136,15 @@ const GioiThieu = () => {
             <Card className="overflow-hidden border-2 border-primary/10 shadow-lg">
               <CardContent className="p-0">
                 <div className="grid md:grid-cols-5">
-                  {/* Photo placeholder */}
+                  {/* Teacher photo */}
                   <div className="md:col-span-2 bg-gradient-to-br from-primary/20 to-amber-100/60 flex flex-col items-center justify-center py-12 px-8 gap-4">
-                    <div className="w-36 h-36 rounded-full bg-primary/20 border-4 border-primary/30 flex items-center justify-center shadow-inner">
-                      <GraduationCap className="w-16 h-16 text-primary/70" />
+                    <div className="w-40 h-40 rounded-full border-4 border-primary/30 overflow-hidden shadow-lg bg-white">
+                      <img
+                        src="/bumathx.png"
+                        alt="Thầy Hoàng Anh - giáo viên BuMath-X"
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
                     </div>
                     <div className="text-center">
                       <div className="text-2xl font-extrabold">Lê Hoàng Anh</div>
@@ -206,7 +210,7 @@ const GioiThieu = () => {
 
         {/* Achievement Timeline */}
         <section className="bg-muted/40 py-20">
-          <div className="container max-w-3xl">
+          <div className="container max-w-6xl">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-extrabold tracking-tight">
                 Thành tích <span className="text-primary">nổi bật</span>
@@ -214,33 +218,46 @@ const GioiThieu = () => {
               <p className="mt-3 text-muted-foreground">Hành trình học thuật và giảng dạy</p>
             </div>
 
-            <div className="space-y-0">
-              {ACHIEVEMENTS.map(({ year, title, location, icon: Icon, color }, index) => (
-                <div key={title} className="flex gap-5">
-                  {/* Icon + connecting line */}
-                  <div className="flex flex-col items-center">
-                    <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center bg-background shrink-0 ${color}`}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    {index < ACHIEVEMENTS.length - 1 && (
-                      <div className="w-px bg-border flex-1 min-h-[32px] my-1" />
-                    )}
-                  </div>
-                  {/* Content */}
-                  <div className={`flex-1 ${index < ACHIEVEMENTS.length - 1 ? "pb-6" : ""}`}>
-                    <span className="text-xs font-bold text-muted-foreground">{year}</span>
-                    <Card className="mt-1 hover:shadow-md transition-shadow duration-200">
-                      <CardContent className="p-4">
-                        <div className="font-semibold text-sm leading-snug">{title}</div>
-                        <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
-                          {location}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
+            <div className="grid gap-8 lg:grid-cols-2 items-start">
+              <Card className="overflow-hidden border-primary/20 shadow-md">
+                <div className="aspect-[4/5] sm:aspect-[16/10] lg:aspect-[4/5] bg-muted">
+                  <img
+                    src="/gioithieu.jpg"
+                    alt="Hồ sơ thành tích và hình ảnh giáo viên Lê Hoàng Anh"
+                    className="w-full h-full object-cover object-top"
+                    loading="lazy"
+                  />
                 </div>
-              ))}
+              </Card>
+
+              <div className="space-y-0">
+                {ACHIEVEMENTS.map(({ year, title, location, icon: Icon, color }, index) => (
+                  <div key={title} className="flex gap-5">
+                    {/* Icon + connecting line */}
+                    <div className="flex flex-col items-center">
+                      <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center bg-background shrink-0 ${color}`}>
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      {index < ACHIEVEMENTS.length - 1 && (
+                        <div className="w-px bg-border flex-1 min-h-[32px] my-1" />
+                      )}
+                    </div>
+                    {/* Content */}
+                    <div className={`flex-1 ${index < ACHIEVEMENTS.length - 1 ? "pb-6" : ""}`}>
+                      <span className="text-xs font-bold text-muted-foreground">{year}</span>
+                      <Card className="mt-1 hover:shadow-md transition-shadow duration-200">
+                        <CardContent className="p-4">
+                          <div className="font-semibold text-sm leading-snug">{title}</div>
+                          <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            {location}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
